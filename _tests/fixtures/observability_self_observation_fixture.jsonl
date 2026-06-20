@@ -1,0 +1,2 @@
+{"ts":"2026-05-18T10:00:00.000Z","event":"tool_call_start","request_id":"r-real-orphan","tool":"dev_code_symbols","success":true}
+{"ts":"2026-05-18T10:00:01.000Z","event":"tool_call_start","request_id":"r-obs-current","tool":"observability_status","success":true}

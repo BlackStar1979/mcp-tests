@@ -1,0 +1,9 @@
+{
+  "deployment_name": "stage8_52d_control_plane_selftest",
+  "files": [
+    {
+      "source": "_workflow/control_plane/selftest/source.txt",
+      "target": "_workflow/control_plane/selftest/target.txt"
+    }
+  ]
+}

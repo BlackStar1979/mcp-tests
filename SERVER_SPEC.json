@@ -1,0 +1,307 @@
+{
+  "schema_version": "mcp-tests-server-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "server": {
+    "name": "mcp-tests-response-shape",
+    "version": "0.30.0",
+    "shape": "2025-05-strict-v1",
+    "mode": "structured",
+    "default_auth": "none",
+    "default_profile": "public",
+    "default_tool_surface": "public_mcp_tools",
+    "default_tool_count": 13,
+    "full_tests_authenticated_tool_count": 46
+  },
+  "maintenance_rules": {
+    "do_not_use_as_progress_log": true,
+    "workflow_logs_stay_under": "_workflow",
+    "updates_must_modify_structured_sections": true,
+    "root_spec_snapshot_allowlisted": true,
+    "root_spec_snapshot_allowlist_source": "_workflow/scripts/workflow_snapshot.js",
+    "index_rebuild_required_before_work": true,
+    "index_rebuild_tool": "GPT_MCP.build_index",
+    "index_status_check_required": true,
+    "closeout_control_review_required": true,
+    "closeout_control_review": {
+      "each_step": true,
+      "active_controls": true,
+      "stale_controls": true,
+      "stale_action": true,
+      "rec_next": true,
+      "rationale_required": true
+    },
+    "index_usage_protocol": {
+      "index_role": "discovery_only_not_source_of_truth",
+      "required_start_sequence": [
+        "read SERVER_SPEC.json",
+        "check index_status",
+        "run build_index before substantive repo work",
+        "re-check index_status after rebuild"
+      ],
+      "authority_order": [
+        "repo_root_current_files",
+        "_workflow/state.json",
+        "SERVER_*.json",
+        "_tests and _workflow/longterm current files",
+        "live TEST_MCP/TEST_MCP_BEARER status",
+        "indexed search results as candidate pointers only"
+      ],
+      "non_authoritative_paths_for_current_truth": [
+        "_public_sandbox/",
+        "_public_sandbox/mcp-tests/",
+        "_repos_with_code_samples/",
+        "_backups/",
+        "_stages/",
+        "archive/",
+        "_logs/",
+        ".mcp_trash/",
+        ".mcp_backups/"
+      ],
+      "verification_rule": "Any indexed hit used for a current workflow/runtime decision must be confirmed by direct read of the authoritative root file or by a validation command.",
+      "sandbox_copy_rule": "Indexed copies under _public_sandbox/mcp-tests are historical or public-sandbox material and must never outrank root _workflow/state.json, root SERVER_*.json, root _tests, or live runtime status.",
+      "query_rule": "Path-qualified searches are helpful but insufficient; filter result paths by authority before drawing conclusions."
+    }
+  },
+  "spec_refs": {
+    "auth": "SERVER_AUTH_SPEC.json",
+    "profiles": "SERVER_PROFILES_SPEC.json",
+    "tools": "SERVER_TOOLS_SPEC.json",
+    "cross_category_policy": "SERVER_AUTHZ_DECISION_SPEC.json",
+    "authz_decision": "SERVER_AUTHZ_DECISION_SPEC.json",
+    "stage12": "SERVER_STAGE12.json",
+    "policy_decision": "SERVER_AUTHZ_DECISION_SPEC.json",
+    "resource_policy": "SERVER_RESOURCE_POLICY_SPEC.json",
+    "memory_policy": "SERVER_MEMORY_POLICY_SPEC.json",
+    "network_policy": "SERVER_NETWORK_POLICY_SPEC.json",
+    "database_policy": "SERVER_DATABASE_POLICY_SPEC.json",
+    "plugin_visibility_policy": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+    "policy_runtime": "SERVER_POLICY_RUNTIME_SPEC.json",
+    "development_structure": "_workflow/REPO_DEVELOPMENT_STRUCTURE.md",
+    "layout_status": "_workflow/REPO_LAYOUT_STATUS.md"
+  },
+  "auth": {
+    "summary": "Authentication modes and port policy are specified in SERVER_AUTH_SPEC.json.",
+    "cli_parameter": "--auth",
+    "allowed_values": [
+      "none",
+      "bearer",
+      "access",
+      "oauth",
+      "oauth21"
+    ],
+    "runtime_selectable_values": [
+      "none",
+      "bearer",
+      "access"
+    ],
+    "reserved_values": [
+      "oauth",
+      "oauth21"
+    ],
+    "spec_ref": "SERVER_AUTH_SPEC.json"
+  },
+  "profiles": {
+    "summary": "Named server profiles, profile schema validation and tool surface rules are specified in SERVER_PROFILES_SPEC.json.",
+    "cli_parameter": "--profile",
+    "default_profile": "public",
+    "implemented_profiles": [
+      "public",
+      "tests"
+    ],
+    "spec_ref": "SERVER_PROFILES_SPEC.json",
+    "schema_validator": "src/profile_schema_validator.js",
+    "directory": "profiles/",
+    "directory_status": "active_root_runtime_configuration"
+  },
+  "tools": {
+    "summary": "MCP-callable tool catalogue and surface classification. Public and authorized tools are exposed through MCP tools/list according to profile/auth policy; internal tools are hidden technical modules and must not be exposed by MCP schema.",
+    "surface_classes": [
+      "public_mcp_tools",
+      "authorized_mcp_tools",
+      "internal_hidden_tools"
+    ],
+    "deprecated_surface_classes": {
+      "non_public_mcp_tools": "Deprecated umbrella term. Use authorized_mcp_tools for MCP-exposed authenticated tools and internal_hidden_tools for server-internal hidden tools."
+    },
+    "current_migration_note": "MCP-exposed authenticated facades are loaded through tools/authorized. tools/internal is reserved for hidden technical helpers that are not exposed through MCP schema/tools/list.",
+    "spec_ref": "SERVER_TOOLS_SPEC.json",
+    "authz_decision_spec_ref": "SERVER_AUTHZ_DECISION_SPEC.json"
+  },
+  "repository_layout_contract": {
+    "version": "repo-layout-contract-v2",
+    "status": "canonical_layout_contract_not_progress_log",
+    "developer_structure_ref": "_workflow/REPO_DEVELOPMENT_STRUCTURE.md",
+    "layout_status_ref": "_workflow/REPO_LAYOUT_STATUS.md",
+    "root_policy": {
+      "rule": "Root-level active runtime/repo directories are allowlisted. Developer, workflow, generated, fixture, backup, sandbox, and temporary structures must live under underscore-prefixed or dot-prefixed locations unless explicitly allowlisted here.",
+      "active_root_dirs": [
+        "src",
+        "tools",
+        "profiles",
+        "plugins",
+        "docker"
+      ],
+      "active_root_files": [
+        "README.md",
+        "server.js",
+        "SERVER_SPEC.json",
+        "SERVER_AUTH_SPEC.json",
+        "SERVER_PROFILES_SPEC.json",
+        "SERVER_TOOLS_SPEC.json",
+        "SERVER_AUTHZ_DECISION_SPEC.json",
+        "SERVER_STAGE12.json",
+        "SERVER_RESOURCE_POLICY_SPEC.json",
+        "SERVER_MEMORY_POLICY_SPEC.json",
+        "SERVER_NETWORK_POLICY_SPEC.json",
+        "SERVER_DATABASE_POLICY_SPEC.json",
+        "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+        "SERVER_POLICY_RUNTIME_SPEC.json"
+      ],
+      "reserved_root_dirs": [
+        "tools/authorized",
+        "_logs"
+      ],
+      "tolerated_legacy_root_items": [
+        {
+          "path": "tools/*.js",
+          "status": "legacy_tool_implementation_modules",
+          "target": "tools/public, tools/authorized, tools/internal plus src implementation modules",
+          "rationale": "Canonical loading goes through tools/public and tools/internal facades, but implementations remain flat pending facade/implementation split."
+        },
+        {
+          "path": "server.js",
+          "status": "thin_root_runtime_entrypoint",
+          "target": "thin entrypoint delegating to src/runtime/server_bootstrap_runtime.js",
+          "rationale": "Step38P extracted CLI parsing and static docs; Step38Q extracted HTTP server factory/route wiring; Step38R extracted self-test/startup lifecycle; Step38S extracted RPC/MCP handler wiring; Step38T extracted runtime context assembly; Step38U extracted runtime status provider assembly; Step38V extracted optional-tools assembly; Step38W extracted audit/document/toolsList support assembly; Step38X extracted process/bootstrap configuration and final startup wiring into src/runtime/server_bootstrap_runtime.js. Root server.js is now a thin entrypoint that delegates to runServerBootstrapRuntime(...)."
+        },
+        {
+          "path": "server.js.bak-*",
+          "status": "legacy_root_backup_file",
+          "target": "_backups/",
+          "rationale": "Historical local backup file tolerated until cleanup step."
+        }
+      ],
+      "runtime_output_dirs": [
+        "_logs"
+      ]
+    },
+    "src": {
+      "purpose": "Active TEST MCP source modules. Runtime code, policy helpers, schemas, metadata, and implementation helpers live here; root-level auth/schemas/util directories are forbidden.",
+      "dirs": {
+        "auth": "Authentication modes, transition guards, and auth policy helpers.",
+        "schemas": "Shared JSON-schema and output-shape contracts.",
+        "util": "Shared policy, path, network, and code-workspace utilities.",
+        "runtime": "Runtime handlers and future server.js container extraction target.",
+        "plugin": "Reserved target for plugin subsystem implementation split.",
+        "exec": "Reserved target for execution wrapper internals."
+      }
+    },
+    "tools": {
+      "purpose": "Connector tool facade layer and legacy implementation debt boundary.",
+      "dirs": {
+        "public": "MCP-exposed public facades visible in public profile tools/list.",
+        "authorized": "MCP-exposed authenticated facades visible only when profile/auth policy allows them.",
+        "internal": "Hidden technical facades and helpers not exposed through MCP schema/tools/list."
+      },
+      "legacy_flat_tools": "Flat tools/*.js are legacy implementation modules until schema extraction and facade migration are complete."
+    },
+    "profiles": {
+      "purpose": "Profile fixture and policy configuration files. This is an active root directory introduced after the original topology contract."
+    },
+    "plugins": {
+      "purpose": "Real manifest-backed plugin candidates only. Test templates belong under _tests/fixtures, not plugins/."
+    },
+    "docker": {
+      "purpose": "Docker and devcontainer scaffolding. Canonical devcontainer path is docker/.devcontainer."
+    },
+    "logs": {
+      "status": "active_runtime_log_dir",
+      "path": "_logs/",
+      "migration_required": false,
+      "legacy_path": "logs/",
+      "legacy_path_status": "removed_after_runtime_files_moved_to__logs"
+    }
+  },
+  "authz_decision": {
+    "summary": "Cross-category allow/deny decision contract spanning auth, profiles and tools. It is specified separately because it belongs to more than one main category.",
+    "applies_to": [
+      "auth",
+      "profiles",
+      "tools"
+    ],
+    "runtime_enforced": false,
+    "mcp_tool_exposed": false,
+    "cli_extension_allowed": false,
+    "spec_ref": "SERVER_AUTHZ_DECISION_SPEC.json"
+  },
+  "cli": {
+    "entrypoint": "node server.js",
+    "parameters": {
+      "--profile": {
+        "values": [
+          "public",
+          "tests"
+        ],
+        "default": "public",
+        "spec_ref": "SERVER_PROFILES_SPEC.json"
+      },
+      "--auth": {
+        "values": [
+          "none",
+          "bearer",
+          "access",
+          "oauth",
+          "oauth21"
+        ],
+        "default": "none",
+        "runtime_selectable_values": [
+          "none",
+          "bearer",
+          "access"
+        ],
+        "reserved_values": [
+          "oauth",
+          "oauth21"
+        ],
+        "spec_ref": "SERVER_AUTH_SPEC.json"
+      },
+      "--token-file": {
+        "required_when": "--auth bearer",
+        "spec_ref": "SERVER_AUTH_SPEC.json"
+      },
+      "--port": {
+        "default_policy_ref": "SERVER_AUTH_SPEC.json#auth_port_policy.default_ports"
+      },
+      "--self-test": {
+        "description": "run connector shape/profile policy self-test and exit"
+      }
+    }
+  },
+  "stage12": {
+    "summary": "Historical Stage 12 planning/spec work moved out of root server spec.",
+    "spec_ref": "SERVER_STAGE12.json"
+  },
+  "policy_extension_model": {
+    "status": "canonical",
+    "rule": "new per-tool, per-auth-mode or per-category policies must be introduced through dedicated SPEC files and profile schema evolution, not by adding new CLI parameters",
+    "cli_extension_allowed": false,
+    "profile_schema_must_model_new_categories": true,
+    "dedicated_spec_required": true,
+    "examples": {
+      "tool_policy": "SERVER_TOOLS_SPEC.json",
+      "auth_policy": "SERVER_AUTH_SPEC.json",
+      "profile_surface_policy": "SERVER_PROFILES_SPEC.json"
+    }
+  },
+  "auth_port_policy": {
+    "default_ports": {
+      "none": 3009,
+      "access": 3005,
+      "bearer": 3006,
+      "oauth": 3007,
+      "oauth21": 3008
+    },
+    "source_ref": "src/runtime/auth_bootstrap_config_resolver.js",
+    "public_bind_without_auth_forbidden": true
+  }
+}

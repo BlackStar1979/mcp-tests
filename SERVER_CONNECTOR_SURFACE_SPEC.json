@@ -1,0 +1,114 @@
+{
+  "schema_version": "mcp-tests-connector-surface-spec-v1",
+  "spec_mode": "refresh-readiness-contract-not-live-connector-state",
+  "scope": "Defines what may be accepted as public connector surface before OAuth. Live ChatGPT connector refresh is an external operator action and is not performed by this spec.",
+  "repository_truth_ref": "SERVER_TOOLS_SPEC.json",
+  "public_connector": {
+    "profile": "public",
+    "auth_mode": "none",
+    "expected_tool_count": 13,
+    "expected_tools": [
+      "search",
+      "fetch",
+      "net_http_get_allowlisted",
+      "net_fetch_text_allowlisted",
+      "net_check_url_head",
+      "net_fetch_github_raw",
+      "net_check_npm_package",
+      "net_check_pypi_package",
+      "fs_list_public",
+      "fs_get_public_info",
+      "fs_read_public_text",
+      "fs_read_public_lines",
+      "fs_read_public_chunk"
+    ],
+    "forbidden_tool_names": [
+      "write_file",
+      "append_file",
+      "delete_path",
+      "move_path",
+      "copy_path",
+      "restore_path",
+      "run_process",
+      "edit_file_patch",
+      "write_remote_site_file",
+      "edit_remote_site_file",
+      "delete_remote_site_file",
+      "tool_registry_list",
+      "tool_registry_status"
+    ],
+    "forbidden_categories": [
+      "workspace_mutation",
+      "process_execution",
+      "remote_site_mutation",
+      "tool_registry_introspection"
+    ],
+    "refresh_required_before_live_use": true
+  },
+  "authenticated_connector": {
+    "profile": "tests",
+    "allowed_groups": [
+      "public",
+      "authorized",
+      "restricted_core_after_authz"
+    ],
+    "expected_public_plus_authorized_count": 45,
+    "expected_authorized_tools": [
+      "test_mcp_runtime_status",
+      "dev_code_symbols",
+      "dev_code_dependencies",
+      "dev_code_audit",
+      "dev_code_impact",
+      "dev_code_syntax_check",
+      "dev_code_locate",
+      "plugin_registry_status",
+      "plugin_registry_list",
+      "plugin_registry_get",
+      "plugin_registry_audit",
+      "plugin_catalog_search",
+      "plugin_catalog_describe",
+      "plugin_visibility_status",
+      "plugin_visibility_plan",
+      "session_toolset_status",
+      "session_toolset_plan",
+      "plugin_execution_preflight",
+      "plugin_execute_readonly",
+      "plugin_execution_governance",
+      "plugin_execution_verify_receipt",
+      "auth_transition_status",
+      "auth_bearer_dry_run",
+      "auth_bearer_cutover_guard",
+      "auth_modular_parity_status",
+      "observability_status",
+      "memory_save",
+      "memory_search",
+      "memory_get_state",
+      "memory_set_state",
+      "memory_create_task",
+      "memory_get_tasks"
+    ],
+    "oauth_before_production_required": true
+  },
+  "operator_connector": {
+    "separate_from_public_connector": true,
+    "may_include_workspace_mutation_tools_only_after_operator_approval": true,
+    "must_not_be_labeled_public": true
+  },
+  "live_refresh_readiness": {
+    "status": "implemented_h9_readiness_contract",
+    "refresh_is_external_operator_action": true,
+    "automatic_refresh_forbidden": true,
+    "explicit_operator_approval_required": true,
+    "post_refresh_evidence_required": [
+      "visible_tool_list",
+      "auth_mode",
+      "public_base_url_or_resource",
+      "tool_count",
+      "forbidden_tool_absence"
+    ],
+    "query_token_urls_oauth_ready": false,
+    "public_connector_must_remain_auth_none": true,
+    "oauth_resource_server_connector_must_be_separate_from_public_connector": true,
+    "guard": "_tests/smoke_stage12_connector_refresh_readiness.js"
+  }
+}

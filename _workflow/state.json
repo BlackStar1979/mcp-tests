@@ -1,0 +1,45 @@
+{
+  "schema_version": "workflow-state-compact-v1",
+  "project": "mcp-tests",
+  "updated_at": "2026-06-19T00:00:00Z",
+  "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
+  "current_work_package": {
+    "id": "post_h9_debt_closure",
+    "stage": "Stage 12",
+    "status": "green_post_h9_debt_closure",
+    "description": "Post-H9 debts are closed: too-old Last-Event-ID fails closed before SSE stream open, and JWKS cache-control/max-age parsing is implemented with local max TTL bounding."
+  },
+  "last_validated_runtime": {
+    "server_version": "0.30.0",
+    "public_sections": 8,
+    "tests_authenticated": 141,
+    "full_smoke_skip_network": "ok_0_30_0_8_141"
+  },
+  "active_controls": [
+    "auth behavior freeze",
+    "CLI behavior freeze",
+    "runtime behavior freeze unless separately authorized",
+    "connector-visible surface freeze",
+    "raw audit export prohibition",
+    "restart requires explicit operator intent",
+    "connector refresh requires explicit operator intent",
+    "OAuth blocked until Streamable HTTP Phase A-F are green or explicitly waived"
+  ],
+  "workflow_layout": {
+    "active_canon": "_workflow/WORKFLOW_CANON.md",
+    "streamable_http_workflow": "_workflow/STREAMABLE_HTTP_SAMPLING_OAUTH_WORKFLOW.md",
+    "state": "_workflow/state.json",
+    "control_scripts": "_workflow/scripts/**",
+    "baselines": "_workflow/baselines/**",
+    "tests": "_tests/**"
+  },
+  "removed_from_active_memory": [
+    "_workflow/longterm/**",
+    "_workflow/patch_manifests/**",
+    "_workflow/policies/**",
+    "root narrative workflow markdown files"
+  ],
+  "next_allowed_work": [
+    "Explicit operator approval may authorize live connector refresh readiness check; otherwise no automatic live connector action is allowed"
+  ]
+}

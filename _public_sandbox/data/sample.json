@@ -1,0 +1,6 @@
+{
+  "kind": "public-test-fixture",
+  "safe": true,
+  "stage": "stage3-public-fs-sandbox",
+  "items": ["alpha", "beta", "gamma"]
+}

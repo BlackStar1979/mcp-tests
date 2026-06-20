@@ -1,0 +1,33 @@
+"use strict";
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const ROOT=path.resolve(__dirname,"..");
+const toolsSpec=JSON.parse(fs.readFileSync(path.join(ROOT,"SERVER_TOOLS_SPEC.json"),"utf8"));
+const publicTools=toolsSpec.surface_classes.public_mcp_tools.tools.filter((n)=>!(["search","fetch"].includes(n)));
+const authorizedTools=toolsSpec.surface_classes.authorized_mcp_tools.tools;
+for(const dir of ["tools/public","tools/authorized","tools/internal","src/runtime","src/plugin","src/exec","src/auth","src/util","src/schemas","plugins","plugins/sample_echo_readonly","_tests/fixtures/plugins/template","_tests/fixtures/plugins/template/tests","docker","docker/.devcontainer","_logs"]){assert.equal(fs.statSync(path.join(ROOT,dir)).isDirectory(),true,dir+" must exist");}
+assert.equal(fs.existsSync(path.join(ROOT,"plugins","_template")),false,"plugins/_template must not exist");
+function assertFacade(area,name){const p=path.join(ROOT,"tools",area,name+".js");assert.equal(fs.statSync(p).isFile(),true,`missing ${area} facade: ${name}`);const s=fs.readFileSync(p,"utf8");assert.ok(s.includes(`require('../${name}')`)||s.includes(`require("../${name}")`),`${area} facade ${name} must target legacy implementation`);}
+for(const name of publicTools)assertFacade("public",name);
+for(const name of authorizedTools)assertFacade("authorized",name);
+const internalJs=fs.readdirSync(path.join(ROOT,"tools","internal")).filter((n)=>n.endsWith(".js"));
+assert.deepEqual(internalJs,[],"tools/internal must not contain MCP-exposed facade JS files");
+const loader=fs.readFileSync(path.join(ROOT,"src","tool_loader.js"),"utf8");
+assert.ok(loader.includes("../tools/public/"));
+assert.ok(loader.includes("../tools/authorized/"));
+assert.equal(loader.includes("../tools/internal/"),false);
+assert.equal(/\.\.\/tools\/(?!public\/|authorized\/)/.test(loader),false);
+const server=fs.readFileSync(path.join(ROOT,"server.js"),"utf8");
+const optionalAssembly=fs.readFileSync(path.join(ROOT,"src","runtime","optional_tools_assembly.js"),"utf8");
+assert.equal(server.includes("./tools/authorized/test_mcp_runtime_status"),false);
+assert.equal(server.includes("./tools/authorized/observability_status"),false);
+assert.ok(optionalAssembly.includes("../../tools/authorized/test_mcp_runtime_status"));
+assert.ok(optionalAssembly.includes("../../tools/authorized/observability_status"));
+assert.equal(server.includes("./tools/internal/"),false);
+assert.equal(/\.\/tools\/(?!public\/|authorized\/)/.test(server),false);
+const sample=JSON.parse(fs.readFileSync(path.join(ROOT,"plugins","sample_echo_readonly","plugin.manifest.json"),"utf8"));
+assert.equal(sample.plugin_id,"sample.echo_readonly");
+assert.equal(sample.status,"candidate");
+assert.equal(sample.tools[0].name,"plugin_sample_echo_preview");
+console.log("smoke_stage8_49_structural_topology_guard ok");

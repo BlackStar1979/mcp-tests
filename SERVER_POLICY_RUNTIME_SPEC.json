@@ -1,0 +1,178 @@
+{
+  "schema_version": "mcp-tests-server-policy-runtime-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-category policy runtime composition contract for MCP-callable tool invocation. Defines how auth, profile, tool catalog, resource policy, specific policy refs and authz decision are assembled into a fail-closed decision envelope. Not a CLI extension and not runtime enforcement.",
+  "applies_to": [
+    "SERVER_AUTH_SPEC.json",
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_AUTHZ_DECISION_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_MEMORY_POLICY_SPEC.json",
+    "SERVER_NETWORK_POLICY_SPEC.json",
+    "SERVER_DATABASE_POLICY_SPEC.json",
+    "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+  ],
+  "runtime_enforced": false,
+  "connector_visible": false,
+  "no_cli_extension": true,
+  "composition_pipeline": [
+    "normalize_request_context",
+    "derive_auth_context",
+    "load_profile_surface",
+    "load_tool_catalog_entry",
+    "resolve_resource_policy",
+    "resolve_specific_policy_refs",
+    "evaluate_authz_decision",
+    "build_audit_receipt",
+    "allow_or_deny"
+  ],
+  "input_contexts": {
+    "request_context": {
+      "required_fields": [
+        "request_id",
+        "tool_name",
+        "requested_operation",
+        "request_surface"
+      ],
+      "immutable": true,
+      "normalization_required": true
+    },
+    "auth_context": {
+      "required_fields": [
+        "auth_mode",
+        "principal",
+        "authenticated"
+      ],
+      "source_spec_ref": "SERVER_AUTH_SPEC.json"
+    },
+    "profile_context": {
+      "required_fields": [
+        "profile",
+        "surface_name",
+        "surface_class"
+      ],
+      "source_spec_ref": "SERVER_PROFILES_SPEC.json"
+    },
+    "tool_context": {
+      "required_fields": [
+        "tool_name",
+        "surface_class",
+        "tool_category"
+      ],
+      "source_spec_ref": "SERVER_TOOLS_SPEC.json"
+    },
+    "resource_context": {
+      "required_fields": [
+        "resource_class",
+        "operation_class",
+        "resource_policy_refs"
+      ],
+      "source_spec_ref": "SERVER_RESOURCE_POLICY_SPEC.json"
+    },
+    "specific_policy_context": {
+      "required_fields": [
+        "policy_refs"
+      ],
+      "optional_refs": [
+        "memory_policy_ref",
+        "network_policy_ref",
+        "database_policy_ref",
+        "plugin_visibility_policy_ref"
+      ]
+    },
+    "runtime_context": {
+      "required_fields": [
+        "server_version",
+        "connector_shape_version",
+        "output_mode",
+        "runtime_surface_hash"
+      ],
+      "runtime_enforcement_expected_now": false
+    }
+  },
+  "specific_policy_resolution": {
+    "memory": {
+      "tool_category": "memory",
+      "required_tool_field": "memory_policy_ref",
+      "policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "network": {
+      "tool_category": "network",
+      "required_tool_field": "network_policy_ref",
+      "policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "database": {
+      "resource_class": "database_store_bounded",
+      "required_tool_field_when_direct_tool_exists": "database_policy_ref",
+      "policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+      "direct_mcp_tools_allowed_now": false
+    },
+    "plugin_visibility": {
+      "tool_name_prefix": "plugin_",
+      "required_tool_field": "plugin_visibility_policy_ref",
+      "policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    }
+  },
+  "output_contract": {
+    "required_fields": [
+      "allowed",
+      "decision",
+      "reason_codes",
+      "tool_name",
+      "profile",
+      "auth_mode",
+      "surface_class",
+      "resource_class",
+      "operation_class",
+      "policy_refs",
+      "audit_receipt"
+    ],
+    "decision_values": [
+      "allow",
+      "deny"
+    ],
+    "default_decision": "deny",
+    "allowed_type": "boolean"
+  },
+  "fail_closed_rules": {
+    "unknown_tool_denied": true,
+    "missing_tool_catalog_entry_denied": true,
+    "missing_resource_policy_denied": true,
+    "unknown_resource_class_denied": true,
+    "unknown_operation_class_denied": true,
+    "missing_specific_policy_when_required_denied": true,
+    "profile_surface_mismatch_denied": true,
+    "auth_profile_surface_mismatch_denied": true,
+    "public_surface_non_public_policy_denied": true,
+    "runtime_surface_drift_denied": true,
+    "audit_receipt_build_failure_denied": true
+  },
+  "audit_receipt_contract": {
+    "required_fields": [
+      "receipt_version",
+      "request_id",
+      "decision",
+      "reason_codes",
+      "tool_name",
+      "profile",
+      "auth_mode",
+      "surface_class",
+      "resource_class",
+      "operation_class",
+      "policy_refs"
+    ],
+    "redaction_required": true,
+    "secret_material_allowed": false,
+    "required_for_allow": true,
+    "required_for_deny": true
+  },
+  "integration_policy": {
+    "dedicated_spec_required": true,
+    "runtime_enforcement_requires_operator_approval": true,
+    "restart_plan_required_before_runtime_enforcement": true,
+    "connector_refresh_plan_required_before_connector_visible_change": true,
+    "runtime_enforcement_implemented_now": false,
+    "cli_extension_allowed": false
+  }
+}

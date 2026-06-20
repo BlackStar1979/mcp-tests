@@ -1,0 +1,88 @@
+{
+  "name": "tests",
+  "version": 1,
+  "description": "Test server profile. Unauthenticated runs expose only public tools. Authenticated runs expose public and authorized tools, including memory_* tools.",
+  "surfaces": {
+    "public": {
+      "description": "auth none surface",
+      "optional_tool_groups": [
+        "public"
+      ],
+      "include_non_public_tools": false,
+      "include_memory_tools": false,
+      "allowed_resource_policy_refs": [
+        "public_index",
+        "filesystem_public",
+        "network_allowlisted"
+      ],
+      "denied_resource_policy_refs": [],
+      "allowed_memory_scopes": [],
+      "denied_memory_scopes": [],
+      "allowed_network_scopes": [
+        "allowlisted_https_fetch",
+        "allowlisted_text_fetch",
+        "allowlisted_head",
+        "github_raw_allowlisted",
+        "package_metadata_npm",
+        "package_metadata_pypi"
+      ],
+      "denied_network_scopes": [],
+      "allowed_database_scopes": [],
+      "denied_database_scopes": [],
+      "allowed_plugin_scopes": [],
+      "denied_plugin_scopes": []
+    },
+    "authenticated": {
+      "description": "authenticated access, bearer, or future OAuth surface",
+      "optional_tool_groups": [
+        "public",
+        "authorized"
+      ],
+      "include_non_public_tools": true,
+      "include_memory_tools": true,
+      "auth_mode_exclusions": {
+        "bearer": []
+      },
+      "allowed_resource_policy_refs": [
+        "public_index",
+        "filesystem_public",
+        "network_allowlisted",
+        "filesystem_workspace_readonly",
+        "memory_context_scoped",
+        "plugin_registry_readonly",
+        "plugin_visibility_state_preview",
+        "plugin_execution_readonly",
+        "auth_runtime_readonly",
+        "observability_audit_readonly",
+        "tool_surface_planning",
+        "runtime_status_readonly"
+      ],
+      "denied_resource_policy_refs": [],
+      "allowed_memory_scopes": [
+        "agent_state",
+        "memory_entries",
+        "task_entries"
+      ],
+      "denied_memory_scopes": [],
+      "allowed_network_scopes": [
+        "allowlisted_https_fetch",
+        "allowlisted_text_fetch",
+        "allowlisted_head",
+        "github_raw_allowlisted",
+        "package_metadata_npm",
+        "package_metadata_pypi"
+      ],
+      "denied_network_scopes": [],
+      "allowed_database_scopes": [],
+      "denied_database_scopes": [],
+      "allowed_plugin_scopes": [
+        "plugin_registry_read",
+        "plugin_visibility_plan",
+        "plugin_visibility_status",
+        "plugin_execution_preflight",
+        "plugin_execution_readonly"
+      ],
+      "denied_plugin_scopes": []
+    }
+  }
+}

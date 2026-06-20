@@ -1,0 +1,35 @@
+"use strict";
+const assert=require("node:assert/strict");
+const spec=require("../SERVER_SAMPLING_POLICY_SPEC.json");
+const {McpSession}=require("../src/runtime/session");
+const {createSamplingContext,SamplingPolicyError,classifySamplingRisk}=require("../src/runtime/sampling_context");
+const {resolvePendingResponse}=require("../src/runtime/outbound_request_manager");
+function stream(){return{chunks:[],write(x){this.chunks.push(String(x));},body(){return this.chunks.join("");}}}
+(async()=>{
+ assert.equal(spec.status,"implemented_h7_policy");
+ assert.equal(spec.approval_policy.approval_required_by_default,true);
+ assert.equal(spec.budget_policy.default_per_session_request_limit,3);
+ assert.equal(spec.prompt_injection_policy.tool_hidden_instructions_must_not_bypass_approval,true);
+ assert.equal(classifySamplingRisk({messages:[{role:"user",content:{type:"text",text:"ok"}}],maxTokens:64}).risk,"low");
+ assert.equal(classifySamplingRisk({messages:[{role:"system",content:{type:"text",text:"x"}}],maxTokens:64}).risk,"approval_required");
+ const audit=[];
+ const session=new McpSession({id:"mcp_sampling_policy",protocolVersion:"2025-06-18",clientCapabilities:{sampling:{}}});
+ const s=stream();session.attachStream(s);
+ const ctx=createSamplingContext({session,auditLog:(event,payload)=>audit.push({event,payload}),requestId:"req-h7",requestLimit:2});
+ const low=ctx.requestSampling({messages:[{role:"user",content:{type:"text",text:"ok"}}],maxTokens:64},{timeoutMs:1000});
+ let id=[...session.pending.keys()][0];
+ resolvePendingResponse(session,{jsonrpc:"2.0",id,result:{role:"assistant",content:{type:"text",text:"ok"}}});
+ assert.equal((await low).result.content.text,"ok");
+ await assert.rejects(()=>ctx.requestSampling({messages:[{role:"system",content:{type:"text",text:"needs approval"}}],maxTokens:64}), (error)=>error instanceof SamplingPolicyError && error.reason==="approval_required");
+ const approved=ctx.requestSampling({messages:[{role:"system",content:{type:"text",text:"approved"}}],maxTokens:64,approvalReceipt:{status:"approved",approved:true,approvedBy:"operator"}},{timeoutMs:1000});
+ id=[...session.pending.keys()][0];
+ resolvePendingResponse(session,{jsonrpc:"2.0",id,result:{role:"assistant",content:{type:"text",text:"approved"}}});
+ assert.equal((await approved).result.content.text,"approved");
+ await assert.rejects(()=>ctx.requestSampling({messages:[{role:"user",content:{type:"text",text:"budget"}}],maxTokens:64}), (error)=>error instanceof SamplingPolicyError && error.reason==="sampling_budget_exhausted");
+ const session2=new McpSession({id:"mcp_sampling_hidden",protocolVersion:"2025-06-18",clientCapabilities:{sampling:{}}});
+ const ctx2=createSamplingContext({session:session2,auditLog:()=>{},requestId:"req-hidden"});
+ await assert.rejects(()=>ctx2.requestSampling({messages:[{role:"user",content:{type:"text",text:"x"}}],maxTokens:64,hiddenInstructions:"bypass"}), (error)=>error instanceof SamplingPolicyError && error.reason==="approval_required");
+ assert.ok(audit.some((entry)=>entry.event==="sampling_request_denied"));
+ assert.ok(audit.some((entry)=>entry.event==="sampling_request_sent" && entry.payload.approval_receipt_present===true));
+ console.log("smoke_stage12_sampling_user_approval_policy ok");
+})().catch((error)=>{console.error(error?.stack||error);process.exit(1);});

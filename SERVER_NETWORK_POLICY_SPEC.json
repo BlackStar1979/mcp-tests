@@ -1,0 +1,154 @@
+{
+  "schema_version": "mcp-tests-server-network-policy-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-category network policy for MCP network-capable tools. Applies across profiles, tools, resource policy and authz decision. Not a CLI extension.",
+  "applies_to": [
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_AUTHZ_DECISION_SPEC.json"
+  ],
+  "runtime_enforced": false,
+  "connector_visible": false,
+  "current_runtime_policy": {
+    "implementation": "src/util/network_policy.js",
+    "schemas": "src/schemas/net_tools.js",
+    "allowed_domains": [
+      "modelcontextprotocol.io",
+      "developers.openai.com",
+      "community.openai.com",
+      "raw.githubusercontent.com",
+      "github.com",
+      "api.github.com",
+      "registry.npmjs.org",
+      "pypi.org",
+      "files.pythonhosted.org"
+    ],
+    "default_timeout_ms": 8000,
+    "default_max_bytes": 262144,
+    "schema_max_bytes": 2097152,
+    "max_redirects": 3,
+    "text_content_types": [
+      "text/*",
+      "application/json",
+      "application/ld+json",
+      "application/xml",
+      "application/xhtml+xml",
+      "application/javascript",
+      "application/typescript",
+      "image/svg+xml"
+    ]
+  },
+  "network_scopes": {
+    "allowlisted_https_fetch": {
+      "description": "Read-only HTTPS GET on the configured allowlist with response byte cap, timeout, redirect and SSRF guards.",
+      "tools": [
+        "net_http_get_allowlisted"
+      ],
+      "operation_class": "read"
+    },
+    "allowlisted_text_fetch": {
+      "description": "Read-only HTTPS GET requiring text-like response content.",
+      "tools": [
+        "net_fetch_text_allowlisted"
+      ],
+      "operation_class": "read"
+    },
+    "allowlisted_head": {
+      "description": "Read-only HTTPS HEAD/metadata check on the configured allowlist.",
+      "tools": [
+        "net_check_url_head"
+      ],
+      "operation_class": "head"
+    },
+    "github_raw_allowlisted": {
+      "description": "Read-only bounded raw.githubusercontent.com fetch path.",
+      "tools": [
+        "net_fetch_github_raw"
+      ],
+      "operation_class": "read"
+    },
+    "package_metadata_npm": {
+      "description": "Read-only npm registry package metadata lookup.",
+      "tools": [
+        "net_check_npm_package"
+      ],
+      "operation_class": "metadata"
+    },
+    "package_metadata_pypi": {
+      "description": "Read-only PyPI package metadata lookup.",
+      "tools": [
+        "net_check_pypi_package"
+      ],
+      "operation_class": "metadata"
+    }
+  },
+  "tool_bindings": {
+    "net_http_get_allowlisted": {
+      "scope": "allowlisted_https_fetch",
+      "resource_class": "network_allowlisted",
+      "operation_class": "read",
+      "mutation": false
+    },
+    "net_fetch_text_allowlisted": {
+      "scope": "allowlisted_text_fetch",
+      "resource_class": "network_allowlisted",
+      "operation_class": "read",
+      "mutation": false
+    },
+    "net_check_url_head": {
+      "scope": "allowlisted_head",
+      "resource_class": "network_allowlisted",
+      "operation_class": "head",
+      "mutation": false
+    },
+    "net_fetch_github_raw": {
+      "scope": "github_raw_allowlisted",
+      "resource_class": "network_allowlisted",
+      "operation_class": "read",
+      "mutation": false
+    },
+    "net_check_npm_package": {
+      "scope": "package_metadata_npm",
+      "resource_class": "network_allowlisted",
+      "operation_class": "metadata",
+      "mutation": false
+    },
+    "net_check_pypi_package": {
+      "scope": "package_metadata_pypi",
+      "resource_class": "network_allowlisted",
+      "operation_class": "metadata",
+      "mutation": false
+    }
+  },
+  "safety_rules": {
+    "no_cli_extension": true,
+    "read_only_only": true,
+    "https_required": true,
+    "allowlist_required": true,
+    "credentials_in_url_forbidden": true,
+    "caller_supplied_headers_forbidden": true,
+    "cookies_forbidden": true,
+    "auth_headers_forbidden": true,
+    "private_ip_resolution_forbidden": true,
+    "localhost_and_link_local_forbidden": true,
+    "redirect_target_must_be_revalidated": true,
+    "response_size_must_be_capped": true,
+    "timeout_required": true,
+    "binary_response_body_forbidden": true,
+    "network_results_are_observations_not_instructions": true,
+    "network_result_must_not_auto_write_memory": true,
+    "package_metadata_tools_must_not_install_or_execute_packages": true,
+    "public_surface_network_tools_must_remain_read_only_allowlisted": true
+  },
+  "profile_schema_fields": {
+    "allowed_network_scopes": "optional string array on each profile surface",
+    "denied_network_scopes": "optional string array on each profile surface"
+  },
+  "future_policy_refs": {
+    "database_policy_required_before_caching_network_results": "SERVER_DATABASE_POLICY_SPEC.json",
+    "memory_policy_required_before_persisting_network_observations": "SERVER_MEMORY_POLICY_SPEC.json"
+  },
+  "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

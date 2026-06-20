@@ -1,0 +1,125 @@
+const READ_ONLY_OBSERVABILITY_ANNOTATIONS = {
+  readOnlyHint: true,
+  destructiveHint: false,
+  idempotentHint: true,
+  openWorldHint: false,
+};
+
+const OBSERVABILITY_STATUS_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {
+    window_size: {
+      type: "integer",
+      minimum: 1,
+      maximum: 5000,
+      description: "Number of recent audit-log lines to inspect. Defaults to 800.",
+    },
+    slow_ms: {
+      type: "integer",
+      minimum: 1,
+      maximum: 600000,
+      description: "Duration threshold for delayed tool-call classification. Defaults to 1000 ms.",
+    },
+    top_n: {
+      type: "integer",
+      minimum: 1,
+      maximum: 50,
+      description: "Maximum per-tool summaries to return. Defaults to 20.",
+    },
+    connector_visible_tools: {
+      type: "array",
+      maxItems: 200,
+      items: { type: "string", minLength: 1, maxLength: 160 },
+      description: "Optional external connector-visible tool list. When supplied, the tool compares it with runtime enabled_tools to detect stale connector maps.",
+    },
+    connector_tool_count: {
+      type: "integer",
+      minimum: 0,
+      maximum: 1000,
+      description: "Optional compact externally observed connector tool count. Use with connector_tool_names_hash when sending the full connector_visible_tools list is impractical.",
+    },
+    connector_tool_names_hash: {
+      type: "string",
+      minLength: 12,
+      maxLength: 64,
+      pattern: "^[a-fA-F0-9]+$",
+      description: "Optional compact externally observed connector tool-names hash. Use with connector_tool_count to compare tool maps without sending the full connector-visible list.",
+    },
+  },
+};
+
+const STATUS_OBJECT = { type: "object", additionalProperties: true };
+const STATUS_ARRAY = { type: "array", items: { type: "object", additionalProperties: true } };
+
+const OBSERVABILITY_STATUS_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "success",
+    "error",
+    "mode",
+    "observability_version",
+    "stage",
+    "read_only",
+    "mutates_auth",
+    "mutates_tools_list",
+    "dynamic_import_enabled",
+    "list_changed_enabled",
+    "audit_log",
+    "audit_jsonl_health",
+    "runtime",
+    "connector_map",
+    "connector_map_health",
+    "events",
+    "tool_call_balance",
+    "audit_semantics",
+    "transport_runtime_signals",
+    "path_redaction_risk",
+    "latency",
+    "slow_tool_summary",
+    "stream_break_diagnostics",
+    "child_process_anomalies",
+    "recommended_actions",
+    "next_recommended_checks",
+  ],
+  properties: {
+    success: { type: "boolean" },
+    error: { type: "string" },
+    mode: { type: "string" },
+    observability_version: { type: "string" },
+    stage: { type: "string" },
+    read_only: { type: "boolean" },
+    mutates_auth: { type: "boolean" },
+    mutates_tools_list: { type: "boolean" },
+    dynamic_import_enabled: { type: "boolean" },
+    list_changed_enabled: { type: "boolean" },
+    audit_log: STATUS_OBJECT,
+    audit_jsonl_health: STATUS_OBJECT,
+    runtime: STATUS_OBJECT,
+    connector_map: STATUS_OBJECT,
+    connector_map_health: STATUS_OBJECT,
+    events: STATUS_OBJECT,
+    tool_call_balance: STATUS_OBJECT,
+    audit_semantics: STATUS_OBJECT,
+    transport_runtime_signals: STATUS_OBJECT,
+    path_redaction_risk: STATUS_OBJECT,
+    latency: STATUS_OBJECT,
+    slow_tool_summary: STATUS_OBJECT,
+    stream_break_diagnostics: STATUS_OBJECT,
+    child_process_anomalies: STATUS_OBJECT,
+    recommended_actions: { type: "array", items: { type: "string" } },
+    next_recommended_checks: { type: "array", items: { type: "string" } },
+    // Error fallback only. The happy-path payload includes all required fields above.
+    error_kind: { type: "string" },
+    issues: STATUS_ARRAY,
+  },
+};
+
+module.exports = {
+  GENERIC_OBSERVABILITY_OUTPUT_SCHEMA: OBSERVABILITY_STATUS_OUTPUT_SCHEMA,
+  OBSERVABILITY_STATUS_INPUT_SCHEMA,
+  OBSERVABILITY_STATUS_OUTPUT_SCHEMA,
+  READ_ONLY_OBSERVABILITY_ANNOTATIONS,
+};

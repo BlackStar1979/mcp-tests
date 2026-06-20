@@ -1,0 +1,1596 @@
+{
+  "schema_version": "mcp-tests-server-stage12-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "source_split_from": "SERVER_SPEC.json",
+  "sections": {
+    "stage12_decision_model_contract": {
+      "status": "contract_fixtures_written",
+      "runtime_ready": false,
+      "shadow_ready": false,
+      "stage12_closable": false,
+      "new_stage_allowed": false,
+      "inputs": [
+        "auth_context",
+        "profile_context",
+        "tool_context",
+        "resource_context",
+        "runtime_context",
+        "request_context"
+      ],
+      "outputs": [
+        "decision",
+        "reason_code",
+        "human_reason",
+        "matched_rule",
+        "audit_receipt",
+        "surface_effect"
+      ],
+      "default": "deny",
+      "next": "stage12_step15_contract_fixture_validator_dev_tool"
+    },
+    "rule_precedence": [
+      "malformed_context_deny",
+      "unknown_tool_deny",
+      "unknown_domain_or_risk_deny",
+      "runtime_surface_invariance_deny",
+      "public_privileged_capability_deny",
+      "bearer_not_admin_deny",
+      "cf_access_claims_required_deny",
+      "descriptor_only_bypass_deny",
+      "resource_gate_scope_deny",
+      "connector_visible_change_deny",
+      "explicit_allow",
+      "default_deny"
+    ],
+    "fixture_suite": {
+      "status": "contract_fixtures_only_not_executable",
+      "fixtures": [
+        {
+          "id": "public_search_allow",
+          "surface": "invocation",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "search",
+          "risk": "public",
+          "res": "none",
+          "op": "none",
+          "decision": "allow",
+          "code": "ALLOW_PUBLIC_SAFE_TOOL",
+          "rule": "explicit_allow"
+        },
+        {
+          "id": "public_dev_tool_deny",
+          "surface": "invocation",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "dev",
+          "risk": "readonly",
+          "res": "filesystem",
+          "op": "read",
+          "decision": "deny",
+          "code": "DENY_PUBLIC_PRIVILEGED_CAPABILITY",
+          "rule": "public_privileged_capability_deny"
+        },
+        {
+          "id": "bearer_transport_admin_deny",
+          "surface": "invocation",
+          "principal": "unknown",
+          "profile": "public",
+          "domain": "auth",
+          "risk": "admin",
+          "res": "none",
+          "op": "none",
+          "decision": "deny",
+          "code": "DENY_BEARER_NOT_ADMIN",
+          "rule": "bearer_not_admin_deny"
+        },
+        {
+          "id": "cf_access_no_claims_deny",
+          "surface": "invocation",
+          "principal": "unknown",
+          "profile": "public",
+          "domain": "auth",
+          "risk": "admin",
+          "res": "none",
+          "op": "none",
+          "decision": "deny",
+          "code": "DENY_CF_ACCESS_CLAIMS_NOT_VALIDATED",
+          "rule": "cf_access_claims_required_deny"
+        },
+        {
+          "id": "descriptor_bypass_deny",
+          "surface": "descriptor",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "plugin",
+          "risk": "mutate",
+          "res": "registry",
+          "op": "mutate",
+          "decision": "deny",
+          "code": "DENY_DESCRIPTOR_ONLY_BYPASS",
+          "rule": "descriptor_only_bypass_deny"
+        },
+        {
+          "id": "fs_public_read_allow",
+          "surface": "resource_gate",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "fs",
+          "risk": "public",
+          "res": "filesystem",
+          "op": "read",
+          "decision": "allow",
+          "code": "ALLOW_RESOURCE_READ_PUBLIC",
+          "rule": "explicit_allow"
+        },
+        {
+          "id": "fs_escape_deny",
+          "surface": "resource_gate",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "fs",
+          "risk": "public",
+          "res": "filesystem",
+          "op": "read",
+          "decision": "deny",
+          "code": "DENY_FILESYSTEM_ESCAPE",
+          "rule": "resource_gate_scope_deny"
+        },
+        {
+          "id": "network_unlisted_deny",
+          "surface": "resource_gate",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "net",
+          "risk": "readonly",
+          "res": "network",
+          "op": "read",
+          "decision": "deny",
+          "code": "DENY_NETWORK_NOT_ALLOWLISTED",
+          "rule": "resource_gate_scope_deny"
+        },
+        {
+          "id": "process_execute_deny",
+          "surface": "invocation",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "process",
+          "risk": "execute",
+          "res": "process",
+          "op": "execute",
+          "decision": "deny",
+          "code": "DENY_PROCESS_EXECUTION",
+          "rule": "resource_gate_scope_deny"
+        },
+        {
+          "id": "remote_site_write_deny",
+          "surface": "invocation",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "remote_site",
+          "risk": "write",
+          "res": "remote_site",
+          "op": "write",
+          "decision": "deny",
+          "code": "DENY_REMOTE_SITE_MUTATION",
+          "rule": "resource_gate_scope_deny"
+        },
+        {
+          "id": "ssh_access_deny",
+          "surface": "invocation",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "ssh",
+          "risk": "execute",
+          "res": "ssh",
+          "op": "execute",
+          "decision": "deny",
+          "code": "DENY_SSH_ACCESS",
+          "rule": "resource_gate_scope_deny"
+        },
+        {
+          "id": "memory_cross_scope_deny",
+          "surface": "resource_gate",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "memory",
+          "risk": "read",
+          "res": "memory",
+          "op": "read",
+          "decision": "deny",
+          "code": "DENY_MEMORY_SCOPE",
+          "rule": "resource_gate_scope_deny"
+        },
+        {
+          "id": "unknown_tool_deny",
+          "surface": "invocation",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "unknown",
+          "risk": "unknown",
+          "res": "unknown",
+          "op": "unknown",
+          "decision": "deny",
+          "code": "DENY_UNKNOWN_TOOL",
+          "rule": "unknown_tool_deny"
+        },
+        {
+          "id": "runtime_surface_drift_deny",
+          "surface": "tools_list",
+          "principal": "absent",
+          "profile": "public",
+          "domain": "test",
+          "risk": "public",
+          "res": "none",
+          "op": "none",
+          "decision": "deny",
+          "code": "DENY_RUNTIME_SURFACE_DRIFT",
+          "rule": "runtime_surface_invariance_deny"
+        },
+        {
+          "id": "connector_visible_change_deny",
+          "surface": "tools_list",
+          "principal": "operator",
+          "profile": "operator",
+          "domain": "plugin",
+          "risk": "mutate",
+          "res": "registry",
+          "op": "mutate",
+          "decision": "deny",
+          "code": "DENY_CONNECTOR_SURFACE_CHANGE_NOT_APPROVED",
+          "rule": "connector_visible_change_deny"
+        }
+      ]
+    },
+    "runtime_boundary": {
+      "runtime_behavior_changed": false,
+      "server_js_changed": false,
+      "tools_list_changed": false,
+      "fingerprints_changed": false,
+      "restart_required": false,
+      "connector_refresh_required": false
+    },
+    "developer_tooling_policy": {
+      "status": "active",
+      "allowed_without_preapproval": [
+        "build",
+        "test",
+        "analysis",
+        "security",
+        "planning",
+        "logs",
+        "local_harnesses",
+        "temporary_scripts"
+      ],
+      "notify_operator_after_creation": true,
+      "approval_required_for": "integration with server runtime or MCP-exposed module/tool",
+      "runtime_boundary": "dev tooling may support work but must not alter live server behavior without explicit approval"
+    },
+    "fixture_validation_plan": {
+      "status": "strict_matrix_validator_passing",
+      "required_fields": [
+        "id",
+        "surface",
+        "principal",
+        "profile",
+        "domain",
+        "risk",
+        "res",
+        "op",
+        "decision",
+        "code",
+        "rule"
+      ],
+      "requirements": [
+        "unique_ids",
+        "valid_decision",
+        "known_reason_code",
+        "known_rule",
+        "auth_port_policy_present",
+        "runtime_boundary_false"
+      ],
+      "next": "stage12_step19_decision_evaluator_dev_harness_contract",
+      "validator": "_workflow/scripts/validate_server_spec_fixtures.js",
+      "smoke": "_tests/smoke_stage12_server_spec_fixture_validator.js",
+      "coverage_tightened": true,
+      "negative_controls": "passing"
+    },
+    "fixture_validation_matrix": {
+      "status": "strict_matrix_required",
+      "required_fixture_ids": [
+        "bearer_transport_admin_deny",
+        "cf_access_no_claims_deny",
+        "connector_visible_change_deny",
+        "descriptor_bypass_deny",
+        "fs_escape_deny",
+        "fs_public_read_allow",
+        "memory_cross_scope_deny",
+        "network_unlisted_deny",
+        "process_execute_deny",
+        "public_dev_tool_deny",
+        "public_search_allow",
+        "remote_site_write_deny",
+        "runtime_surface_drift_deny",
+        "ssh_access_deny",
+        "unknown_tool_deny"
+      ],
+      "allowed_values": {
+        "surface": [
+          "descriptor",
+          "invocation",
+          "resource_gate",
+          "tools_list"
+        ],
+        "principal": [
+          "absent",
+          "operator",
+          "unknown"
+        ],
+        "profile": [
+          "operator",
+          "public"
+        ],
+        "domain": [
+          "auth",
+          "dev",
+          "fs",
+          "memory",
+          "net",
+          "plugin",
+          "process",
+          "remote_site",
+          "search",
+          "ssh",
+          "test",
+          "unknown"
+        ],
+        "risk": [
+          "admin",
+          "execute",
+          "mutate",
+          "public",
+          "read",
+          "readonly",
+          "unknown",
+          "write"
+        ],
+        "res": [
+          "filesystem",
+          "memory",
+          "network",
+          "none",
+          "process",
+          "registry",
+          "remote_site",
+          "ssh",
+          "unknown"
+        ],
+        "op": [
+          "execute",
+          "mutate",
+          "none",
+          "read",
+          "unknown",
+          "write"
+        ],
+        "decision": [
+          "allow",
+          "deny"
+        ]
+      },
+      "expected_by_fixture_id": {
+        "public_search_allow": {
+          "decision": "allow",
+          "code": "ALLOW_PUBLIC_SAFE_TOOL",
+          "rule": "explicit_allow",
+          "domain": "search",
+          "risk": "public",
+          "res": "none",
+          "op": "none"
+        },
+        "public_dev_tool_deny": {
+          "decision": "deny",
+          "code": "DENY_PUBLIC_PRIVILEGED_CAPABILITY",
+          "rule": "public_privileged_capability_deny",
+          "domain": "dev",
+          "risk": "readonly",
+          "res": "filesystem",
+          "op": "read"
+        },
+        "bearer_transport_admin_deny": {
+          "decision": "deny",
+          "code": "DENY_BEARER_NOT_ADMIN",
+          "rule": "bearer_not_admin_deny",
+          "domain": "auth",
+          "risk": "admin",
+          "res": "none",
+          "op": "none"
+        },
+        "cf_access_no_claims_deny": {
+          "decision": "deny",
+          "code": "DENY_CF_ACCESS_CLAIMS_NOT_VALIDATED",
+          "rule": "cf_access_claims_required_deny",
+          "domain": "auth",
+          "risk": "admin",
+          "res": "none",
+          "op": "none"
+        },
+        "descriptor_bypass_deny": {
+          "decision": "deny",
+          "code": "DENY_DESCRIPTOR_ONLY_BYPASS",
+          "rule": "descriptor_only_bypass_deny",
+          "domain": "plugin",
+          "risk": "mutate",
+          "res": "registry",
+          "op": "mutate"
+        },
+        "fs_public_read_allow": {
+          "decision": "allow",
+          "code": "ALLOW_RESOURCE_READ_PUBLIC",
+          "rule": "explicit_allow",
+          "domain": "fs",
+          "risk": "public",
+          "res": "filesystem",
+          "op": "read"
+        },
+        "fs_escape_deny": {
+          "decision": "deny",
+          "code": "DENY_FILESYSTEM_ESCAPE",
+          "rule": "resource_gate_scope_deny",
+          "domain": "fs",
+          "risk": "public",
+          "res": "filesystem",
+          "op": "read"
+        },
+        "network_unlisted_deny": {
+          "decision": "deny",
+          "code": "DENY_NETWORK_NOT_ALLOWLISTED",
+          "rule": "resource_gate_scope_deny",
+          "domain": "net",
+          "risk": "readonly",
+          "res": "network",
+          "op": "read"
+        },
+        "process_execute_deny": {
+          "decision": "deny",
+          "code": "DENY_PROCESS_EXECUTION",
+          "rule": "resource_gate_scope_deny",
+          "domain": "process",
+          "risk": "execute",
+          "res": "process",
+          "op": "execute"
+        },
+        "remote_site_write_deny": {
+          "decision": "deny",
+          "code": "DENY_REMOTE_SITE_MUTATION",
+          "rule": "resource_gate_scope_deny",
+          "domain": "remote_site",
+          "risk": "write",
+          "res": "remote_site",
+          "op": "write"
+        },
+        "ssh_access_deny": {
+          "decision": "deny",
+          "code": "DENY_SSH_ACCESS",
+          "rule": "resource_gate_scope_deny",
+          "domain": "ssh",
+          "risk": "execute",
+          "res": "ssh",
+          "op": "execute"
+        },
+        "memory_cross_scope_deny": {
+          "decision": "deny",
+          "code": "DENY_MEMORY_SCOPE",
+          "rule": "resource_gate_scope_deny",
+          "domain": "memory",
+          "risk": "read",
+          "res": "memory",
+          "op": "read"
+        },
+        "unknown_tool_deny": {
+          "decision": "deny",
+          "code": "DENY_UNKNOWN_TOOL",
+          "rule": "unknown_tool_deny",
+          "domain": "unknown",
+          "risk": "unknown",
+          "res": "unknown",
+          "op": "unknown"
+        },
+        "runtime_surface_drift_deny": {
+          "decision": "deny",
+          "code": "DENY_RUNTIME_SURFACE_DRIFT",
+          "rule": "runtime_surface_invariance_deny",
+          "domain": "test",
+          "risk": "public",
+          "res": "none",
+          "op": "none"
+        },
+        "connector_visible_change_deny": {
+          "decision": "deny",
+          "code": "DENY_CONNECTOR_SURFACE_CHANGE_NOT_APPROVED",
+          "rule": "connector_visible_change_deny",
+          "domain": "plugin",
+          "risk": "mutate",
+          "res": "registry",
+          "op": "mutate"
+        }
+      },
+      "reason_code_rules": {
+        "ALLOW_PUBLIC_SAFE_TOOL": [
+          "explicit_allow"
+        ],
+        "DENY_PUBLIC_PRIVILEGED_CAPABILITY": [
+          "public_privileged_capability_deny"
+        ],
+        "DENY_BEARER_NOT_ADMIN": [
+          "bearer_not_admin_deny"
+        ],
+        "DENY_CF_ACCESS_CLAIMS_NOT_VALIDATED": [
+          "cf_access_claims_required_deny"
+        ],
+        "DENY_DESCRIPTOR_ONLY_BYPASS": [
+          "descriptor_only_bypass_deny"
+        ],
+        "ALLOW_RESOURCE_READ_PUBLIC": [
+          "explicit_allow"
+        ],
+        "DENY_FILESYSTEM_ESCAPE": [
+          "resource_gate_scope_deny"
+        ],
+        "DENY_NETWORK_NOT_ALLOWLISTED": [
+          "resource_gate_scope_deny"
+        ],
+        "DENY_PROCESS_EXECUTION": [
+          "resource_gate_scope_deny"
+        ],
+        "DENY_REMOTE_SITE_MUTATION": [
+          "resource_gate_scope_deny"
+        ],
+        "DENY_SSH_ACCESS": [
+          "resource_gate_scope_deny"
+        ],
+        "DENY_MEMORY_SCOPE": [
+          "resource_gate_scope_deny"
+        ],
+        "DENY_UNKNOWN_TOOL": [
+          "unknown_tool_deny"
+        ],
+        "DENY_RUNTIME_SURFACE_DRIFT": [
+          "runtime_surface_invariance_deny"
+        ],
+        "DENY_CONNECTOR_SURFACE_CHANGE_NOT_APPROVED": [
+          "connector_visible_change_deny"
+        ]
+      },
+      "rule_constraints": {
+        "explicit_allow": {
+          "decision": [
+            "allow"
+          ],
+          "domain": [
+            "fs",
+            "search"
+          ],
+          "risk": [
+            "public"
+          ],
+          "res": [
+            "filesystem",
+            "none"
+          ],
+          "op": [
+            "none",
+            "read"
+          ]
+        },
+        "public_privileged_capability_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "dev"
+          ],
+          "risk": [
+            "readonly"
+          ],
+          "res": [
+            "filesystem"
+          ],
+          "op": [
+            "read"
+          ]
+        },
+        "bearer_not_admin_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "auth"
+          ],
+          "risk": [
+            "admin"
+          ],
+          "res": [
+            "none"
+          ],
+          "op": [
+            "none"
+          ]
+        },
+        "cf_access_claims_required_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "auth"
+          ],
+          "risk": [
+            "admin"
+          ],
+          "res": [
+            "none"
+          ],
+          "op": [
+            "none"
+          ]
+        },
+        "descriptor_only_bypass_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "plugin"
+          ],
+          "risk": [
+            "mutate"
+          ],
+          "res": [
+            "registry"
+          ],
+          "op": [
+            "mutate"
+          ]
+        },
+        "resource_gate_scope_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "fs",
+            "memory",
+            "net",
+            "process",
+            "remote_site",
+            "ssh"
+          ],
+          "risk": [
+            "execute",
+            "public",
+            "read",
+            "readonly",
+            "write"
+          ],
+          "res": [
+            "filesystem",
+            "memory",
+            "network",
+            "process",
+            "remote_site",
+            "ssh"
+          ],
+          "op": [
+            "execute",
+            "read",
+            "write"
+          ]
+        },
+        "unknown_tool_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "unknown"
+          ],
+          "risk": [
+            "unknown"
+          ],
+          "res": [
+            "unknown"
+          ],
+          "op": [
+            "unknown"
+          ]
+        },
+        "runtime_surface_invariance_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "test"
+          ],
+          "risk": [
+            "public"
+          ],
+          "res": [
+            "none"
+          ],
+          "op": [
+            "none"
+          ]
+        },
+        "connector_visible_change_deny": {
+          "decision": [
+            "deny"
+          ],
+          "domain": [
+            "plugin"
+          ],
+          "risk": [
+            "mutate"
+          ],
+          "res": [
+            "registry"
+          ],
+          "op": [
+            "mutate"
+          ]
+        }
+      },
+      "coverage_requirements": {
+        "all_fixtures_have_matrix_entry": true,
+        "all_matrix_entries_have_fixture": true,
+        "reason_code_must_allow_rule": true,
+        "rule_constraints_enforced_for_decision_domain_risk_res_op": true,
+        "auth_port_policy_required": true,
+        "runtime_boundary_false_required": true
+      }
+    },
+    "fixture_negative_controls": {
+      "status": "passing",
+      "tool": "_workflow/scripts/validate_server_spec_negative_controls.js",
+      "smoke": "_tests/smoke_stage12_server_spec_negative_controls.js",
+      "control_count": 7,
+      "controls": [
+        "bad_decision_value",
+        "bad_reason_rule_mapping",
+        "bad_rule_constraint",
+        "missing_matrix_entry",
+        "extra_matrix_entry",
+        "bad_auth_port",
+        "runtime_boundary_true"
+      ],
+      "runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "next": "stage12_step19_decision_evaluator_dev_harness_contract"
+    },
+    "fixture_decision_contract_readiness_gate": {
+      "status": "passed_for_dev_harness_contract_only",
+      "gate_inputs": {
+        "strict_fixture_validator_ok": true,
+        "negative_controls_ok": true,
+        "run_all_smokes_skip_network": "ok_true_101_results_version_0_29_0",
+        "auth_port_policy_recorded": true,
+        "developer_tooling_policy_recorded": true
+      },
+      "gate_decision": {
+        "decision_contract_ready_for_dev_harness_contract": true,
+        "runtime_implementation_ready": false,
+        "shadow_mode_ready": false,
+        "prototype_shadow_mode_allowed_next": false,
+        "server_runtime_integrated": false,
+        "mcp_tool_exposed": false,
+        "stage12_closable": false,
+        "new_stage_allowed": false,
+        "next_planned_step": "stage12_step20_decision_evaluator_dev_harness_tool"
+      },
+      "runtime_boundary": {
+        "runtime_behavior_changed": false,
+        "server_js_changed": false,
+        "tools_list_changed": false,
+        "descriptor_changed": false,
+        "schema_changed": false,
+        "outputMode_changed": false,
+        "connectorShapeVersion_changed": false,
+        "fingerprints_changed": false,
+        "restart_required": false,
+        "connector_refresh_required": false
+      }
+    },
+    "decision_evaluator_dev_harness_contract": {
+      "status": "tool_implemented_and_passing",
+      "mode": "local_dev_harness_contract_only",
+      "source_of_truth": "SERVER_SPEC.json",
+      "allowed_without_operator_preapproval": true,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "runtime_behavior_changed": false,
+      "input_contract": {
+        "fixture_source": "fixture_suite.fixtures",
+        "matrix_source": "fixture_validation_matrix",
+        "required_fixture_fields": [
+          "id",
+          "surface",
+          "principal",
+          "profile",
+          "domain",
+          "risk",
+          "res",
+          "op",
+          "decision",
+          "code",
+          "rule"
+        ],
+        "normalization_required": true,
+        "mutation_of_server_spec_allowed": false
+      },
+      "output_contract": {
+        "ok": "boolean",
+        "evaluated_fixture_count": "number",
+        "pass_count": "number",
+        "failures": "array",
+        "decision_trace_required": true,
+        "trace_fields": [
+          "fixture_id",
+          "expected_decision",
+          "actual_decision",
+          "expected_reason_code",
+          "actual_reason_code",
+          "expected_rule",
+          "actual_rule",
+          "matched_matrix_entry"
+        ]
+      },
+      "evaluation_semantics": {
+        "default_decision": "deny",
+        "allow_only_when_fixture_matrix_explicitly_matches": true,
+        "deny_on_unknown_fixture_id": true,
+        "deny_on_unknown_reason_code": true,
+        "deny_on_unknown_rule": true,
+        "deny_on_runtime_boundary_violation": true,
+        "deny_on_auth_port_policy_violation": true,
+        "deterministic_no_network_no_runtime": true
+      },
+      "readiness_gate": {
+        "contract_ready_for_local_tool_implementation": true,
+        "runtime_implementation_ready": false,
+        "shadow_mode_ready": false,
+        "prototype_shadow_mode_allowed_next": false,
+        "next_planned_step": "stage12_step23_decision_runtime_interface_contract"
+      },
+      "tool": "_workflow/scripts/evaluate_server_spec_decisions.js",
+      "smoke": "_tests/smoke_stage12_decision_evaluator_dev_harness.js",
+      "last_result": {
+        "ok": true,
+        "evaluated_fixture_count": 15,
+        "pass_count": 15,
+        "failures": 0,
+        "runtime_integrated": false,
+        "mcp_tool_exposed": false
+      },
+      "negative_controls": "passing"
+    },
+    "decision_evaluator_negative_controls": {
+      "status": "passing",
+      "tool": "_workflow/scripts/evaluate_server_spec_decision_negative_controls.js",
+      "smoke": "_tests/smoke_stage12_decision_evaluator_negative_controls.js",
+      "control_count": 8,
+      "controls": [
+        "fixture_decision_mismatch",
+        "fixture_reason_code_mismatch",
+        "fixture_rule_mismatch",
+        "missing_matrix_entry",
+        "matrix_decision_mismatch",
+        "matrix_reason_code_mismatch",
+        "runtime_boundary_violation",
+        "auth_port_policy_violation"
+      ],
+      "runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "next": "stage12_step23_decision_runtime_interface_contract"
+    },
+    "decision_evaluator_readiness_gate": {
+      "status": "passed_for_runtime_interface_contract_only",
+      "gate_inputs": {
+        "strict_fixture_validator_ok": true,
+        "fixture_negative_controls_ok": true,
+        "decision_evaluator_ok": true,
+        "decision_evaluator_negative_controls_ok": true,
+        "run_all_smokes_skip_network": "ok_true_103_results_version_0_29_0",
+        "auth_port_policy_recorded": true,
+        "developer_tooling_policy_recorded": true
+      },
+      "gate_decision": {
+        "ready_for_runtime_interface_contract": true,
+        "runtime_implementation_ready": false,
+        "shadow_mode_ready": false,
+        "prototype_shadow_mode_allowed_next": false,
+        "server_runtime_integrated": false,
+        "mcp_tool_exposed": false,
+        "connector_visible_change_allowed": false,
+        "stage12_closable": false,
+        "new_stage_allowed": false,
+        "next_planned_step": "stage12_step24_decision_runtime_interface_contract_validator_dev_tool"
+      },
+      "runtime_boundary": {
+        "runtime_behavior_changed": false,
+        "server_js_changed": false,
+        "tools_list_changed": false,
+        "descriptor_changed": false,
+        "schema_changed": false,
+        "outputMode_changed": false,
+        "connectorShapeVersion_changed": false,
+        "fingerprints_changed": false,
+        "restart_required": false,
+        "connector_refresh_required": false
+      }
+    },
+    "decision_runtime_interface_contract": {
+      "status": "contract_written_not_implemented",
+      "mode": "runtime_interface_contract_only",
+      "source_of_truth": "SERVER_SPEC.json",
+      "runtime_implementation_ready": false,
+      "shadow_mode_ready": false,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "connector_visible_change_allowed": false,
+      "input_contract": {
+        "immutable_request_context_required": true,
+        "required_fields": [
+          "request_id",
+          "request_surface",
+          "principal",
+          "auth_context",
+          "connector_profile",
+          "capability_profile",
+          "tool_context",
+          "resource_context",
+          "requested_operation",
+          "runtime_surface_hash",
+          "policy_version"
+        ],
+        "normalization_required": true,
+        "unknown_fields_policy": "ignore_for_decision_but_include_in_audit_summary_if_safe",
+        "mutation_allowed": false
+      },
+      "output_contract": {
+        "required_fields": [
+          "decision",
+          "reason_code",
+          "matched_rule",
+          "human_reason",
+          "audit_receipt",
+          "surface_effect"
+        ],
+        "decision_values": [
+          "allow",
+          "deny"
+        ],
+        "audit_receipt_required_for_allow": true,
+        "audit_receipt_required_for_deny": true,
+        "surface_effect_values": [
+          "none",
+          "allow_invocation",
+          "deny_invocation",
+          "deny_resource"
+        ]
+      },
+      "audit_receipt_contract": {
+        "required_fields": [
+          "receipt_version",
+          "request_id",
+          "request_surface",
+          "decision",
+          "reason_code",
+          "matched_rule",
+          "principal",
+          "connector_profile",
+          "capability_profile",
+          "tool_name",
+          "tool_domain",
+          "resource_class",
+          "requested_operation",
+          "runtime_surface_hash"
+        ],
+        "redaction_required": true,
+        "secret_material_allowed": false
+      },
+      "fail_closed_semantics": {
+        "default_decision": "deny",
+        "deny_on_malformed_context": true,
+        "deny_on_unknown_tool": true,
+        "deny_on_unknown_domain_or_risk": true,
+        "deny_on_unknown_resource_or_operation": true,
+        "deny_on_runtime_surface_drift": true,
+        "deny_on_descriptor_only_bypass": true,
+        "deny_on_auth_transport_without_permission": true,
+        "deny_on_missing_audit_receipt": true
+      },
+      "integration_prerequisites": {
+        "contract_validator_required_next": true,
+        "positive_and_negative_interface_fixtures_required_before_runtime": true,
+        "operator_approval_required_before_runtime_integration": true,
+        "operator_approval_required_before_mcp_exposure": true,
+        "restart_plan_required_before_runtime_integration": true,
+        "connector_refresh_plan_required_before_connector_visible_change": true
+      },
+      "next_planned_step": "stage12_step28_decision_runtime_integration_plan_validator_or_operator_approval_gate",
+      "validator": {
+        "status": "passing",
+        "script": "_workflow/scripts/validate_decision_runtime_interface_contract.js",
+        "scope": "local_dev_tool_only",
+        "validates": "SERVER_SPEC.json decision_runtime_interface_contract",
+        "runtime_integrated": false,
+        "mcp_tool_exposed": false,
+        "connector_visible_change_allowed": false
+      },
+      "smoke": {
+        "status": "passing",
+        "path": "_tests/smoke_stage12_decision_runtime_interface_contract_validator.js",
+        "registered_in_run_all_smokes": true,
+        "expected_full_smoke_results_after_registration": 105
+      },
+      "last_result": {
+        "ok": true,
+        "checked_input_fields": 11,
+        "checked_output_fields": 6,
+        "checked_audit_receipt_fields": 14,
+        "fail_closed_semantics_enforced": true,
+        "integration_prerequisites_enforced": true,
+        "runtime_integrated": false,
+        "runtime_implementation_ready": false,
+        "shadow_mode_ready": false,
+        "mcp_tool_exposed": false,
+        "connector_visible_change_allowed": false,
+        "errors": [],
+        "warnings": [],
+        "full_smoke_skip_network": "ok_true_105_results_version_0_29_0",
+        "platform_blocks": [
+          {
+            "route": "GPT_MCP.run_process node _tests/run_all_smokes.js --skip-network",
+            "classification": "platform_blocked_not_repo_failure",
+            "fallback": "shorter trace_id and lower max_output_chars retry passed"
+          }
+        ],
+        "negative_controls": "passing",
+        "negative_control_count": 17
+      },
+      "negative_controls": {
+        "status": "passing",
+        "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_negative_controls.js",
+        "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_negative_controls.js",
+        "control_count": 17,
+        "controls": [
+          "missing_contract_object",
+          "bad_contract_status",
+          "bad_contract_mode",
+          "runtime_implementation_ready_true",
+          "server_runtime_integrated_true",
+          "input_required_field_removed",
+          "input_unknown_fields_policy_changed",
+          "input_mutation_allowed_true",
+          "output_decision_values_incomplete",
+          "output_surface_effect_removed",
+          "audit_receipt_required_for_deny_false",
+          "audit_required_field_removed",
+          "audit_secret_material_allowed_true",
+          "fail_closed_default_allow",
+          "fail_closed_deny_on_unknown_tool_false",
+          "integration_prerequisite_operator_approval_false",
+          "runtime_boundary_changed_true"
+        ],
+        "runtime_integrated": false,
+        "mcp_tool_exposed": false,
+        "connector_visible_change_allowed": false,
+        "next": "stage12_step26_decision_runtime_interface_contract_readiness_gate"
+      }
+    },
+    "decision_runtime_interface_contract_readiness_gate": {
+      "status": "passed_for_runtime_integration_planning_only",
+      "mode": "readiness_gate_only_no_runtime_change",
+      "source_of_truth": "SERVER_SPEC.json",
+      "runtime_behavior_changed": false,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "connector_visible_change_allowed": false,
+      "gate_inputs": {
+        "contract_validator_ok": true,
+        "contract_negative_controls_ok": true,
+        "fixture_validator_ok": true,
+        "fixture_negative_controls_ok": true,
+        "decision_evaluator_ok": true,
+        "decision_evaluator_negative_controls_ok": true,
+        "workflow_state_smoke_ok": true,
+        "documentation_state_audit_ok": true,
+        "runtime_boundary_preserved": true,
+        "pre_gate_full_smoke_skip_network": "ok_true_105_results_version_0_29_0",
+        "expected_full_smoke_results_after_registration": 106
+      },
+      "gate_decision": {
+        "ready_for_runtime_integration_planning": true,
+        "runtime_implementation_ready": false,
+        "shadow_mode_ready": false,
+        "prototype_shadow_mode_allowed_next": false,
+        "server_runtime_integrated": false,
+        "mcp_tool_exposed": false,
+        "connector_visible_change_allowed": false,
+        "stage12_closable": false,
+        "new_stage_allowed": false,
+        "direct_runtime_implementation_allowed": false,
+        "next_planned_step": "stage12_step28_decision_runtime_integration_plan_validator_or_operator_approval_gate"
+      },
+      "documentation_audit": {
+        "status": "complete",
+        "state_current_package_recorded": true,
+        "state_previous_package_recorded": true,
+        "state_validation_evidence_recorded": true,
+        "state_recent_completed_work_packages_updated": true,
+        "server_spec_gate_recorded": true,
+        "handoff_rendered": true,
+        "working_course_rendered": true,
+        "longterm_doc_written": true,
+        "policy_doc_written": true,
+        "correction_notes": [
+          "Added dedicated decision_runtime_interface_contract_readiness_gate section to SERVER_SPEC.json.",
+          "Added Step 26 current package, acceptance state, and validation evidence to _workflow/state.json.",
+          "Added recent Stage 12 decision-runtime work packages to completed_work_packages for easier manual audit."
+        ]
+      },
+      "runtime_boundary": {
+        "runtime_behavior_changed": false,
+        "server_js_changed": false,
+        "tools_list_changed": false,
+        "descriptor_changed": false,
+        "schema_changed": false,
+        "outputMode_changed": false,
+        "connectorShapeVersion_changed": false,
+        "fingerprints_changed": false,
+        "restart_required": false,
+        "connector_refresh_required": false
+      },
+      "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_readiness_gate.js",
+      "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_readiness_gate.js",
+      "last_result": {
+        "ok": true,
+        "documentation_state_audit": "complete",
+        "full_smoke_skip_network": "ok_true_106_results_version_0_29_0"
+      }
+    },
+    "decision_runtime_integration_plan": {
+      "status": "plan_written_not_implemented",
+      "mode": "integration_plan_only_no_runtime_change",
+      "source_of_truth": "SERVER_SPEC.json",
+      "runtime_behavior_changed": false,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "connector_visible_change_allowed": false,
+      "operator_approval_required_before_runtime_patch": true,
+      "restart_plan_required_before_runtime_patch": true,
+      "connector_refresh_plan_required_before_surface_change": true,
+      "integration_points": [
+        {
+          "file": "src/runtime/mcp_entry_dispatcher.js",
+          "planned_role": "HTTP/RPC entry boundary and request-envelope source",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        },
+        {
+          "file": "src/runtime/rpc_message_dispatcher.js",
+          "planned_role": "JSON-RPC method routing boundary",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        },
+        {
+          "file": "src/runtime/tools_call_handler.js",
+          "planned_role": "primary tools/call decision checkpoint before handler dispatch",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        },
+        {
+          "file": "src/runtime/tools_list_message_handler.js",
+          "planned_role": "tools/list surface invariant checkpoint without filtering unless later approved",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        },
+        {
+          "file": "src/runtime/unknown_tool_call_handler.js",
+          "planned_role": "unknown-tool fail-closed receipt consistency path",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        },
+        {
+          "file": "src/runtime/tool_audit_helpers.js",
+          "planned_role": "audit enrichment bridge for decision receipts",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        },
+        {
+          "file": "src/runtime/audit_log.js",
+          "planned_role": "audit receipt persistence path",
+          "inspection_mode": "read_only_verified",
+          "modified_in_step27": false
+        }
+      ],
+      "planned_modules": [
+        "src/runtime/decision_runtime_context_builder.js",
+        "src/runtime/decision_runtime_policy.js",
+        "src/runtime/decision_runtime_receipt.js"
+      ],
+      "planned_phases": [
+        {
+          "id": "operator_approval_gate",
+          "required": true,
+          "runtime_patch_allowed": false
+        },
+        {
+          "id": "implementation_patch_plan",
+          "required": true,
+          "runtime_patch_allowed": false
+        },
+        {
+          "id": "pre_restart_validation",
+          "required": true,
+          "runtime_patch_allowed": false
+        },
+        {
+          "id": "operator_controlled_restart",
+          "required": true,
+          "runtime_patch_allowed": false
+        },
+        {
+          "id": "post_restart_live_validation",
+          "required": true,
+          "runtime_patch_allowed": false
+        },
+        {
+          "id": "rollback_gate",
+          "required": true,
+          "runtime_patch_allowed": false
+        }
+      ],
+      "controls": {
+        "fail_closed_default_deny": true,
+        "deny_unknown_tool_before_handler_fallback": true,
+        "audit_receipt_required_for_allow_and_deny": true,
+        "no_descriptor_only_bypass": true,
+        "no_connector_visible_change_without_operator_refresh_plan": true,
+        "no_secret_material_in_audit": true,
+        "preserve_public_fallback_port_3009": true,
+        "preserve_tool_count_and_hash_until_explicit_surface_change": true
+      },
+      "required_validation_before_runtime_patch": {
+        "contract_validator": true,
+        "contract_negative_controls": true,
+        "readiness_gate_validator": true,
+        "integration_plan_validator": true,
+        "full_smoke_skip_network": true,
+        "baseline_manifest": true,
+        "baseline_drift_guard": true,
+        "workflow_state_smoke": true
+      },
+      "rollback_plan": {
+        "pre_patch_snapshot_required": true,
+        "restore_changed_runtime_files": true,
+        "rerun_full_smoke_skip_network": true,
+        "operator_confirms_runtime_recovered": true
+      },
+      "runtime_boundary": {
+        "runtime_behavior_changed": false,
+        "server_js_changed": false,
+        "tools_list_changed": false,
+        "descriptor_changed": false,
+        "schema_changed": false,
+        "outputMode_changed": false,
+        "connectorShapeVersion_changed": false,
+        "fingerprints_changed": false,
+        "restart_required": false,
+        "connector_refresh_required": false
+      },
+      "tool": "_workflow/scripts/validate_decision_runtime_integration_plan.js",
+      "smoke": "_tests/smoke_stage12_decision_runtime_integration_plan.js",
+      "next_gate": {
+        "next_planned_step": "stage12_step29_decision_runtime_patch_scope_approval_package",
+        "runtime_patch_allowed_next": false,
+        "operator_approval_required": true
+      },
+      "last_result": {
+        "ok": true,
+        "full_smoke_skip_network": "ok_true_107_results_version_0_29_0"
+      }
+    },
+    "decision_runtime_operator_gate": {
+      "status": "operator_gate_written_runtime_patch_not_authorized",
+      "mode": "operator_approval_gate_only_no_runtime_change",
+      "runtime_behavior_changed": false,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "connector_visible_change_allowed": false,
+      "runtime_patch_authorized": false,
+      "restart_authorized": false,
+      "connector_refresh_authorized": false,
+      "operator_approval_required_for_runtime_patch": true,
+      "eligible_for_operator_runtime_patch_review": true,
+      "prerequisites": {
+        "step27_full_smoke_result": "ok_true_107_results_version_0_29_0"
+      },
+      "runtime_patch_candidate_files": [
+        {
+          "file": "src/runtime/mcp_entry_dispatcher.js",
+          "approved_for_patch_now": false
+        },
+        {
+          "file": "src/runtime/rpc_message_dispatcher.js",
+          "approved_for_patch_now": false
+        },
+        {
+          "file": "src/runtime/tools_call_handler.js",
+          "approved_for_patch_now": false
+        },
+        {
+          "file": "src/runtime/tools_list_message_handler.js",
+          "approved_for_patch_now": false
+        },
+        {
+          "file": "src/runtime/unknown_tool_call_handler.js",
+          "approved_for_patch_now": false
+        },
+        {
+          "file": "src/runtime/tool_audit_helpers.js",
+          "approved_for_patch_now": false
+        },
+        {
+          "file": "src/runtime/audit_log.js",
+          "approved_for_patch_now": false
+        }
+      ],
+      "gate_decision": {
+        "plan_validated": true,
+        "ready_to_request_operator_runtime_patch_approval": true,
+        "runtime_patch_allowed_next": false,
+        "direct_runtime_implementation_allowed": false,
+        "server_runtime_integrated": false,
+        "mcp_tool_exposed": false,
+        "connector_visible_change_allowed": false,
+        "restart_required_now": false,
+        "next_planned_step": "stage12_step29_decision_runtime_patch_scope_approval_package"
+      },
+      "tool": "_workflow/scripts/validate_decision_runtime_operator_gate.js",
+      "smoke": "_tests/smoke_stage12_decision_runtime_operator_gate.js",
+      "last_result": {
+        "ok": true,
+        "full_smoke_skip_network": "ok_true_108_results_version_0_29_0"
+      }
+    },
+    "decision_runtime_scope_approval_package": {
+      "status": "scope_package_written_no_runtime_change",
+      "scope_package_written": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "connector_visible_change_allowed": false,
+      "candidate_files": [
+        {
+          "file": "src/runtime/mcp_entry_dispatcher.js",
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/rpc_message_dispatcher.js",
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/tools_call_handler.js",
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/tools_list_message_handler.js",
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/unknown_tool_call_handler.js",
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/tool_audit_helpers.js",
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/audit_log.js",
+          "approved_for_change_now": false
+        }
+      ],
+      "required_operator_decisions": [
+        "approve_files",
+        "approve_tests",
+        "approve_restart",
+        "approve_rollback"
+      ],
+      "tool": "_workflow/scripts/validate_runtime_scope_approval_package.js",
+      "smoke": "_tests/smoke_stage12_runtime_scope_approval_package.js",
+      "next_planned_step": "stage12_step30_runtime_scope_operator_approval_decision",
+      "last_result": {
+        "ok": true,
+        "full_smoke_skip_network": "ok_true_109_results_version_0_29_0"
+      }
+    },
+    "decision_runtime_scope_operator_decision": {
+      "status": "scope_approved_for_implementation_planning_only",
+      "scope_decision_recorded": true,
+      "scope_approved_for_implementation_planning": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "direct_runtime_implementation_allowed": false,
+      "server_runtime_integrated": false,
+      "mcp_tool_exposed": false,
+      "connector_visible_change_allowed": false,
+      "candidate_files": [
+        {
+          "file": "src/runtime/mcp_entry_dispatcher.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/rpc_message_dispatcher.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/tools_call_handler.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/tools_list_message_handler.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/unknown_tool_call_handler.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/tool_audit_helpers.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        },
+        {
+          "file": "src/runtime/audit_log.js",
+          "approved_for_planning_scope": true,
+          "approved_for_change_now": false
+        }
+      ],
+      "tool": "_workflow/scripts/validate_runtime_scope_operator_decision.js",
+      "smoke": "_tests/smoke_stage12_runtime_scope_operator_decision.js",
+      "next_planned_step": "stage12_step31_runtime_implementation_plan_no_code",
+      "last_result": {
+        "ok": true,
+        "full_smoke_skip_network": "ok_true_110_results_version_0_29_0"
+      }
+    },
+    "restriction_justification_analysis": {
+      "status": "control_artifact_written_no_runtime_change",
+      "analysis_required_before_each_step": true,
+      "print_analysis_in_chat_by_default": false,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "artifact": "_workflow/longterm/stage12_step30a_restriction_justification_analysis.md",
+      "policy": "_workflow/policies/s30a_policy.json",
+      "next_planned_step": "stage12_step31_runtime_implementation_plan_no_code"
+    },
+    "runtime_implementation_plan_no_code": {
+      "status": "implementation_plan_written_no_runtime_change",
+      "implementation_plan_written": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "direct_runtime_implementation_allowed": false,
+      "artifact": "_workflow/longterm/stage12_step31_runtime_implementation_plan_no_code.md",
+      "policy": "_workflow/policies/p31.json",
+      "smoke": "_tests/smoke_stage12_runtime_implementation_plan_no_code.js",
+      "next_planned_step": "stage12_step32_runtime_implementation_plan_operator_approval",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_111_results_version_0_29_0"
+      }
+    },
+    "runtime_implementation_plan_operator_approval": {
+      "status": "plan_approved_for_execution_package_preparation_no_runtime_change",
+      "implementation_plan_approved": true,
+      "execution_package_preparation_allowed": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "direct_runtime_implementation_allowed": false,
+      "artifact": "_workflow/longterm/stage12_step32_runtime_implementation_plan_operator_approval.md",
+      "policy": "_workflow/policies/p32.json",
+      "smoke": "_tests/smoke_stage12_runtime_implementation_plan_operator_approval.js",
+      "next_planned_step": "stage12_step33_runtime_execution_package_no_apply",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_112_results_version_0_29_0"
+      }
+    },
+    "runtime_execution_package_no_apply": {
+      "status": "execution_package_written_no_runtime_change",
+      "execution_package_written": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "direct_runtime_implementation_allowed": false,
+      "apply_changes_allowed": false,
+      "artifact": "_workflow/longterm/stage12_step33_runtime_execution_package_no_apply.md",
+      "policy": "_workflow/policies/p33.json",
+      "smoke": "_tests/smoke_stage12_runtime_execution_package_no_apply.js",
+      "next_planned_step": "stage12_step34_runtime_execution_package_operator_approval",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_113_results_version_0_29_0"
+      }
+    },
+    "project_debt_review_before_step34": {
+      "status": "project_debt_review_written_no_runtime_change",
+      "debt_review_written": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "artifact": "_workflow/longterm/stage12_step33a_project_debt_review_before_step34.md",
+      "policy": "_workflow/policies/p33a.json",
+      "smoke": "_tests/smoke_stage12_project_debt_review_before_step34.js",
+      "next_planned_step": "stage12_step33b_pre_step34_debt_reduction_plan_no_runtime_change",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_114_results_version_0_29_0"
+      }
+    },
+    "pre_step34_debt_reduction": {
+      "status": "p0_debt_reduced_no_runtime_change",
+      "p0_debt_reduced": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "artifact": "_workflow/longterm/stage12_step33b_pre_step34_debt_reduction_no_runtime_change.md",
+      "policy": "_workflow/policies/p33b.json",
+      "policy_index": "_workflow/policies/policy_index.json",
+      "dry_run_manifest": "_workflow/patch_manifests/stage12_step33_runtime_execution_dry_run_manifest.json",
+      "smoke": "_tests/smoke_stage12_pre_step34_debt_reduction.js",
+      "next_planned_step": "stage12_step34_runtime_execution_package_operator_approval",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_115_results_version_0_29_0"
+      }
+    },
+    "runtime_execution_package_operator_approval": {
+      "status": "execution_package_approved_for_apply_package_preparation_runtime_apply_blocked",
+      "step33_execution_package_approved_for_apply_package_preparation": true,
+      "apply_package_preparation_allowed": true,
+      "additional_p1_tests_required_before_apply": true,
+      "runtime_patch_requires_separate_operator_execution_approval": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "apply_changes_allowed": false,
+      "direct_runtime_implementation_allowed": false,
+      "artifact": "_workflow/longterm/stage12_step34_runtime_execution_package_operator_approval.md",
+      "policy": "_workflow/policies/p34.json",
+      "smoke": "_tests/smoke_stage12_runtime_execution_package_operator_approval.js",
+      "next_planned_step": "stage12_step35_runtime_apply_package_preparation_no_apply",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_116_results_version_0_29_0",
+        "post_work_backup": "_backups/workflow_snapshots/2026-06-14T13-37-22-017Z_stage12_step34_post_operator_approval_green_final"
+      },
+      "blocking_topology_fixture_debt_repaired": true,
+      "snapshot_allowlist_excluded_fixture_stage_repair": true
+    },
+    "runtime_apply_package_preparation_no_apply": {
+      "status": "apply_package_prepared_execution_not_recommended",
+      "apply_package_prepared": true,
+      "p1_test_package_prepared": true,
+      "execution_recommendation": "keep_blocked",
+      "operational_decision": "prepare_decision_runtime_shim_package_next",
+      "decision_runtime_shim_missing": true,
+      "runtime_change_authorized": false,
+      "runtime_change_allowed_next": false,
+      "apply_changes_allowed": false,
+      "artifact": "_workflow/longterm/stage12_step35_runtime_apply_package_preparation_no_apply.md",
+      "apply_package": "_workflow/patch_manifests/stage12_step35_runtime_apply_package_preparation_no_apply.json",
+      "p1_test_package": "_workflow/patch_manifests/stage12_step35_p1_test_package_manifest.json",
+      "policy": "_workflow/policies/p35.json",
+      "smoke": "_tests/smoke_stage12_runtime_apply_package_preparation_no_apply.js",
+      "next_planned_step": "stage12_step36_decision_runtime_shim_package_no_apply",
+      "last_result": {
+        "full_smoke_skip_network": "ok_true_117_results_version_0_29_0",
+        "post_work_backup": "_backups/workflow_snapshots/2026-06-14T14-25-09-774Z_stage12_step35_post_apply_package_preparation_green"
+      },
+      "historical_s34_validator_repaired": true
+    }
+  }
+}

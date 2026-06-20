@@ -1,0 +1,12 @@
+{"ts":"2026-05-18T10:00:00.000Z","event":"tool_call_start","request_id":"r-ok","tool":"search","success":true,"args":{"path":"fixtures/public.txt"}}
+{"ts":"2026-05-18T10:00:00.010Z","event":"tool_call_end","request_id":"r-ok","tool":"search","duration_ms":5,"is_error":false,"result_chars":100,"result_count":1}
+{"ts":"2026-05-18T10:00:01.000Z","event":"tool_call_start","request_id":"r-arg","tool":"fs_read_public_text","success":false,"error":"arg_summary","args":{"path":"C:/Work/mcp-tests/fixtures/example.txt"}}
+{"ts":"2026-05-18T10:00:01.010Z","event":"tool_call_end","request_id":"r-arg","tool":"fs_read_public_text","duration_ms":1200,"is_error":false,"result_chars":20,"result_count":1}
+{"ts":"2026-05-18T10:00:02.000Z","event":"tool_call_start","request_id":"r-orphan","tool":"dev_code_symbols","success":true}
+{"ts":"2026-05-18T10:00:03.000Z","event":"tool_call_error","request_id":"r-unknown","tool":"dev_code_symbols","error_kind":"unknown_tool","message":"unknown_tool"}
+{"ts":"2026-05-18T10:00:04.000Z","event":"rpc_received","kind":"auth_rejected","method":"tools/list"}
+{"ts":"2026-05-18T10:00:05.000Z","event":"rpc_received","kind":"method_not_allowed","method":"GET"}
+{"ts":"2026-05-18T10:00:06.000Z","event":"server_error","error":"listen EADDRINUSE: address already in use 127.0.0.1:3009"}
+{"ts":"2026-05-18T10:00:07.000Z","event":"tool_call_start","request_id":"r-sensitive","tool":"fetch","success":true,"metadata":{"file":"docs/private.pem"}}
+{"ts":"2026-05-18T10:00:07.010Z","event":"tool_call_end","request_id":"r-sensitive","tool":"fetch","duration_ms":2,"is_error":false,"success":true,"result_chars":1,"result_count":1}
+not-json

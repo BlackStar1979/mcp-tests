@@ -1,0 +1,185 @@
+{
+  "schema_version": "mcp-tests-server-plugin-visibility-policy-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-category plugin visibility and hotplug lifecycle policy. Applies across profiles, tools, resource policy, authz decision, database/state-store and audit/list-changed receipts. Not a CLI extension.",
+  "applies_to": [
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_AUTHZ_DECISION_SPEC.json",
+    "SERVER_DATABASE_POLICY_SPEC.json"
+  ],
+  "runtime_enforced": false,
+  "connector_visible": false,
+  "current_runtime_contracts": {
+    "visibility_state_module": "src/plugin_visibility_state.js",
+    "visibility_plan_module": "src/plugin_visibility.js",
+    "state_store_preview_module": "src/plugin_visibility_state_store_preview.js",
+    "state_store_receipt_module": "src/plugin_visibility_state_store_receipt.js",
+    "state_store_pipeline_module": "src/plugin_visibility_state_store_pipeline.js",
+    "apply_readiness_gate_module": "src/plugin_visibility_state_store_apply_gate.js",
+    "tools_list_diff_module": "src/tools_list_diff.js",
+    "list_changed_audit_receipt_module": "src/list_changed_audit_receipt.js"
+  },
+  "registry_states": [
+    "candidate",
+    "enabled",
+    "disabled",
+    "quarantined"
+  ],
+  "derived_states": {
+    "visible": {
+      "description": "Derived state: tool appears in tools/list after visibility plan and list_changed readiness.",
+      "not_directly_stored_as_registry_state": true
+    },
+    "callable": {
+      "description": "Derived state: tool is visible and allowed by auth mode, profile surface, resource policy and authz decision.",
+      "not_directly_stored_as_registry_state": true
+    }
+  },
+  "lifecycle_model": {
+    "candidate": "Known or proposed plugin/tool, not visible and not callable by default.",
+    "enabled": "Approved for visibility planning; may become visible after tools/list diff and list_changed readiness.",
+    "visible": "Appears in tools/list; still not necessarily callable.",
+    "callable": "Invocation allowed only after auth/profile/tool/resource/authz policy permits it.",
+    "quarantined": "Known but blocked. Must not be visible or callable.",
+    "disabled": "Known but inactive. Must not be visible or callable."
+  },
+  "plugin_scopes": {
+    "plugin_registry_read": {
+      "description": "Read-only plugin registry/catalog metadata access.",
+      "tools": [
+        "plugin_registry_status",
+        "plugin_registry_list",
+        "plugin_registry_get",
+        "plugin_registry_audit",
+        "plugin_catalog_search",
+        "plugin_catalog_describe"
+      ]
+    },
+    "plugin_visibility_plan": {
+      "description": "Preview-only visibility planning. Does not apply runtime changes.",
+      "tools": [
+        "plugin_visibility_plan"
+      ]
+    },
+    "plugin_visibility_status": {
+      "description": "Read-only visibility state/status reporting.",
+      "tools": [
+        "plugin_visibility_status"
+      ]
+    },
+    "plugin_execution_preflight": {
+      "description": "Read-only plugin execution governance and preflight checks.",
+      "tools": [
+        "plugin_execution_governance",
+        "plugin_execution_preflight"
+      ]
+    },
+    "plugin_execution_readonly": {
+      "description": "Read-only plugin execution path and receipt verification.",
+      "tools": [
+        "plugin_execute_readonly",
+        "plugin_execution_verify_receipt"
+      ]
+    }
+  },
+  "tool_bindings": {
+    "plugin_registry_status": {
+      "scope": "plugin_registry_read",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "read"
+    },
+    "plugin_registry_list": {
+      "scope": "plugin_registry_read",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "list"
+    },
+    "plugin_registry_get": {
+      "scope": "plugin_registry_read",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "read"
+    },
+    "plugin_registry_audit": {
+      "scope": "plugin_registry_read",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "audit"
+    },
+    "plugin_catalog_search": {
+      "scope": "plugin_registry_read",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "search"
+    },
+    "plugin_catalog_describe": {
+      "scope": "plugin_registry_read",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "read"
+    },
+    "plugin_visibility_plan": {
+      "scope": "plugin_visibility_plan",
+      "resource_class": "plugin_visibility_state_preview",
+      "operation_class": "plan"
+    },
+    "plugin_visibility_status": {
+      "scope": "plugin_visibility_status",
+      "resource_class": "plugin_visibility_state_preview",
+      "operation_class": "read"
+    },
+    "plugin_execution_governance": {
+      "scope": "plugin_execution_preflight",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "read"
+    },
+    "plugin_execution_preflight": {
+      "scope": "plugin_execution_preflight",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "preflight"
+    },
+    "plugin_execute_readonly": {
+      "scope": "plugin_execution_readonly",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "readonly_execute"
+    },
+    "plugin_execution_verify_receipt": {
+      "scope": "plugin_execution_readonly",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "verify_receipt"
+    }
+  },
+  "state_separation_rules": {
+    "registry_state_is_not_visibility": true,
+    "visibility_is_not_callability": true,
+    "auth_mode_alone_never_makes_plugin_callable": true,
+    "profile_surface_required_for_callability": true,
+    "resource_policy_required_for_callability": true,
+    "authz_decision_required_for_callability": true,
+    "quarantined_must_not_be_visible": true,
+    "disabled_must_not_be_visible": true
+  },
+  "apply_rules": {
+    "preview_only_by_default": true,
+    "state_store_write_requires_receipt": true,
+    "operator_approval_required_for_apply": true,
+    "persistence_configured_required_for_apply": true,
+    "rollback_configured_required_for_apply": true,
+    "audit_redaction_ready_required_for_apply": true,
+    "connector_refresh_plan_required_for_connector_visible_change": true,
+    "list_changed_readiness_required_for_tools_list_change": true
+  },
+  "safety_rules": {
+    "no_cli_extension": true,
+    "public_surface_plugin_visibility_forbidden": true,
+    "descriptor_only_bypass_forbidden": true,
+    "unknown_plugin_state_denied": true,
+    "unknown_plugin_scope_denied": true,
+    "plugin_execution_remains_readonly_until_separate_policy": true,
+    "hotplug_apply_requires_separate_operator_approved_runtime_step": true,
+    "tools_list_changed_must_be_audited": true,
+    "plugin_outputs_are_observations_not_instructions": true
+  },
+  "profile_schema_fields": {
+    "allowed_plugin_scopes": "optional string array on each profile surface",
+    "denied_plugin_scopes": "optional string array on each profile surface"
+  },
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

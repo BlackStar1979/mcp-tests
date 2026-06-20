@@ -1,0 +1,220 @@
+{
+  "schema_version": "mcp-tests-server-authz-decision-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-cutting authorization decision contract for MCP-callable tool invocation. Applies across auth, profiles and tools. Not a CLI extension.",
+  "applies_to": [
+    "SERVER_AUTH_SPEC.json",
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_MEMORY_POLICY_SPEC.json",
+    "SERVER_NETWORK_POLICY_SPEC.json",
+    "SERVER_DATABASE_POLICY_SPEC.json",
+    "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+  ],
+  "source_salvage": {
+    "from": "SERVER_STAGE12.json",
+    "sections": [
+      "stage12_decision_model_contract",
+      "rule_precedence",
+      "decision_runtime_interface_contract"
+    ],
+    "policy_artifacts": [
+      "_workflow/policies/stage12_step12_capability_decision_model_contract_v0.json",
+      "_workflow/policies/stage12_step23_decision_runtime_interface_contract_v0.json"
+    ],
+    "salvage_status": "promoted_from_historical_stage12_workbench_to_neutral_cross_category_spec",
+    "runtime_enforced": false,
+    "connector_visible": false
+  },
+  "decision_model": {
+    "input_sections": [
+      "auth_context",
+      "profile_context",
+      "tool_context",
+      "resource_context",
+      "runtime_context",
+      "request_context"
+    ],
+    "output_fields": [
+      "decision",
+      "reason_code",
+      "human_reason",
+      "matched_rule",
+      "audit_receipt",
+      "surface_effect"
+    ],
+    "decision_values": [
+      "allow",
+      "deny"
+    ],
+    "default_decision": "deny"
+  },
+  "reason_codes": [
+    "ALLOW_PUBLIC_SAFE_TOOL",
+    "ALLOW_OPERATOR_READONLY_TOOL",
+    "ALLOW_DEVELOPER_TOOL",
+    "ALLOW_ADMIN_TOOL",
+    "ALLOW_RESOURCE_READ_PUBLIC",
+    "DENY_DEFAULT",
+    "DENY_MALFORMED_CONTEXT",
+    "DENY_UNKNOWN_TOOL",
+    "DENY_UNKNOWN_DOMAIN_OR_RISK_SUFFIX",
+    "DENY_PUBLIC_PRIVILEGED_CAPABILITY",
+    "DENY_BEARER_NOT_ADMIN",
+    "DENY_CF_ACCESS_CLAIMS_NOT_VALIDATED",
+    "DENY_DESCRIPTOR_ONLY_BYPASS",
+    "DENY_RESOURCE_SCOPE",
+    "DENY_FILESYSTEM_ESCAPE",
+    "DENY_NETWORK_NOT_ALLOWLISTED",
+    "DENY_PROCESS_EXECUTION",
+    "DENY_REMOTE_SITE_MUTATION",
+    "DENY_SSH_ACCESS",
+    "DENY_MEMORY_SCOPE",
+    "DENY_CONNECTOR_SURFACE_CHANGE_NOT_APPROVED",
+    "DENY_RUNTIME_SURFACE_DRIFT",
+    "DENY_OUTPUT_MODE_MISMATCH"
+  ],
+  "rule_precedence": [
+    "malformed_context_deny",
+    "unknown_tool_deny",
+    "unknown_domain_or_risk_deny",
+    "runtime_surface_invariance_deny",
+    "public_privileged_capability_deny",
+    "bearer_not_admin_deny",
+    "cf_access_claims_required_deny",
+    "descriptor_only_bypass_deny",
+    "resource_gate_scope_deny",
+    "connector_visible_change_deny",
+    "explicit_allow",
+    "default_deny"
+  ],
+  "interface_contract": {
+    "input_contract": {
+      "immutable_request_context_required": true,
+      "required_fields": [
+        "request_id",
+        "request_surface",
+        "principal",
+        "auth_context",
+        "connector_profile",
+        "capability_profile",
+        "tool_context",
+        "resource_context",
+        "requested_operation",
+        "runtime_surface_hash",
+        "policy_version"
+      ],
+      "normalization_required": true,
+      "unknown_fields_policy": "ignore_for_decision_but_include_in_audit_summary_if_safe",
+      "mutation_allowed": false
+    },
+    "output_contract": {
+      "required_fields": [
+        "decision",
+        "reason_code",
+        "matched_rule",
+        "human_reason",
+        "audit_receipt",
+        "surface_effect"
+      ],
+      "decision_values": [
+        "allow",
+        "deny"
+      ],
+      "audit_receipt_required_for_allow": true,
+      "audit_receipt_required_for_deny": true,
+      "surface_effect_values": [
+        "none",
+        "allow_invocation",
+        "deny_invocation",
+        "deny_resource"
+      ]
+    },
+    "audit_receipt_contract": {
+      "required_fields": [
+        "receipt_version",
+        "request_id",
+        "request_surface",
+        "decision",
+        "reason_code",
+        "matched_rule",
+        "principal",
+        "connector_profile",
+        "capability_profile",
+        "tool_name",
+        "tool_domain",
+        "resource_class",
+        "requested_operation",
+        "runtime_surface_hash"
+      ],
+      "redaction_required": true,
+      "secret_material_allowed": false
+    },
+    "fail_closed_semantics": {
+      "default_decision": "deny",
+      "deny_on_malformed_context": true,
+      "deny_on_unknown_tool": true,
+      "deny_on_unknown_domain_or_risk": true,
+      "deny_on_unknown_resource_or_operation": true,
+      "deny_on_runtime_surface_drift": true,
+      "deny_on_descriptor_only_bypass": true,
+      "deny_on_auth_transport_without_permission": true,
+      "deny_on_missing_audit_receipt": true
+    }
+  },
+  "cross_category_rules": {
+    "no_cli_extension": true,
+    "auth_mode_alone_never_grants_capability": true,
+    "profile_surface_required": true,
+    "tool_policy_required": true,
+    "resource_policy_required_when_tool_uses_resource": true,
+    "descriptor_only_bypass_denied": true,
+    "unknown_tool_denied": true,
+    "unknown_policy_category_denied": true,
+    "runtime_surface_drift_denied": true
+  },
+  "integration_policy": {
+    "dedicated_spec_required": true,
+    "profile_schema_must_model_new_policy_categories": true,
+    "negative_controls_required": true,
+    "operator_approval_required_before_runtime_enforcement": true,
+    "restart_plan_required_before_runtime_enforcement": true,
+    "connector_refresh_plan_required_before_connector_visible_change": true
+  },
+  "negative_controls": {
+    "status": "passing",
+    "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_negative_controls.js",
+    "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_negative_controls.js",
+    "control_count": 17,
+    "controls": [
+      "missing_contract_object",
+      "bad_contract_status",
+      "bad_contract_mode",
+      "runtime_implementation_ready_true",
+      "server_runtime_integrated_true",
+      "input_required_field_removed",
+      "input_unknown_fields_policy_changed",
+      "input_mutation_allowed_true",
+      "output_decision_values_incomplete",
+      "output_surface_effect_removed",
+      "audit_receipt_required_for_deny_false",
+      "audit_required_field_removed",
+      "audit_secret_material_allowed_true",
+      "fail_closed_default_allow",
+      "fail_closed_deny_on_unknown_tool_false",
+      "integration_prerequisite_operator_approval_false",
+      "runtime_boundary_changed_true"
+    ],
+    "runtime_integrated": false,
+    "mcp_tool_exposed": false,
+    "connector_visible_change_allowed": false,
+    "next": "stage12_step26_decision_runtime_interface_contract_readiness_gate"
+  },
+  "resource_policy_ref": "SERVER_RESOURCE_POLICY_SPEC.json",
+  "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",
+  "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
+  "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+  "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

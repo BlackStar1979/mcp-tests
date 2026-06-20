@@ -1,0 +1,45 @@
+{
+  "schema_version": "mcp-tests-sampling-policy-v1",
+  "status": "implemented_h7_policy",
+  "sampling_role": "server_may_request_client_sampling_only_when_client_declares_sampling_capability",
+  "approval_policy": {
+    "approval_required_by_default": true,
+    "low_risk_auto_approve_allowed": true,
+    "approval_receipt_required_for_non_low_risk": true,
+    "approval_receipt_param": "approvalReceipt",
+    "approval_receipt_status_required": "approved",
+    "deny_when_approval_required_but_unavailable": true
+  },
+  "risk_classification": {
+    "low_risk": {
+      "max_messages": 1,
+      "max_tokens": 128,
+      "allowed_content_types": ["text"],
+      "disallow_system_role": true
+    },
+    "requires_approval_when": [
+      "system role is present",
+      "message count exceeds low risk maximum",
+      "maxTokens exceeds low risk maximum",
+      "non-text content is present",
+      "tool-provided hidden instructions are present"
+    ]
+  },
+  "budget_policy": {
+    "per_session_sampling_budget_required": true,
+    "default_per_session_request_limit": 3,
+    "deny_when_budget_exhausted": true
+  },
+  "prompt_injection_policy": {
+    "tool_hidden_instructions_must_not_bypass_approval": true,
+    "params_hidden_instruction_keys": ["hiddenInstructions", "systemOverride", "developerOverride"]
+  },
+  "audit_policy": {
+    "audit_receipt_required": true,
+    "audit_events": [
+      "sampling_request_sent",
+      "sampling_request_denied"
+    ]
+  },
+  "guard": "_tests/smoke_stage12_sampling_user_approval_policy.js"
+}

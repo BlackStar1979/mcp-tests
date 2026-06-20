@@ -1,0 +1,226 @@
+{
+  "schema_version": "mcp-tests-server-resource-policy-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-category resource policy grammar for MCP-callable tool invocation. Applies across profiles, tools, and authz decision. Not a CLI extension.",
+  "applies_to": [
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_AUTHZ_DECISION_SPEC.json"
+  ],
+  "runtime_enforced": false,
+  "connector_visible": false,
+  "resource_classes": {
+    "public_index": {
+      "description": "Read-only public search/fetch index exposed by the public surface.",
+      "allowed_operations": [
+        "read"
+      ],
+      "public_surface_allowed": true
+    },
+    "filesystem_public": {
+      "description": "Read-only access to the configured public sandbox filesystem.",
+      "allowed_operations": [
+        "read",
+        "list",
+        "stat"
+      ],
+      "public_surface_allowed": true
+    },
+    "filesystem_workspace_readonly": {
+      "description": "Read-only code/workspace inspection for developer/test profile.",
+      "allowed_operations": [
+        "read",
+        "list",
+        "analyze"
+      ],
+      "public_surface_allowed": false
+    },
+    "network_allowlisted": {
+      "description": "Read-only outbound HTTP(S) access restricted by allowlist, redirect limits, timeout, byte cap and SSRF guard.",
+      "allowed_operations": [
+        "read",
+        "head",
+        "metadata"
+      ],
+      "public_surface_allowed": true
+    },
+    "memory_context_scoped": {
+      "description": "Scoped agent memory/state/task resource. Requires namespace and profile authorization.",
+      "allowed_operations": [
+        "read",
+        "search",
+        "write",
+        "state_update",
+        "task_create",
+        "task_list"
+      ],
+      "public_surface_allowed": false
+    },
+    "plugin_registry_readonly": {
+      "description": "Read-only plugin registry/catalog metadata.",
+      "allowed_operations": [
+        "read",
+        "list",
+        "audit"
+      ],
+      "public_surface_allowed": false
+    },
+    "plugin_visibility_state_preview": {
+      "description": "Preview/planning resource for plugin visibility and hotplug lifecycle. No apply without separate approval.",
+      "allowed_operations": [
+        "plan",
+        "preview",
+        "verify_receipt"
+      ],
+      "public_surface_allowed": false
+    },
+    "plugin_execution_readonly": {
+      "description": "Read-only plugin execution governance/preflight/readonly execution receipt path.",
+      "allowed_operations": [
+        "preflight",
+        "readonly_execute",
+        "verify_receipt"
+      ],
+      "public_surface_allowed": false
+    },
+    "auth_runtime_readonly": {
+      "description": "Read-only auth transition/status/dry-run/guard resource.",
+      "allowed_operations": [
+        "read",
+        "dry_run",
+        "guard"
+      ],
+      "public_surface_allowed": false
+    },
+    "observability_audit_readonly": {
+      "description": "Read-only runtime observability and audit summary resource.",
+      "allowed_operations": [
+        "read",
+        "summarize"
+      ],
+      "public_surface_allowed": false
+    },
+    "tool_surface_planning": {
+      "description": "Read-only or preview-only tool surface/session planning resource.",
+      "allowed_operations": [
+        "read",
+        "plan"
+      ],
+      "public_surface_allowed": false
+    },
+    "runtime_status_readonly": {
+      "description": "Read-only server runtime/status resource.",
+      "allowed_operations": [
+        "read"
+      ],
+      "public_surface_allowed": false
+    },
+    "database_store_bounded": {
+      "description": "Reserved bounded database/state-store resource class. No raw SQL, no arbitrary connection strings, no migrations without operator approval.",
+      "allowed_operations": [
+        "read",
+        "write",
+        "plan",
+        "migrate"
+      ],
+      "public_surface_allowed": false,
+      "reserved": true
+    }
+  },
+  "operation_classes": {
+    "read": {
+      "mutation": false
+    },
+    "list": {
+      "mutation": false
+    },
+    "stat": {
+      "mutation": false
+    },
+    "head": {
+      "mutation": false
+    },
+    "metadata": {
+      "mutation": false
+    },
+    "analyze": {
+      "mutation": false
+    },
+    "search": {
+      "mutation": false
+    },
+    "write": {
+      "mutation": true
+    },
+    "state_update": {
+      "mutation": true
+    },
+    "task_create": {
+      "mutation": true
+    },
+    "task_list": {
+      "mutation": false
+    },
+    "plan": {
+      "mutation": false
+    },
+    "preview": {
+      "mutation": false
+    },
+    "dry_run": {
+      "mutation": false
+    },
+    "guard": {
+      "mutation": false
+    },
+    "preflight": {
+      "mutation": false
+    },
+    "readonly_execute": {
+      "mutation": false
+    },
+    "verify_receipt": {
+      "mutation": false
+    },
+    "summarize": {
+      "mutation": false
+    },
+    "migrate": {
+      "mutation": true,
+      "operator_approval_required": true
+    },
+    "audit": {
+      "mutation": false
+    }
+  },
+  "mandatory_rules": {
+    "no_cli_extension": true,
+    "unknown_resource_class_denied": true,
+    "unknown_operation_class_denied": true,
+    "public_surface_disallows_non_public_resource_classes": true,
+    "mutating_operation_requires_audit": true,
+    "database_raw_query_tools_forbidden": true,
+    "resource_policy_refs_must_be_declared_in_profiles_when_profile_controls_resources": true
+  },
+  "profile_schema_fields": {
+    "allowed_resource_policy_refs": "optional string array on each profile surface",
+    "denied_resource_policy_refs": "optional string array on each profile surface"
+  },
+  "next_specific_specs": [
+    "SERVER_MEMORY_POLICY_SPEC.json",
+    "SERVER_NETWORK_POLICY_SPEC.json",
+    "SERVER_DATABASE_POLICY_SPEC.json",
+    "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+  ],
+  "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",
+  "specific_policy_refs": {
+    "memory": "SERVER_MEMORY_POLICY_SPEC.json",
+    "network": "SERVER_NETWORK_POLICY_SPEC.json",
+    "database": "SERVER_DATABASE_POLICY_SPEC.json",
+    "plugin_visibility": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+  },
+  "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
+  "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+  "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

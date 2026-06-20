@@ -1,0 +1,17 @@
+{
+  "name": "mcp-tests",
+  "version": "0.30.0",
+  "private": true,
+  "description": "TEST MCP workbench for connector/runtime contract validation.",
+  "type": "commonjs",
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "self-test": "node server.js --self-test",
+    "test": "node _tests/run_all_smokes.js --skip-network",
+    "test:full": "node _tests/run_all_smokes.js"
+  }
+}

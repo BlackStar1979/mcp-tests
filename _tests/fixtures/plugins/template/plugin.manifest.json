@@ -1,0 +1,17 @@
+{
+  "plugin_id": "template.plugin_id",
+  "plugin_version": "0.0.0",
+  "status": "template",
+  "tool_name": "template_tool_name",
+  "handler_type": "builtin.echo.readonly.v1",
+  "public_safe": false,
+  "risk": "template",
+  "entrypoint": "index.js",
+  "permissions": {
+    "network": false,
+    "fs": false,
+    "process": false,
+    "write": false,
+    "destructive": false
+  }
+}

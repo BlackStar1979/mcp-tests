@@ -1,0 +1,69 @@
+{
+  "name": "public",
+  "version": 1,
+  "description": "Default public server profile. It exposes only public tools regardless of auth mode.",
+  "surfaces": {
+    "public": {
+      "description": "auth none surface with public tools only",
+      "optional_tool_groups": [
+        "public"
+      ],
+      "include_non_public_tools": false,
+      "include_memory_tools": false,
+      "allowed_resource_policy_refs": [
+        "public_index",
+        "filesystem_public",
+        "network_allowlisted"
+      ],
+      "denied_resource_policy_refs": [],
+      "allowed_memory_scopes": [],
+      "denied_memory_scopes": [],
+      "allowed_network_scopes": [
+        "allowlisted_https_fetch",
+        "allowlisted_text_fetch",
+        "allowlisted_head",
+        "github_raw_allowlisted",
+        "package_metadata_npm",
+        "package_metadata_pypi"
+      ],
+      "denied_network_scopes": [],
+      "allowed_database_scopes": [],
+      "denied_database_scopes": [],
+      "allowed_plugin_scopes": [],
+      "denied_plugin_scopes": []
+    },
+    "authenticated": {
+      "description": "authenticated transport with public tools only",
+      "optional_tool_groups": [
+        "public"
+      ],
+      "include_non_public_tools": false,
+      "include_memory_tools": false,
+      "auth_mode_exclusions": {
+        "access": [],
+        "bearer": []
+      },
+      "allowed_resource_policy_refs": [
+        "public_index",
+        "filesystem_public",
+        "network_allowlisted"
+      ],
+      "denied_resource_policy_refs": [],
+      "allowed_memory_scopes": [],
+      "denied_memory_scopes": [],
+      "allowed_network_scopes": [
+        "allowlisted_https_fetch",
+        "allowlisted_text_fetch",
+        "allowlisted_head",
+        "github_raw_allowlisted",
+        "package_metadata_npm",
+        "package_metadata_pypi"
+      ],
+      "denied_network_scopes": [],
+      "allowed_database_scopes": [],
+      "denied_database_scopes": [],
+      "allowed_plugin_scopes": [],
+      "denied_plugin_scopes": []
+    }
+  }
+}

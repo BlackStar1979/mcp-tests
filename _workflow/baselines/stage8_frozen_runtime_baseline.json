@@ -1,0 +1,27 @@
+{
+  "baseline_name": "stage8_frozen_runtime_baseline",
+  "server_name": "mcp-tests-response-shape",
+  "server_version": "0.30.0",
+  "connectorShapeVersion": "2025-05-strict-v1",
+  "outputMode": "structured",
+  "authMode": "none",
+  "profile": "public",
+  "tool_count": 13,
+  "tool_names_hash": "0852d07b373a25ed",
+  "input_schema_fingerprint": "9cddc4a1824482df",
+  "output_schema_fingerprint": "84afb0118a60d23d",
+  "descriptor_fingerprint": "a0ea249155033319",
+  "combined_fingerprint": "ae2d27342e685996",
+  "memory_tools_expected": false,
+  "connector_refresh_required": true,
+  "source_stage": "stage12_pre_oauth_hardening_public_surface_reduction",
+  "notes": [
+    "Originally frozen after Stage 8 final gate; server_version was later corrected in Stage 12 Step 5B after runtime-visible/auth-startup history was recalculated.",
+    "This is a committed frozen baseline, not a runtime-generated value. Tests compare the current computed surface against this file; the file is the source of truth.",
+    "Only server_version changed in Stage 12 Step 5B; connectorShapeVersion, outputMode, tool_count and tool-surface fingerprints remained unchanged.",
+    "ChatGPT connector UI version 1.0.0 is connector/app metadata, not MCP initialize.result.serverInfo.version.",
+    "Update this manifest only in a future explicit connector-surface/baseline-change stage, never automatically from computed output.",
+    "Updated after accepted profile contract split: default profile public exposes public_mcp_tools only; full tests authenticated surface is specified separately in SERVER_TOOLS_SPEC.json and SERVER_PROFILES_SPEC.json.",
+    "Updated after approved pre-OAuth hardening: code_sample_js removed from auth.none public surface; public tool count is now 13 and tool-surface fingerprints intentionally changed. Connector refresh is required before treating live connector surface as updated."
+  ]
+}

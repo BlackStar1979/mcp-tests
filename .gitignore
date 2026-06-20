@@ -1,0 +1,63 @@
+# Dependencies
+node_modules/
+
+# Local environment and secrets
+.env
+.env.*
+!.env.example
+.secrets/
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.csr
+id_rsa*
+id_ed25519*
+
+# Runtime logs and local agent state
+_logs/*
+!_logs/README.md
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Local runtime/workflow backups and generated control-plane artifacts
+_backups/
+_stages/
+.mcp_backups/
+.mcp_trash/
+.temp/
+tmp/
+temp/
+_workflow/_diagnostics/
+_workflow/control_plane/deploy_records/
+_workflow/control_plane/file_backups/
+_workflow/control_plane/retired_root_backups/
+_workflow/control_plane/snapshots/
+
+# Local imported reference material; keep only the directory orientation.
+_docs/*
+!_docs/README.md
+!_docs/.gitkeep
+
+# External corpora and local research sandboxes not suitable for first GitHub import
+_repos_with_code_samples/
+_public_sandbox/mcp-tests/
+_public_sandbox/handbook/
+_public_sandbox/mvltt/
+_public_sandbox/rlhf-lab/
+
+# Temporary local test scratch files
+_tests/tmp*.js
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+.idea/
+.vscode/
+*.swp
+*.swo

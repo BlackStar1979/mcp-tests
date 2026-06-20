@@ -1,0 +1,5 @@
+Hello from the TEST MCP public filesystem sandbox.
+
+This file is intentionally safe to expose through read-only public FS tools.
+Line 4 exists for range-read smoke tests.
+Line 5 exists for chunk-read smoke tests.

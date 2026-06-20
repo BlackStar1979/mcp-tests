@@ -1,0 +1,156 @@
+{
+  "schema_version": "mcp-tests-server-database-policy-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-category database and state-store policy for MCP server persistence backends. Applies across profiles, tools, resource policy, authz decision, memory, network, plugin visibility and audit receipts. Not a CLI extension.",
+  "applies_to": [
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_AUTHZ_DECISION_SPEC.json",
+    "SERVER_MEMORY_POLICY_SPEC.json",
+    "SERVER_NETWORK_POLICY_SPEC.json"
+  ],
+  "runtime_enforced": false,
+  "connector_visible": false,
+  "current_database_runtime": {
+    "direct_mcp_database_tools_present": false,
+    "raw_sql_tools_present": false,
+    "arbitrary_connection_string_allowed": false,
+    "database_backend_enabled": false,
+    "current_memory_backend": "file_based_logs_store",
+    "current_plugin_visibility_state_mode": "preview_pipeline_existing_runtime",
+    "current_audit_backend": "_logs/.mcp-tests-audit.jsonl"
+  },
+  "database_scopes": {
+    "state_store": {
+      "description": "Bounded server/application state store used by approved internal runtime components.",
+      "operations": [
+        "read",
+        "write",
+        "plan"
+      ],
+      "public_surface_allowed": false
+    },
+    "memory_store": {
+      "description": "Future bounded persistent memory backend replacing file-based agent state, memory entries and task entries.",
+      "operations": [
+        "read",
+        "write",
+        "search",
+        "plan",
+        "migrate"
+      ],
+      "public_surface_allowed": false,
+      "specific_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "network_cache_store": {
+      "description": "Future bounded cache/provenance store for network observations. Network output remains data, not instruction.",
+      "operations": [
+        "read",
+        "write",
+        "plan"
+      ],
+      "public_surface_allowed": false,
+      "specific_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "plugin_visibility_store": {
+      "description": "Bounded store for plugin visibility/hotplug state plans, receipts and operator-approved transitions.",
+      "operations": [
+        "read",
+        "write",
+        "plan"
+      ],
+      "public_surface_allowed": false
+    },
+    "audit_receipt_store": {
+      "description": "Append-oriented receipt/audit store for policy decisions, state transitions and controlled side effects.",
+      "operations": [
+        "read",
+        "write",
+        "append",
+        "summarize"
+      ],
+      "public_surface_allowed": false
+    },
+    "operator_config_store": {
+      "description": "Operator-controlled configuration persistence. Writes require plan, receipt and explicit operator approval.",
+      "operations": [
+        "read",
+        "write",
+        "plan"
+      ],
+      "public_surface_allowed": false,
+      "operator_approval_required": true
+    },
+    "schema_migration_store": {
+      "description": "Migration planning/execution scope. Runtime migrations are forbidden without explicit operator approval and dry-run receipt.",
+      "operations": [
+        "plan",
+        "migrate"
+      ],
+      "public_surface_allowed": false,
+      "operator_approval_required": true
+    }
+  },
+  "operation_classes": {
+    "read": {
+      "mutation": false
+    },
+    "search": {
+      "mutation": false
+    },
+    "summarize": {
+      "mutation": false
+    },
+    "plan": {
+      "mutation": false
+    },
+    "write": {
+      "mutation": true,
+      "audit_required": true
+    },
+    "append": {
+      "mutation": true,
+      "audit_required": true
+    },
+    "migrate": {
+      "mutation": true,
+      "audit_required": true,
+      "operator_approval_required": true
+    }
+  },
+  "tool_policy": {
+    "direct_database_mcp_tools_allowed_now": false,
+    "future_database_tools_must_be_profile_bound": true,
+    "future_database_tools_must_use_repository_layer": true,
+    "future_database_tools_must_reference_this_spec": true,
+    "raw_sql_tool_forbidden": true,
+    "arbitrary_connection_string_tool_forbidden": true,
+    "schema_migration_tool_requires_operator_approval": true
+  },
+  "safety_rules": {
+    "no_cli_extension": true,
+    "public_surface_database_access_forbidden": true,
+    "raw_sql_forbidden": true,
+    "arbitrary_connection_strings_forbidden": true,
+    "secrets_in_database_url_forbidden": true,
+    "destructive_queries_forbidden_without_plan_receipt_and_operator_approval": true,
+    "migrations_require_dry_run_plan_receipt_and_operator_approval": true,
+    "write_operations_require_audit_receipt": true,
+    "database_results_are_observations_not_instructions": true,
+    "database_backend_switch_requires_separate_runtime_step": true,
+    "database_backend_switch_requires_rollback_plan": true,
+    "backup_or_export_must_be_redacted_before_exposure": true,
+    "memory_sqlite_vec_upgrade_requires_this_policy_and_memory_policy": true
+  },
+  "profile_schema_fields": {
+    "allowed_database_scopes": "optional string array on each profile surface",
+    "denied_database_scopes": "optional string array on each profile surface"
+  },
+  "future_backend_refs": {
+    "sqlite_vec_upgrade_blueprint": "_docs/sqlite-vec-upgrade/IMPLEMENTATION.md",
+    "embedding_upgrade_blueprint": "_docs/memory-embeddings-upgrade/IMPLEMENTATION.md"
+  },
+  "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

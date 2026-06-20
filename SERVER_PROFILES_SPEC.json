@@ -1,0 +1,105 @@
+{
+  "schema_version": "mcp-tests-server-profiles-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "terminology": {
+    "public_mcp_tools": "MCP-callable public tool surface.",
+    "authorized_mcp_tools": "MCP-callable authenticated/authorized tool surface gated by profile and auth state.",
+    "non_public_mcp_tools": "Deprecated umbrella term for authorized_mcp_tools plus internal_hidden_tools.",
+    "hidden_server_modules": "server implementation internals, not MCP-callable tools"
+  },
+  "server_profiles": {
+    "status": "implemented",
+    "profile_directory": "profiles",
+    "default_profile": "public",
+    "implemented_profiles": [
+      "public",
+      "tests"
+    ],
+    "standalone_memory_flag_allowed": false,
+    "tools_spec_ref": "SERVER_TOOLS_SPEC.json",
+    "decision_ref": "SERVER_AUTHZ_DECISION_SPEC.json",
+    "profile_schema_validation": {
+      "status": "implemented",
+      "validator": "src/profile_schema_validator.js",
+      "smoke": "_tests/smoke_stage13_profile_schema_validator.js",
+      "required": true,
+      "validated_files": "profiles/*.json",
+      "required_surfaces": [
+        "public",
+        "authenticated"
+      ],
+      "allowed_runtime_tool_groups": [
+        "public",
+        "authorized"
+      ],
+      "auth_mode_exclusion_keys": [
+        "access",
+        "bearer",
+        "oauth",
+        "oauth21"
+      ],
+      "resource_policy_ref": "SERVER_RESOURCE_POLICY_SPEC.json",
+      "resource_policy_fields": [
+        "allowed_resource_policy_refs",
+        "denied_resource_policy_refs"
+      ],
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",
+      "memory_policy_fields": [
+        "allowed_memory_scopes",
+        "denied_memory_scopes"
+      ],
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
+      "network_policy_fields": [
+        "allowed_network_scopes",
+        "denied_network_scopes"
+      ],
+      "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+      "database_policy_fields": [
+        "allowed_database_scopes",
+        "denied_database_scopes"
+      ],
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+      "plugin_visibility_policy_fields": [
+        "allowed_plugin_scopes",
+        "denied_plugin_scopes"
+      ]
+    },
+    "run_all_smokes_sections": {
+      "public": {
+        "profile": "public",
+        "auth": "none",
+        "tool_count": 14
+      },
+      "tests_authenticated": {
+        "profile": "tests",
+        "auth": "access",
+        "tool_count": 46,
+        "auth_header": "cf-access-jwt-assertion injected by _tests/smoke_auth_fetch_patch.js"
+      }
+    },
+    "run_all_smoke_scripts_manifest": "_tests/run_all_smoke_scripts.json",
+    "decision_spec_ref": "SERVER_AUTHZ_DECISION_SPEC.json",
+    "profile_schema_evolution_policy": {
+      "status": "canonical",
+      "rule": "new access categories, tool categories and policy categories must be represented in profiles schema and dedicated SPEC files before a new profile is introduced",
+      "cli_extension_allowed": false,
+      "required_when_adding_policy": [
+        "update dedicated SPEC",
+        "update src/profile_schema_validator.js",
+        "update profiles/*.json shape if needed",
+        "add negative controls",
+        "run profile schema smoke"
+      ],
+      "cross_category_spec_refs": [
+        "SERVER_AUTHZ_DECISION_SPEC.json",
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ]
+    },
+    "resource_policy_ref": "SERVER_RESOURCE_POLICY_SPEC.json",
+    "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",
+    "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
+    "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+    "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+    "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+  }
+}

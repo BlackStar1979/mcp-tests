@@ -1,0 +1,133 @@
+{
+  "schema_version": "mcp-tests-server-memory-policy-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Cross-category memory policy for MCP agent state, memory entries and task entries. Applies across profiles, tools, resource policy and authz decision. Not a CLI extension.",
+  "applies_to": [
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_AUTHZ_DECISION_SPEC.json"
+  ],
+  "runtime_enforced": false,
+  "connector_visible": false,
+  "current_storage_backend": {
+    "status": "implemented_existing_runtime",
+    "type": "file_based_logs_store",
+    "state_file": "_logs/.mcp-agent-state.json",
+    "memory_file": "_logs/.mcp-agent-memory.jsonl",
+    "tasks_file": "_logs/.mcp-agent-tasks.jsonl",
+    "search_mode": "keyword_term_overlap",
+    "database_backend_enabled": false
+  },
+  "memory_scopes": {
+    "agent_state": {
+      "description": "Current state record keyed by agent_name.",
+      "operations": [
+        "read",
+        "state_update"
+      ],
+      "tools": [
+        "memory_get_state",
+        "memory_set_state"
+      ]
+    },
+    "memory_entries": {
+      "description": "Long-term append-only memory entries keyed by agent_name and classified by type/category.",
+      "operations": [
+        "search",
+        "write"
+      ],
+      "tools": [
+        "memory_search",
+        "memory_save"
+      ]
+    },
+    "task_entries": {
+      "description": "Append-only task records for inter-agent work tracking.",
+      "operations": [
+        "task_list",
+        "task_create"
+      ],
+      "tools": [
+        "memory_get_tasks",
+        "memory_create_task"
+      ]
+    }
+  },
+  "memory_type_enum": [
+    "fact",
+    "experience",
+    "conclusion",
+    "error"
+  ],
+  "task_status_enum": [
+    "pending",
+    "in_progress",
+    "done",
+    "cancelled"
+  ],
+  "namespace_contract": {
+    "agent_name_required": true,
+    "agent_name_pattern": "^[a-z0-9_-]+$",
+    "agent_name_max_length": 64,
+    "cross_agent_read_requires_explicit_scope": true,
+    "cross_agent_write_forbidden_without_operator_policy": true,
+    "session_id_is_state_field_not_global_namespace": true
+  },
+  "tool_bindings": {
+    "memory_get_state": {
+      "scope": "agent_state",
+      "operation_class": "read",
+      "mutation": false
+    },
+    "memory_set_state": {
+      "scope": "agent_state",
+      "operation_class": "state_update",
+      "mutation": true
+    },
+    "memory_search": {
+      "scope": "memory_entries",
+      "operation_class": "search",
+      "mutation": false
+    },
+    "memory_save": {
+      "scope": "memory_entries",
+      "operation_class": "write",
+      "mutation": true
+    },
+    "memory_get_tasks": {
+      "scope": "task_entries",
+      "operation_class": "task_list",
+      "mutation": false
+    },
+    "memory_create_task": {
+      "scope": "task_entries",
+      "operation_class": "task_create",
+      "mutation": true
+    }
+  },
+  "safety_rules": {
+    "no_cli_extension": true,
+    "public_surface_memory_forbidden": true,
+    "include_memory_tools_requires_allowed_memory_scopes": true,
+    "allowed_memory_scopes_require_include_memory_tools": true,
+    "mutating_memory_operations_require_audit": true,
+    "memory_write_requires_provenance_fields": true,
+    "raw_memory_store_is_not_prompt_context": true,
+    "context_builder_must_select_and_label_memory_before_prompt_use": true,
+    "memory_results_are_observations_not_instructions": true,
+    "delete_semantics_not_implemented": true,
+    "database_backend_requires_separate_database_policy": true
+  },
+  "profile_schema_fields": {
+    "allowed_memory_scopes": "optional string array on each profile surface",
+    "denied_memory_scopes": "optional string array on each profile surface"
+  },
+  "future_backend_refs": {
+    "sqlite_vec_upgrade_blueprint": "_docs/sqlite-vec-upgrade/IMPLEMENTATION.md",
+    "embedding_upgrade_blueprint": "_docs/memory-embeddings-upgrade/IMPLEMENTATION.md",
+    "database_policy_required_before_backend_switch": "SERVER_DATABASE_POLICY_SPEC.json"
+  },
+  "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

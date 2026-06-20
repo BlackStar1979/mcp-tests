@@ -1,0 +1,623 @@
+{
+  "schema_version": "mcp-tests-server-tools-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "MCP-callable tools only; server implementation modules are excluded",
+  "policy_decision_ref": "SERVER_AUTHZ_DECISION_SPEC.json",
+  "surface_classes": {
+    "public_mcp_tools": {
+      "description": "MCP-callable tools exposed by the public profile",
+      "tool_count": 13,
+      "tools": [
+        "search",
+        "fetch",
+        "net_http_get_allowlisted",
+        "net_fetch_text_allowlisted",
+        "net_check_url_head",
+        "net_fetch_github_raw",
+        "net_check_npm_package",
+        "net_check_pypi_package",
+        "fs_list_public",
+        "fs_get_public_info",
+        "fs_read_public_text",
+        "fs_read_public_lines",
+        "fs_read_public_chunk"
+      ]
+    },
+    "authorized_mcp_tools": {
+      "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
+      "tool_count": 32,
+      "tools": [
+        "auth_bearer_cutover_guard",
+        "auth_bearer_dry_run",
+        "auth_modular_parity_status",
+        "auth_transition_status",
+        "dev_code_audit",
+        "dev_code_dependencies",
+        "dev_code_impact",
+        "dev_code_locate",
+        "dev_code_symbols",
+        "dev_code_syntax_check",
+        "memory_create_task",
+        "memory_get_state",
+        "memory_get_tasks",
+        "memory_save",
+        "memory_search",
+        "memory_set_state",
+        "observability_status",
+        "plugin_catalog_describe",
+        "plugin_catalog_search",
+        "plugin_execute_readonly",
+        "plugin_execution_governance",
+        "plugin_execution_preflight",
+        "plugin_execution_verify_receipt",
+        "plugin_registry_audit",
+        "plugin_registry_get",
+        "plugin_registry_list",
+        "plugin_registry_status",
+        "plugin_visibility_plan",
+        "plugin_visibility_status",
+        "session_toolset_plan",
+        "session_toolset_status",
+        "test_mcp_runtime_status"
+      ]
+    },
+    "restricted_core_tools": {
+      "description": "MCP-callable core tools not exposed by public profile and not implemented as tools/authorized facades.",
+      "tool_count": 1,
+      "tools": [
+        "code_sample_js"
+      ]
+    }
+  },
+  "total_mcp_callable_tool_count": 46,
+  "server_implementation_modules": {
+    "mcp_callable": false,
+    "included_in_this_spec": false,
+    "examples": [
+      "src/server_profile_loader.js",
+      "src/tool_loader.js",
+      "src/runtime/*",
+      "src/auth/*"
+    ]
+  },
+  "resource_policy_ref": "SERVER_RESOURCE_POLICY_SPEC.json",
+  "tool_catalog": {
+    "search": {
+      "name": "search",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "core",
+      "resource_class": "public_index",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "fetch": {
+      "name": "fetch",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "core",
+      "resource_class": "public_index",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "code_sample_js": {
+      "name": "code_sample_js",
+      "surface_class": "restricted_core_tools",
+      "tool_category": "core",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "net_http_get_allowlisted": {
+      "name": "net_http_get_allowlisted",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "network",
+      "resource_class": "network_allowlisted",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "net_fetch_text_allowlisted": {
+      "name": "net_fetch_text_allowlisted",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "network",
+      "resource_class": "network_allowlisted",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "net_check_url_head": {
+      "name": "net_check_url_head",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "network",
+      "resource_class": "network_allowlisted",
+      "operation_class": "head",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "net_fetch_github_raw": {
+      "name": "net_fetch_github_raw",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "network",
+      "resource_class": "network_allowlisted",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "net_check_npm_package": {
+      "name": "net_check_npm_package",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "network",
+      "resource_class": "network_allowlisted",
+      "operation_class": "metadata",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "net_check_pypi_package": {
+      "name": "net_check_pypi_package",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "network",
+      "resource_class": "network_allowlisted",
+      "operation_class": "metadata",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false,
+      "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json"
+    },
+    "fs_list_public": {
+      "name": "fs_list_public",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_public",
+      "operation_class": "list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "fs_get_public_info": {
+      "name": "fs_get_public_info",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_public",
+      "operation_class": "stat",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "fs_read_public_text": {
+      "name": "fs_read_public_text",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_public",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "fs_read_public_lines": {
+      "name": "fs_read_public_lines",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_public",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "fs_read_public_chunk": {
+      "name": "fs_read_public_chunk",
+      "surface_class": "public_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_public",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": false
+    },
+    "auth_bearer_cutover_guard": {
+      "name": "auth_bearer_cutover_guard",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "auth_control",
+      "resource_class": "auth_runtime_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "auth_bearer_dry_run": {
+      "name": "auth_bearer_dry_run",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "auth_control",
+      "resource_class": "auth_runtime_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "auth_modular_parity_status": {
+      "name": "auth_modular_parity_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "auth_control",
+      "resource_class": "auth_runtime_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "auth_transition_status": {
+      "name": "auth_transition_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "auth_control",
+      "resource_class": "auth_runtime_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "dev_code_audit": {
+      "name": "dev_code_audit",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "dev_code_dependencies": {
+      "name": "dev_code_dependencies",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "dev_code_impact": {
+      "name": "dev_code_impact",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "dev_code_locate": {
+      "name": "dev_code_locate",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "dev_code_symbols": {
+      "name": "dev_code_symbols",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "dev_code_syntax_check": {
+      "name": "dev_code_syntax_check",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "memory_create_task": {
+      "name": "memory_create_task",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "task_create",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "memory_get_state": {
+      "name": "memory_get_state",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "memory_get_tasks": {
+      "name": "memory_get_tasks",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "task_list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "memory_save": {
+      "name": "memory_save",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "memory_search": {
+      "name": "memory_search",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "memory_set_state": {
+      "name": "memory_set_state",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "state_update",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "observability_status": {
+      "name": "observability_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "core",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "plugin_catalog_describe": {
+      "name": "plugin_catalog_describe",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_registry",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_catalog_search": {
+      "name": "plugin_catalog_search",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_registry",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_execute_readonly": {
+      "name": "plugin_execute_readonly",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_execution",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "readonly_execute",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_execution_governance": {
+      "name": "plugin_execution_governance",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_execution",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_execution_preflight": {
+      "name": "plugin_execution_preflight",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_execution",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "preflight",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_execution_verify_receipt": {
+      "name": "plugin_execution_verify_receipt",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_execution",
+      "resource_class": "plugin_execution_readonly",
+      "operation_class": "verify_receipt",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_registry_audit": {
+      "name": "plugin_registry_audit",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_registry",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "audit",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_registry_get": {
+      "name": "plugin_registry_get",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_registry",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_registry_list": {
+      "name": "plugin_registry_list",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_registry",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_registry_status": {
+      "name": "plugin_registry_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "plugin_registry",
+      "resource_class": "plugin_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_visibility_plan": {
+      "name": "plugin_visibility_plan",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "hotplug",
+      "resource_class": "plugin_visibility_state_preview",
+      "operation_class": "plan",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "plugin_visibility_status": {
+      "name": "plugin_visibility_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "hotplug",
+      "resource_class": "plugin_visibility_state_preview",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    },
+    "session_toolset_plan": {
+      "name": "session_toolset_plan",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "core",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "session_toolset_status": {
+      "name": "session_toolset_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "core",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "test_mcp_runtime_status": {
+      "name": "test_mcp_runtime_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "core",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    }
+  },
+  "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",
+  "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
+  "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+  "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+}

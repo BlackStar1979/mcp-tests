@@ -1,0 +1,3 @@
+# TEST MCP compose scaffold.
+# The active runtime remains the local node server unless an operator explicitly chooses container mode.
+services: {}

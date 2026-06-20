@@ -1,0 +1,10 @@
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const root = path.resolve(__dirname, "..", "..");
+const canon = fs.readFileSync(path.join(root, "_workflow", "WORKFLOW_CANON.md"), "utf8");
+assert.ok(canon.includes("# TEST MCP WORKFLOW CANON"));
+assert.ok(canon.includes("Latest known full smoke"));
+assert.ok(canon.includes("Runtime architecture"));
+assert.ok(canon.includes("Active controls"));
+console.log(JSON.stringify({ ok: true, mode: "workflow_canon_compacted" }, null, 2));

@@ -1,0 +1,242 @@
+{
+  "schema_version": "mcp-tests-auth-spec-v1",
+  "spec_mode": "oauth-resource-server-contract",
+  "mcp_authorization_spec_version": "2025-06-18",
+  "resource_server": {
+    "role": "oauth_2_1_resource_server",
+    "protected_resource_metadata_required": true,
+    "www_authenticate_required_on_401": true,
+    "authorization_header_required": true,
+    "query_token_forbidden": true,
+    "token_passthrough_forbidden": true,
+    "audience_binding_required": true,
+    "canonical_resource_from_public_base_url": true
+  },
+  "authorization_server": {
+    "implemented_by_mcp_tests": false,
+    "metadata_required_from_external_authorization_server": true,
+    "dynamic_client_registration_expected": true,
+    "pkce_required_for_clients": true
+  },
+  "oauth_runtime_modes": {
+    "oauth": {
+      "status": "implemented_resource_server_jwt_validation",
+      "accepted_transport": "Authorization: Bearer",
+      "accepted_token_source": "authorization_header_only",
+      "signature_algorithms": [
+        "RS256",
+        "HS256"
+      ],
+      "issuer_env": "MCP_TEST_OAUTH_ISSUER",
+      "audience_env": "MCP_TEST_OAUTH_AUDIENCE",
+      "hmac_secret_file_env": "MCP_TEST_OAUTH_HS256_SECRET_FILE",
+      "jwks_file_env": "MCP_TEST_OAUTH_JWKS_FILE",
+      "preferred_production_validation": "jwks_rs256",
+      "introspection_file_env": "MCP_TEST_OAUTH_INTROSPECTION_FILE",
+      "token_validation_priority": [
+        "jwks_rs256",
+        "introspection",
+        "hs256_test"
+      ]
+    },
+    "oauth21": {
+      "status": "alias_of_oauth_resource_server_contract"
+    }
+  },
+  "scope_matrix": {
+    "mcp:public": {
+      "description": "Allows public read-only profile tools only.",
+      "profile": "public"
+    },
+    "mcp:tools": {
+      "description": "Allows authenticated tools profile after policy runtime checks.",
+      "profile": "internal"
+    },
+    "mcp:operator": {
+      "description": "Reserved for operator-only surfaces; must not be public connector.",
+      "profile": "operator",
+      "requires_explicit_operator_connector": true
+    }
+  },
+  "connector_constraints": {
+    "public_connector_must_remain_public_surface": true,
+    "operator_connector_must_remain_separate": true,
+    "live_connector_refresh_requires_operator_action": true
+  },
+  "decision_spec_ref": "SERVER_AUTHZ_DECISION_SPEC.json",
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json",
+  "auth_port_policy": {
+    "default_ports": {
+      "none": 3009,
+      "access": 3005,
+      "bearer": 3006,
+      "oauth": 3007,
+      "oauth21": 3008
+    },
+    "source_ref": "src/runtime/auth_bootstrap_config_resolver.js",
+    "public_bind_without_auth_forbidden": true
+  },
+  "authorization_server_metadata_integration": {
+    "status": "implemented_h1",
+    "issuer_env": "MCP_TEST_OAUTH_ISSUER",
+    "metadata_file_env": "MCP_TEST_OAUTH_AS_METADATA_FILE",
+    "metadata_ttl_ms_default": 300000,
+    "required_fields": [
+      "issuer",
+      "authorization_endpoint",
+      "token_endpoint"
+    ],
+    "requires_jwks_uri_or_introspection_endpoint": true,
+    "validates_exact_issuer_match": true,
+    "publishes_authorization_servers_from_validated_metadata": true,
+    "guard": "_tests/smoke_stage12_oauth_as_metadata_integration.js"
+  },
+  "jwks_rs256_validation": {
+    "status": "implemented_h2",
+    "jwks_file_env": "MCP_TEST_OAUTH_JWKS_FILE",
+    "required_alg": "RS256",
+    "requires_kid": true,
+    "validates_signature": true,
+    "validates_issuer": true,
+    "validates_audience": true,
+    "validates_time_claims": [
+      "exp",
+      "nbf",
+      "iat"
+    ],
+    "validates_scope": true,
+    "rejects_unknown_kid": true,
+    "guard": "_tests/smoke_stage12_oauth_jwks_rs256_validation.js"
+  },
+  "introspection_validation": {
+    "status": "implemented_h3",
+    "introspection_file_env": "MCP_TEST_OAUTH_INTROSPECTION_FILE",
+    "preferred_for": [
+      "opaque_tokens",
+      "revocation_check_policy"
+    ],
+    "requires_active_true": true,
+    "validates_issuer_when_present": true,
+    "validates_audience_when_present": true,
+    "validates_time_claims": [
+      "exp",
+      "nbf"
+    ],
+    "validates_scope": true,
+    "positive_cache_ttl_ms_default": 60000,
+    "negative_results_not_cached_as_valid": true,
+    "guard": "_tests/smoke_stage12_oauth_introspection_validation.js"
+  },
+  "dynamic_client_registration_policy": {
+    "status": "implemented_h4_policy",
+    "dcr_mode": "supported",
+    "runtime_registration_endpoint_implemented_by_mcp_tests": false,
+    "authorization_server_registration_endpoint_required_when_dcr_enabled": true,
+    "manual_registration_fallback_allowed": true,
+    "wildcard_redirect_uris_forbidden": true,
+    "allowed_redirect_uri_patterns": {
+      "development": [
+        "http://127.0.0.1:*/*",
+        "http://localhost:*/*"
+      ],
+      "production": [
+        "https://*"
+      ]
+    },
+    "forbidden_redirect_uri_patterns": [
+      "*",
+      "http://* except localhost/127.0.0.1",
+      "file://*",
+      "javascript:*"
+    ],
+    "allowed_token_endpoint_auth_methods": [
+      "none",
+      "client_secret_basic",
+      "private_key_jwt"
+    ],
+    "operator_approval_required_for_untrusted_public_clients": true,
+    "registration_metadata_requirements": [
+      "client_name",
+      "redirect_uris",
+      "grant_types",
+      "response_types",
+      "token_endpoint_auth_method"
+    ],
+    "guard": "_tests/smoke_stage12_oauth_dcr_policy.js"
+  },
+  "pkce_client_flow_policy": {
+    "status": "implemented_h5_policy",
+    "authorization_server_implemented_by_mcp_tests": false,
+    "grant_type": "authorization_code",
+    "pkce_required_for_public_clients": true,
+    "code_challenge_method_required": "S256",
+    "plain_code_challenge_forbidden": true,
+    "authorization_request_requirements": [
+      "response_type=code",
+      "client_id",
+      "redirect_uri",
+      "scope",
+      "state",
+      "code_challenge",
+      "code_challenge_method=S256",
+      "resource"
+    ],
+    "token_request_requirements": [
+      "grant_type=authorization_code",
+      "code",
+      "redirect_uri",
+      "client_id",
+      "code_verifier",
+      "resource"
+    ],
+    "state_parameter_required": true,
+    "client_must_verify_state": true,
+    "exact_redirect_uri_validation_required_by_as": true,
+    "resource_parameter_required_in_authorization_request": true,
+    "resource_parameter_required_in_token_request": true,
+    "resource_parameter_must_match_protected_resource_metadata_resource": true,
+    "server_role": "resource_server_validates_access_tokens_only",
+    "server_must_not_issue_authorization_codes": true,
+    "guard": "_tests/smoke_stage12_oauth_pkce_policy.js"
+  },
+  "jwks_key_rotation": {
+    "status": "implemented_h6",
+    "cache_by": [
+      "issuer",
+      "jwks_uri"
+    ],
+    "multiple_active_keys_supported": true,
+    "unknown_kid_refresh_interval_ms_default": 30000,
+    "previous_key_overlap_ms_default": 0,
+    "previous_key_overlap_supported": true,
+    "refresh_on_unknown_kid_bounded": true,
+    "rejects_unknown_kid_after_refresh": true,
+    "refresh_reason_codes": [
+      "manual",
+      "ttl",
+      "unknown_kid",
+      "unknown_kid_refresh_suppressed"
+    ],
+    "guard": "_tests/smoke_stage12_oauth_key_rotation.js",
+    "cache_control_max_age_parsing": "implemented_post_h9_debt",
+    "respect_cache_control_max_age_when_available": true,
+    "bounded_by_local_max_ttl": true,
+    "cache_control_guard": "_tests/jwks_ttl_guard.js"
+  },
+  "sampling_user_approval_policy": {
+    "status": "implemented_h7",
+    "sampling_policy_spec_ref": "SERVER_SAMPLING_POLICY_SPEC.json",
+    "approval_required_by_default": true,
+    "low_risk_auto_approve_allowed": true,
+    "approval_receipt_required_for_non_low_risk": true,
+    "per_session_sampling_budget_required": true,
+    "default_per_session_request_limit": 3,
+    "deny_when_approval_required_but_unavailable": true,
+    "tool_hidden_instructions_must_not_bypass_approval": true,
+    "audit_events": [
+      "sampling_request_sent",
+      "sampling_request_denied"
+    ],
+    "guard": "_tests/smoke_stage12_sampling_user_approval_policy.js"
+  }
+}

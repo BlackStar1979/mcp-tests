@@ -1,0 +1,185 @@
+const RUNTIME_STATUS_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {
+    include_tools: {
+      type: "boolean",
+      default: true,
+      description: "Whether to include enabled tool names in the runtime status response.",
+    },
+  },
+};
+
+const AUTH_STATUS_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "mode",
+    "enabled",
+    "requires_auth",
+    "token_file_configured",
+    "token_loaded",
+    "token_length",
+    "token_sha256_prefix",
+  ],
+  properties: {
+    mode: { type: "string" },
+    enabled: { type: "boolean" },
+    requires_auth: { type: "boolean" },
+    token_file_configured: { type: "boolean" },
+    token_loaded: { type: "boolean" },
+    token_length: { type: "integer", minimum: 0 },
+    token_sha256_prefix: { type: "string" },
+  },
+};
+
+const PROFILE_STATUS_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["mode", "public_exposure", "policy_status"],
+  properties: {
+    mode: { type: "string" },
+    public_exposure: { type: "boolean" },
+    policy_status: { type: "string" },
+  },
+};
+
+const TOOL_POLICY_SUMMARY_ITEM_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "tool",
+    "profile_allowed",
+    "read_only",
+    "open_world",
+    "uses_network",
+    "uses_fs",
+    "fs_scope",
+    "auth_required",
+    "public_safe",
+  ],
+  properties: {
+    tool: { type: "string" },
+    profile_allowed: { type: "array", items: { type: "string" } },
+    read_only: { type: "boolean" },
+    open_world: { type: "boolean" },
+    uses_network: { type: "boolean" },
+    uses_fs: { type: "boolean" },
+    fs_scope: { type: "string" },
+    auth_required: { type: "boolean" },
+    public_safe: { type: "boolean" },
+  },
+};
+
+const RUNTIME_STATUS_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "server_name",
+    "server_version",
+    "connector_shape_version",
+    "output_mode",
+    "public_base_url",
+    "host",
+    "port",
+    "runtime_identity",
+    "auth",
+    "profile",
+    "audit",
+    "limits",
+    "network",
+    "fs",
+    "enabled_tools",
+    "tool_surface",
+    "schema_compatibility",
+    "tool_policy_summary",
+    "tool_labels",
+    "stage_status",
+    "security_boundary",
+  ],
+  properties: {
+    server_name: { type: "string" },
+    server_version: { type: "string" },
+    connector_shape_version: { type: "string" },
+    output_mode: { type: "string" },
+    public_base_url: { type: "string" },
+    host: { type: "string" },
+    port: { type: "integer" },
+    runtime_identity: {
+      type: "object",
+      additionalProperties: true,
+      required: [
+        "server_name",
+        "server_version",
+        "connector_shape_version",
+        "audit_version",
+        "startup_report_version",
+        "labels_version",
+        "runtime_stage_status",
+        "current_working_course",
+      ],
+      properties: {
+        server_name: { type: "string" },
+        server_version: { type: "string" },
+        connector_shape_version: { type: "string" },
+        audit_version: { type: "string" },
+        startup_report_version: { type: "string" },
+        labels_version: { type: "string" },
+        runtime_stage_status: { type: "string" },
+        runtime_stage_status_semantics: { type: "string" },
+        current_working_course: { type: "string" },
+      },
+    },
+    auth: AUTH_STATUS_SCHEMA,
+    profile: PROFILE_STATUS_SCHEMA,
+    audit: {
+      type: "object",
+      additionalProperties: false,
+      required: ["enabled", "version", "path"],
+      properties: {
+        enabled: { type: "boolean" },
+        version: { type: "string" },
+        path: { type: "string" },
+      },
+    },
+    limits: {
+      type: "object",
+      additionalProperties: false,
+      required: ["fetch_text_cap_chars"],
+      properties: {
+        fetch_text_cap_chars: { type: "integer", minimum: 0 },
+      },
+    },
+    network: {
+      type: "object",
+      additionalProperties: false,
+      required: ["enabled", "allowlist", "timeout_ms", "max_bytes"],
+      properties: {
+        enabled: { type: "boolean" },
+        allowlist: { type: "array", items: { type: "string" } },
+        timeout_ms: { type: "integer", minimum: 0 },
+        max_bytes: { type: "integer", minimum: 0 },
+      },
+    },
+    fs: {
+      type: "object",
+      additionalProperties: true,
+    },
+    enabled_tools: { type: "array", items: { type: "string" } },
+    tool_surface: { type: "object", additionalProperties: true },
+    schema_compatibility: { type: "object", additionalProperties: true },
+    tool_policy_summary: { type: "array", items: TOOL_POLICY_SUMMARY_ITEM_SCHEMA },
+    tool_labels: { type: "object", additionalProperties: true },
+    stage_status: { type: "string" },
+    security_boundary: { type: "object", additionalProperties: true },
+  },
+};
+
+module.exports = {
+  AUTH_STATUS_SCHEMA,
+  PROFILE_STATUS_SCHEMA,
+  RUNTIME_STATUS_INPUT_SCHEMA,
+  RUNTIME_STATUS_OUTPUT_SCHEMA,
+  TOOL_POLICY_SUMMARY_ITEM_SCHEMA,
+};
