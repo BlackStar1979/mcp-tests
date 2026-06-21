@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T18:05:00+02:00",
+  "updated_at": "2026-06-21T18:15:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "p3_cancellation_path_client_disconnect_plan",
-    "stage": "Post Stage 6 P3",
-    "status": "green_p3_cancellation_path_client_disconnect_plan_pending_commit",
-    "description": "Source-derived plan for client-disconnect cancellation path recorded; no runtime implementation performed in P3."
+    "id": "p4_runtime_policy_expansion_scope_plan",
+    "stage": "Post Stage 6 P4",
+    "status": "green_p4_runtime_policy_expansion_scope_plan_pending_commit",
+    "description": "Runtime Resource/Scope Matrix Enforcement expansion plan recorded; no runtime enforcement change performed in P4."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit P3 cancellation path plan",
-    "P4 runtime_policy_expansion_scope_plan with separate operator approval",
+    "Commit P4 runtime policy expansion scope plan",
     "P5 sessionless_explicit_state_handles_spec_review with live official spec verification",
     "P6 event_driven_hotplug_lifecycle_design",
     "P7 workflow_archive_compaction",
@@ -277,6 +276,31 @@
       "C2 client disconnect audit and no-write-after-close guard",
       "C3 cooperative tool cancellation sample",
       "C4 timeout fallback preservation"
+    ]
+  },
+  "p4_runtime_policy_expansion_scope_plan": {
+    "status": "green_plan_only",
+    "record": "_workflow/operator_decisions/p4_runtime_policy_expansion_scope_plan.md",
+    "source_review": [
+      "SERVER_POLICY_RUNTIME_SPEC.json",
+      "SERVER_RESOURCE_POLICY_SPEC.json",
+      "SERVER_TOOLS_SPEC.json",
+      "SERVER_AUTHZ_DECISION_SPEC.json",
+      "SERVER_PROFILES_SPEC.json",
+      "src/runtime/decision_runtime_context_builder.js",
+      "src/runtime/decision_runtime_policy.js",
+      "src/runtime/tools_call_handler.js",
+      "src/tool_policy.js",
+      "src/profile_schema_validator.js"
+    ],
+    "implementation_stages": [
+      "R1 policy spec loader",
+      "R2 tool catalog runtime resolution",
+      "R3 resource/operation class checks",
+      "R4 profile resource/scope matrix",
+      "R5 argument resource-claim extraction",
+      "R6 audit receipt v2",
+      "R7 controlled enablement with operator approval"
     ]
   }
 }
