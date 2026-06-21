@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T18:35:00+02:00",
+  "updated_at": "2026-06-21T18:50:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "p5_sessionless_explicit_state_handles_spec_review",
-    "stage": "Post Stage 6 P5",
-    "status": "green_p5_sessionless_explicit_state_handles_spec_review_pending_commit",
-    "description": "Official MCP sources reviewed for sessionless/stateless direction; no runtime implementation performed in P5."
+    "id": "p6_event_driven_hotplug_lifecycle_design",
+    "stage": "Post Stage 6 P6",
+    "status": "green_p6_event_driven_hotplug_lifecycle_design_pending_commit",
+    "description": "Event-driven Hotplug lifecycle design recorded from existing list_changed/plugin visibility dry-run stack; no runtime emission or tool surface mutation performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,11 +39,10 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit P5 sessionless explicit state handles review",
-    "P6 event_driven_hotplug_lifecycle_design",
+    "Commit P6 event-driven hotplug lifecycle design",
     "P7 workflow_archive_compaction",
+    "Future: HPL1 tool registry abstraction after operator approval",
     "Future: S1 sessionless compatibility inventory",
-    "Future: S2 stable-vs-draft target selection",
     "Explicit operator approval required before any further connector refresh or runtime policy expansion"
   ],
   "target_runtime_topology": {
@@ -316,5 +315,29 @@
       "modelcontextprotocol.io/seps/2575-stateless-mcp"
     ],
     "conclusion": "stable_2025_11_25_still_supports_sessions; final_SEPs_and_draft_2026_07_28_define_sessionless_stateless_direction"
+  },
+  "p6_event_driven_hotplug_lifecycle_design": {
+    "status": "green_design_only",
+    "record": "_workflow/operator_decisions/p6_event_driven_hotplug_lifecycle_design.md",
+    "source_review": [
+      "src/list_changed_notification_bus.js",
+      "src/list_changed_harness.js",
+      "src/list_changed_audit_receipt.js",
+      "src/list_changed_pipeline.js",
+      "src/tools_list_diff.js",
+      "src/plugin_visibility.js",
+      "src/plugin_visibility_state.js",
+      "src/plugin_visibility_state_store_pipeline.js",
+      "src/security_first_preflight.js",
+      "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
+    ],
+    "implementation_stages": [
+      "HPL1 tool registry abstraction",
+      "HPL2 diff model integration",
+      "HPL3 state store apply gate",
+      "HPL4 local harness emission only",
+      "HPL5 runtime apply prototype behind feature flag",
+      "HPL6 sessionless/draft alignment"
+    ]
   }
 }
