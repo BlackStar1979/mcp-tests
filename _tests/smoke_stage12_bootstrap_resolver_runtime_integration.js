@@ -123,19 +123,11 @@ function assertFailsClosed(args, pattern) {
     }
 
     {
-      const config = resolveAuthBootstrapConfig({
-        argv: ["--auth", "bearer", "--token-file", tokenFile],
-        env: cleanEnv(),
-      });
-      assert.equal(config.authMode, "bearer");
-      assert.equal(config.port, 3006);
-      assert.equal(config.tokenFile, tokenFile);
+      assert.throws(() => resolveAuthBootstrapConfig({ argv: ["--auth", "bearer", "--token-file", tokenFile], env: cleanEnv() }), /Retired auth mode/);
     }
 
     {
-      const config = resolveAuthBootstrapConfig({ argv: ["--auth", "access"], env: cleanEnv() });
-      assert.equal(config.authMode, "access");
-      assert.equal(config.port, 3005);
+      assert.throws(() => resolveAuthBootstrapConfig({ argv: ["--auth", "access"], env: cleanEnv() }), /Retired auth mode/);
     }
 
     {
@@ -145,33 +137,15 @@ function assertFailsClosed(args, pattern) {
     }
 
     {
-      const config = resolveAuthBootstrapConfig({
-        argv: [],
-        env: cleanEnv({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_TOKEN_FILE: tokenFile }),
-      });
-      assert.equal(config.authMode, "bearer");
-      assert.equal(config.port, 3006);
-      assert.equal(config.tokenFile, tokenFile);
+      assert.throws(() => resolveAuthBootstrapConfig({ argv: [], env: cleanEnv({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_TOKEN_FILE: tokenFile }) }), /Retired auth mode/);
     }
 
     {
-      const config = resolveAuthBootstrapConfig({
-        argv: [],
-        env: cleanEnv({ MCP_TEST_AUTH_MODE: "access" }),
-      });
-      assert.equal(config.authMode, "access");
-      assert.equal(config.port, 3005);
+      assert.throws(() => resolveAuthBootstrapConfig({ argv: [], env: cleanEnv({ MCP_TEST_AUTH_MODE: "access" }) }), /Retired auth mode/);
     }
 
     {
-      const config = resolveAuthBootstrapConfig({
-        argv: ["--auth", "access", "--port", "4020"],
-        env: cleanEnv({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_PORT: "4019", MCP_TEST_TOKEN_FILE: tokenFile }),
-      });
-      assert.equal(config.authMode, "access");
-      assert.equal(config.port, 4020);
-      assert.equal(config.authModeSource, "cli");
-      assert.equal(config.portSource, "cli");
+      assert.throws(() => resolveAuthBootstrapConfig({ argv: ["--auth", "access", "--port", "4020"], env: cleanEnv({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_PORT: "4019", MCP_TEST_TOKEN_FILE: tokenFile }) }), /Retired auth mode/);
     }
 
     await withServer({
@@ -179,33 +153,6 @@ function assertFailsClosed(args, pattern) {
       assertFn: async ({ health }) => {
         assert.equal(health.auth.mode, "none");
         assert.ok(!health.tools || health.tools.length === 13);
-      },
-    });
-
-    await withServer({
-      argv: ["--auth", "bearer", "--token-file", tokenFile],
-      assertFn: async ({ port, health }) => {
-        assert.equal(health.auth.mode, "bearer");
-        const listed = await rpc({
-          port,
-          headers: { authorization: `Bearer ${TOKEN}` },
-        });
-        assert.equal(listed.status, 200);
-        assert.equal(listed.body.result.tools.length, 13);
-      },
-    });
-
-    await withServer({
-      argv: ["--auth", "access"],
-      env: { MCP_TEST_ACCESS_TRUSTED_PROXY: "1" },
-      assertFn: async ({ port, health }) => {
-        assert.equal(health.auth.mode, "access");
-        const listed = await rpc({
-          port,
-          headers: { "cf-access-jwt-assertion": "stage12-bootstrap-access-assertion" },
-        });
-        assert.equal(listed.status, 200);
-        assert.equal(listed.body.result.tools.length, 13);
       },
     });
 
@@ -219,6 +166,8 @@ function assertFailsClosed(args, pattern) {
     });
 
     assertFailsClosed(["--auth", "invalid"], /Invalid auth mode/);
+    assertFailsClosed(["--auth", "access"], /Retired auth mode/);
+    assertFailsClosed(["--auth", "bearer"], /Retired auth mode/);
     assertFailsClosed(["--port", "0"], /Invalid port/);
     assertFailsClosed(["--auth", "oauth"], /MCP_TEST_OAUTH_ISSUER is required/);
     assertFailsClosed(["--auth", "oauth21"], /OAUTH_OPERATOR_SECRET|operator_secret/);

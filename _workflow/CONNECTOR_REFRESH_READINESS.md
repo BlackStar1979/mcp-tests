@@ -1,10 +1,10 @@
 # Connector Refresh Readiness
 
-Status: H9 readiness contract only. Live connector refresh is not performed by this document.
+Status: H9 readiness contract plus Stage 6 live evidence. OAuth21 connector refresh was performed externally by the operator and validated via TESTS_MCP.test_mcp_runtime_status; public connector remains disconnected, with public runtime validated locally.
 
 ## Blocking rule
 
-Do not refresh the live connector automatically. A separate explicit operator approval is required before any live ChatGPT connector refresh.
+Do not refresh the live connector automatically. OAuth21 connector refresh was explicitly performed by the operator for Stage 6; any further ChatGPT connector refresh still requires explicit operator approval.
 
 ## Repository truth
 
@@ -64,12 +64,12 @@ The OAuth/resource-server connector must be separate from the public `auth:none`
 
 ## Operator checklist before live refresh
 
-- [ ] Confirm explicit operator approval for live connector refresh.
-- [ ] Confirm public connector remains `auth:none`.
-- [ ] Confirm public connector exposes exactly 13 allowed public tools.
-- [ ] Confirm no forbidden tools or forbidden categories appear in public connector.
-- [ ] Confirm OAuth/resource-server connector is separate from public connector.
-- [ ] Confirm query-token URLs are not used as OAuth-ready URLs.
+- [x] Confirm explicit operator approval for OAuth21 live connector refresh.
+- [x] Public runtime remains `auth:none`; UI public connector is currently disconnected by operator decision.
+- [x] Public runtime `tools/list` exposes exactly 13 allowed public tools locally on 127.0.0.1:3009.
+- [x] No forbidden tools appeared in local public runtime tools/list.
+- [x] OAuth21/resource-server connector is separate and validated on port 3008.
+- [x] Query-token URLs are not used as OAuth-ready URLs; OAuth21 connector uses Authorization Bearer flow.
 
 ## Required post-refresh evidence
 

@@ -13,10 +13,11 @@
     "canonical_resource_from_public_base_url": true
   },
   "authorization_server": {
-    "implemented_by_mcp_tests": false,
+    "implemented_by_mcp_tests": true,
     "metadata_required_from_external_authorization_server": true,
     "dynamic_client_registration_expected": true,
-    "pkce_required_for_clients": true
+    "pkce_required_for_clients": true,
+    "implementation_scope": "local_oauth21_authorization_server_for_TEST_MCP_only"
   },
   "oauth_runtime_modes": {
     "oauth": {
@@ -40,7 +41,7 @@
       ]
     },
     "oauth21": {
-      "status": "alias_of_oauth_resource_server_contract"
+      "status": "implemented_local_oauth21_authorization_server_primary_authenticated_instance"
     }
   },
   "scope_matrix": {
@@ -68,13 +69,24 @@
   "auth_port_policy": {
     "default_ports": {
       "none": 3009,
-      "access": 3005,
-      "bearer": 3006,
-      "oauth": 3007,
       "oauth21": 3008
     },
     "source_ref": "src/runtime/auth_bootstrap_config_resolver.js",
-    "public_bind_without_auth_forbidden": true
+    "public_bind_without_auth_forbidden": true,
+    "active_runtime_modes": [
+      "none",
+      "oauth21"
+    ],
+    "retired_default_ports": {
+      "access": 3005,
+      "bearer": 3006,
+      "oauth": 3007
+    },
+    "retirement_status": "stage6_final_closeout_enforced",
+    "retired_runtime_modes": [
+      "access",
+      "bearer"
+    ]
   },
   "authorization_server_metadata_integration": {
     "status": "implemented_h1",
@@ -271,6 +283,80 @@
       "_tests/smoke_stage12_oauth21_bootstrap_config.js",
       "_tests/smoke_stage12_oauth21_host_header.js",
       "_tests/smoke_stage12_oauth21_local_as_flow.js"
+    ],
+    "target_runtime_role": "primary_authenticated_oauth21_test_server",
+    "paired_public_instance": {
+      "auth_mode": "none",
+      "port": 3009,
+      "public_base_url": "https://mcp-tests.romionologic.dev"
+    }
+  },
+  "runtime_topology": {
+    "status": "stage6_final_closeout_green",
+    "decision_date": "2026-06-21",
+    "active_runtime_modes": [
+      "none",
+      "oauth21"
+    ],
+    "active_instances": {
+      "public": {
+        "auth_mode": "none",
+        "port": 3009,
+        "profile": "public",
+        "public_base_url": "https://mcp-tests.romionologic.dev",
+        "mcp_endpoint": "https://mcp-tests.romionologic.dev/mcp",
+        "role": "public_readonly_test_server"
+      },
+      "authorized": {
+        "auth_mode": "oauth21",
+        "port": 3008,
+        "profile": "internal",
+        "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+        "mcp_endpoint": "https://mcp-tests-oauth21.romionologic.dev/mcp",
+        "role": "primary_authenticated_oauth21_test_server"
+      }
+    },
+    "retired_runtime_modes": [
+      "access",
+      "bearer"
+    ],
+    "non_target_modes": {
+      "oauth": {
+        "old_port": 3007,
+        "status": "resource_server_validation_legacy_not_target_live_instance"
+      }
+    },
+    "stage_plan": [
+      "Stage 1 specs/workflow target freeze",
+      "Stage 2 runtime bootstrap retirement",
+      "Stage 3 run_all OAuth21 migration",
+      "Stage 4 legacy auth tool consolidation/removal",
+      "Stage 5 legacy test pruning/reclassification",
+      "Stage 6 full validation"
+    ],
+    "valid_library_modes": [
+      "none",
+      "oauth",
+      "oauth21"
+    ],
+    "legacy_non_target_modes": [
+      "oauth"
+    ],
+    "active_ports": {
+      "none": 3009,
+      "oauth21": 3008
+    },
+    "legacy_non_target_ports": {
+      "oauth": 3007
+    },
+    "retired_ports": {
+      "access": 3005,
+      "bearer": 3006
+    },
+    "source_files": [
+      "src/runtime/auth_bootstrap_config_resolver.js",
+      "src/auth/auth_policy.js",
+      "server.js"
     ]
   }
 }

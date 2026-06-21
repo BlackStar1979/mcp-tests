@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-19T00:00:00Z",
+  "updated_at": "2026-06-21T12:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "oauth21_runtime_status_response_remediation",
-    "stage": "Stage 12",
-    "status": "green_oauth21_runtime_status_response_remediation",
-    "description": "OAuth21 test_mcp_runtime_status response is descriptor-stable and guarded through full OAuth21 DCR/PKCE/operator-login/tools-call path; replay id reuse remains non-blocking; full smoke validated."
+    "id": "post_stage6_operator_decisions_recorded",
+    "stage": "Post Stage 6",
+    "status": "green_operator_decisions_recorded_pending_checkpoint_commit",
+    "description": "Operator decisions D1-D12 recorded after post-Stage6 review. Current instruction is to commit the GREEN checkpoint before further cleanup/implementation stages."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -16,14 +16,13 @@
     "full_smoke_skip_network": "ok_0_40_0_8_148"
   },
   "active_controls": [
-    "auth behavior freeze",
-    "CLI behavior freeze",
-    "runtime behavior freeze unless separately authorized",
-    "connector-visible surface freeze",
+    "target runtime topology freeze: only auth none on 3009 and oauth21 on 3008 are active TEST MCP instances",
+    "access/bearer active runtime restart forbidden unless explicitly approved for legacy debugging",
+    "runtime behavior freeze outside accepted access/bearer retirement stages",
+    "connector-visible surface freeze until explicit operator refresh approval",
     "raw audit export prohibition",
     "restart requires explicit operator intent",
-    "connector refresh requires explicit operator intent",
-    "OAuth blocked until Streamable HTTP Phase A-F are green or explicitly waived"
+    "connector refresh requires explicit operator intent"
   ],
   "workflow_layout": {
     "active_canon": "_workflow/WORKFLOW_CANON.md",
@@ -40,6 +39,199 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "External tunnel validation for mcp-tests-oauth21 may proceed; live connector refresh still requires separate explicit operator approval"
-  ]
+    "Checkpoint commit current GREEN state",
+    "After commit: legacy retired auth triage",
+    "After commit: formalize batch SSE unsupported guard",
+    "After commit: plan sessionless/explicit-state-handle direction after official spec verification",
+    "After commit: active cancellation path plan/implementation stage",
+    "After commit: runtime policy expansion scope plan with separate operator approval",
+    "After commit: event-driven Hotplug lifecycle design",
+    "After commit: workflow archive compaction",
+    "Explicit operator approval required before any further connector refresh or runtime policy expansion"
+  ],
+  "target_runtime_topology": {
+    "active_instances": {
+      "public": {
+        "auth_mode": "none",
+        "port": 3009,
+        "public_base_url": "https://mcp-tests.romionologic.dev"
+      },
+      "authorized": {
+        "auth_mode": "oauth21",
+        "port": 3008,
+        "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
+      }
+    },
+    "retired_instances": {
+      "access": {
+        "old_port": 3005,
+        "status": "server_startup_path_retired_stage2_enforced"
+      },
+      "bearer": {
+        "old_port": 3006,
+        "status": "server_startup_path_retired_stage2_enforced"
+      }
+    }
+  },
+  "accepted_plan": {
+    "decision": "Retire active access and bearer TEST MCP server instances; keep only public none:3009 and authorized oauth21:3008 as target live topology.",
+    "stages": [
+      "Stage 1 root specs + workflow target freeze",
+      "Stage 2 runtime bootstrap selectable mode retirement",
+      "Stage 3 run_all authenticated harness migration to OAuth21 token flow",
+      "Stage 4 legacy auth precutover tool consolidation/removal",
+      "Stage 5 legacy access/bearer test pruning or reclassification",
+      "Stage 6 full validation and closeout"
+    ]
+  },
+  "stage2_validation": {
+    "syntax_checks": [
+      "server.js",
+      "src/runtime/auth_bootstrap_config_resolver.js",
+      "src/auth/auth_policy.js",
+      "_tests/smoke_stage11_auth_bootstrap_config_resolver.js",
+      "_tests/smoke_stage11_auth_port_policy.js",
+      "_tests/smoke_stage12_bootstrap_resolver_runtime_integration.js",
+      "_tests/smoke_stage12_public_base_url_auth_mode_mapping.js"
+    ],
+    "smokes_ok": [
+      "smoke_stage11_auth_bootstrap_config_resolver",
+      "smoke_stage11_auth_port_policy",
+      "smoke_stage12_bootstrap_resolver_runtime_integration",
+      "smoke_stage12_public_base_url_auth_mode_mapping"
+    ],
+    "negative_startup_ok": [
+      "node server.js --auth access -> MCP TEST SERVER FAILED: Retired auth mode",
+      "node server.js --auth bearer -> MCP TEST SERVER FAILED: Retired auth mode"
+    ]
+  },
+  "stage3_validation": {
+    "run_all_syntax": "ok_via_new_Function_parse",
+    "oauth21_harness_evidence": "run_all attempts reached authenticated OAuth21 section; later failures were legacy access/bearer tests or workflow whitelist and were patched/quarantined",
+    "run_all_skip_network_final": "not_reexecuted_after_last_patch_because_runner_blocked_repeated_run_all_invocations",
+    "sections_after_stage3_quarantine": {
+      "public": 6,
+      "tests_authenticated": 135,
+      "legacy_retired_auth_pending_stage4_5": 0,
+      "resolved_by": "stage5_legacy_tests_reclassified"
+    },
+    "syntax_checks": [
+      "run_all_smokes.js parse ok",
+      "smoke_stage10_observability_thin_contract.js node --check ok",
+      "smoke_stage12_streamable_http_workflow_plan.js node --check ok"
+    ],
+    "sections_after_stage4_quarantine": {
+      "public": 6,
+      "tests_authenticated": 136,
+      "legacy_retired_auth_pending_stage5": 0,
+      "resolved_by": "stage5_legacy_tests_reclassified"
+    },
+    "historical_sections_after_stage3_quarantine": {
+      "public": 6,
+      "tests_authenticated": 135,
+      "legacy_retired_auth_pending_stage4_5": 15
+    },
+    "historical_sections_after_stage4_quarantine": {
+      "public": 6,
+      "tests_authenticated": 136,
+      "legacy_retired_auth_pending_stage5": 15
+    }
+  },
+  "stage4_validation": {
+    "replacement_tool": "auth_legacy_retirement_status",
+    "old_tools_not_loaded": [
+      "auth_transition_status",
+      "auth_bearer_dry_run",
+      "auth_bearer_cutover_guard",
+      "auth_modular_parity_status"
+    ],
+    "loader_surface_optional_count": 41,
+    "loader_surface_total_with_search_fetch": 43,
+    "smokes_ok": [
+      "smoke_stage4_auth_legacy_retirement_status",
+      "smoke_stage12_step38m_schema_extraction",
+      "descriptor_audit public"
+    ],
+    "notes": [
+      "internal descriptor audit invoked without full internal profile context returned public-only surface; loader-surface validation was used as source of truth for authorized optional count"
+    ]
+  },
+  "stage5_validation": {
+    "active_run_all_manifest_total": 143,
+    "public_scripts": 6,
+    "tests_authenticated_scripts": 136,
+    "legacy_manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
+    "legacy_candidates_total": 17,
+    "removed_from_active_run_all_manifest": 15,
+    "legacy_still_active_in_run_all": 0,
+    "run_all_skip_network": "ok",
+    "run_all_sections": {
+      "public": 6,
+      "tests_authenticated": 136
+    },
+    "legacy_authorized_facades_soft_deleted": [
+      "tools/authorized/auth_transition_status.js",
+      "tools/authorized/auth_bearer_dry_run.js",
+      "tools/authorized/auth_bearer_cutover_guard.js",
+      "tools/authorized/auth_modular_parity_status.js"
+    ],
+    "code_sample_js_surface": "authorized_mcp_tools with tools/authorized facade and flat legacy implementation restored"
+  },
+  "stage6_validation": {
+    "public_local": {
+      "healthz": "ok",
+      "auth_mode": "none",
+      "profile": "public",
+      "port": 3009,
+      "tools_list_count": 13
+    },
+    "oauth21_connector_live": {
+      "runtime_status": "ok",
+      "auth_mode": "oauth21",
+      "profile": "internal",
+      "port": 3008,
+      "tool_count": 43,
+      "tool_names_hash": "8b62ecaf89227335",
+      "schema_compatibility": "ok",
+      "security_boundary": "ok",
+      "replacement_tool_present": true,
+      "retired_tools_absent": true
+    },
+    "run_all_skip_network": {
+      "status": "ok",
+      "public": 6,
+      "tests_authenticated": 136
+    },
+    "public_connector": "not_connected_not_required_for_stage6_closeout",
+    "connector_refresh": "oauth21 refreshed by operator before validation",
+    "runtime_restart": "both runtimes restarted by operator before validation"
+  },
+  "post_stage6_root_spec_review": {
+    "status": "green_source_aligned",
+    "source_files": [
+      "src/runtime/auth_bootstrap_config_resolver.js",
+      "src/auth/auth_policy.js",
+      "src/tool_policy.js",
+      "src/tool_loader.js",
+      "package.json",
+      "src/runtime/identity.js"
+    ],
+    "current_truth": {
+      "public": "none:3009 tools=13",
+      "authorized": "oauth21:3008 tools=43 hash=8b62ecaf89227335",
+      "run_all": "ok public=6 tests_authenticated=136",
+      "legacy_auth_tests_active_in_run_all": 0
+    }
+  },
+  "operator_decisions": {
+    "date": "2026-06-21",
+    "record": "_workflow/operator_decisions/post_stage6_operator_decisions_2026-06-21.md",
+    "accepted_main_package": true,
+    "checkpoint_commit_required": true,
+    "public_connector": "disconnected_until_ui_validation_needed",
+    "legacy_auth": "archive_until_separate_triage",
+    "transport_deferrals": "classified_as_deliberate_limitations_no_implementation_now",
+    "runtime_policy_expansion": "separate_operator_approved_stage",
+    "hotplug": "future_event_driven_lifecycle_stage"
+  }
 }

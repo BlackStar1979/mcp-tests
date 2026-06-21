@@ -42,7 +42,7 @@ function loadOptionalTools(options = {}) {
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_CODE_SAMPLE_JS", true)) {
-    add("../tools/public/code_sample_js", "codeSampleJsTool", "code_sample_js");
+    add("../tools/authorized/code_sample_js", "codeSampleJsTool", "code_sample_js");
   }
 
   if (groupEnabled("public") && envFlagEnabled("MCP_TEST_ENABLE_NET_TOOLS", true)) {
@@ -73,10 +73,7 @@ function loadOptionalTools(options = {}) {
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_EXECUTION_TOOLS", true)) {
     add("../tools/authorized/plugin_execution_governance", "pluginExecutionGovernanceTool", "plugin_execution_governance");
-    add("../tools/authorized/auth_transition_status", "authTransitionStatusTool", "auth_transition_status");
-    add("../tools/authorized/auth_bearer_dry_run", "authBearerDryRunTool", "auth_bearer_dry_run");
-    add("../tools/authorized/auth_bearer_cutover_guard", "authBearerCutoverGuardTool", "auth_bearer_cutover_guard");
-    add("../tools/authorized/auth_modular_parity_status", "authModularParityStatusTool", "auth_modular_parity_status");
+    add("../tools/authorized/auth_legacy_retirement_status", "authLegacyRetirementStatusTool", "auth_legacy_retirement_status");
     add("../tools/authorized/plugin_execution_verify_receipt", "pluginExecutionVerifyReceiptTool", "plugin_execution_verify_receipt");
     add("../tools/authorized/plugin_execution_preflight", "pluginExecutionPreflightTool", "plugin_execution_preflight");
     add("../tools/authorized/plugin_execute_readonly", "pluginExecuteReadonlyTool", "plugin_execute_readonly");

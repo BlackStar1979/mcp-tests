@@ -10,7 +10,20 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 46
+    "full_tests_authenticated_tool_count": 43,
+    "target_active_runtime_count": 2,
+    "target_active_runtime_modes": [
+      "none",
+      "oauth21"
+    ],
+    "target_active_ports": {
+      "none": 3009,
+      "oauth21": 3008
+    },
+    "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
+    "public_tool_count": 13,
+    "authenticated_tool_count": 43,
+    "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {
     "do_not_use_as_progress_log": true,
@@ -84,21 +97,21 @@
     "cli_parameter": "--auth",
     "allowed_values": [
       "none",
-      "bearer",
-      "access",
-      "oauth",
       "oauth21"
     ],
     "runtime_selectable_values": [
       "none",
-      "bearer",
-      "access"
-    ],
-    "reserved_values": [
-      "oauth",
       "oauth21"
     ],
-    "spec_ref": "SERVER_AUTH_SPEC.json"
+    "reserved_values": [
+      "oauth"
+    ],
+    "spec_ref": "SERVER_AUTH_SPEC.json",
+    "retired_values": [
+      "access",
+      "bearer"
+    ],
+    "retirement_decision_ref": "SERVER_AUTH_SPEC.json#runtime_topology"
   },
   "profiles": {
     "summary": "Named server profiles, profile schema validation and tool surface rules are specified in SERVER_PROFILES_SPEC.json.",
@@ -248,26 +261,27 @@
       "--auth": {
         "values": [
           "none",
-          "bearer",
-          "access",
-          "oauth",
           "oauth21"
         ],
         "default": "none",
         "runtime_selectable_values": [
           "none",
-          "bearer",
-          "access"
-        ],
-        "reserved_values": [
-          "oauth",
           "oauth21"
         ],
-        "spec_ref": "SERVER_AUTH_SPEC.json"
+        "reserved_values": [
+          "oauth"
+        ],
+        "spec_ref": "SERVER_AUTH_SPEC.json",
+        "retired_values": [
+          "access",
+          "bearer"
+        ],
+        "retirement_decision_ref": "SERVER_AUTH_SPEC.json#runtime_topology"
       },
       "--token-file": {
-        "required_when": "--auth bearer",
-        "spec_ref": "SERVER_AUTH_SPEC.json"
+        "required_when": "not used by target runtime topology; retained only for non-target legacy bearer/library references",
+        "spec_ref": "SERVER_AUTH_SPEC.json",
+        "status": "retired_from_target_runtime_stage6"
       },
       "--port": {
         "default_policy_ref": "SERVER_AUTH_SPEC.json#auth_port_policy.default_ports"
@@ -296,12 +310,66 @@
   "auth_port_policy": {
     "default_ports": {
       "none": 3009,
-      "access": 3005,
-      "bearer": 3006,
-      "oauth": 3007,
       "oauth21": 3008
     },
     "source_ref": "src/runtime/auth_bootstrap_config_resolver.js",
-    "public_bind_without_auth_forbidden": true
+    "public_bind_without_auth_forbidden": true,
+    "active_runtime_modes": [
+      "none",
+      "oauth21"
+    ],
+    "retired_default_ports": {
+      "access": 3005,
+      "bearer": 3006,
+      "oauth": 3007
+    },
+    "retirement_status": "stage6_final_closeout_enforced",
+    "valid_library_modes": [
+      "none",
+      "oauth",
+      "oauth21"
+    ],
+    "legacy_non_target_modes": [
+      "oauth"
+    ],
+    "retired_runtime_modes": [
+      "access",
+      "bearer"
+    ]
+  },
+  "runtime_retirement_plan": {
+    "status": "stage6_final_closeout_green",
+    "active_runtime_modes": [
+      "none",
+      "oauth21"
+    ],
+    "active_ports": {
+      "none": 3009,
+      "oauth21": 3008
+    },
+    "retired_modes": {
+      "access": 3005,
+      "bearer": 3006
+    },
+    "non_target_modes": {
+      "oauth": 3007
+    },
+    "next_stage": "Stage 3 run_all authenticated harness migration to OAuth21 token flow",
+    "active_runtime_topology": {
+      "public": "none:3009",
+      "authorized": "oauth21:3008"
+    },
+    "legacy_non_target": "oauth:3007 resource-server validation only",
+    "retired_runtime_topology": {
+      "access": "retired_from_startup_path",
+      "bearer": "retired_from_startup_path"
+    },
+    "final_validation": {
+      "run_all_skip_network": "ok",
+      "public_scripts": 6,
+      "tests_authenticated_scripts": 136,
+      "oauth21_connector_tool_count": 43,
+      "oauth21_connector_tool_names_hash": "8b62ecaf89227335"
+    }
   }
 }

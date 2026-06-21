@@ -1,10 +1,9 @@
 const { createNoneAuth } = require("./auth_none");
-const { createBearerAuth } = require("./auth_bearer");
-const { createAccessAuth } = require("./auth_access");
 const { createOAuthAuth } = require("./auth_oauth");
 const { buildWwwAuthenticateHeader } = require("../runtime/oauth_metadata");
 
-const VALID_AUTH_MODES = new Set(["none", "bearer", "access", "oauth", "oauth21"]);
+const VALID_AUTH_MODES = new Set(["none", "oauth", "oauth21"]);
+const RETIRED_AUTH_MODES = new Set(["access", "bearer"]);
 
 function getAuthMode() {
   return String(process.env.MCP_TEST_AUTH_MODE || "none").trim().toLowerCase();
@@ -13,17 +12,18 @@ function getAuthMode() {
 function createAuthPolicy(options = {}) {
   const mode = String(options.mode || getAuthMode()).trim().toLowerCase();
 
+  if (RETIRED_AUTH_MODES.has(mode)) {
+    throw new Error(`Retired MCP_TEST_AUTH_MODE: ${mode}. Active values: none, oauth21. Legacy non-target value: oauth. Retired values: access, bearer.`);
+  }
+
   if (!VALID_AUTH_MODES.has(mode)) {
-    throw new Error(`Invalid MCP_TEST_AUTH_MODE: ${mode}. Allowed values: none, bearer, access, oauth, oauth21.`);
+    throw new Error(`Invalid MCP_TEST_AUTH_MODE: ${mode}. Allowed values: none, oauth, oauth21. Retired values: access, bearer.`);
   }
 
   if (mode === "none") {
     return createNoneAuth();
   }
 
-  if (mode === "access") {
-    return createAccessAuth({ trustedProxy: options.trustedProxy === true });
-  }
 
   if (mode === "oauth" || mode === "oauth21") {
     return createOAuthAuth({
@@ -37,10 +37,8 @@ function createAuthPolicy(options = {}) {
     });
   }
 
-  return createBearerAuth({
-    tokenFile: options.tokenFile || process.env.MCP_TEST_TOKEN_FILE,
-    allowQueryToken: options.allowQueryToken === true,
-  });
+
+  throw new Error(`Unhandled MCP_TEST_AUTH_MODE after validation: ${mode}`);
 }
 
 function authResponseHeaders(policy) {
@@ -70,6 +68,7 @@ function summarizeAuthFailure(result = {}) {
 
 module.exports = {
   VALID_AUTH_MODES,
+  RETIRED_AUTH_MODES,
   authResponseHeaders,
   createAuthPolicy,
   getAuthMode,

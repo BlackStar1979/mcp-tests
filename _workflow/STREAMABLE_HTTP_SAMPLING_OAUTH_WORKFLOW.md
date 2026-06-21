@@ -30,7 +30,7 @@ GET /mcp -> 405
 OPTIONS /mcp -> CORS preflight
 ```
 
-Current implementation is not yet full Streamable HTTP because it does not implement full Accept negotiation, MCP-Protocol-Version policy, POST SSE response path, GET SSE stream, SessionStore, outbound queue, pending request correlation, or sampling round-trip.
+Historical pre-Phase-A note: those capabilities were implemented across Phases A-G and H8 where applicable. Remaining explicit deferrals are strict stateful no-session 400, DELETE teardown, multiple concurrent streams, batch SSE semantics, and cancellation path.
 
 ## 3. Non-negotiable gates
 
@@ -102,11 +102,11 @@ _tests/smoke_stage12_post_sse_response.js
 Checklist:
 
 - [x] Add stream response writer.
-- [ ] POST single request can return `Content-Type: text/event-stream` when negotiated.
-- [ ] SSE emits `event: message` with final JSON-RPC response.
+- [x] POST single request can return `Content-Type: text/event-stream` when negotiated.
+- [x] SSE emits `event: message` with final JSON-RPC response.
 - [x] Stream closes after final response.
 - [x] JSON response path remains default-compatible.
-- [ ] Batch SSE is either explicitly unsupported or tested separately.
+- [x] Batch SSE classified as explicitly unsupported/deprecated for current target; do not implement in this checkpoint.
 
 Acceptance:
 
@@ -137,8 +137,8 @@ Checklist:
 - [x] Session stores negotiated protocol version.
 - [x] Session stores client capabilities.
 - [x] Requests with unknown session id return 404.
-- [ ] Requests missing required session id after initialization return 400. Deferred until strict stateful mode is enabled; legacy no-session requests remain compatible.
-- [ ] DELETE `/mcp` teardown deferred; current non-POST behavior remains 405.
+- [x] Strict transport-session enforcement is not the strategic target; current compatibility remains while future direction is Sessionless MCP / explicit state handles, subject to live spec verification before implementation.
+- [x] DELETE `/mcp` teardown classified out-of-scope; current non-POST behavior remains 405.
 - [x] TTL or idle reaper exists in SessionStore and is basic-tested.
 
 Acceptance:
@@ -168,11 +168,11 @@ Checklist:
 
 - [x] GET `/mcp` with valid session and `Accept: text/event-stream` opens an SSE stream.
 - [x] One session can have at least one active outbound stream.
-- [ ] Multiple streams are deferred; current session stores one active stream reference.
+- [x] Custom multi-stream-in-session manager rejected; future direction is one request equals one potential stream, plus separate notification/listen stream where applicable.
 - [x] Server does not broadcast across sessions; current stream is session-bound.
 - [x] Outbound queue buffers messages when stream is temporarily absent.
 - [x] Queue flushes when stream is attached.
-- [ ] Keepalive deferred to later hardening; ready event confirms stream open.
+- [x] SSE keepalive implemented in H8; ready event confirms stream open.
 - [x] `tools/list_changed` remains false; bus is not flipped during Phase D.
 
 Acceptance:
@@ -201,13 +201,13 @@ _tests/smoke_stage12_pending_request_correlation.js
 Checklist:
 
 - [x] Session allocates server-originated ids from a separate namespace.
-- [ ] `session.sendRequest(method, params)` queues outbound request and returns a Promise.
+- [x] `session.sendRequest(method, params)` queues outbound request and returns a Promise.
 - [x] Pending map correlates response id to resolver.
-- [ ] POST JSON-RPC response is accepted as response, not treated as request.
-- [ ] Accepted response/notification returns HTTP 202 with no body.
+- [x] POST JSON-RPC response is accepted as response, not treated as request.
+- [x] Accepted response/notification returns HTTP 202 with no body.
 - [x] Unknown pending id is fail-closed and audited.
 - [x] Pending timeout is implemented.
-- [ ] Cancellation path deferred; timeout path is implemented.
+- [x] Cancellation path classified as separate future stage: implement active client-disconnect cancellation plus timeout fallback, not in this checkpoint.
 
 Acceptance:
 
@@ -239,7 +239,7 @@ Checklist:
 - [x] Missing sampling capability returns deterministic error.
 - [x] `sampling/createMessage` is sent through outbound queue.
 - [x] Client response resolves pending request.
-- [ ] User approval/security policy deferred to Phase G/OAuth policy hardening; sampling gate is technical-only.
+- [x] User approval/security policy implemented in H7/OAuth policy hardening; sampling gate is no longer technical-only.
 - [x] `capabilities.sampling` is not falsely advertised as a server capability.
 
 Acceptance:
@@ -309,7 +309,7 @@ Phase C is green as `ok_0_40_0_8_122`. Implemented: `src/runtime/session.js`, `s
 
 ## Phase D completion note
 
-Phase D is green as `ok_0_40_0_8_124`. Implemented: `src/runtime/mcp_get_stream_handler.js`, GET SSE for known sessions with explicit stream Accept, session stream attach/detach, outbound queue buffering/flushing, `_tests/smoke_stage12_get_sse_stream.js`, and `_tests/smoke_stage12_outbound_queue.js`. Multiple streams and keepalive are deferred. Next phase: Phase E - Pending request correlation.
+Phase D is green as `ok_0_40_0_8_124`. Implemented: `src/runtime/mcp_get_stream_handler.js`, GET SSE for known sessions with explicit stream Accept, session stream attach/detach, outbound queue buffering/flushing, `_tests/smoke_stage12_get_sse_stream.js`, and `_tests/smoke_stage12_outbound_queue.js`. Multiple concurrent streams remain deferred; keepalive was implemented in H8. Next phase: Phase E - Pending request correlation.
 
 ## Phase E completion note
 
@@ -317,8 +317,8 @@ Phase E is green as `ok_0_40_0_8_125`. Implemented pending request correlation a
 
 ## Phase F completion note
 
-Phase F is green as `ok_0_40_0_8_127`. Implemented sampling context, capability gate, requestSampling path, outbound sampling request, and response resolution by pending correlation. User approval/security policy is deferred to Phase G/OAuth policy hardening. Phase A-F are green. Next phase: Phase G - OAuth preflight and implementation.
+Phase F is green as `ok_0_40_0_8_127`. Implemented sampling context, capability gate, requestSampling path, outbound sampling request, and response resolution by pending correlation. User approval/security policy was implemented in H7/OAuth policy hardening. Phase A-F are green. Next phase: Phase G - OAuth preflight and implementation.
 
 ## Phase G completion note
 
-Phase G is green as `ok_0_40_0_8_128`. Implemented OAuth resource-server preflight and validation: `SERVER_AUTH_SPEC.json`, `src/auth/auth_oauth.js`, `src/runtime/oauth_metadata.js`, protected resource metadata route, OAuth auth mode, Authorization header-only token use, query-token rejection, issuer/audience/scope checks, and `_tests/smoke_stage12_oauth_preflight_contract.js`. Authorization-server implementation remains external. Production hardening remains: external AS metadata/JWKS/RS256 or introspection integration.
+Phase G is green as `ok_0_40_0_8_128`. Implemented OAuth resource-server preflight and validation: `SERVER_AUTH_SPEC.json`, `src/auth/auth_oauth.js`, `src/runtime/oauth_metadata.js`, protected resource metadata route, OAuth auth mode, Authorization header-only token use, query-token rejection, issuer/audience/scope checks, and `_tests/smoke_stage12_oauth_preflight_contract.js`. Resource-server validation is implemented and local OAuth21 AS was added later in H10; production hardening H1-H9 is green for TEST MCP.

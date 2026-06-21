@@ -62,19 +62,46 @@
       "plugin_visibility_policy_fields": [
         "allowed_plugin_scopes",
         "denied_plugin_scopes"
+      ],
+      "active_auth_mode_exclusion_keys": [
+        "oauth21"
+      ],
+      "retired_auth_mode_exclusion_keys": [
+        "access",
+        "bearer"
+      ],
+      "reserved_auth_mode_exclusion_keys": [
+        "oauth"
       ]
     },
     "run_all_smokes_sections": {
       "public": {
         "profile": "public",
         "auth": "none",
-        "tool_count": 14
+        "tool_count": 13,
+        "script_count_after_stage3_quarantine": 6,
+        "script_count_after_stage4_quarantine": 6,
+        "script_count_after_stage5_reclassification": 6,
+        "script_count": 6,
+        "script_count_after_stage6_closeout": 6
       },
       "tests_authenticated": {
         "profile": "tests",
-        "auth": "access",
-        "tool_count": 46,
-        "auth_header": "cf-access-jwt-assertion injected by _tests/smoke_auth_fetch_patch.js"
+        "auth": "oauth21",
+        "tool_count": 43,
+        "auth_flow": "OAuth21 DCR + PKCE + operator-login + token exchange + Authorization: Bearer injection through smoke_auth_fetch_patch",
+        "script_count_after_stage3_quarantine": 135,
+        "legacy_retired_auth_pending_stage4_5": 0,
+        "script_count_after_stage4_quarantine": 136,
+        "legacy_retired_auth_pending_stage5": 0,
+        "auth_legacy_retirement_status_smoke": "_tests/smoke_stage4_auth_legacy_retirement_status.js",
+        "script_count_after_stage5_reclassification": 136,
+        "legacy_retired_auth_manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
+        "stage5_status": "legacy access/bearer tests excluded from active run_all manifest",
+        "tool_count_current": 43,
+        "script_count": 136,
+        "script_count_after_stage6_closeout": 136,
+        "stage6_status": "green_source_aligned_active_run_all"
       }
     },
     "run_all_smoke_scripts_manifest": "_tests/run_all_smoke_scripts.json",
@@ -100,6 +127,35 @@
     "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
     "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
     "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
-    "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+    "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json",
+    "runtime_topology": {
+      "status": "stage1_target_frozen",
+      "public_surface": {
+        "profile": "public",
+        "auth": "none",
+        "port": 3009
+      },
+      "authenticated_surface": {
+        "profile": "tests",
+        "auth": "oauth21",
+        "port": 3008
+      },
+      "retired_authenticated_transports": [
+        "access",
+        "bearer"
+      ]
+    },
+    "stage6_closeout": {
+      "status": "green",
+      "run_all_skip_network": "ok",
+      "public_scripts": 6,
+      "tests_authenticated_scripts": 136,
+      "active_runtime_topology": {
+        "public": "none:3009",
+        "authorized": "oauth21:3008"
+      },
+      "oauth21_connector_tool_count": 43,
+      "oauth21_connector_tool_names_hash": "8b62ecaf89227335"
+    }
   }
 }

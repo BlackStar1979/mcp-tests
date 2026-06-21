@@ -34,10 +34,7 @@ const EXPECTED_TOOL_NAMES = [
   "plugin_execute_readonly",
   "plugin_execution_governance",
   "plugin_execution_verify_receipt",
-  "auth_transition_status",
-  "auth_bearer_dry_run",
-  "auth_bearer_cutover_guard",
-  "auth_modular_parity_status",
+  "auth_legacy_retirement_status",
   "observability_status",
 ];
 

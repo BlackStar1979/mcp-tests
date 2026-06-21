@@ -1,0 +1,95 @@
+{
+  "status": "stage5_reclassified_out_of_active_run_all",
+  "decision_date": "2026-06-21",
+  "reason": "access:3005 and bearer:3006 are retired from active TEST MCP runtime topology; legacy tests either self-start retired modes or assert precutover bearer/access tools removed in Stage 4.",
+  "active_replacement": "oauth21 runtime harness plus auth_legacy_retirement_status",
+  "run_all_manifest_removed_count": 15,
+  "legacy_candidates_total": 17,
+  "tests": [
+    {
+      "path": "_tests/smoke_stage2_auth.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_audit_event_contract.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage7_2_internal_auth_runtime.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_8_bearer_dry_run_harness.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_9_bearer_cutover_guard.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_10a_bearer_query_token.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_10b_access_assertion.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_10c_modular_parity_status.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_10e_modular_parity_tool.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage8_26_auth_precutover_freshness.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage12_step38j_healthz_public_auth_redaction.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage12_step38k_output_schema_strictness.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage11_auth_surface_invariance_guard.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage11_bearer_token_file_readiness.js",
+      "was_in_run_all_manifest": false,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage11_cloudflare_access_runtime_readiness.js",
+      "was_in_run_all_manifest": false,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage13_memory_auth_visibility.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    },
+    {
+      "path": "_tests/smoke_stage13_public_profile_visibility.js",
+      "was_in_run_all_manifest": true,
+      "disposition": "legacy_retired_auth_test_excluded_from_active_run_all_pending_manual_archive_or_rewrite"
+    }
+  ]
+}

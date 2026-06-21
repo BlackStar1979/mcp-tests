@@ -9,7 +9,7 @@ Scope: post Phase G hardening plan for production-grade OAuth, sampling approval
 
 Phase A-G are green. The repository has a minimal OAuth resource-server validator with HS256 JWT validation, Protected Resource Metadata, Authorization header-only token use, query-token rejection, audience binding, and scope checking.
 
-This is not yet production OAuth complete. The remaining work is integration and hardening, not another broad architecture reset.
+Historical note: this plan started before OAuth hardening and local OAuth21 AS closure. H1-H9 are now green and Stage 6 validated the OAuth21 connector; future productionization beyond TEST MCP remains a separate operator decision, not a broad architecture reset.
 
 ## 2. External authorization server metadata integration
 
@@ -292,7 +292,7 @@ H5 is green. Implemented PKCE/client-flow policy at AS boundary: `pkce_client_fl
 
 ## H6 completion note
 
-H6 is green. Implemented JWKS key-rotation behavior in `src/auth/oauth_jwks_cache.js`: issuer/jwks_uri status fields, multiple active keys, bounded refresh-on-unknown-kid, unknown-kid refresh suppression reason, optional previous-key overlap window, and `_tests/smoke_stage12_oauth_key_rotation.js`. HTTP cache-control/max-age parsing remains deferred because current JWKS source is file-backed; local TTL remains bounded. Next step: H7 - Sampling user-approval policy.
+H6 is green. Implemented JWKS key-rotation behavior in `src/auth/oauth_jwks_cache.js`: issuer/jwks_uri status fields, multiple active keys, bounded refresh-on-unknown-kid, unknown-kid refresh suppression reason, optional previous-key overlap window, and `_tests/smoke_stage12_oauth_key_rotation.js`. HTTP cache-control/max-age parsing was later closed by jwks_ttl_guard; local TTL remains bounded. Next step: H7 - Sampling user-approval policy.
 
 ## H7 completion note
 
@@ -300,11 +300,11 @@ H7 is green. Implemented sampling user-approval policy: `SERVER_SAMPLING_POLICY_
 
 ## H8 completion note
 
-H8 is green. Implemented SSE keepalive/resumability: `encodeSseComment`, `writeSseComment`, keepalive timer in GET stream handler, `Last-Event-ID` parsing, monotonic SSE IDs, bounded replay buffer in `McpSession`, replay of buffered sent events, and `_tests/smoke_stage12_sse_keepalive.js` / `_tests/smoke_stage12_sse_resumability.js`. Fail-closed on too-old Last-Event-ID remains deferred; current behavior replays available buffered events and otherwise continues the session. Next step: H9 - Live connector refresh readiness after explicit operator approval.
+H8 is green. Implemented SSE keepalive/resumability: `encodeSseComment`, `writeSseComment`, keepalive timer in GET stream handler, `Last-Event-ID` parsing, monotonic SSE IDs, bounded replay buffer in `McpSession`, replay of buffered sent events, and `_tests/smoke_stage12_sse_keepalive.js` / `_tests/smoke_stage12_sse_resumability.js`. Fail-closed on too-old Last-Event-ID was later closed by replay_gap_guard. Next step: H9 - Live connector refresh readiness after explicit operator approval.
 
 ## H9 completion note
 
-H9 is green. Implemented live connector refresh readiness contract only: `SERVER_CONNECTOR_SURFACE_SPEC.json`, `_workflow/CONNECTOR_REFRESH_READINESS.md`, and `_tests/smoke_stage12_connector_refresh_readiness.js`. Public connector remains `auth:none` with 13 allowed public tools. OAuth/resource-server connector must remain separate. Query-token URLs are not OAuth-ready. Live connector refresh was not performed and remains an explicit external operator action requiring post-refresh evidence.
+H9 is green. Implemented live connector refresh readiness contract only: `SERVER_CONNECTOR_SURFACE_SPEC.json`, `_workflow/CONNECTOR_REFRESH_READINESS.md`, and `_tests/smoke_stage12_connector_refresh_readiness.js`. Public connector remains `auth:none` with 13 allowed public tools. OAuth/resource-server connector must remain separate. Query-token URLs are not OAuth-ready. Stage 6 later performed OAuth21 connector refresh externally by operator approval and recorded post-refresh evidence. Public connector remained disconnected; public runtime was validated locally.
 
 ## Post-H9 debt closure note
 

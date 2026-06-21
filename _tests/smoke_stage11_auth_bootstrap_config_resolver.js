@@ -22,8 +22,7 @@ function mustThrow(fn, pattern) {
   assert.throws(fn, pattern);
 }
 
-const policy = JSON.parse(fs.readFileSync(POLICY_PATH, "utf8"));
-assert.deepEqual(AUTH_DEFAULT_PORTS, policy.default_ports);
+assert.deepEqual(AUTH_DEFAULT_PORTS, { none: 3009, oauth: 3007, oauth21: 3008 });
 
 {
   const config = resolveAuthBootstrapConfig({ argv: [], env: env() });
@@ -39,26 +38,15 @@ assert.deepEqual(AUTH_DEFAULT_PORTS, policy.default_ports);
   assert.equal(config.selfTest, false);
 }
 
-{
-  const config = resolveAuthBootstrapConfig({
-    argv: [],
-    env: env({ MCP_TEST_AUTH_MODE: "bearer" }),
-  });
-  assert.equal(config.authMode, "bearer");
-  assert.equal(config.authModeSource, "env");
-  assert.equal(config.port, 3006);
-  assert.equal(config.portSource, "auth_default");
-}
+mustThrow(
+  () => resolveAuthBootstrapConfig({ argv: [], env: env({ MCP_TEST_AUTH_MODE: "bearer" }) }),
+  /Retired auth mode/
+);
 
-{
-  const config = resolveAuthBootstrapConfig({
-    argv: [],
-    env: env({ MCP_TEST_AUTH_MODE: "access" }),
-  });
-  assert.equal(config.authMode, "access");
-  assert.equal(config.port, 3005);
-  assert.equal(config.authModeReserved, false);
-}
+mustThrow(
+  () => resolveAuthBootstrapConfig({ argv: [], env: env({ MCP_TEST_AUTH_MODE: "access" }) }),
+  /Retired auth mode/
+);
 
 {
   const config = resolveAuthBootstrapConfig({
@@ -68,7 +56,7 @@ assert.deepEqual(AUTH_DEFAULT_PORTS, policy.default_ports);
   assert.equal(config.authMode, "oauth");
   assert.equal(config.port, 3007);
   assert.equal(config.authModeReserved, true);
-  assert.equal(config.authModeStatus, "reserved_future_not_implemented");
+  assert.equal(config.authModeStatus, "legacy_resource_server_validation_not_target_live_instance");
 }
 
 {
@@ -78,38 +66,24 @@ assert.deepEqual(AUTH_DEFAULT_PORTS, policy.default_ports);
   });
   assert.equal(config.authMode, "oauth21");
   assert.equal(config.port, 3008);
-  assert.equal(config.authModeReserved, true);
-  assert.equal(config.authModeStatus, "reserved_future_not_implemented");
+  assert.equal(config.authModeReserved, false);
+  assert.equal(config.authModeStatus, "active_local_oauth21_authorization_server");
 }
 
-{
-  const config = resolveAuthBootstrapConfig({
-    argv: [],
-    env: env({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_PORT: "4010" }),
-  });
-  assert.equal(config.authMode, "bearer");
-  assert.equal(config.port, 4010);
-  assert.equal(config.portSource, "env");
-}
+mustThrow(
+  () => resolveAuthBootstrapConfig({ argv: [], env: env({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_PORT: "4010" }) }),
+  /Retired auth mode/
+);
 
-{
-  const config = resolveAuthBootstrapConfig({
-    argv: ["--port", "4011"],
-    env: env({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_PORT: "4010" }),
-  });
-  assert.equal(config.port, 4011);
-  assert.equal(config.portSource, "cli");
-}
+mustThrow(
+  () => resolveAuthBootstrapConfig({ argv: ["--port", "4011"], env: env({ MCP_TEST_AUTH_MODE: "bearer", MCP_TEST_PORT: "4010" }) }),
+  /Retired auth mode/
+);
 
-{
-  const config = resolveAuthBootstrapConfig({
-    argv: ["--auth=access"],
-    env: env({ MCP_TEST_AUTH_MODE: "bearer" }),
-  });
-  assert.equal(config.authMode, "access");
-  assert.equal(config.authModeSource, "cli");
-  assert.equal(config.port, 3005);
-}
+mustThrow(
+  () => resolveAuthBootstrapConfig({ argv: ["--auth=access"], env: env({ MCP_TEST_AUTH_MODE: "bearer" }) }),
+  /Retired auth mode/
+);
 
 {
   const config = resolveAuthBootstrapConfig({
@@ -136,16 +110,10 @@ assert.deepEqual(AUTH_DEFAULT_PORTS, policy.default_ports);
   assert.equal(config.selfTest, true);
 }
 
-{
-  const config = resolveAuthBootstrapConfig({
-    argv: ["--auth", "bearer", "--port=4555", "--token-file=relative-token.txt"],
-    env: env({ MCP_TEST_HOST: "0.0.0.0" }),
-  });
-  assert.equal(config.authMode, "bearer");
-  assert.equal(config.port, 4555);
-  assert.equal(config.tokenFile, "relative-token.txt");
-  assert.equal(config.host, "0.0.0.0");
-}
+mustThrow(
+  () => resolveAuthBootstrapConfig({ argv: ["--auth", "bearer", "--port=4555", "--token-file=relative-token.txt"], env: env({ MCP_TEST_HOST: "0.0.0.0" }) }),
+  /Retired auth mode/
+);
 
 mustThrow(
   () => resolveAuthBootstrapConfig({ argv: ["--auth", "invalid"], env: env() }),

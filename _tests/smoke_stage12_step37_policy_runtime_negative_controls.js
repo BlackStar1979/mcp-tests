@@ -142,7 +142,7 @@ assertInvalid(base, "missing resource policy ref", (s) => { s.tools.tool_catalog
 assertInvalid(base, "memory ref", (s) => { delete s.tools.tool_catalog.memory_save.memory_policy_ref; }, "specific_policy_ref_missing");
 assertInvalid(base, "network ref", (s) => { delete s.tools.tool_catalog.net_http_get_allowlisted.network_policy_ref; }, "specific_policy_ref_missing");
 assertInvalid(base, "plugin ref", (s) => { delete s.tools.tool_catalog.plugin_registry_get.plugin_visibility_policy_ref; }, "specific_policy_ref_missing");
-assertInvalid(base, "public surface mismatch", (s) => { s.tools.surface_classes.public_mcp_tools.tools.push("auth_transition_status"); }, "public_surface_non_public_policy_denied");
+assertInvalid(base, "removed legacy auth tool injected into public surface", (s) => { s.tools.surface_classes.public_mcp_tools.tools.push("auth_transition_status"); }, "missing_tool_catalog_entry_denied");
 assertInvalid(base, "output field", (s) => { s.runtime.output_contract.required_fields = s.runtime.output_contract.required_fields.filter((field) => field !== "audit_receipt"); }, "output_contract_field_missing");
 assertInvalid(base, "fail closed", (s) => { s.runtime.fail_closed_rules.unknown_tool_denied = false; }, "fail_closed_rule_missing");
 assertInvalid(base, "root cli", (s) => { s.root.cli = { parameters: { "--policy-runtime": {} } }; }, "cli_extension_forbidden");

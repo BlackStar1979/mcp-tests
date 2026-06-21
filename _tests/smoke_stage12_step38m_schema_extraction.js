@@ -30,10 +30,7 @@ for (const entry of fs.readdirSync(flatToolDir, { withFileTypes: true })) {
 assert.deepEqual(inlineSchemaHits, []);
 
 for (const rel of [
-  "tools/auth_transition_status.js",
-  "tools/auth_bearer_dry_run.js",
-  "tools/auth_bearer_cutover_guard.js",
-  "tools/auth_modular_parity_status.js",
+  "tools/auth_legacy_retirement_status.js",
 ]) {
   const source = fs.readFileSync(path.join(ROOT, rel), "utf8");
   assert.ok(source.includes("../src/schemas/auth_tools"), `${rel} must import auth schemas`);

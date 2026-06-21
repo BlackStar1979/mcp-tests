@@ -25,8 +25,13 @@
 
 const { runServerBootstrapRuntime } = require("./src/runtime/server_bootstrap_runtime");
 
-runServerBootstrapRuntime({
-  argv: process.argv,
-  env: process.env,
-  rootDir: __dirname,
-});
+try {
+  runServerBootstrapRuntime({
+    argv: process.argv,
+    env: process.env,
+    rootDir: __dirname,
+  });
+} catch (error) {
+  console.error(`MCP TEST SERVER FAILED: ${error && error.message ? error.message : String(error)}`);
+  process.exitCode = 1;
+}

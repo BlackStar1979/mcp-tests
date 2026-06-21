@@ -216,5 +216,21 @@
   "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
   "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
   "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
-  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json",
+  "legacy_transport_decisions": {
+    "status": "retired_runtime_negative_controls_only_after_stage1",
+    "retired_transports": [
+      "access",
+      "bearer"
+    ],
+    "legacy_reason_codes": [
+      "bearer_not_admin_deny",
+      "cf_access_claims_required_deny"
+    ],
+    "active_runtime_target": [
+      "none",
+      "oauth21"
+    ],
+    "follow_up": "Stage 5 may keep these as library/security negative controls or move them out of active runtime policy fixtures."
+  }
 }

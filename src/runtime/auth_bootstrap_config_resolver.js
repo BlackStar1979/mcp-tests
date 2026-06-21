@@ -2,37 +2,36 @@
 
 const AUTH_DEFAULT_PORTS = Object.freeze({
   none: 3009,
-  access: 3005,
-  bearer: 3006,
   oauth: 3007,
   oauth21: 3008,
 });
 
 const AUTH_PUBLIC_BASE_URLS = Object.freeze({
   none: "https://mcp-tests.romionologic.dev",
-  access: "https://mcp-tests-access.romionologic.dev",
-  bearer: "https://mcp-tests-bearer.romionologic.dev",
+  oauth: "https://mcp-tests-oauth.romionologic.dev",
   oauth21: "https://mcp-tests-oauth21.romionologic.dev",
 });
 
 const AUTH_MODE_STATUS = Object.freeze({
-  none: "current_fallback",
-  access: "planned_cloudflare_access_presence_check",
-  bearer: "planned_token_file_bearer",
-  oauth: "reserved_future_not_implemented",
-  oauth21: "implemented_local_oauth21_authorization_server",
+  none: "active_public_runtime",
+  oauth: "legacy_resource_server_validation_not_target_live_instance",
+  oauth21: "active_local_oauth21_authorization_server",
 });
 
 const VALID_AUTH_MODES = new Set(Object.keys(AUTH_DEFAULT_PORTS));
-const RESERVED_AUTH_MODES = new Set(["oauth", "oauth21"]);
+const RETIRED_AUTH_MODES = new Set(["access", "bearer"]);
+const RESERVED_AUTH_MODES = new Set(["oauth"]);
 const HARD_FALLBACK_PORT = 3009;
 const HARD_FALLBACK_HOST = "127.0.0.1";
 const HARD_FALLBACK_PUBLIC_BASE_URL = AUTH_PUBLIC_BASE_URLS.none;
 
 function normalizeAuthMode(value, source) {
   const mode = String(value || "none").trim().toLowerCase();
+  if (RETIRED_AUTH_MODES.has(mode)) {
+    throw new Error(`Retired auth mode from ${source}: ${mode}. Active values: none, oauth21. Legacy non-target value: oauth. Retired values: access, bearer.`);
+  }
   if (!VALID_AUTH_MODES.has(mode)) {
-    throw new Error(`Invalid auth mode from ${source}: ${mode}. Allowed values: none, access, bearer, oauth, oauth21.`);
+    throw new Error(`Invalid auth mode from ${source}: ${mode}. Allowed values: none, oauth, oauth21. Retired values: access, bearer.`);
   }
   return mode;
 }
@@ -248,6 +247,7 @@ module.exports = {
   HARD_FALLBACK_PORT,
   HARD_FALLBACK_PUBLIC_BASE_URL,
   RESERVED_AUTH_MODES,
+  RETIRED_AUTH_MODES,
   VALID_AUTH_MODES,
   parseBootstrapArgs,
   resolveAuthBootstrapConfig,

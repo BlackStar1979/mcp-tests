@@ -1592,5 +1592,17 @@
       },
       "historical_s34_validator_repaired": true
     }
+  },
+  "post_stage12_runtime_retirement_note": {
+    "status": "stage1_target_frozen_after_h10_oauth21",
+    "active_runtime_target": {
+      "none": 3009,
+      "oauth21": 3008
+    },
+    "retired_runtime_modes": {
+      "access": 3005,
+      "bearer": 3006
+    },
+    "legacy_stage12_access_bearer_rules": "historical negative controls; no longer target live TEST MCP instances after Stage 1 retirement decision"
   }
 }

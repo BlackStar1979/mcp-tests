@@ -25,12 +25,9 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 32,
+      "tool_count": 30,
       "tools": [
-        "auth_bearer_cutover_guard",
-        "auth_bearer_dry_run",
-        "auth_modular_parity_status",
-        "auth_transition_status",
+        "code_sample_js",
         "dev_code_audit",
         "dev_code_dependencies",
         "dev_code_impact",
@@ -58,18 +55,26 @@
         "plugin_visibility_status",
         "session_toolset_plan",
         "session_toolset_status",
-        "test_mcp_runtime_status"
-      ]
+        "test_mcp_runtime_status",
+        "auth_legacy_retirement_status"
+      ],
+      "legacy_auth_precutover_tools_replaced_stage4": [
+        "auth_transition_status",
+        "auth_bearer_dry_run",
+        "auth_bearer_cutover_guard",
+        "auth_modular_parity_status"
+      ],
+      "stage4_consolidation_tool": "auth_legacy_retirement_status",
+      "stage6_status": "green_active_authorized_surface_source_aligned"
     },
     "restricted_core_tools": {
-      "description": "MCP-callable core tools not exposed by public profile and not implemented as tools/authorized facades.",
-      "tool_count": 1,
-      "tools": [
-        "code_sample_js"
-      ]
+      "description": "No active restricted-core MCP tools after Stage 5; code_sample_js is represented in authorized_mcp_tools with an authorized facade.",
+      "tool_count": 0,
+      "tools": [],
+      "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 46,
+  "total_mcp_callable_tool_count": 43,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -106,7 +111,7 @@
     },
     "code_sample_js": {
       "name": "code_sample_js",
-      "surface_class": "restricted_core_tools",
+      "surface_class": "authorized_mcp_tools",
       "tool_category": "core",
       "resource_class": "runtime_status_readonly",
       "operation_class": "read",
@@ -115,7 +120,8 @@
       ],
       "audit_required": false,
       "auth_required": true,
-      "public_safe": false
+      "public_safe": false,
+      "stage5_surface_reclassification": "moved_from_restricted_core_tools_to_authorized_mcp_tools_to_match_runtime_loader"
     },
     "net_http_get_allowlisted": {
       "name": "net_http_get_allowlisted",
@@ -243,50 +249,6 @@
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
       "audit_required": false
-    },
-    "auth_bearer_cutover_guard": {
-      "name": "auth_bearer_cutover_guard",
-      "surface_class": "authorized_mcp_tools",
-      "tool_category": "auth_control",
-      "resource_class": "auth_runtime_readonly",
-      "operation_class": "read",
-      "resource_policy_refs": [
-        "SERVER_RESOURCE_POLICY_SPEC.json"
-      ],
-      "audit_required": true
-    },
-    "auth_bearer_dry_run": {
-      "name": "auth_bearer_dry_run",
-      "surface_class": "authorized_mcp_tools",
-      "tool_category": "auth_control",
-      "resource_class": "auth_runtime_readonly",
-      "operation_class": "read",
-      "resource_policy_refs": [
-        "SERVER_RESOURCE_POLICY_SPEC.json"
-      ],
-      "audit_required": true
-    },
-    "auth_modular_parity_status": {
-      "name": "auth_modular_parity_status",
-      "surface_class": "authorized_mcp_tools",
-      "tool_category": "auth_control",
-      "resource_class": "auth_runtime_readonly",
-      "operation_class": "read",
-      "resource_policy_refs": [
-        "SERVER_RESOURCE_POLICY_SPEC.json"
-      ],
-      "audit_required": true
-    },
-    "auth_transition_status": {
-      "name": "auth_transition_status",
-      "surface_class": "authorized_mcp_tools",
-      "tool_category": "auth_control",
-      "resource_class": "auth_runtime_readonly",
-      "operation_class": "read",
-      "resource_policy_refs": [
-        "SERVER_RESOURCE_POLICY_SPEC.json"
-      ],
-      "audit_required": true
     },
     "dev_code_audit": {
       "name": "dev_code_audit",
@@ -613,11 +575,129 @@
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
       "audit_required": true
+    },
+    "auth_legacy_retirement_status": {
+      "name": "auth_legacy_retirement_status",
+      "surface": "authorized",
+      "category": "auth_retirement_status",
+      "description": "Read-only status for retired access/bearer TEST MCP runtime targets; replaces four precutover auth transition/bearer guard tools in active surface.",
+      "stage4_replaces": [
+        "auth_transition_status",
+        "auth_bearer_dry_run",
+        "auth_bearer_cutover_guard",
+        "auth_modular_parity_status"
+      ],
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "auth_retirement_status",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
     }
   },
   "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",
   "network_policy_ref": "SERVER_NETWORK_POLICY_SPEC.json",
   "database_policy_ref": "SERVER_DATABASE_POLICY_SPEC.json",
   "plugin_visibility_policy_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
-  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json",
+  "access_bearer_retirement": {
+    "status": "stage6_final_closeout_green",
+    "legacy_auth_precutover_tools": [
+      "auth_transition_status",
+      "auth_bearer_dry_run",
+      "auth_bearer_cutover_guard",
+      "auth_modular_parity_status"
+    ],
+    "preferred_stage4_path": "replace four precutover tools with one auth_legacy_retirement_status tool, then hard-remove after stabilization if operator approves",
+    "replacement_tool": "auth_legacy_retirement_status",
+    "current_authorized_tool_count_after_stage4": 30,
+    "current_total_mcp_callable_tool_count_after_stage4": 43,
+    "retired_tool_catalog_entries_removed_stage5": [
+      "auth_bearer_cutover_guard",
+      "auth_bearer_dry_run",
+      "auth_modular_parity_status",
+      "auth_transition_status"
+    ],
+    "retired_tool_catalog_archive": {
+      "auth_bearer_cutover_guard": {
+        "name": "auth_bearer_cutover_guard",
+        "surface_class": "authorized_mcp_tools",
+        "tool_category": "auth_control",
+        "resource_class": "auth_runtime_readonly",
+        "operation_class": "read",
+        "resource_policy_refs": [
+          "SERVER_RESOURCE_POLICY_SPEC.json"
+        ],
+        "audit_required": true,
+        "active_runtime_target": false,
+        "stage4_status": "legacy_not_loaded_by_tool_loader",
+        "archived_stage1_retirement_status": "legacy_precutover_auth_tool_pending_stage4_consolidation_or_removal",
+        "stage6_status": "retired_from_active_mcp_surface"
+      },
+      "auth_bearer_dry_run": {
+        "name": "auth_bearer_dry_run",
+        "surface_class": "authorized_mcp_tools",
+        "tool_category": "auth_control",
+        "resource_class": "auth_runtime_readonly",
+        "operation_class": "read",
+        "resource_policy_refs": [
+          "SERVER_RESOURCE_POLICY_SPEC.json"
+        ],
+        "audit_required": true,
+        "active_runtime_target": false,
+        "stage4_status": "legacy_not_loaded_by_tool_loader",
+        "archived_stage1_retirement_status": "legacy_precutover_auth_tool_pending_stage4_consolidation_or_removal",
+        "stage6_status": "retired_from_active_mcp_surface"
+      },
+      "auth_modular_parity_status": {
+        "name": "auth_modular_parity_status",
+        "surface_class": "authorized_mcp_tools",
+        "tool_category": "auth_control",
+        "resource_class": "auth_runtime_readonly",
+        "operation_class": "read",
+        "resource_policy_refs": [
+          "SERVER_RESOURCE_POLICY_SPEC.json"
+        ],
+        "audit_required": true,
+        "active_runtime_target": false,
+        "stage4_status": "legacy_not_loaded_by_tool_loader",
+        "archived_stage1_retirement_status": "legacy_precutover_auth_tool_pending_stage4_consolidation_or_removal",
+        "stage6_status": "retired_from_active_mcp_surface"
+      },
+      "auth_transition_status": {
+        "name": "auth_transition_status",
+        "surface_class": "authorized_mcp_tools",
+        "tool_category": "auth_control",
+        "resource_class": "auth_runtime_readonly",
+        "operation_class": "read",
+        "resource_policy_refs": [
+          "SERVER_RESOURCE_POLICY_SPEC.json"
+        ],
+        "audit_required": true,
+        "active_runtime_target": false,
+        "stage4_status": "legacy_not_loaded_by_tool_loader",
+        "archived_stage1_retirement_status": "legacy_precutover_auth_tool_pending_stage4_consolidation_or_removal",
+        "stage6_status": "retired_from_active_mcp_surface"
+      }
+    },
+    "active_replacement_tool": "auth_legacy_retirement_status",
+    "retired_tools": [
+      "auth_transition_status",
+      "auth_bearer_dry_run",
+      "auth_bearer_cutover_guard",
+      "auth_modular_parity_status"
+    ],
+    "current_authorized_tool_count_after_stage6": 30,
+    "current_total_mcp_callable_tool_count_after_stage6": 43,
+    "legacy_implementation_modules_retained": true,
+    "archived_pre_stage_counts": {
+      "authorized_tool_count_pre_stage4": 32,
+      "total_mcp_callable_tool_count_pre_stage4": 46,
+      "target_authorized_tool_count_after_hard_removal": 28,
+      "target_total_mcp_callable_tool_count_after_hard_removal": 42
+    },
+    "final_decision": "replacement_tool_plus_legacy_manifest_reclassification_not_hard_removal"
+  }
 }

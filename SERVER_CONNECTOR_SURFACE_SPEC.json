@@ -1,7 +1,7 @@
 {
   "schema_version": "mcp-tests-connector-surface-spec-v1",
   "spec_mode": "refresh-readiness-contract-not-live-connector-state",
-  "scope": "Defines what may be accepted as public connector surface before OAuth. Live ChatGPT connector refresh is an external operator action and is not performed by this spec.",
+  "scope": "Defines target TEST MCP connector topology after Stage 1 retirement decision. Live ChatGPT connector refresh is an external operator action and is not performed by this spec.",
   "repository_truth_ref": "SERVER_TOOLS_SPEC.json",
   "public_connector": {
     "profile": "public",
@@ -55,6 +55,7 @@
     "expected_public_plus_authorized_count": 45,
     "expected_authorized_tools": [
       "test_mcp_runtime_status",
+      "code_sample_js",
       "dev_code_symbols",
       "dev_code_dependencies",
       "dev_code_audit",
@@ -75,10 +76,7 @@
       "plugin_execute_readonly",
       "plugin_execution_governance",
       "plugin_execution_verify_receipt",
-      "auth_transition_status",
-      "auth_bearer_dry_run",
-      "auth_bearer_cutover_guard",
-      "auth_modular_parity_status",
+      "auth_legacy_retirement_status",
       "observability_status",
       "memory_save",
       "memory_search",
@@ -87,7 +85,25 @@
       "memory_create_task",
       "memory_get_tasks"
     ],
-    "oauth_before_production_required": true
+    "oauth_before_production_required": true,
+    "auth_mode": "oauth21",
+    "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+    "mcp_endpoint": "https://mcp-tests-oauth21.romionologic.dev/mcp",
+    "target_port": 3008,
+    "target_after_stage4": {
+      "remove_or_consolidate_legacy_auth_precutover_tools": true,
+      "preferred_consolidation_tool": "auth_legacy_retirement_status"
+    },
+    "legacy_auth_precutover_tools_replaced_stage4": [
+      "auth_transition_status",
+      "auth_bearer_dry_run",
+      "auth_bearer_cutover_guard",
+      "auth_modular_parity_status"
+    ],
+    "stage4_replacement_tool": "auth_legacy_retirement_status",
+    "current_tool_count_after_stage4": 43,
+    "current_tool_count_after_stage5": 43,
+    "current_tool_count_after_stage6": 43
   },
   "operator_connector": {
     "separate_from_public_connector": true,
@@ -109,7 +125,15 @@
     "query_token_urls_oauth_ready": false,
     "public_connector_must_remain_auth_none": true,
     "oauth_resource_server_connector_must_be_separate_from_public_connector": true,
-    "guard": "_tests/smoke_stage12_connector_refresh_readiness.js"
+    "guard": "_tests/smoke_stage12_connector_refresh_readiness.js",
+    "retired_connector_targets": [
+      "access",
+      "bearer"
+    ],
+    "active_connector_targets": [
+      "public:none",
+      "authorized:oauth21"
+    ]
   },
   "oauth21_connector": {
     "status": "implemented_h10_local_as_ready",
@@ -120,5 +144,68 @@
     "cloudflare_access": false,
     "path": "/mcp",
     "target_final_park_role": "primary_authenticated_oauth21_test_server"
+  },
+  "target_connector_topology": {
+    "status": "stage1_target_frozen",
+    "active_connectors": {
+      "public": {
+        "auth_mode": "none",
+        "port": 3009,
+        "profile": "public",
+        "mcp_endpoint": "https://mcp-tests.romionologic.dev/mcp",
+        "tool_count": 13,
+        "auth": "none"
+      },
+      "authorized": {
+        "auth_mode": "oauth21",
+        "port": 3008,
+        "profile": "internal",
+        "mcp_endpoint": "https://mcp-tests-oauth21.romionologic.dev/mcp",
+        "current_tool_count_after_stage4": 43,
+        "current_tool_count_after_stage5": 43,
+        "auth": "oauth21",
+        "current_tool_count_after_stage6": 43
+      }
+    },
+    "retired_connectors": {
+      "access": {
+        "old_port": 3005,
+        "status": "retired_no_connector_target"
+      },
+      "bearer": {
+        "old_port": 3006,
+        "status": "retired_no_connector_target"
+      }
+    }
+  },
+  "stage6_live_closeout": {
+    "status": "green_live_closeout_oauth21_connector_public_local_source_aligned",
+    "date": "2026-06-21",
+    "oauth21_connector": {
+      "validated_via": "TESTS_MCP.test_mcp_runtime_status",
+      "auth_mode": "oauth21",
+      "profile": "internal",
+      "port": 3008,
+      "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+      "tool_count": 43,
+      "tool_names_hash": "8b62ecaf89227335",
+      "schema_compatibility": "ok",
+      "security_boundary": "ok",
+      "replacement_tool_present": "auth_legacy_retirement_status",
+      "retired_tools_absent": [
+        "auth_transition_status",
+        "auth_bearer_dry_run",
+        "auth_bearer_cutover_guard",
+        "auth_modular_parity_status"
+      ]
+    },
+    "public_runtime": {
+      "validated_via": "local 127.0.0.1:3009 healthz and tools/list",
+      "auth_mode": "none",
+      "profile": "public",
+      "port": 3009,
+      "tool_count": 13
+    },
+    "public_connector": "not_connected_not_required_for_stage6_closeout"
   }
 }

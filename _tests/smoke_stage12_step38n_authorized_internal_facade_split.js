@@ -6,7 +6,7 @@ const ROOT=path.resolve(__dirname,"..");
 const toolsSpec=JSON.parse(fs.readFileSync(path.join(ROOT,"SERVER_TOOLS_SPEC.json"),"utf8"));
 const authorized=toolsSpec.surface_classes.authorized_mcp_tools.tools;
 assert.ok(Array.isArray(authorized));
-assert.equal(authorized.length,32);
+assert.equal(authorized.length, require("../src/tool_policy").AUTHORIZED_MCP_TOOL_NAMES.length);
 assert.equal(Object.hasOwn(toolsSpec.surface_classes,"non_public_mcp_tools"),false);
 const authorizedJs=fs.readdirSync(path.join(ROOT,"tools","authorized")).filter((n)=>n.endsWith(".js")).map((n)=>n.replace(/\.js$/,""));
 assert.deepEqual(authorizedJs.sort(),authorized.slice().sort());

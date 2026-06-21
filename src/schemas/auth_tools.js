@@ -78,7 +78,64 @@ const AUTH_MODULAR_PARITY_STATUS_OUTPUT_SCHEMA = {
   },
 };
 
+const AUTH_LEGACY_RETIREMENT_STATUS_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "success",
+    "mode",
+    "version",
+    "active_auth_modes",
+    "active_ports",
+    "retired_auth_modes",
+    "retired_ports",
+    "legacy_tools_replaced",
+    "stage",
+    "connector_refresh_required",
+    "message",
+  ],
+  properties: {
+    success: { type: "boolean" },
+    error: { type: "string" },
+    mode: { type: "string" },
+    version: { type: "string" },
+    active_auth_modes: { type: "array", items: { type: "string" } },
+    active_ports: {
+      type: "object",
+      additionalProperties: false,
+      required: ["none", "oauth21"],
+      properties: {
+        none: { type: "number" },
+        oauth21: { type: "number" },
+      },
+    },
+    retired_auth_modes: { type: "array", items: { type: "string" } },
+    retired_ports: {
+      type: "object",
+      additionalProperties: false,
+      required: ["access", "bearer"],
+      properties: {
+        access: { type: "number" },
+        bearer: { type: "number" },
+      },
+    },
+    legacy_non_target_modes: { type: "array", items: { type: "string" } },
+    legacy_non_target_ports: {
+      type: "object",
+      additionalProperties: false,
+      properties: {
+        oauth: { type: "number" },
+      },
+    },
+    legacy_tools_replaced: { type: "array", items: { type: "string" } },
+    stage: { type: "string" },
+    connector_refresh_required: { type: "boolean" },
+    message: { type: "string" },
+  },
+};
+
 module.exports = {
+  AUTH_LEGACY_RETIREMENT_STATUS_OUTPUT_SCHEMA,
   AUTH_BEARER_CUTOVER_GUARD_OUTPUT_SCHEMA,
   AUTH_BEARER_DRY_RUN_OUTPUT_SCHEMA,
   AUTH_MODULAR_PARITY_STATUS_OUTPUT_SCHEMA,

@@ -18,6 +18,7 @@ const PUBLIC_TOOL_NAMES = [
 
 const AUTHORIZED_MCP_TOOL_NAMES = [
   "test_mcp_runtime_status",
+  "code_sample_js",
   "dev_code_symbols",
   "dev_code_dependencies",
   "dev_code_audit",
@@ -38,10 +39,7 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "plugin_execute_readonly",
   "plugin_execution_governance",
   "plugin_execution_verify_receipt",
-  "auth_transition_status",
-  "auth_bearer_dry_run",
-  "auth_bearer_cutover_guard",
-  "auth_modular_parity_status",
+  "auth_legacy_retirement_status",
   "observability_status",
   "memory_save",
   "memory_search",
@@ -95,10 +93,7 @@ const TOOL_POLICIES = Object.freeze({
   plugin_execute_readonly: policy({ usesFs: true, fsScope: "plugin-execution-wrapper" }),
   plugin_execution_governance: policy({ usesFs: false, fsScope: "none" }),
   plugin_execution_verify_receipt: policy({ usesFs: false, fsScope: "none" }),
-  auth_transition_status: policy({ usesFs: false, fsScope: "none" }),
-  auth_bearer_dry_run: policy({ usesFs: false, fsScope: "none" }),
-  auth_bearer_cutover_guard: policy({ usesFs: false, fsScope: "none" }),
-  auth_modular_parity_status: policy({ usesFs: false, fsScope: "none" }),
+  auth_legacy_retirement_status: policy({ usesFs: false, fsScope: "none" }),
   observability_status: policy({ usesFs: true, fsScope: "observability-audit-preview" }),
 });
 

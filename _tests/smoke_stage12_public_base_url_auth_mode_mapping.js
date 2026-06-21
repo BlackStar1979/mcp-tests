@@ -142,26 +142,25 @@ async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode,
 
   try {
     assert.equal(AUTH_PUBLIC_BASE_URLS.none, "https://mcp-tests.romionologic.dev");
-    assert.equal(AUTH_PUBLIC_BASE_URLS.bearer, "https://mcp-tests-bearer.romionologic.dev");
-    assert.equal(AUTH_PUBLIC_BASE_URLS.access, "https://mcp-tests-access.romionologic.dev");
+    assert.equal(AUTH_PUBLIC_BASE_URLS.bearer, undefined);
+    assert.equal(AUTH_PUBLIC_BASE_URLS.access, undefined);
+    assert.equal(AUTH_PUBLIC_BASE_URLS.oauth, "https://mcp-tests-oauth.romionologic.dev");
     assert.equal(AUTH_PUBLIC_BASE_URLS.oauth21, "https://mcp-tests-oauth21.romionologic.dev");
 
     assert.equal(
       resolveAuthBootstrapConfig({ argv: [], env: cleanEnv() }).publicBaseUrl,
       AUTH_PUBLIC_BASE_URLS.none
     );
+    assert.throws(() => resolveAuthBootstrapConfig({ argv: ["--auth", "bearer"], env: cleanEnv() }), /Retired auth mode/);
+    assert.throws(() => resolveAuthBootstrapConfig({ argv: ["--auth", "access"], env: cleanEnv() }), /Retired auth mode/);
     assert.equal(
-      resolveAuthBootstrapConfig({ argv: ["--auth", "bearer"], env: cleanEnv() }).publicBaseUrl,
-      AUTH_PUBLIC_BASE_URLS.bearer
-    );
-    assert.equal(
-      resolveAuthBootstrapConfig({ argv: ["--auth", "access"], env: cleanEnv() }).publicBaseUrl,
-      AUTH_PUBLIC_BASE_URLS.access
+      resolveAuthBootstrapConfig({ argv: ["--auth", "oauth"], env: cleanEnv() }).publicBaseUrl,
+      AUTH_PUBLIC_BASE_URLS.oauth
     );
 
     {
       const config = resolveAuthBootstrapConfig({
-        argv: ["--auth", "bearer"],
+        argv: ["--auth", "oauth"],
         env: cleanEnv({ MCP_TEST_PUBLIC_BASE_URL: "https://override.example.test////" }),
       });
       assert.equal(config.publicBaseUrl, "https://override.example.test");
@@ -172,29 +171,6 @@ async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode,
       argv: ["--auth", "none"],
       expectedAuthMode: "none",
       expectedPublicBaseUrl: AUTH_PUBLIC_BASE_URLS.none,
-    });
-
-    await withServer({
-      argv: ["--auth", "bearer", "--token-file", tokenFile],
-      headers: { authorization: `Bearer ${TOKEN}` },
-      expectedAuthMode: "bearer",
-      expectedPublicBaseUrl: AUTH_PUBLIC_BASE_URLS.bearer,
-    });
-
-    await withServer({
-      argv: ["--auth", "access"],
-      env: { MCP_TEST_ACCESS_TRUSTED_PROXY: "1" },
-      headers: { "cf-access-jwt-assertion": "stage12-public-url-access-assertion" },
-      expectedAuthMode: "access",
-      expectedPublicBaseUrl: AUTH_PUBLIC_BASE_URLS.access,
-    });
-
-    await withServer({
-      argv: ["--auth", "access"],
-      env: { MCP_TEST_PUBLIC_BASE_URL: "https://custom-public.example.test", MCP_TEST_ACCESS_TRUSTED_PROXY: "1" },
-      headers: { "cf-access-jwt-assertion": "stage12-public-url-access-assertion" },
-      expectedAuthMode: "access",
-      expectedPublicBaseUrl: "https://custom-public.example.test",
     });
 
     {
