@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T18:50:00+02:00",
+  "updated_at": "2026-06-21T19:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "p6_event_driven_hotplug_lifecycle_design",
-    "stage": "Post Stage 6 P6",
-    "status": "green_p6_event_driven_hotplug_lifecycle_design_pending_commit",
-    "description": "Event-driven Hotplug lifecycle design recorded from existing list_changed/plugin visibility dry-run stack; no runtime emission or tool surface mutation performed."
+    "id": "p7_workflow_archive_compaction_index",
+    "stage": "Post Stage 6 P7",
+    "status": "green_p7_workflow_archive_compaction_index_pending_commit",
+    "description": "Non-destructive active workflow index added to reduce historical workflow noise without moving or deleting referenced records."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,10 +39,11 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit P6 event-driven hotplug lifecycle design",
-    "P7 workflow_archive_compaction",
+    "Commit P7 workflow active index",
     "Future: HPL1 tool registry abstraction after operator approval",
     "Future: S1 sessionless compatibility inventory",
+    "Future: C1 cancellation context plumbing after operator approval",
+    "Future: R1 runtime policy spec loader after operator approval",
     "Explicit operator approval required before any further connector refresh or runtime policy expansion"
   ],
   "target_runtime_topology": {
@@ -339,5 +340,11 @@
       "HPL5 runtime apply prototype behind feature flag",
       "HPL6 sessionless/draft alignment"
     ]
+  },
+  "p7_workflow_archive_compaction_index": {
+    "status": "green_index_only",
+    "record": "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+    "policy": "non_destructive_compaction_no_file_moves",
+    "reason": "historical workflow paths are referenced by tests and remain useful for audit chronology"
   }
 }
