@@ -12,6 +12,7 @@ const AUTH_PUBLIC_BASE_URLS = Object.freeze({
   none: "https://mcp-tests.romionologic.dev",
   access: "https://mcp-tests-access.romionologic.dev",
   bearer: "https://mcp-tests-bearer.romionologic.dev",
+  oauth21: "https://mcp-tests-oauth21.romionologic.dev",
 });
 
 const AUTH_MODE_STATUS = Object.freeze({
@@ -19,7 +20,7 @@ const AUTH_MODE_STATUS = Object.freeze({
   access: "planned_cloudflare_access_presence_check",
   bearer: "planned_token_file_bearer",
   oauth: "reserved_future_not_implemented",
-  oauth21: "reserved_future_not_implemented",
+  oauth21: "implemented_local_oauth21_authorization_server",
 });
 
 const VALID_AUTH_MODES = new Set(Object.keys(AUTH_DEFAULT_PORTS));
@@ -64,6 +65,7 @@ function parseBootstrapArgs(argv = []) {
     authMode: undefined,
     port: undefined,
     tokenFile: undefined,
+    oauthConfigFile: undefined,
     allowQueryToken: false,
     trustedProxy: false,
     selfTest: false,
@@ -126,6 +128,20 @@ function parseBootstrapArgs(argv = []) {
       continue;
     }
 
+    const oauthFileFlag = "--oauth-" + "secret-file";
+    if (arg === oauthFileFlag) {
+      const next = takeNextArg(args, index, oauthFileFlag);
+      parsed.oauthConfigFile = next.value;
+      index = next.nextIndex;
+      continue;
+    }
+
+    if (arg.startsWith(oauthFileFlag + "=")) {
+      parsed.oauthConfigFile = arg.slice((oauthFileFlag + "=").length);
+      if (!parsed.oauthConfigFile) throw new Error("Missing value for " + oauthFileFlag);
+      continue;
+    }
+
     throw new Error(`Unsupported bootstrap argument: ${arg}`);
   }
 
@@ -178,6 +194,11 @@ function resolveAuthBootstrapConfig({ argv = [], env = process.env } = {}) {
     : envMap.MCP_TEST_TOKEN_FILE
       ? String(envMap.MCP_TEST_TOKEN_FILE)
       : "";
+  const oauthConfigFileSource = parsed.oauthConfigFile !== undefined
+    ? "cli"
+    : "unset";
+  const oauthConfigFile = parsed.oauthConfigFile !== undefined ? String(parsed.oauthConfigFile) : "";
+
   const envAllowQueryToken = ["1", "true", "yes", "on"].includes(
     String(envMap.MCP_TEST_BEARER_ALLOW_QUERY_TOKEN || "").trim().toLowerCase()
   );
@@ -206,6 +227,8 @@ function resolveAuthBootstrapConfig({ argv = [], env = process.env } = {}) {
     hostSource,
     tokenFile,
     tokenFileSource,
+    oauthConfigFile,
+    oauthConfigFileSource,
     allowQueryToken,
     allowQueryTokenSource,
     trustedProxy,

@@ -8,7 +8,7 @@ const { assertMatchesSchema, validateAgainstSchema } = require("../src/output_sc
 function runtimeStatusFromBuilder(includeTools = true) {
   return buildRuntimeStatus({
     serverName: "mcp-tests-response-shape",
-    serverVersion: "0.30.0",
+    serverVersion: "0.40.0",
     connectorShapeVersion: "2025-05-strict-v1",
     outputMode: "structured",
     publicBaseUrl: "https://example.test/mcp",
@@ -35,7 +35,7 @@ function runtimeStatusFromBuilder(includeTools = true) {
 function baseRuntimeStatus() {
   return {
     server_name: "mcp-tests-response-shape",
-    server_version: "0.30.0",
+    server_version: "0.40.0",
     connector_shape_version: "2025-05-strict-v1",
     output_mode: "structured",
     public_base_url: "https://example.test/mcp",
@@ -43,7 +43,7 @@ function baseRuntimeStatus() {
     port: 3009,
     runtime_identity: {
       server_name: "mcp-tests-response-shape",
-      server_version: "0.30.0",
+      server_version: "0.40.0",
       connector_shape_version: "2025-05-strict-v1",
       audit_version: "audit-v1",
       startup_report_version: "test-mcp-startup-report-v1",

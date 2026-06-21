@@ -33,7 +33,7 @@ const AUDIT_LOG_PATH = path.join(
 
 // Stable contract baseline (from src/runtime/identity.js).
 const SERVER_NAME = "mcp-tests-response-shape";
-const SERVER_VERSION = "0.30.0";
+const SERVER_VERSION = "0.40.0";
 const CONNECTOR_SHAPE_VERSION = "2025-05-strict-v1";
 
 // Redaction forbidden strings. None of these may appear in a clean audit log.

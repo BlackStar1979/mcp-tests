@@ -4,16 +4,16 @@
   "updated_at": "2026-06-19T00:00:00Z",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "post_h9_debt_closure",
+    "id": "oauth21_runtime_status_response_remediation",
     "stage": "Stage 12",
-    "status": "green_post_h9_debt_closure",
-    "description": "Post-H9 debts are closed: too-old Last-Event-ID fails closed before SSE stream open, and JWKS cache-control/max-age parsing is implemented with local max TTL bounding."
+    "status": "green_oauth21_runtime_status_response_remediation",
+    "description": "OAuth21 test_mcp_runtime_status response is descriptor-stable and guarded through full OAuth21 DCR/PKCE/operator-login/tools-call path; replay id reuse remains non-blocking; full smoke validated."
   },
   "last_validated_runtime": {
-    "server_version": "0.30.0",
+    "server_version": "0.40.0",
     "public_sections": 8,
-    "tests_authenticated": 141,
-    "full_smoke_skip_network": "ok_0_30_0_8_141"
+    "tests_authenticated": 148,
+    "full_smoke_skip_network": "ok_0_40_0_8_148"
   },
   "active_controls": [
     "auth behavior freeze",
@@ -40,6 +40,6 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Explicit operator approval may authorize live connector refresh readiness check; otherwise no automatic live connector action is allowed"
+    "External tunnel validation for mcp-tests-oauth21 may proceed; live connector refresh still requires separate explicit operator approval"
   ]
 }

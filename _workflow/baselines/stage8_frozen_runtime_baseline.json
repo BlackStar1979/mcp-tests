@@ -1,7 +1,7 @@
 {
   "baseline_name": "stage8_frozen_runtime_baseline",
   "server_name": "mcp-tests-response-shape",
-  "server_version": "0.30.0",
+  "server_version": "0.40.0",
   "connectorShapeVersion": "2025-05-strict-v1",
   "outputMode": "structured",
   "authMode": "none",

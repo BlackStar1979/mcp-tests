@@ -80,7 +80,7 @@ function unitHandlerCheck() {
       res: {},
       jsonResponse: (_res, _status, payload) => { body = payload; },
       serverName: "mcp-tests-response-shape",
-      serverVersion: "0.30.0",
+      serverVersion: "0.40.0",
       connectorShapeVersion: "2025-05-strict-v1",
       outputMode: "structured",
       maxFetchTextChars: 2500,

@@ -3,7 +3,7 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "server": {
     "name": "mcp-tests-response-shape",
-    "version": "0.30.0",
+    "version": "0.40.0",
     "shape": "2025-05-strict-v1",
     "mode": "structured",
     "default_auth": "none",

@@ -65,7 +65,7 @@ const entries = [
 fs.writeFileSync(auditLogPath, `${entries.map((entry) => JSON.stringify(entry)).join("\n")}\n`, "utf8");
 
 const runtimeStatus = {
-  server_version: "0.30.0",
+  server_version: "0.40.0",
   stage_status: "stage8_16-audit-arg-summary-semantics",
   auth: { mode: "none" },
   profile: { mode: "public" },

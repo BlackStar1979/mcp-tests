@@ -2,7 +2,7 @@
 
 Status: ACTIVE
 Created: 2026-06-20
-Baseline: ok_0_30_0_8_128
+Baseline: ok_0_40_0_8_128
 Scope: post Phase G hardening plan for production-grade OAuth, sampling approval policy, stream reliability, and live connector refresh.
 
 ## 1. Current state
@@ -309,3 +309,7 @@ H9 is green. Implemented live connector refresh readiness contract only: `SERVER
 ## Post-H9 debt closure note
 
 Closed the two remaining debts required before any live connector refresh authorization: too-old Last-Event-ID now fails closed through replay validation before opening the SSE stream, and JWKS cache-control max-age is parsed into an effective TTL bounded by local maximum TTL. Guards: `_tests/replay_gap_guard.js` and `_tests/jwks_ttl_guard.js`.
+
+## H10 OAuth21 local authorization server note
+
+H10 is green. `mcp-tests` now has a separate `oauth21` mode on port 3008 with public base URL `https://mcp-tests-oauth21.romionologic.dev`, path `/mcp`, app-layer OAuth 2.1 authorization server endpoints, public DCR, PKCE S256, operator login gate, no Cloudflare Access requirement, and Authorization header Bearer validation for MCP. Guards: `_tests/smoke_stage12_oauth21_bootstrap_config.js`, `_tests/smoke_stage12_oauth21_host_header.js`, `_tests/smoke_stage12_oauth21_local_as_flow.js`.

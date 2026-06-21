@@ -20,6 +20,19 @@ function compactToolLabels(labels) {
   };
 }
 
+function buildRuntimeAuthStatus(authPolicy) {
+  const status = authPolicy && typeof authPolicy.status === "function" ? authPolicy.status() : {};
+  return {
+    mode: String(status.mode || authPolicy?.mode || "unknown"),
+    enabled: typeof status.enabled === "boolean" ? status.enabled : Boolean(authPolicy?.enabled),
+    requires_auth: typeof status.requires_auth === "boolean" ? status.requires_auth : Boolean(authPolicy?.requiresAuth),
+    token_file_configured: Boolean(status.token_file_configured),
+    token_loaded: Boolean(status.token_loaded),
+    token_length: Number.isInteger(status.token_length) && status.token_length >= 0 ? status.token_length : 0,
+    token_sha256_prefix: typeof status.token_sha256_prefix === "string" ? status.token_sha256_prefix : "",
+  };
+}
+
 function buildRuntimeStatus(context) {
   const {
     serverName,
@@ -78,7 +91,7 @@ function buildRuntimeStatus(context) {
     host,
     port,
     runtime_identity: identity,
-    auth: authPolicy.status(),
+    auth: buildRuntimeAuthStatus(authPolicy),
     profile: {
       mode: profile,
       public_exposure: profile === "public",
@@ -121,5 +134,6 @@ function buildRuntimeStatus(context) {
 }
 
 module.exports = {
+  buildRuntimeAuthStatus,
   buildRuntimeStatus,
 };

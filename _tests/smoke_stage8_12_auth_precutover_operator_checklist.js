@@ -31,7 +31,7 @@ async function callTool(name, args = {}) {
   assert.ok(toolNames.includes("memory_save"));
 
   const runtime = await callTool("test_mcp_runtime_status", { include_tools: true });
-  assert.equal(runtime.server_version, "0.30.0");
+  assert.equal(runtime.server_version, "0.40.0");
   assert.equal(runtime.stage_status, CURRENT_STAGE_STATUS);
   assert.equal(runtime.auth.mode, "access");
   assert.equal(runtime.auth.requires_auth, true);
@@ -85,7 +85,7 @@ async function callTool(name, args = {}) {
     connector_visible_tools: toolNames,
   });
   assert.equal(observability.success, true);
-  assert.equal(observability.runtime.server_version, "0.30.0");
+  assert.equal(observability.runtime.server_version, "0.40.0");
   assert.equal(observability.runtime.auth_mode, "access");
   assert.equal(observability.runtime.enabled_tool_count, 46);
   assert.equal(observability.connector_map.comparison_available, true);

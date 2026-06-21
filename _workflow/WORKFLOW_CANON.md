@@ -26,13 +26,13 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 ## 3. Current validated state
 
 - Server name: `mcp-tests-response-shape`.
-- Server version: `0.30.0`.
+- Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Latest validated public section count: `8`.
 - Latest validated authenticated smoke count after HTTP boundary guard: `116`.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_30_0_8_141`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_8_148`.
 - Step39 semantic correction: Step39 is a workstream boundary/control review. The P1 decision-runtime coverage package is supporting evidence, not the definition of Step39.
 - Step40 correction: workflow rules must be guarded by smoke, not merely documented.
 - Workflow memory compaction: `_workflow` reduced from 425 files to 45 files; historical longterm, patch manifest, policy, root narrative files, stage logs, temp scripts, public-sandbox workflow mirror, obsolete README generators, and one-off closeout scripts removed from active workflow memory.
@@ -330,3 +330,7 @@ H7 sampling user-approval policy green: `SERVER_SAMPLING_POLICY_SPEC.json`, runt
 H8 SSE keepalive/resumability green: `sse_response.js`, `mcp_get_stream_handler.js`, `session.js`, `_tests/smoke_stage12_sse_keepalive.js`, and `_tests/smoke_stage12_sse_resumability.js` are active. Next phase: H9 - Live connector refresh readiness after explicit operator approval.
 
 H9 live connector refresh readiness green: `SERVER_CONNECTOR_SURFACE_SPEC.json`, `_workflow/CONNECTOR_REFRESH_READINESS.md`, and `_tests/smoke_stage12_connector_refresh_readiness.js` are active. Live connector refresh was not performed and remains blocked unless explicitly approved by operator. OAuth production hardening H1-H9 is green with documented debts: JWKS HTTP cache-control/max-age parsing and too-old Last-Event-ID fail-closed behavior.
+
+mcp-tests audit remediation green: GET `/mcp` SSE authenticates before opening stream and `/docs/*` malformed percent-encoding returns controlled 400. Guards: `_tests/smoke_stage12_get_sse_requires_auth.js`, `_tests/smoke_stage12_docs_malformed_uri.js`. Live connector refresh remains blocked unless explicitly approved by operator.
+
+H10 OAuth21 local authorization server green: `oauth21` mode on port 3008 exposes local OAuth 2.1 AS endpoints, DCR, PKCE S256, operator login, token issuance, Bearer-protected `/mcp`, and host allowlist for `mcp-tests-oauth21.romionologic.dev`. Guards are active in run_all. Live connector refresh remains blocked unless explicitly approved by operator.

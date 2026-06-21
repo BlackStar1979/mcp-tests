@@ -146,7 +146,14 @@
   "_tests/smoke_stage12_sse_resumability.js",
   "_tests/replay_gap_guard.js",
   "_tests/smoke_stage12_connector_refresh_readiness.js",
+  "_tests/smoke_stage12_oauth21_bootstrap_config.js",
+  "_tests/smoke_stage12_oauth21_host_header.js",
+  "_tests/smoke_stage12_oauth21_local_as_flow.js",
+  "_tests/smoke_stage12_oauth21_body_guard.js",
+  "_tests/smoke_stage12_oauth21_runtime_status_response.js",
+  "_tests/smoke_stage12_docs_malformed_uri.js",
   "_tests/smoke_stage12_sse_keepalive.js",
   "_tests/smoke_stage12_sampling_capability_gate.js",
-  "_tests/smoke_stage12_get_sse_stream.js"
+  "_tests/smoke_stage12_get_sse_stream.js",
+  "_tests/smoke_stage12_get_sse_requires_auth.js"
 ]

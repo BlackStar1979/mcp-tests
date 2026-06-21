@@ -110,5 +110,15 @@
     "public_connector_must_remain_auth_none": true,
     "oauth_resource_server_connector_must_be_separate_from_public_connector": true,
     "guard": "_tests/smoke_stage12_connector_refresh_readiness.js"
+  },
+  "oauth21_connector": {
+    "status": "implemented_h10_local_as_ready",
+    "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+    "mcp_endpoint": "https://mcp-tests-oauth21.romionologic.dev/mcp",
+    "auth_mode": "oauth21",
+    "port": 3008,
+    "cloudflare_access": false,
+    "path": "/mcp",
+    "target_final_park_role": "primary_authenticated_oauth21_test_server"
   }
 }

@@ -6,7 +6,7 @@ const { buildObservabilityStatus } = require("../src/observability_status");
 const auditLogPath = path.join(__dirname, "fixtures", "observability_hardening_audit_fixture.jsonl");
 
 const runtimeStatus = {
-  server_version: "0.30.0",
+  server_version: "0.40.0",
   stage_status: CURRENT_STAGE_STATUS,
   auth: { mode: "none" },
   profile: { mode: "public" },

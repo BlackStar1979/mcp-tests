@@ -8,10 +8,13 @@ function buildProtectedResourceMetadata({ publicBaseUrl, authorizationServers = 
   const resource = canonicalResource(publicBaseUrl);
   const metadataAuthorizationServers = authorizationServerMetadata?.issuer ? [authorizationServerMetadata.issuer] : [];
   const resolvedAuthorizationServers = authorizationServers.length > 0 ? authorizationServers : metadataAuthorizationServers;
+  const scopesSupported = Array.isArray(authorizationServerMetadata?.scopes_supported) && authorizationServerMetadata.scopes_supported.length > 0
+    ? authorizationServerMetadata.scopes_supported.map(String)
+    : ["mcp:public", "mcp:tools", "mcp:operator"];
   return {
     resource,
     authorization_servers: resolvedAuthorizationServers.length > 0 ? resolvedAuthorizationServers : [`${resource}/.well-known/oauth-authorization-server`],
-    scopes_supported: ["mcp:public", "mcp:tools", "mcp:operator"],
+    scopes_supported: scopesSupported,
     bearer_methods_supported: ["header"],
     resource_documentation: `${resource}/docs/auth`,
   };

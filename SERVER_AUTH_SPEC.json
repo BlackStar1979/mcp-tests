@@ -238,5 +238,39 @@
       "sampling_request_denied"
     ],
     "guard": "_tests/smoke_stage12_sampling_user_approval_policy.js"
+  },
+  "oauth21_local_authorization_server": {
+    "status": "implemented_h10",
+    "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+    "mcp_path": "/mcp",
+    "port": 3008,
+    "cloudflare_access_required": false,
+    "authorization_server_endpoints": [
+      "/.well-known/oauth-authorization-server",
+      "/register",
+      "/authorize",
+      "/oauth/operator-login",
+      "/token",
+      "/revoke"
+    ],
+    "protected_resource_metadata": "/.well-known/oauth-protected-resource",
+    "dcr_public": true,
+    "pkce_required": true,
+    "pkce_method": "S256",
+    "operator_secret_source_order": [
+      "cli_file",
+      "env_fallback"
+    ],
+    "query_token_forbidden": true,
+    "host_header_allowlist_includes": [
+      "mcp-tests-oauth21.romionologic.dev",
+      "127.0.0.1",
+      "localhost"
+    ],
+    "guards": [
+      "_tests/smoke_stage12_oauth21_bootstrap_config.js",
+      "_tests/smoke_stage12_oauth21_host_header.js",
+      "_tests/smoke_stage12_oauth21_local_as_flow.js"
+    ]
   }
 }

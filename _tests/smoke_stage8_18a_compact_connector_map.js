@@ -14,7 +14,7 @@ function statusWith(args) {
     args: { window_size: 1, slow_ms: 1000, top_n: 5, ...args },
     auditLogPath: "./missing-audit-log-for-compact-map-test.jsonl",
     runtimeStatusProvider: () => ({
-      server_version: "0.30.0",
+      server_version: "0.40.0",
       stage_status: "stage8_18a-compact-connector-map",
       auth: { mode: "none" },
       profile: { mode: "public" },

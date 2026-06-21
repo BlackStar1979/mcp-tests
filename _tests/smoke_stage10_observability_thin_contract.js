@@ -102,7 +102,7 @@ async function callTool(mcpUrl, name, args = {}) {
     assert.equal(status.dynamic_import_enabled, false);
     assert.equal(status.list_changed_enabled, false);
 
-    assert.equal(status.runtime.server_version, "0.30.0");
+    assert.equal(status.runtime.server_version, "0.40.0");
     assert.equal(status.runtime.auth_mode, "access");
     assert.equal(status.runtime.profile, "internal");
     assert.equal(status.runtime.enabled_tool_count, 46);

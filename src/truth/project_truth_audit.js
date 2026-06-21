@@ -10,7 +10,7 @@ const {
 const { buildMechanismParityReport } = require("../mechanism_parity_matrix");
 
 const EXPECTED = Object.freeze({
-  server_version: "0.30.0",
+  server_version: "0.40.0",
   runtime_stage_status: CURRENT_STAGE_STATUS,
   current_working_course: "stage8_52e-cross-server-mechanism-parity-matrix-complete",
   next_primary: "stage8_53a-internal-truth-tools-parity-preflight",

@@ -17,6 +17,8 @@ const { configureOptionalToolsAssembly } = require("./optional_tools_assembly");
 const { runConfiguredRuntime } = require("./runtime_context_assembly");
 const { resolveAuthBootstrapConfig } = require("./auth_bootstrap_config_resolver");
 const { createAuthorizationServerMetadataProvider } = require("../auth/oauth_authorization_server_metadata");
+const { createOAuth21AuthorizationServer } = require("../auth/oauth21_authorization_server");
+const { loadOAuth21SecretConfig } = require("./oauth21_secret_config");
 const { parseServerCliArgs } = require("./server_cli_args");
 const { loadServerProfileConfig } = require("../server_profile_loader");
 const { DOCS } = require("./static_docs");
@@ -54,20 +56,31 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const auditLogPath = env.MCP_TEST_AUDIT_LOG || path.join(auditLogDir, ".mcp-tests-audit.jsonl");
 
   const optionalTools = [];
+  let oauth21AuthorizationServer = null;
+  let oauth21Issuer = env.MCP_TEST_OAUTH_ISSUER;
+  if (bootstrapConfig.authMode === "oauth21") {
+    const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
+    oauth21Issuer = secretConfig.issuer;
+    oauth21AuthorizationServer = createOAuth21AuthorizationServer({ issuer: oauth21Issuer, operatorSecret: secretConfig.operatorSecret });
+  }
+
   const authPolicy = createAuthPolicy({
     mode: bootstrapConfig.authMode,
     tokenFile: bootstrapConfig.tokenFile,
     allowQueryToken: bootstrapConfig.allowQueryToken,
     trustedProxy: bootstrapConfig.trustedProxy,
     publicBaseUrl,
-    oauthIssuer: env.MCP_TEST_OAUTH_ISSUER,
+    oauthIssuer: oauth21Issuer || env.MCP_TEST_OAUTH_ISSUER,
     oauthAudience: env.MCP_TEST_OAUTH_AUDIENCE || publicBaseUrl,
     oauthHmacSecretFile: env.MCP_TEST_OAUTH_HS256_SECRET_FILE,
     oauthJwksFile: env.MCP_TEST_OAUTH_JWKS_FILE,
+    tokenValidator: oauth21AuthorizationServer ? oauth21AuthorizationServer.validateAccessToken : undefined,
   });
 
   let authorizationServerMetadataProvider = null;
-  if (bootstrapConfig.authMode === "oauth" || bootstrapConfig.authMode === "oauth21") {
+  if (bootstrapConfig.authMode === "oauth21" && oauth21AuthorizationServer) {
+    authorizationServerMetadataProvider = { get: () => oauth21AuthorizationServer.metadata() };
+  } else if (bootstrapConfig.authMode === "oauth") {
     authorizationServerMetadataProvider = createAuthorizationServerMetadataProvider({
       issuer: env.MCP_TEST_OAUTH_ISSUER,
       metadataFile: env.MCP_TEST_OAUTH_AS_METADATA_FILE,
@@ -153,6 +166,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     publicBaseUrl,
     toolsList,
     authorizationServerMetadataProvider,
+    oauth21AuthorizationServer,
     optionalTools,
     getOptionalTool,
     auditLog,

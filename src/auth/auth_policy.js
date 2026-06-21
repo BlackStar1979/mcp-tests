@@ -27,11 +27,13 @@ function createAuthPolicy(options = {}) {
 
   if (mode === "oauth" || mode === "oauth21") {
     return createOAuthAuth({
+      mode,
       issuer: options.oauthIssuer,
       audience: options.oauthAudience || options.publicBaseUrl,
       hmacSecretFile: options.oauthHmacSecretFile,
       jwksFile: options.oauthJwksFile,
       publicBaseUrl: options.publicBaseUrl,
+      tokenValidator: options.tokenValidator,
     });
   }
 
@@ -43,7 +45,7 @@ function createAuthPolicy(options = {}) {
 
 function authResponseHeaders(policy) {
   if (!policy) return {};
-  if (policy.mode === "oauth") {
+  if (policy.mode === "oauth" || policy.mode === "oauth21") {
     return {
       "www-authenticate": buildWwwAuthenticateHeader({ publicBaseUrl: policy.audience, error: "invalid_token", scope: "mcp:tools" }),
     };

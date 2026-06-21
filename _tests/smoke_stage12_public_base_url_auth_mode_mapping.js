@@ -128,7 +128,7 @@ async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode,
       assert.equal(runtime.tool_surface.combined_fingerprint, EXPECTED_COMBINED_FINGERPRINT);
     }
 
-    assert.doesNotMatch(output, /Auth mode: .*oauth/i);
+    if (expectedAuthMode !== "oauth21") assert.doesNotMatch(output, /Auth mode: .*oauth/i);
     return { output, health, runtime };
   } finally {
     child.kill();
@@ -144,6 +144,7 @@ async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode,
     assert.equal(AUTH_PUBLIC_BASE_URLS.none, "https://mcp-tests.romionologic.dev");
     assert.equal(AUTH_PUBLIC_BASE_URLS.bearer, "https://mcp-tests-bearer.romionologic.dev");
     assert.equal(AUTH_PUBLIC_BASE_URLS.access, "https://mcp-tests-access.romionologic.dev");
+    assert.equal(AUTH_PUBLIC_BASE_URLS.oauth21, "https://mcp-tests-oauth21.romionologic.dev");
 
     assert.equal(
       resolveAuthBootstrapConfig({ argv: [], env: cleanEnv() }).publicBaseUrl,
@@ -196,15 +197,20 @@ async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode,
       expectedPublicBaseUrl: "https://custom-public.example.test",
     });
 
-    for (const mode of ["oauth", "oauth21"]) {
-      const result = spawnSync(process.execPath, ["server.js", "--auth", mode], {
-        cwd: ROOT,
-        env: cleanEnv(),
-        encoding: "utf8",
-        timeout: 10000,
+    {
+      const result = spawnSync(process.execPath, ["server.js", "--auth", "oauth"], {
+        cwd: ROOT, env: cleanEnv(), encoding: "utf8", timeout: 10000,
       });
-      assert.notEqual(result.status, 0, `${mode} must fail closed`);
+      assert.notEqual(result.status, 0, "oauth must fail closed without issuer");
       assert.match(`${result.stdout}\n${result.stderr}`, /MCP_TEST_OAUTH_ISSUER is required/);
+      assert.doesNotMatch(result.stdout, /Public:/);
+    }
+    {
+      const result = spawnSync(process.execPath, ["server.js", "--auth", "oauth21"], {
+        cwd: ROOT, env: cleanEnv(), encoding: "utf8", timeout: 10000,
+      });
+      assert.notEqual(result.status, 0, "oauth21 must fail closed without operator secret");
+      assert.match(`${result.stdout}\n${result.stderr}`, /OAUTH_OPERATOR_SECRET|operator_secret/);
       assert.doesNotMatch(result.stdout, /Public:/);
     }
 

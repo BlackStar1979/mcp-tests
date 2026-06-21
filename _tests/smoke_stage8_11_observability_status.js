@@ -7,7 +7,7 @@ const { createObservabilityStatusTool } = require("../tools/observability_status
 const auditLogPath = path.join(__dirname, "..", ".mcp-tests-audit.jsonl");
 
 const runtimeStatus = {
-  server_version: "0.30.0",
+  server_version: "0.40.0",
   stage_status: CURRENT_STAGE_STATUS,
   auth: { mode: "none" },
   profile: { mode: "public" },
@@ -35,7 +35,7 @@ assert.equal(status.mutates_auth, false);
 assert.equal(status.mutates_tools_list, false);
 assert.equal(status.dynamic_import_enabled, false);
 assert.equal(status.list_changed_enabled, false);
-assert.equal(status.runtime.server_version, "0.30.0");
+assert.equal(status.runtime.server_version, "0.40.0");
 assert.equal(status.runtime.enabled_tool_count, 3);
 assert.equal(status.connector_map.comparison_available, true);
 assert.equal(status.connector_map.status, "drift_detected");

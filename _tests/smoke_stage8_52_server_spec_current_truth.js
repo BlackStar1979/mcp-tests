@@ -10,7 +10,7 @@ const toolsSpec = JSON.parse(fs.readFileSync(path.join(ROOT, "SERVER_TOOLS_SPEC.
 const startupReport = fs.readFileSync(path.join(ROOT, "src", "startup_report.js"), "utf8");
 
 for (const required of [
-  "SERVER_VERSION: 0.30.0",
+  "SERVER_VERSION: 0.40.0",
   "STARTUP_REPORT_VERSION: test-mcp-startup-report-v1",
   "LABELS_VERSION: test-mcp-labels-v1",
   "_logs/.mcp-tests-audit.jsonl",

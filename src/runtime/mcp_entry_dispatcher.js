@@ -52,6 +52,11 @@ async function dispatchMcpEntry({
       handleMethodNotAllowed({ res, auditLog, requestId, sessionId, httpMethod: req.method });
       return;
     }
+    const authResult = authPolicy.authenticate(req);
+    if (!authResult.ok) {
+      handleAuthRejection({ res, auditLog, requestId, sessionId, httpMethod: req.method, authResult, authPolicy });
+      return;
+    }
     handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, auditLog });
     return;
   }

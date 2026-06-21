@@ -106,7 +106,7 @@ function assertDoesNotContainToken(value) {
 
   try {
     const health = await waitHealth(port);
-    assert.equal(health.version, "0.30.0");
+    assert.equal(health.version, "0.40.0");
     assert.equal(health.auth.mode, "bearer");
     assert.equal(health.auth.requires_auth, true);
     assert.equal(health.auth.public_health_redacted, true);

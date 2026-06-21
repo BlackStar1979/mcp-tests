@@ -183,7 +183,7 @@ function postJson(value) {
       assert.equal(result.protocolVersion, "2025-06-18", "initialize protocolVersion");
       assert.equal(result.capabilities.tools.listChanged, false, "initialize listChanged");
       assert.equal(result.serverInfo.name, "mcp-tests-response-shape", "initialize serverInfo.name");
-      assert.equal(result.serverInfo.version, "0.30.0", "initialize serverInfo.version");
+      assert.equal(result.serverInfo.version, "0.40.0", "initialize serverInfo.version");
       assert.equal(
         result.serverInfo.connectorShapeVersion,
         "2025-05-strict-v1",

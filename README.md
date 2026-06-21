@@ -5,7 +5,7 @@ TEST MCP workbench for validating MCP server behavior, connector-visible contrac
 ## Current Runtime
 
 ```text
-server_version = 0.30.0
+server_version = 0.40.0
 connectorShapeVersion = 2025-05-strict-v1
 outputMode = structured
 default profile = public

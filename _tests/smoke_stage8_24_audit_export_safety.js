@@ -41,7 +41,7 @@ try {
     args: { window_size: 10, slow_ms: 1000, top_n: 5 },
     auditLogPath: fixture,
     runtimeStatusProvider: () => ({
-      server_version: "0.30.0",
+      server_version: "0.40.0",
       stage_status: CURRENT_STAGE_STATUS,
       auth: { mode: "none" },
       profile: { mode: "public" },

@@ -52,7 +52,7 @@ const response = buildInitializeResponse({
 assert.equal(response.protocolVersion, "2025-06-18");
 assert.equal(response.capabilities.tools.listChanged, false);
 assert.equal(response.serverInfo.name, "mcp-tests-response-shape");
-assert.equal(response.serverInfo.version, "0.30.0");
+assert.equal(response.serverInfo.version, "0.40.0");
 assert.equal(response.serverInfo.connectorShapeVersion, "2025-05-strict-v1");
 assert.equal(response.serverInfo.outputMode, "structured");
 assert.equal(response.serverInfo.authMode, "none");

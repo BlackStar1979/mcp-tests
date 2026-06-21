@@ -7,7 +7,7 @@ const { assertMatchesSchema, validateAgainstSchema } = require("../src/output_sc
 
 function runtimeStatus() {
   return {
-    server_version: "0.30.0",
+    server_version: "0.40.0",
     stage_status: CURRENT_STAGE_STATUS,
     auth: { mode: "none" },
     profile: { mode: "public" },

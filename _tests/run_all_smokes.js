@@ -19,7 +19,7 @@ async function waitHealth(port,headers={}){for(let i=0;i<50;i++){try{const r=awa
 function nodeOptions(env,file){const existing=env.NODE_OPTIONS?String(env.NODE_OPTIONS)+" ":"";return {...env,NODE_OPTIONS:existing+"--require "+JSON.stringify(file)}}
 function runNode(script,env,section){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[script],{cwd:process.cwd(),env,stdio:["ignore","pipe","pipe"]});let stdout="",stderr="";child.stdout.on("data",d=>stdout+=String(d));child.stderr.on("data",d=>stderr+=String(d));child.on("exit",code=>{const result={section,script,stdout:stdout.trim(),stderr:stderr.trim()};if(code===0)resolve(result);else reject(new Error(section+": "+script+" failed with "+code+"\nSTDOUT:\n"+stdout+"\nSTDERR:\n"+stderr))})})}
 function startServer(args,env){const child=spawn(process.execPath,["server.js",...args],{cwd:process.cwd(),env,stdio:["ignore","pipe","pipe"]});let output="";child.stdout.on("data",d=>output+=String(d));child.stderr.on("data",d=>output+=String(d));child.getOutput=()=>output;return child}
-async function startChecked(args,port,env,headers){const child=startServer([...args,"--port",String(port)],env);try{const health=await waitHealth(port,headers);assert.equal(health.version,"0.30.0");assert.equal(health.stage_status,CURRENT_STAGE_STATUS);return {child,health}}catch(e){child.kill();e.message=e.message+"\nSERVER OUTPUT:\n"+child.getOutput();throw e}}
+async function startChecked(args,port,env,headers){const child=startServer([...args,"--port",String(port)],env);try{const health=await waitHealth(port,headers);assert.equal(health.version,"0.40.0");assert.equal(health.stage_status,CURRENT_STAGE_STATUS);return {child,health}}catch(e){child.kill();e.message=e.message+"\nSERVER OUTPUT:\n"+child.getOutput();throw e}}
 (async()=>{
 const baseEnv={...process.env,MCP_TEST_FS_ROOT:FS_ROOT,MCP_TEST_LOG_DIR:RUN_TMP,MCP_TEST_HEALTH_FULL:"1",MCP_TEST_ACCESS_TRUSTED_PROXY:"1"};
 const results=[];
@@ -42,5 +42,5 @@ try{
   results.push(await runNode(script,internalEnv,"tests-authenticated"));
  }
 }finally{internalServer.child.kill()}
-console.log(JSON.stringify({ok:true,version:"0.30.0",stage:CURRENT_STAGE_STATUS,sections:{public:publicScripts.length,tests_authenticated:internalScripts.length},results},null,2));
+console.log(JSON.stringify({ok:true,version:"0.40.0",stage:CURRENT_STAGE_STATUS,sections:{public:publicScripts.length,tests_authenticated:internalScripts.length},results},null,2));
 })().catch(e=>{console.error(e?.stack||e?.message||String(e));process.exit(1)});

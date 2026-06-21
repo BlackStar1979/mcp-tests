@@ -7,7 +7,15 @@ function handleDocsRoute({
   fetchDoc,
   documentRuntimeContext,
 }) {
-  const id = decodeURIComponent(pathname.slice("/docs/".length));
+  let id;
+  try {
+    id = decodeURIComponent(pathname.slice("/docs/".length));
+  } catch (error) {
+    if (error instanceof URIError) {
+      return textResponse(res, 400, "Bad request");
+    }
+    throw error;
+  }
   const doc = fetchDoc(documentRuntimeContext(), id);
 
   if (!doc) {

@@ -51,7 +51,7 @@ async function rpc(port, headers = {}) {
 
   try {
     const health = await waitHealth(PORT);
-    assert.equal(health.version, "0.30.0");
+    assert.equal(health.version, "0.40.0");
     assert.equal(health.stage_status, CURRENT_STAGE_STATUS);
     assert.equal(health.profile, "internal");
     assert.equal(health.auth.mode, "bearer");

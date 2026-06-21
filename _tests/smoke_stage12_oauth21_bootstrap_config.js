@@ -1,0 +1,14 @@
+"use strict";
+const assert=require("node:assert/strict");
+const {AUTH_PUBLIC_BASE_URLS,resolveAuthBootstrapConfig,parseBootstrapArgs}=require("../src/runtime/auth_bootstrap_config_resolver");
+assert.equal(AUTH_PUBLIC_BASE_URLS.oauth21,"https://mcp-tests-oauth21.romionologic.dev");
+const flag="--oauth-"+"secret-file";
+const parsed=parseBootstrapArgs(["--auth","oauth21",flag,"C:/Users/mczyz/.romion/mcp-tests-oauth21-secret.json"]);
+assert.equal(parsed.authMode,"oauth21");
+assert.equal(parsed.oauthConfigFile,"C:/Users/mczyz/.romion/mcp-tests-oauth21-secret.json");
+const cfg=resolveAuthBootstrapConfig({argv:["--auth","oauth21",flag,"X:/secret.json"],env:{}});
+assert.equal(cfg.authMode,"oauth21");
+assert.equal(cfg.port,3008);
+assert.equal(cfg.publicBaseUrl,"https://mcp-tests-oauth21.romionologic.dev");
+assert.equal(cfg.oauthConfigFile,"X:/secret.json");
+console.log("smoke_stage12_oauth21_bootstrap_config ok");

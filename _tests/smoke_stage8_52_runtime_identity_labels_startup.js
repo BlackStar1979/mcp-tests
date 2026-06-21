@@ -11,7 +11,7 @@ const identity = require("../src/runtime/identity");
 const { buildToolLabelsSync } = require("../src/tool_labels");
 const { formatStartupReport } = require("../src/startup_report");
 
-assert.equal(identity.SERVER_VERSION, "0.30.0");
+assert.equal(identity.SERVER_VERSION, "0.40.0");
 assert.equal(identity.CONNECTOR_SHAPE_VERSION, "2025-05-strict-v1");
 assert.equal(identity.STARTUP_REPORT_VERSION, "test-mcp-startup-report-v1");
 assert.equal(identity.LABELS_VERSION, "test-mcp-labels-v1");
@@ -56,7 +56,7 @@ const report = formatStartupReport({
   useColor: false,
 }).join("\n");
 
-assert.ok(report.includes("mcp-tests-response-shape v0.30.0"));
+assert.ok(report.includes("mcp-tests-response-shape v0.40.0"));
 assert.ok(report.includes("startupReportVersion=test-mcp-startup-report-v1"));
 assert.ok(report.includes("labelsVersion=test-mcp-labels-v1"));
 assert.ok(report.includes("Public MCP tools:"));

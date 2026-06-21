@@ -12,7 +12,7 @@ assert.equal(state.schema_version, "workflow-state-compact-v1");
 assert.equal(state.project, "mcp-tests");
 assert.equal(state.source_of_operational_truth, "_workflow/WORKFLOW_CANON.md");
 assert.ok(state.current_work_package && state.current_work_package.id);
-assert.ok(state.last_validated_runtime && state.last_validated_runtime.full_smoke_skip_network === "ok_0_30_0_8_141");
+assert.ok(state.last_validated_runtime && state.last_validated_runtime.full_smoke_skip_network === "ok_0_40_0_8_148");
 assert.ok(Array.isArray(state.active_controls));
 assert.ok(canon.includes("# TEST MCP WORKFLOW CANON"));
 assert.ok(canon.includes("Directory roles and retention"));

@@ -25,7 +25,12 @@ async function dispatchCreateServerRoute({
   publicBaseUrl,
   toolsList,
   authorizationServerMetadataProvider,
+  oauth21AuthorizationServer,
 }) {
+  if (oauth21AuthorizationServer) {
+    const handled = await oauth21AuthorizationServer.handleRoute({ req, res, url });
+    if (handled !== false) return handled;
+  }
   if (url.pathname === "/.well-known/oauth-protected-resource") {
     const { buildProtectedResourceMetadata } = require("./oauth_metadata");
     let authorizationServerMetadata;

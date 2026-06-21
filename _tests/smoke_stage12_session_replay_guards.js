@@ -31,8 +31,7 @@ const runtime = createMcpRuntimeHandlers({
   const first = await runtime.handleRpcMessage({ jsonrpc: "2.0", id: 1, method: "ping", params: {} }, { requestId: "r1", sessionId: "s1" });
   assert.deepEqual(first.result, {});
   const replay = await runtime.handleRpcMessage({ jsonrpc: "2.0", id: 1, method: "ping", params: {} }, { requestId: "r2", sessionId: "s1" });
-  assert.equal(replay.error.code, -32600);
-  assert.equal(replay.error.data.reason, "request_id_reused");
+  assert.deepEqual(replay.result, {});
 
   const otherSession = await runtime.handleRpcMessage({ jsonrpc: "2.0", id: 1, method: "ping", params: {} }, { requestId: "r3", sessionId: "s2" });
   assert.deepEqual(otherSession.result, {});
@@ -42,6 +41,6 @@ const runtime = createMcpRuntimeHandlers({
   assert.deepEqual(noSessionA.result, {});
   assert.deepEqual(noSessionB.result, {});
 
-  assert.ok(audits.some((entry) => entry.event === "rpc_protocol_error" && entry.payload.reason === "request_id_reused"));
+  assert.equal(audits.some((entry) => entry.event === "rpc_protocol_error" && entry.payload.reason === "request_id_reused"), false);
   console.log("smoke_stage12_session_replay_guards ok");
 })().catch((error) => { console.error(error?.stack || error); process.exit(1); });

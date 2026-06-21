@@ -66,6 +66,8 @@ function verifyHs256({ signingInput, signature, secret }) {
 }
 
 function createOAuthAuth(options = {}) {
+  const policyMode = String(options.mode || "oauth").trim().toLowerCase();
+  const tokenValidator = typeof options.tokenValidator === "function" ? options.tokenValidator : null;
   const issuer = String(options.issuer || process.env.MCP_TEST_OAUTH_ISSUER || "").trim();
   const audience = String(options.audience || process.env.MCP_TEST_OAUTH_AUDIENCE || options.publicBaseUrl || "").replace(/\/+$/, "");
   const jwksFile = String(options.jwksFile || process.env.MCP_TEST_OAUTH_JWKS_FILE || "").trim();
@@ -76,7 +78,9 @@ function createOAuthAuth(options = {}) {
   let jwksCache = null;
   let secret = "";
   let introspectionClient = null;
-  if (jwksFile) {
+  if (tokenValidator) {
+    // Local OAuth 2.1 authorization server validates opaque access tokens.
+  } else if (jwksFile) {
     jwksCache = createJwksCacheFromFile({ path: jwksFile });
   } else if (introspectionFile) {
     introspectionClient = createFileIntrospectionClient({ responseFile: introspectionFile, issuer, audience });
@@ -87,55 +91,56 @@ function createOAuthAuth(options = {}) {
   }
 
   return {
-    mode: "oauth",
+    mode: policyMode,
     enabled: true,
     requiresAuth: true,
     issuer,
     audience,
     authenticate(req = {}) {
-      if (hasQueryToken(req)) return { ok: false, status: 400, error: "query_token_forbidden", mode: "oauth" };
+      if (hasQueryToken(req)) return { ok: false, status: 400, error: "query_token_forbidden", mode: policyMode };
       const token = extractAuthorizationBearerToken(req);
-      if (!token) return { ok: false, status: 401, error: "missing_bearer_token", mode: "oauth" };
+      if (!token) return { ok: false, status: 401, error: "missing_bearer_token", mode: policyMode };
+      if (tokenValidator) return tokenValidator(token);
       if (introspectionClient) {
         const result = introspectionClient.introspect(token);
-        if (!result.ok) return { ok: false, status: result.status || 401, error: result.error, mode: "oauth" };
-        return { ok: true, status: 200, error: "", mode: "oauth", subject: result.subject || "", scopes: result.scopes || [] };
+        if (!result.ok) return { ok: false, status: result.status || 401, error: result.error, mode: policyMode };
+        return { ok: true, status: 200, error: "", mode: policyMode, subject: result.subject || "", scopes: result.scopes || [] };
       }
       let parsed;
-      try { parsed = parseJwt(token); } catch (_) { return { ok: false, status: 401, error: "invalid_jwt", mode: "oauth" }; }
+      try { parsed = parseJwt(token); } catch (_) { return { ok: false, status: 401, error: "invalid_jwt", mode: policyMode }; }
       if (jwksCache) {
-        if (parsed.header.alg !== "RS256") return { ok: false, status: 401, error: "unsupported_jwt_alg", mode: "oauth" };
-        if (!parsed.header.kid) return { ok: false, status: 401, error: "missing_jwt_kid", mode: "oauth" };
+        if (parsed.header.alg !== "RS256") return { ok: false, status: 401, error: "unsupported_jwt_alg", mode: policyMode };
+        if (!parsed.header.kid) return { ok: false, status: 401, error: "missing_jwt_kid", mode: policyMode };
         const found = jwksCache.findKey(parsed.header.kid);
-        if (!found.ok) return { ok: false, status: 401, error: found.reason, mode: "oauth" };
-        if (!verifyRs256({ signingInput: parsed.signingInput, signature: parsed.signature, jwk: found.key })) return { ok: false, status: 401, error: "invalid_jwt_signature", mode: "oauth" };
+        if (!found.ok) return { ok: false, status: 401, error: found.reason, mode: policyMode };
+        if (!verifyRs256({ signingInput: parsed.signingInput, signature: parsed.signature, jwk: found.key })) return { ok: false, status: 401, error: "invalid_jwt_signature", mode: policyMode };
       } else {
-        if (parsed.header.alg !== "HS256") return { ok: false, status: 401, error: "unsupported_jwt_alg", mode: "oauth" };
-        if (!verifyHs256({ signingInput: parsed.signingInput, signature: parsed.signature, secret })) return { ok: false, status: 401, error: "invalid_jwt_signature", mode: "oauth" };
+        if (parsed.header.alg !== "HS256") return { ok: false, status: 401, error: "unsupported_jwt_alg", mode: policyMode };
+        if (!verifyHs256({ signingInput: parsed.signingInput, signature: parsed.signature, secret })) return { ok: false, status: 401, error: "invalid_jwt_signature", mode: policyMode };
       }
       const now = Math.floor(Date.now() / 1000);
-      if (parsed.payload.iss !== issuer) return { ok: false, status: 401, error: "invalid_issuer", mode: "oauth" };
-      if (!audienceMatches(parsed.payload, audience)) return { ok: false, status: 401, error: "invalid_audience", mode: "oauth" };
+      if (parsed.payload.iss !== issuer) return { ok: false, status: 401, error: "invalid_issuer", mode: policyMode };
+      if (!audienceMatches(parsed.payload, audience)) return { ok: false, status: 401, error: "invalid_audience", mode: policyMode };
       const timeCheck = verifyJwtTimeClaims(parsed.payload, now);
-      if (!timeCheck.ok) return { ok: false, status: 401, error: timeCheck.reason, mode: "oauth" };
+      if (!timeCheck.ok) return { ok: false, status: 401, error: timeCheck.reason, mode: policyMode };
       const scopes = scopeSet(parsed.payload);
-      if (!(scopes.has("mcp:tools") || scopes.has("mcp:public") || scopes.has("mcp:operator"))) return { ok: false, status: 403, error: "insufficient_scope", mode: "oauth" };
-      return { ok: true, status: 200, error: "", mode: "oauth", subject: parsed.payload.sub || "", scopes: [...scopes] };
+      if (!(scopes.has("mcp:tools") || scopes.has("mcp:public") || scopes.has("mcp:operator"))) return { ok: false, status: 403, error: "insufficient_scope", mode: policyMode };
+      return { ok: true, status: 200, error: "", mode: policyMode, subject: parsed.payload.sub || "", scopes: [...scopes] };
     },
     status() {
       return {
-        mode: "oauth",
+        mode: policyMode,
         enabled: true,
         requires_auth: true,
-        validates_jwt_signature: true,
+        validates_jwt_signature: !tokenValidator,
         accepted_token_source: "authorization_header_only",
         query_token_forbidden: true,
         issuer,
         audience,
-        token_validation_mode: jwksCache ? "jwks_rs256" : (introspectionClient ? "introspection" : "hs256_test"),
+        token_validation_mode: tokenValidator ? "local_oauth21_as" : (jwksCache ? "jwks_rs256" : (introspectionClient ? "introspection" : "hs256_test")),
         jwks_configured: Boolean(jwksCache),
         introspection_configured: Boolean(introspectionClient),
-        supported_algs: jwksCache ? ["RS256"] : (introspectionClient ? [] : ["HS256"]),
+        supported_algs: tokenValidator ? [] : (jwksCache ? ["RS256"] : (introspectionClient ? [] : ["HS256"])),
       };
     },
   };

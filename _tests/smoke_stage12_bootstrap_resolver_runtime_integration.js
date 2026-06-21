@@ -221,7 +221,7 @@ function assertFailsClosed(args, pattern) {
     assertFailsClosed(["--auth", "invalid"], /Invalid auth mode/);
     assertFailsClosed(["--port", "0"], /Invalid port/);
     assertFailsClosed(["--auth", "oauth"], /MCP_TEST_OAUTH_ISSUER is required/);
-    assertFailsClosed(["--auth", "oauth21"], /MCP_TEST_OAUTH_ISSUER is required/);
+    assertFailsClosed(["--auth", "oauth21"], /OAUTH_OPERATOR_SECRET|operator_secret/);
 
     const selfTest = spawnSync(process.execPath, ["server.js", "--self-test"], {
       cwd: ROOT,

@@ -42,7 +42,7 @@ async function dispatchRpcMessage({
     }
 
     case "tools/list": {
-      return handleToolsListMessage(id, tools);
+      return handleToolsListMessage(id, tools, { authMode });
     }
 
     case "tools/call": {

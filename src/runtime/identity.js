@@ -5,7 +5,7 @@ const {
 } = require("../stage_metadata");
 
 const SERVER_NAME = "mcp-tests-response-shape";
-const SERVER_VERSION = "0.30.0";
+const SERVER_VERSION = "0.40.0";
 const CONNECTOR_SHAPE_VERSION = "2025-05-strict-v1";
 const AUDIT_VERSION = "mcp-tests-audit-v1";
 const STARTUP_REPORT_VERSION = "test-mcp-startup-report-v1";

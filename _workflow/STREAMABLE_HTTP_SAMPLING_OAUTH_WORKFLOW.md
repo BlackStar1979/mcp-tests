@@ -14,8 +14,8 @@ OAuth must not be implemented on top of unfinished transport, session, outbound 
 ## 2. Current baseline
 
 ```text
-server_version: 0.30.0
-full_smoke_skip_network: ok_0_30_0_8_118
+server_version: 0.40.0
+full_smoke_skip_network: ok_0_40_0_8_118
 public_sections: 8
 tests_authenticated: 118
 repo_public_tools: 13
@@ -301,24 +301,24 @@ Work one phase at a time. Do not mix OAuth implementation into phases A-F. Do no
 
 ## Phase A completion note
 
-Phase A is green as `ok_0_30_0_8_120`. Implemented: `src/runtime/accept_policy.js`, `src/runtime/protocol_version_policy.js`, dispatcher preflight validation, protocol version propagation, initialize protocol negotiation, and `_tests/smoke_stage12_streamable_http_preflight_guards.js`. Next phase: Phase B - POST SSE response path.
+Phase A is green as `ok_0_40_0_8_120`. Implemented: `src/runtime/accept_policy.js`, `src/runtime/protocol_version_policy.js`, dispatcher preflight validation, protocol version propagation, initialize protocol negotiation, and `_tests/smoke_stage12_streamable_http_preflight_guards.js`. Next phase: Phase B - POST SSE response path.
 
 ## Phase C completion note
 
-Phase C is green as `ok_0_30_0_8_122`. Implemented: `src/runtime/session.js`, `src/runtime/session_store.js`, initialize-created `Mcp-Session-Id`, known-session acceptance, unknown-session 404, protocol version/client capabilities storage, and `_tests/smoke_stage12_streamable_http_session_lifecycle.js`. Legacy no-session requests remain compatible until strict stateful mode. Next phase: Phase D - GET SSE stream and outbound queue.
+Phase C is green as `ok_0_40_0_8_122`. Implemented: `src/runtime/session.js`, `src/runtime/session_store.js`, initialize-created `Mcp-Session-Id`, known-session acceptance, unknown-session 404, protocol version/client capabilities storage, and `_tests/smoke_stage12_streamable_http_session_lifecycle.js`. Legacy no-session requests remain compatible until strict stateful mode. Next phase: Phase D - GET SSE stream and outbound queue.
 
 ## Phase D completion note
 
-Phase D is green as `ok_0_30_0_8_124`. Implemented: `src/runtime/mcp_get_stream_handler.js`, GET SSE for known sessions with explicit stream Accept, session stream attach/detach, outbound queue buffering/flushing, `_tests/smoke_stage12_get_sse_stream.js`, and `_tests/smoke_stage12_outbound_queue.js`. Multiple streams and keepalive are deferred. Next phase: Phase E - Pending request correlation.
+Phase D is green as `ok_0_40_0_8_124`. Implemented: `src/runtime/mcp_get_stream_handler.js`, GET SSE for known sessions with explicit stream Accept, session stream attach/detach, outbound queue buffering/flushing, `_tests/smoke_stage12_get_sse_stream.js`, and `_tests/smoke_stage12_outbound_queue.js`. Multiple streams and keepalive are deferred. Next phase: Phase E - Pending request correlation.
 
 ## Phase E completion note
 
-Phase E is green as `ok_0_30_0_8_125`. Implemented pending request correlation and response acceptance guard. Cancellation is deferred; timeout exists. Next phase: Phase F - Sampling readiness.
+Phase E is green as `ok_0_40_0_8_125`. Implemented pending request correlation and response acceptance guard. Cancellation is deferred; timeout exists. Next phase: Phase F - Sampling readiness.
 
 ## Phase F completion note
 
-Phase F is green as `ok_0_30_0_8_127`. Implemented sampling context, capability gate, requestSampling path, outbound sampling request, and response resolution by pending correlation. User approval/security policy is deferred to Phase G/OAuth policy hardening. Phase A-F are green. Next phase: Phase G - OAuth preflight and implementation.
+Phase F is green as `ok_0_40_0_8_127`. Implemented sampling context, capability gate, requestSampling path, outbound sampling request, and response resolution by pending correlation. User approval/security policy is deferred to Phase G/OAuth policy hardening. Phase A-F are green. Next phase: Phase G - OAuth preflight and implementation.
 
 ## Phase G completion note
 
-Phase G is green as `ok_0_30_0_8_128`. Implemented OAuth resource-server preflight and validation: `SERVER_AUTH_SPEC.json`, `src/auth/auth_oauth.js`, `src/runtime/oauth_metadata.js`, protected resource metadata route, OAuth auth mode, Authorization header-only token use, query-token rejection, issuer/audience/scope checks, and `_tests/smoke_stage12_oauth_preflight_contract.js`. Authorization-server implementation remains external. Production hardening remains: external AS metadata/JWKS/RS256 or introspection integration.
+Phase G is green as `ok_0_40_0_8_128`. Implemented OAuth resource-server preflight and validation: `SERVER_AUTH_SPEC.json`, `src/auth/auth_oauth.js`, `src/runtime/oauth_metadata.js`, protected resource metadata route, OAuth auth mode, Authorization header-only token use, query-token rejection, issuer/audience/scope checks, and `_tests/smoke_stage12_oauth_preflight_contract.js`. Authorization-server implementation remains external. Production hardening remains: external AS metadata/JWKS/RS256 or introspection integration.

@@ -70,6 +70,7 @@ function startRuntimeServer({
   publicBaseUrl,
   toolsList,
   authorizationServerMetadataProvider,
+  oauth21AuthorizationServer,
   auditLog,
   bootstrapAuthMode,
   startupReportVersion,
@@ -104,6 +105,7 @@ function startRuntimeServer({
     publicBaseUrl,
     toolsList,
     authorizationServerMetadataProvider,
+    oauth21AuthorizationServer,
   });
 
   return startServer({

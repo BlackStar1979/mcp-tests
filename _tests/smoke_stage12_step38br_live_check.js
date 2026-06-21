@@ -7,7 +7,7 @@ const m = JSON.parse(fs.readFileSync("_workflow/patch_manifests/stage12_step38br
 const spec = JSON.parse(fs.readFileSync("SERVER_SPEC.json", "utf8"));
 
 assert.equal(m.status, "green");
-assert.equal(m.runtime_version, "0.30.0");
+assert.equal(m.runtime_version, "0.40.0");
 assert.equal(m.auth, "bearer");
 assert.equal(m.profile, "internal");
 assert.equal(m.tool_count, 46);

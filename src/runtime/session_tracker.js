@@ -41,7 +41,12 @@ function createSessionReplayTracker({ maxSessions = DEFAULT_MAX_SESSION_IDS, max
     if (!sid) return { ok: false, reason: "invalid_session_id" };
     const key = `${typeof rpcId}:${String(rpcId)}`;
     const session = getSession(sid);
-    if (session.ids.has(key)) return { ok: false, reason: "request_id_reused" };
+    // Real MCP clients (ChatGPT, Claude) legitimately reuse rpc id values across
+    // sequential calls within a session — id uniqueness is only required for
+    // matching in-flight responses, not for the session lifetime. Rejecting a
+    // reused id broke every tools/call (-32600 request_id_reused). Track for
+    // observability but never reject.
+    if (session.ids.has(key)) return { ok: true, reused: true };
     session.ids.add(key);
     session.order.push(key);
     while (session.order.length > maxIdsPerSession) {
