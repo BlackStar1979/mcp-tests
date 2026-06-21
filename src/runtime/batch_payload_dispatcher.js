@@ -23,6 +23,7 @@ async function handleBatchPayloadIfNeeded({
   session,
   protocolVersion,
   httpMethod,
+  responseMode = "json",
   handleRpcMessage,
 }) {
   if (!Array.isArray(payload)) {
@@ -41,6 +42,19 @@ async function handleBatchPayloadIfNeeded({
     raw_bytes: byteLength(raw),
     methods: payload.map((item) => rpcMethodSummary(item)),
   });
+
+  if (responseMode === "sse") {
+    auditLog("rpc_protocol_error", {
+      request_id: requestId,
+      reason: "batch_sse_not_supported",
+      batch_length: payload.length,
+    });
+    jsonResponse(res, 400, rpcError(null, -32600, "Invalid Request", {
+      reason: "batch_sse_not_supported",
+      status: "explicitly_unsupported_for_current_target",
+    }));
+    return true;
+  }
 
   if (payload.length > maxBatchItems) {
     auditLog("rpc_protocol_error", {

@@ -106,7 +106,7 @@ Checklist:
 - [x] SSE emits `event: message` with final JSON-RPC response.
 - [x] Stream closes after final response.
 - [x] JSON response path remains default-compatible.
-- [x] Batch SSE classified as explicitly unsupported/deprecated for current target; do not implement in this checkpoint.
+- [x] Batch SSE classified as explicitly unsupported/deprecated for current target; do not implement in this checkpoint. Guard: `_tests/smoke_stage12_batch_sse_unsupported_guard.js`.
 
 Acceptance:
 

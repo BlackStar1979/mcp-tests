@@ -129,3 +129,24 @@ Rationale: public UI validation can be done temporarily on another port/temporar
    - runtime policy expansion plan;
    - event-driven Hotplug lifecycle;
    - workflow archive compaction.
+
+## Spec verification (2026-06-21)
+
+The D3 caveat ("verify the live official MCP specification before patching") is
+discharged at the record level. Verified against the official spec sources:
+
+- **SEP-2567 — Sessionless MCP via Explicit State Handles**: removes the
+  `Mcp-Session-Id` header and the protocol-level session concept; server-side state
+  is carried via explicit handles minted by tools and passed back as ordinary tool
+  arguments. (modelcontextprotocol.io/seps/2567-sessionless-mcp; PR #2567)
+- **SEP-2575 — Make MCP Stateless**: removes the `initialize` handshake; protocol
+  version + capabilities are carried per-request. (PR #2575)
+- Together targeted at the **2026-07-28 specification Release Candidate**.
+
+Consequence for this record: the sessionless/explicit-state-handle direction behind
+D3/D4/D5 is confirmed as the official trajectory, not speculation. A future
+implementation stage must still re-check **merged/final** SEP status (these were RC at
+verification time), but the strategic direction does not need re-litigation.
+
+Note: this section was added by the architect (VPS/TinyPyMCP) session as diligence;
+the binding decisions above are unchanged.

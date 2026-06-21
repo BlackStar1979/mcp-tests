@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T12:05:00+02:00",
+  "updated_at": "2026-06-21T17:25:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "post_stage6_operator_decisions_recorded",
-    "stage": "Post Stage 6",
-    "status": "green_operator_decisions_recorded_pending_checkpoint_commit",
-    "description": "Operator decisions D1-D12 recorded after post-Stage6 review. Current instruction is to commit the GREEN checkpoint before further cleanup/implementation stages."
+    "id": "p1_batch_sse_explicit_unsupported_guard",
+    "stage": "Post Stage 6 P1",
+    "status": "green_p1_batch_sse_explicit_unsupported_guard",
+    "description": "Batch SSE is formally guarded as explicitly unsupported for the current target; batch JSON remains supported, single POST SSE remains supported."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,14 +39,13 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Checkpoint commit current GREEN state",
-    "After commit: legacy retired auth triage",
-    "After commit: formalize batch SSE unsupported guard",
-    "After commit: plan sessionless/explicit-state-handle direction after official spec verification",
-    "After commit: active cancellation path plan/implementation stage",
-    "After commit: runtime policy expansion scope plan with separate operator approval",
-    "After commit: event-driven Hotplug lifecycle design",
-    "After commit: workflow archive compaction",
+    "Commit P1 batch SSE unsupported guard",
+    "P2 legacy_retired_auth_manifest_triage",
+    "P3 cancellation_path_client_disconnect_plan",
+    "P4 runtime_policy_expansion_scope_plan with separate operator approval",
+    "P5 sessionless_explicit_state_handles_spec_review with live official spec verification",
+    "P6 event_driven_hotplug_lifecycle_design",
+    "P7 workflow_archive_compaction",
     "Explicit operator approval required before any further connector refresh or runtime policy expansion"
   ],
   "target_runtime_topology": {
@@ -219,7 +218,7 @@
     "current_truth": {
       "public": "none:3009 tools=13",
       "authorized": "oauth21:3008 tools=43 hash=8b62ecaf89227335",
-      "run_all": "ok public=6 tests_authenticated=136",
+      "run_all": "ok public=6 tests_authenticated=137",
       "legacy_auth_tests_active_in_run_all": 0
     }
   },
@@ -233,5 +232,24 @@
     "transport_deferrals": "classified_as_deliberate_limitations_no_implementation_now",
     "runtime_policy_expansion": "separate_operator_approved_stage",
     "hotplug": "future_event_driven_lifecycle_stage"
+  },
+  "p1_batch_sse_explicit_unsupported_guard": {
+    "status": "green",
+    "runtime_guard": "src/runtime/batch_payload_dispatcher.js returns batch_sse_not_supported before dispatch when responseMode=sse and payload is batch",
+    "smoke": "_tests/smoke_stage12_batch_sse_unsupported_guard.js",
+    "decision_record": "_workflow/operator_decisions/post_stage6_operator_decisions_2026-06-21.md",
+    "validation": {
+      "syntax": "ok",
+      "smoke": "ok",
+      "mcp_dispatch_contract": "ok",
+      "http_boundary_guards": "ok",
+      "workflow_plan": "ok",
+      "run_all_skip_network": "ok",
+      "run_all_sections": {
+        "total": 144,
+        "public": 6,
+        "tests_authenticated": 137
+      }
+    }
   }
 }

@@ -115,6 +115,7 @@
   "_tests/smoke_stage12_streamable_http_workflow_plan.js",
   "_tests/smoke_stage12_streamable_http_preflight_guards.js",
   "_tests/smoke_stage12_post_sse_response.js",
+  "_tests/smoke_stage12_batch_sse_unsupported_guard.js",
   "_tests/smoke_stage12_streamable_http_session_lifecycle.js",
   "_tests/smoke_stage12_outbound_queue.js",
   "_tests/smoke_stage12_pending_request_correlation.js",
