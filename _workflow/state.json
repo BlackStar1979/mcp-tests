@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T18:15:00+02:00",
+  "updated_at": "2026-06-21T18:35:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "p4_runtime_policy_expansion_scope_plan",
-    "stage": "Post Stage 6 P4",
-    "status": "green_p4_runtime_policy_expansion_scope_plan_pending_commit",
-    "description": "Runtime Resource/Scope Matrix Enforcement expansion plan recorded; no runtime enforcement change performed in P4."
+    "id": "p5_sessionless_explicit_state_handles_spec_review",
+    "stage": "Post Stage 6 P5",
+    "status": "green_p5_sessionless_explicit_state_handles_spec_review_pending_commit",
+    "description": "Official MCP sources reviewed for sessionless/stateless direction; no runtime implementation performed in P5."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,10 +39,11 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit P4 runtime policy expansion scope plan",
-    "P5 sessionless_explicit_state_handles_spec_review with live official spec verification",
+    "Commit P5 sessionless explicit state handles review",
     "P6 event_driven_hotplug_lifecycle_design",
     "P7 workflow_archive_compaction",
+    "Future: S1 sessionless compatibility inventory",
+    "Future: S2 stable-vs-draft target selection",
     "Explicit operator approval required before any further connector refresh or runtime policy expansion"
   ],
   "target_runtime_topology": {
@@ -302,5 +303,18 @@
       "R6 audit receipt v2",
       "R7 controlled enablement with operator approval"
     ]
+  },
+  "p5_sessionless_explicit_state_handles_spec_review": {
+    "status": "green_review_only",
+    "record": "_workflow/operator_decisions/p5_sessionless_explicit_state_handles_spec_review.md",
+    "official_sources": [
+      "modelcontextprotocol.io/specification/2025-11-25",
+      "modelcontextprotocol.io/specification/2025-11-25/basic/transports",
+      "modelcontextprotocol.io/specification/draft/basic/transports",
+      "modelcontextprotocol.io/specification/draft/basic/transports/streamable-http",
+      "modelcontextprotocol.io/seps/2567-sessionless-mcp",
+      "modelcontextprotocol.io/seps/2575-stateless-mcp"
+    ],
+    "conclusion": "stable_2025_11_25_still_supports_sessions; final_SEPs_and_draft_2026_07_28_define_sessionless_stateless_direction"
   }
 }
