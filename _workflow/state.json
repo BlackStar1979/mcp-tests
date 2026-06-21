@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T17:25:00+02:00",
+  "updated_at": "2026-06-21T17:55:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "p1_batch_sse_explicit_unsupported_guard",
-    "stage": "Post Stage 6 P1",
-    "status": "green_p1_batch_sse_explicit_unsupported_guard",
-    "description": "Batch SSE is formally guarded as explicitly unsupported for the current target; batch JSON remains supported, single POST SSE remains supported."
+    "id": "p2_legacy_retired_auth_manifest_triage",
+    "stage": "Post Stage 6 P2",
+    "status": "green_p2_legacy_retired_auth_manifest_triage_pending_commit",
+    "description": "17 legacy retired auth tests classified into rewrite_as_negative_control, archive_only, and delete_after_review buckets; no files deleted or re-added to run_all."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit P1 batch SSE unsupported guard",
-    "P2 legacy_retired_auth_manifest_triage",
+    "Commit P2 legacy retired auth triage",
     "P3 cancellation_path_client_disconnect_plan",
     "P4 runtime_policy_expansion_scope_plan with separate operator approval",
     "P5 sessionless_explicit_state_handles_spec_review with live official spec verification",
@@ -251,5 +250,15 @@
         "tests_authenticated": 137
       }
     }
+  },
+  "p2_legacy_retired_auth_manifest_triage": {
+    "status": "green",
+    "manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
+    "summary": {
+      "rewrite_as_negative_control": 9,
+      "archive_only": 6,
+      "delete_after_review": 2
+    },
+    "policy": "none of the 17 legacy auth tests may re-enter run_all without conversion or explicit operator approval"
   }
 }
