@@ -24,6 +24,7 @@ async function handleBatchPayloadIfNeeded({
   protocolVersion,
   httpMethod,
   responseMode = "json",
+  abortSignal,
   handleRpcMessage,
 }) {
   if (!Array.isArray(payload)) {
@@ -92,7 +93,7 @@ async function handleBatchPayloadIfNeeded({
   const responses = [];
 
   for (const item of payload) {
-    const response = await handleRpcMessage(item || {}, { requestId, sessionId, session, protocolVersion });
+    const response = await handleRpcMessage(item || {}, { requestId, sessionId, session, protocolVersion, abortSignal });
 
     if (response !== undefined) {
       responses.push(response);

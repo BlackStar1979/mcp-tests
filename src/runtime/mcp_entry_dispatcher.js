@@ -13,6 +13,7 @@ const { jsonResponse } = require("./http_responses");
 const { rpcError } = require("./rpc_responses");
 const { evaluateGetAccept, evaluatePostAccept } = require("./accept_policy");
 const { evaluateProtocolVersionHeader, negotiateInitializeProtocolVersion } = require("./protocol_version_policy");
+const { createRequestAbortSignal } = require("./request_cancellation");
 
 async function dispatchMcpEntry({
   req,
@@ -71,6 +72,8 @@ async function dispatchMcpEntry({
     });
     return;
   }
+
+  const abortSignal = createRequestAbortSignal({ req, auditLog, requestId });
 
   const postAccept = evaluatePostAccept(req);
   if (!postAccept.ok) {
@@ -146,6 +149,7 @@ async function dispatchMcpEntry({
       protocolVersion: activeSession?.protocolVersion || protocolVersion.protocolVersion,
       responseMode: postAccept.mediaTypes.includes("text/event-stream") ? "sse" : "json",
       httpMethod: req.method,
+      abortSignal,
       handleRpcMessage,
     });
 
@@ -164,6 +168,7 @@ async function dispatchMcpEntry({
       protocolVersion: activeSession?.protocolVersion || protocolVersion.protocolVersion,
       responseMode: postAccept.mediaTypes.includes("text/event-stream") ? "sse" : "json",
       httpMethod: req.method,
+      abortSignal,
       handleRpcMessage,
     });
   } catch (error) {

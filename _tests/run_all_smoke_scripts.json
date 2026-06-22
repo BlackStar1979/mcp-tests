@@ -119,6 +119,7 @@
   "_tests/smoke_stage12_streamable_http_session_lifecycle.js",
   "_tests/smoke_stage12_outbound_queue.js",
   "_tests/smoke_stage12_pending_request_correlation.js",
+  "_tests/smoke_stage7_c1_cancellation_context_plumbing.js",
   "_tests/smoke_stage12_sampling_roundtrip.js",
   "_tests/smoke_stage12_oauth_preflight_contract.js",
   "_tests/smoke_stage12_oauth_production_hardening_plan.js",
