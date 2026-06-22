@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-22T21:20:00+02:00",
+  "updated_at": "2026-06-22T21:40:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage8_2_registry_to_policy_read_model",
-    "stage": "Stage 8.2",
-    "status": "green_stage8_2_registry_to_policy_read_model",
-    "description": "Read-only registry-to-policy model added: registry entries are mapped to descriptors, runtime TOOL_POLICIES, and SERVER_TOOLS_SPEC.tool_catalog metadata without enforcement behavior changes."
+    "id": "stage8_3_registry_diff_dry_run",
+    "stage": "Stage 8.3",
+    "status": "green_stage8_3_registry_diff_dry_run",
+    "description": "Registry diff dry-run added: static registry snapshots can be diffed for add/remove/update and fed to list_changed dry-run harness without real mutation or emission."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,8 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 8.2 registry-to-policy read model",
-    "Stage 8.3 registry diff dry-run",
+    "Commit Stage 8.3 registry diff dry-run",
+    "Stage 8 closeout and next-stage recommendation",
     "Future optional: C3 cooperative tool cancellation sample after operator approval",
     "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
@@ -452,7 +452,7 @@
     }
   },
   "stage8": {
-    "status": "green_8_2",
+    "status": "green_8_3",
     "proposal": "_workflow/operator_decisions/stage8_proposal_after_stage7.md",
     "stage8_1": {
       "status": "green",
@@ -511,6 +511,37 @@
         "targeted_smokes": [
           "smoke_stage8_registry_policy_read_model",
           "smoke_stage8_static_tool_registry_equivalence",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
+    },
+    "stage8_3": {
+      "status": "green",
+      "files": [
+        "src/registry_diff_dry_run.js",
+        "_tests/smoke_stage8_registry_diff_dry_run.js"
+      ],
+      "non_goals": [
+        "no real registry mutation",
+        "no real tools/list mutation",
+        "no list_changed emission",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug"
+      ],
+      "targeted_smokes": [
+        "smoke_stage8_registry_diff_dry_run",
+        "smoke_stage8_34_tools_list_diff_model",
+        "smoke_stage8_38_list_changed_dry_run_pipeline"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 142,
+        "targeted_smokes": [
+          "smoke_stage8_registry_diff_dry_run",
+          "smoke_stage8_34_tools_list_diff_model",
+          "smoke_stage8_38_list_changed_dry_run_pipeline",
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }
