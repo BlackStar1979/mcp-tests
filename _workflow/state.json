@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T19:05:00+02:00",
+  "updated_at": "2026-06-21T19:35:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "p7_workflow_archive_compaction_index",
-    "stage": "Post Stage 6 P7",
-    "status": "green_p7_workflow_archive_compaction_index_pending_commit",
-    "description": "Non-destructive active workflow index added to reduce historical workflow noise without moving or deleting referenced records."
+    "id": "stage7_repo_live_convergence_and_sessionless_readiness",
+    "stage": "Stage 7",
+    "status": "green_stage7_0_1_repo_live_convergence_pending_commit",
+    "description": "P7 workflow metadata closed as committed; repo/live convergence validated after operator restart; Stage 8 proposal recorded."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,12 +39,11 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit P7 workflow active index",
-    "Future: HPL1 tool registry abstraction after operator approval",
-    "Future: S1 sessionless compatibility inventory",
-    "Future: C1 cancellation context plumbing after operator approval",
-    "Future: R1 runtime policy spec loader after operator approval",
-    "Explicit operator approval required before any further connector refresh or runtime policy expansion"
+    "Commit Stage 7.0/7.1 repo-live convergence and Stage 8 proposal",
+    "Stage 7.3 S1 sessionless compatibility inventory",
+    "Stage 7.4 C1 cancellation context plumbing only after inventory",
+    "Stage 8 proposal retained: static registry foundation before hotplug/policy enforcement",
+    "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -342,9 +341,34 @@
     ]
   },
   "p7_workflow_archive_compaction_index": {
-    "status": "green_index_only",
+    "status": "green_index_only_committed",
     "record": "_workflow/ACTIVE_WORKFLOW_INDEX.md",
     "policy": "non_destructive_compaction_no_file_moves",
-    "reason": "historical workflow paths are referenced by tests and remain useful for audit chronology"
+    "reason": "historical workflow paths are referenced by tests and remain useful for audit chronology",
+    "commit": "ff36a1912a150c3efa08bc516ca3ca2e9543950b"
+  },
+  "stage7": {
+    "status": "green_7_0_7_1_pending_commit",
+    "head": "ff36a1912a150c3efa08bc516ca3ca2e9543950b",
+    "repo_status": "clean_before_stage7_edits",
+    "live_oauth21": {
+      "port": 3008,
+      "auth_mode": "oauth21",
+      "tool_count": 43,
+      "tool_names_hash": "8b62ecaf89227335",
+      "schema_compatibility": "ok",
+      "security_boundary": "ok"
+    },
+    "live_public": {
+      "port": 3009,
+      "status": "listening",
+      "tool_count": 13,
+      "batch_sse_guard": "batch_sse_not_supported"
+    },
+    "retired_ports": {
+      "access_3005": "no_listener",
+      "bearer_3006": "no_listener"
+    },
+    "stage8_proposal": "_workflow/operator_decisions/stage8_proposal_after_stage7.md"
   }
 }
