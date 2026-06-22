@@ -54,6 +54,7 @@
   "_tests/smoke_stage8_31_plugin_visibility_status_output_schema.js",
   "_tests/smoke_stage8_32_plugin_visibility_schema_pair_descriptor_guard.js",
   "_tests/smoke_stage8_static_tool_registry_equivalence.js",
+  "_tests/smoke_stage8_registry_policy_read_model.js",
   "_tests/smoke_stage8_34_tools_list_diff_model.js",
   "_tests/smoke_stage8_35_list_changed_notification_bus_dry_run.js",
   "_tests/smoke_stage8_36_list_changed_local_harness.js",
