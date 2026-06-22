@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T20:35:00+02:00",
+  "updated_at": "2026-06-22T20:45:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage7_c2_client_disconnect_write_guard",
-    "stage": "Stage 7.5 C2",
-    "status": "green_stage7_c2_client_disconnect_write_guard",
-    "description": "Response write guard added for client-disconnect/abort paths. Dispatchers and exception handler skip writes after abort/closed response and audit response_write_skipped_after_client_disconnect."
+    "id": "stage7_closeout",
+    "stage": "Stage 7",
+    "status": "green_stage7_closed",
+    "description": "Stage 7 closed after repo/live convergence, sessionless compatibility inventory, C1 abort-signal plumbing, and C2 no-write-after-client-abort guard. C3 cooperative cancellation is explicitly deferred."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 7.5 C2 client disconnect write guard",
-    "Stage 8 proposal retained: static registry foundation before hotplug/policy enforcement",
+    "Stage 8.1 tool registry static abstraction",
+    "Stage 8.2 registry-to-policy read model",
+    "Stage 8.3 registry diff dry-run",
     "Future optional: C3 cooperative tool cancellation sample after operator approval",
     "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
@@ -347,7 +348,7 @@
     "commit": "ff36a1912a150c3efa08bc516ca3ca2e9543950b"
   },
   "stage7": {
-    "status": "green_7_5_c2",
+    "status": "green_stage7_closed",
     "head": "ff36a1912a150c3efa08bc516ca3ca2e9543950b",
     "repo_status": "clean_before_stage7_edits",
     "live_oauth21": {
@@ -436,6 +437,19 @@
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }
+    },
+    "closeout": {
+      "status": "green",
+      "commits": [
+        "20baa5b docs: start stage 7 convergence",
+        "6271bbc docs: inventory sessionless compatibility",
+        "4093ac2 feat: plumb request abort signal",
+        "d410da7 guard: skip response writes after client abort"
+      ],
+      "deferred": [
+        "C3 cooperative tool cancellation sample requires separate operator approval"
+      ],
+      "next_stage": "Stage 8 - Static Registry Foundation Before Hotplug and Policy Enforcement"
     }
   }
 }
