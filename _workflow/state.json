@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T20:15:00+02:00",
+  "updated_at": "2026-06-21T20:35:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage7_c1_cancellation_context_plumbing",
-    "stage": "Stage 7.4 C1",
-    "status": "green_stage7_c1_cancellation_context_plumbing",
-    "description": "POST request AbortSignal is created from client abort lifecycle and passed through single/batch dispatchers to handleRpcMessage context. No cooperative tool cancellation implemented yet."
+    "id": "stage7_c2_client_disconnect_write_guard",
+    "stage": "Stage 7.5 C2",
+    "status": "green_stage7_c2_client_disconnect_write_guard",
+    "description": "Response write guard added for client-disconnect/abort paths. Dispatchers and exception handler skip writes after abort/closed response and audit response_write_skipped_after_client_disconnect."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 7.4 C1 cancellation context plumbing",
-    "Next optional: C2 client disconnect audit/no-write-after-close guard",
+    "Commit Stage 7.5 C2 client disconnect write guard",
     "Stage 8 proposal retained: static registry foundation before hotplug/policy enforcement",
+    "Future optional: C3 cooperative tool cancellation sample after operator approval",
     "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
   "target_runtime_topology": {
@@ -347,7 +347,7 @@
     "commit": "ff36a1912a150c3efa08bc516ca3ca2e9543950b"
   },
   "stage7": {
-    "status": "green_7_4_c1",
+    "status": "green_7_5_c2",
     "head": "ff36a1912a150c3efa08bc516ca3ca2e9543950b",
     "repo_status": "clean_before_stage7_edits",
     "live_oauth21": {
@@ -402,6 +402,37 @@
           "smoke_stage7_c1_cancellation_context_plumbing",
           "smoke_stage12_post_sse_response",
           "smoke_stage12_pending_request_correlation",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
+    },
+    "c2_client_disconnect_write_guard": {
+      "status": "green",
+      "files": [
+        "src/runtime/response_write_guard.js",
+        "src/runtime/single_payload_dispatcher.js",
+        "src/runtime/batch_payload_dispatcher.js",
+        "src/runtime/rpc_handler_exception_handler.js",
+        "src/runtime/mcp_entry_dispatcher.js",
+        "_tests/smoke_stage7_c2_client_disconnect_write_guard.js"
+      ],
+      "audit_event": "response_write_skipped_after_client_disconnect",
+      "non_goals": [
+        "no JSON-RPC $/cancel",
+        "no cooperative tool cancellation across tools",
+        "no sessionless transport migration",
+        "no connector refresh"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 139,
+        "targeted_smokes": [
+          "smoke_stage7_c2_client_disconnect_write_guard",
+          "smoke_stage7_c1_cancellation_context_plumbing",
+          "smoke_stage12_post_sse_response",
+          "smoke_stage12_pending_request_correlation",
+          "smoke_mcp_dispatch_contract",
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }

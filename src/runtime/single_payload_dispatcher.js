@@ -5,6 +5,7 @@ const { sseResponse } = require("./sse_response");
 const { isJsonRpcResponse, resolvePendingResponse } = require("./outbound_request_manager");
 const { rpcMethodSummary } = require("./rpc_audit_summary");
 const { byteLength } = require("./runtime_helpers");
+const { skipResponseWriteIfNeeded } = require("./response_write_guard");
 
 async function handleSinglePayload({
   payload,
@@ -34,27 +35,37 @@ async function handleSinglePayload({
     const resolved = resolvePendingResponse(session, payload);
     if (!resolved.ok) {
       auditLog("pending_response_rejected", { request_id: requestId, reason: resolved.reason, rpc_id: resolved.id });
-      jsonResponse(res, 400, { jsonrpc: "2.0", id: payload.id, error: { code: -32000, message: "Pending response rejected", data: { reason: resolved.reason } } });
+      if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_pending_rejected" })) {
+        jsonResponse(res, 400, { jsonrpc: "2.0", id: payload.id, error: { code: -32000, message: "Pending response rejected", data: { reason: resolved.reason } } });
+      }
       return;
     }
     auditLog("pending_response_resolved", { request_id: requestId, rpc_id: resolved.id, method: resolved.method, has_error: resolved.hasError });
-    emptyResponse(res, 202);
+    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_pending_resolved" })) {
+      emptyResponse(res, 202);
+    }
     return;
   }
 
   const response = await handleRpcMessage(payload || {}, { requestId, sessionId, session, protocolVersion, abortSignal });
 
   if (response === undefined) {
-    emptyResponse(res, 204);
+    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_no_response" })) {
+      emptyResponse(res, 204);
+    }
     return;
   }
 
   if (responseMode === "sse") {
-    sseResponse(res, { data: response, close: true });
+    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_sse_response" })) {
+      sseResponse(res, { data: response, close: true });
+    }
     return;
   }
 
-  jsonResponse(res, 200, response);
+  if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_json_response" })) {
+    jsonResponse(res, 200, response);
+  }
 }
 
 module.exports = {

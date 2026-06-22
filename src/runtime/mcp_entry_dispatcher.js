@@ -178,6 +178,7 @@ async function dispatchMcpEntry({
       requestId,
       payload,
       error,
+      abortSignal,
     });
   }
 }
