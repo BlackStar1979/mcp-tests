@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-21T19:35:00+02:00",
+  "updated_at": "2026-06-21T19:55:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage7_repo_live_convergence_and_sessionless_readiness",
-    "stage": "Stage 7",
-    "status": "green_stage7_0_1_repo_live_convergence_pending_commit",
-    "description": "P7 workflow metadata closed as committed; repo/live convergence validated after operator restart; Stage 8 proposal recorded."
+    "id": "stage7_sessionless_compatibility_inventory",
+    "stage": "Stage 7.3 S1",
+    "status": "green_stage7_sessionless_inventory_pending_commit",
+    "description": "Sessionless compatibility inventory recorded. No runtime change performed; current stable-compatible session code remains in place."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,8 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 7.0/7.1 repo-live convergence and Stage 8 proposal",
-    "Stage 7.3 S1 sessionless compatibility inventory",
-    "Stage 7.4 C1 cancellation context plumbing only after inventory",
+    "Commit Stage 7.3 sessionless compatibility inventory",
+    "Stage 7.4 C1 cancellation context plumbing in current stable-compatible runtime",
     "Stage 8 proposal retained: static registry foundation before hotplug/policy enforcement",
     "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
@@ -348,7 +347,7 @@
     "commit": "ff36a1912a150c3efa08bc516ca3ca2e9543950b"
   },
   "stage7": {
-    "status": "green_7_0_7_1_pending_commit",
+    "status": "green_7_3_inventory_pending_commit",
     "head": "ff36a1912a150c3efa08bc516ca3ca2e9543950b",
     "repo_status": "clean_before_stage7_edits",
     "live_oauth21": {
@@ -369,6 +368,12 @@
       "access_3005": "no_listener",
       "bearer_3006": "no_listener"
     },
-    "stage8_proposal": "_workflow/operator_decisions/stage8_proposal_after_stage7.md"
+    "stage8_proposal": "_workflow/operator_decisions/stage8_proposal_after_stage7.md",
+    "sessionless_inventory": {
+      "status": "green_inventory_only",
+      "record": "_workflow/operator_decisions/stage7_sessionless_inventory.md",
+      "machine_readable": "_workflow/sessionless_inventory.json",
+      "conclusion": "do_not_remove_sessions_in_stage7; proceed_to_C1_cancellation_context_plumbing_in_current_stable_runtime"
+    }
   }
 }

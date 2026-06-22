@@ -1,0 +1,118 @@
+{
+  "schema_version": "stage7-sessionless-inventory-v1",
+  "date": "2026-06-21",
+  "status": "stage7_s1_inventory_only_no_runtime_change",
+  "source_review": [
+    "src/runtime/mcp_entry_dispatcher.js",
+    "src/runtime/session_tracker.js",
+    "src/runtime/session.js",
+    "src/runtime/mcp_get_stream_handler.js",
+    "src/runtime/outbound_request_manager.js",
+    "src/runtime/sampling_context.js",
+    "src/runtime/initialize_message_handler.js",
+    "src/runtime/initialize_response.js",
+    "src/runtime/rpc_message_dispatcher.js",
+    "_tests/smoke_stage12_streamable_http_session_lifecycle.js",
+    "_tests/smoke_stage12_get_sse_stream.js",
+    "_tests/smoke_stage12_pending_request_correlation.js",
+    "_tests/smoke_stage12_sampling_roundtrip.js"
+  ],
+  "items": [
+    {
+      "id": "initialize_handshake",
+      "component": "initialize / initialized lifecycle",
+      "files": ["src/runtime/rpc_message_dispatcher.js", "src/runtime/initialize_message_handler.js", "src/runtime/initialize_response.js"],
+      "current_model": "stable_2025_11_25_compatible",
+      "classification": "keep_for_stable_compat",
+      "future_direction": "remove_or_parallelize_in_draft_sessionless_mode",
+      "notes": "Initialize creates/negotiates server info and capabilities for current runtime."
+    },
+    {
+      "id": "mcp_session_id_header",
+      "component": "MCP-Session-Id transport header",
+      "files": ["src/runtime/session_tracker.js", "src/runtime/mcp_entry_dispatcher.js"],
+      "current_model": "stable_session_header",
+      "classification": "keep_for_stable_compat",
+      "future_direction": "remove_in_draft_mode",
+      "notes": "Header parsing and validation are central to current stable Streamable HTTP path."
+    },
+    {
+      "id": "session_store",
+      "component": "McpSession / SessionStore",
+      "files": ["src/runtime/session.js"],
+      "current_model": "in_memory_session_store",
+      "classification": "requires_parallel_mode",
+      "future_direction": "replace_transport_session_state_with_explicit_state_handles",
+      "notes": "Contains outbound queue, pending map, replay history, client capabilities and sampling budget."
+    },
+    {
+      "id": "get_sse_stream",
+      "component": "GET /mcp SSE stream",
+      "files": ["src/runtime/mcp_get_stream_handler.js", "src/runtime/mcp_entry_dispatcher.js"],
+      "current_model": "stable_get_sse",
+      "classification": "keep_for_stable_compat",
+      "future_direction": "remove_in_draft_mode_or_replace_with_listen_subscription",
+      "notes": "Bound to session id; handles Last-Event-ID replay and close/aborted cleanup."
+    },
+    {
+      "id": "delete_mcp_teardown",
+      "component": "DELETE /mcp teardown",
+      "files": ["src/runtime/mcp_entry_dispatcher.js"],
+      "current_model": "not_implemented_non_post_405",
+      "classification": "do_not_implement",
+      "future_direction": "out_of_scope_for_sessionless_target",
+      "notes": "Operator decision D4: do not implement DELETE teardown."
+    },
+    {
+      "id": "pending_request_correlation",
+      "component": "server-originated pending requests",
+      "files": ["src/runtime/outbound_request_manager.js", "src/runtime/single_payload_dispatcher.js", "src/runtime/batch_payload_dispatcher.js"],
+      "current_model": "session_pending_map",
+      "classification": "requires_parallel_mode",
+      "future_direction": "request_scoped_or_handle_scoped_correlation_after_target_selection",
+      "notes": "Sampling and outbound requests resolve through session.pending."
+    },
+    {
+      "id": "sampling",
+      "component": "sampling/createMessage roundtrip",
+      "files": ["src/runtime/sampling_context.js", "SERVER_SAMPLING_POLICY_SPEC.json"],
+      "current_model": "session_capabilities_and_budget",
+      "classification": "blocked_by_client_support",
+      "future_direction": "re_evaluate_after_sessionless_target_selection",
+      "notes": "Depends on clientCapabilities.sampling, per-session budget, and pending response correlation."
+    },
+    {
+      "id": "replay_guard",
+      "component": "session-scoped replay guard",
+      "files": ["src/runtime/session_tracker.js", "src/runtime/mcp_runtime_handlers.js", "_tests/smoke_stage12_session_replay_guards.js"],
+      "current_model": "session_id_plus_rpc_id",
+      "classification": "keep_for_stable_compat",
+      "future_direction": "replace_with_request_id_or_state_handle_semantics_if_needed",
+      "notes": "Prevents replay per session in current runtime."
+    },
+    {
+      "id": "batch_sse",
+      "component": "batch SSE",
+      "files": ["src/runtime/batch_payload_dispatcher.js", "_tests/smoke_stage12_batch_sse_unsupported_guard.js"],
+      "current_model": "explicitly_unsupported",
+      "classification": "already_aligned_as_non_target",
+      "future_direction": "keep_unsupported",
+      "notes": "P1 guard returns batch_sse_not_supported."
+    },
+    {
+      "id": "oauth21_connector",
+      "component": "OAuth21 authorized connector",
+      "files": ["src/auth/oauth21_authorization_server.js", "src/auth/auth_policy.js"],
+      "current_model": "active_oauth21_internal_runtime",
+      "classification": "keep_for_stable_compat",
+      "future_direction": "do_not_migrate_until_client_connector_support_verified",
+      "notes": "Live connector validated with 43 tools and oauth21 on port 3008."
+    }
+  ],
+  "recommended_next": [
+    "Do not remove session code in Stage 7.",
+    "Implement C1 cancellation context plumbing only in current stable-compatible runtime.",
+    "Prepare Stage 8 registry foundation before protocol migration.",
+    "Create a future S2 target-selection decision before any sessionless runtime mode."
+  ]
+}
