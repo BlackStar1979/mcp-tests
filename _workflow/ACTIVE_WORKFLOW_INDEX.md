@@ -32,6 +32,14 @@ Read these first:
 
 ## Current GREEN baseline
 
+Stage 8 closeout:
+
+- static registry foundation committed at `2385a03`;
+- registry-to-policy read model committed at `d538320`;
+- registry diff dry-run committed at `1f552ca`;
+- no hotplug/list_changed emission/runtime policy enforcement enabled.
+
+
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;

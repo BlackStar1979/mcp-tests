@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-22T21:40:00+02:00",
+  "updated_at": "2026-06-22T21:55:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage8_3_registry_diff_dry_run",
-    "stage": "Stage 8.3",
-    "status": "green_stage8_3_registry_diff_dry_run",
-    "description": "Registry diff dry-run added: static registry snapshots can be diffed for add/remove/update and fed to list_changed dry-run harness without real mutation or emission."
+    "id": "stage8_closeout",
+    "stage": "Stage 8",
+    "status": "green_stage8_closed",
+    "description": "Stage 8 closed after static registry foundation, registry-to-policy read model, and registry diff dry-run. No hotplug, list_changed emission, connector refresh, or runtime policy enforcement change was implemented."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,11 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 8.3 registry diff dry-run",
-    "Stage 8 closeout and next-stage recommendation",
-    "Future optional: C3 cooperative tool cancellation sample after operator approval",
+    "Commit Stage 8 closeout",
+    "Recommended next: Stage 9 registry-backed runtime read model integration",
+    "Alternative future: C3 cooperative tool cancellation sample after operator approval",
+    "Alternative future: R1 runtime policy spec loader after operator approval",
+    "Alternative future: HPL1 dynamic registry abstraction after operator approval",
     "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
   "target_runtime_topology": {
@@ -452,7 +454,7 @@
     }
   },
   "stage8": {
-    "status": "green_8_3",
+    "status": "green_stage8_closed",
     "proposal": "_workflow/operator_decisions/stage8_proposal_after_stage7.md",
     "stage8_1": {
       "status": "green",
@@ -545,6 +547,20 @@
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }
+    },
+    "closeout": {
+      "status": "green",
+      "commits": [
+        "2385a03 feat: add static tool registry foundation",
+        "d538320 feat: add registry policy read model",
+        "1f552ca feat: add registry diff dry run"
+      ],
+      "run_all_skip_network": {
+        "status": "ok",
+        "public": 6,
+        "tests_authenticated": 142
+      },
+      "next_recommendation": "_workflow/operator_decisions/stage9_recommendation_after_stage8.md"
     }
   }
 }
