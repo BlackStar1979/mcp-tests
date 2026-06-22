@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-22T20:45:00+02:00",
+  "updated_at": "2026-06-22T21:00:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage7_closeout",
-    "stage": "Stage 7",
-    "status": "green_stage7_closed",
-    "description": "Stage 7 closed after repo/live convergence, sessionless compatibility inventory, C1 abort-signal plumbing, and C2 no-write-after-client-abort guard. C3 cooperative cancellation is explicitly deferred."
+    "id": "stage8_1_static_tool_registry_abstraction",
+    "stage": "Stage 8.1",
+    "status": "green_stage8_1_static_tool_registry_abstraction",
+    "description": "Static tool registry abstraction added and runtime toolsList now renders through registry with descriptor-equivalent output; no dynamic hotplug or tool-surface mutation implemented."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,7 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 8.1 tool registry static abstraction",
+    "Commit Stage 8.1 static tool registry abstraction",
     "Stage 8.2 registry-to-policy read model",
     "Stage 8.3 registry diff dry-run",
     "Future optional: C3 cooperative tool cancellation sample after operator approval",
@@ -450,6 +450,43 @@
         "C3 cooperative tool cancellation sample requires separate operator approval"
       ],
       "next_stage": "Stage 8 - Static Registry Foundation Before Hotplug and Policy Enforcement"
+    }
+  },
+  "stage8": {
+    "status": "green_8_1",
+    "proposal": "_workflow/operator_decisions/stage8_proposal_after_stage7.md",
+    "stage8_1": {
+      "status": "green",
+      "files": [
+        "src/static_tool_registry.js",
+        "src/runtime/runtime_support_assembly.js",
+        "_tests/smoke_stage8_static_tool_registry_equivalence.js",
+        "_tests/smoke_stage12_step38w_runtime_support_assembly.js"
+      ],
+      "non_goals": [
+        "no dynamic registration",
+        "no state-store writes",
+        "no list_changed emission",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no runtime policy enforcement change"
+      ],
+      "targeted_smokes": [
+        "smoke_stage8_static_tool_registry_equivalence",
+        "smoke_stage12_step38w_runtime_support_assembly"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 140,
+        "targeted_smokes": [
+          "smoke_stage8_static_tool_registry_equivalence",
+          "smoke_stage12_step38w_runtime_support_assembly",
+          "smoke_stage8_18_tool_surface_fingerprints",
+          "smoke_stage12_step38v_optional_tools_assembly",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
     }
   }
 }

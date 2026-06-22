@@ -16,7 +16,7 @@ assert.ok(server.includes("./src/runtime/server_bootstrap_runtime"));
 assert.ok(bootstrap.includes("./runtime_support_assembly"));
 assert.ok(bootstrap.includes("createRuntimeSupportAssembly({"));
 for(const stale of ["./src/runtime/core_tool_descriptors","./src/runtime/document_runtime_context","./src/runtime/audit_log","createAuditLogger({","createDocumentRuntimeContext({","function toolsList()","buildCoreToolDescriptors({"]){assert.equal(server.includes(stale),false,stale);}
-for(const required of ["buildCoreToolDescriptors","createAuditLogger","createDocumentRuntimeContext","function createRuntimeSupportAssembly","function toolsList","return baseTools.concat"]){assert.ok(support.includes(required),required);}
+for(const required of ["buildCoreToolDescriptors","createStaticToolRegistry","createAuditLogger","createDocumentRuntimeContext","function createRuntimeSupportAssembly","function toolsList","createStaticToolRegistry({"]){assert.ok(support.includes(required),required);}
 const mod=require("../src/runtime/runtime_support_assembly");
 assert.equal(typeof mod.createRuntimeSupportAssembly,"function");
 console.log("smoke_stage12_step38w_runtime_support_assembly ok");

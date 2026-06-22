@@ -1,6 +1,7 @@
 "use strict";
 
 const { buildCoreToolDescriptors } = require("./core_tool_descriptors");
+const { createStaticToolRegistry } = require("../static_tool_registry");
 const { createAuditLogger } = require("./audit_log");
 const { createDocumentRuntimeContext } = require("./document_runtime_context");
 
@@ -38,7 +39,11 @@ function createRuntimeSupportAssembly({
       maxFetchTextChars,
     });
 
-    return baseTools.concat(optionalTools.map((tool) => tool.descriptor));
+    return createStaticToolRegistry({
+      coreDescriptors: baseTools,
+      optionalTools,
+      metadata: { source: "runtime_support_assembly" },
+    }).descriptors();
   }
 
   return {

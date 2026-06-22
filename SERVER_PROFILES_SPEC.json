@@ -86,7 +86,8 @@
         "script_count_after_stage6_closeout": 6,
         "script_count_after_p1": 6,
         "script_count_after_stage7_c1": 6,
-        "script_count_after_stage7_c2": 6
+        "script_count_after_stage7_c2": 6,
+        "script_count_after_stage8_1": 6
       },
       "tests_authenticated": {
         "profile": "tests",
@@ -102,7 +103,7 @@
         "legacy_retired_auth_manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
         "stage5_status": "legacy access/bearer tests excluded from active run_all manifest",
         "tool_count_current": 43,
-        "script_count": 139,
+        "script_count": 140,
         "script_count_after_stage6_closeout": 136,
         "stage6_status": "green_source_aligned_active_run_all",
         "script_count_after_p1": 137,
@@ -110,7 +111,9 @@
         "script_count_after_stage7_c1": 138,
         "stage7_c1_smoke": "_tests/smoke_stage7_c1_cancellation_context_plumbing.js",
         "script_count_after_stage7_c2": 139,
-        "stage7_c2_smoke": "_tests/smoke_stage7_c2_client_disconnect_write_guard.js"
+        "stage7_c2_smoke": "_tests/smoke_stage7_c2_client_disconnect_write_guard.js",
+        "script_count_after_stage8_1": 140,
+        "stage8_1_smoke": "_tests/smoke_stage8_static_tool_registry_equivalence.js"
       }
     },
     "run_all_smoke_scripts_manifest": "_tests/run_all_smoke_scripts.json",
