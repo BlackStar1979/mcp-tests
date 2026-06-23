@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T06:30:00+02:00",
+  "updated_at": "2026-06-23T06:45:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage10_1_policy_enforcement_coverage_matrix_preflight",
-    "stage": "Stage 10.1",
-    "status": "green_stage10_1_policy_enforcement_coverage_matrix_preflight",
-    "description": "Read-only policy enforcement coverage matrix preflight added. It reports visible tool coverage against resource/operation/profile policy without runtime deny behavior change."
+    "id": "stage10_2_policy_preflight_reason_codes",
+    "stage": "Stage 10.2",
+    "status": "green_stage10_2_policy_preflight_reason_codes",
+    "description": "Stable policy preflight reason-code catalog and dry-run evaluator added. Evaluator produces would_allow/would_deny from coverage matrix without runtime enforcement or allow/deny behavior changes."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 10.1 enforcement coverage matrix preflight",
-    "Stage 10.2 deny reason-code dry-run design",
+    "Commit Stage 10.2 deny reason-code dry-run design",
     "Stage 10.3 policy preflight receipt shape",
     "Stage 10 closeout after run_all GREEN",
     "Explicit operator approval required before any runtime policy enforcement or deny behavior change"
@@ -676,7 +675,7 @@
     }
   },
   "stage10": {
-    "status": "green_10_1",
+    "status": "green_10_2",
     "plan": "_workflow/operator_decisions/stage10_policy_enforcement_preflight_plan.md",
     "stage10_1": {
       "status": "green",
@@ -715,6 +714,48 @@
         "targeted_smokes": [
           "smoke_stage10_policy_enforcement_coverage_matrix",
           "smoke_stage9_registry_policy_consistency_guard",
+          "smoke_stage12_step37_policy_runtime_negative_controls",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
+    },
+    "stage10_2": {
+      "status": "green",
+      "files": [
+        "src/policy_preflight_reason_codes.js",
+        "_tests/smoke_stage10_policy_preflight_reason_codes.js"
+      ],
+      "dry_run_findings": {
+        "public_would_deny": 0,
+        "authorized_would_deny": 3,
+        "authorized_denied_tools": [
+          "plugin_execution_governance",
+          "plugin_visibility_status",
+          "plugin_catalog_search"
+        ],
+        "reason": "operation_not_allowed_for_resource_class"
+      },
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector-visible schema change",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ],
+      "targeted_smokes": [
+        "smoke_stage10_policy_preflight_reason_codes",
+        "smoke_stage10_policy_enforcement_coverage_matrix",
+        "smoke_stage12_step37_policy_runtime_negative_controls"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 147,
+        "targeted_smokes": [
+          "smoke_stage10_policy_preflight_reason_codes",
+          "smoke_stage10_policy_enforcement_coverage_matrix",
           "smoke_stage12_step37_policy_runtime_negative_controls",
           "smoke_stage12_streamable_http_workflow_plan"
         ]
