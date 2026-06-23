@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T06:10:00+02:00",
+  "updated_at": "2026-06-23T06:30:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
     "id": "stage10_1_policy_enforcement_coverage_matrix_preflight",
     "stage": "Stage 10.1",
-    "status": "started_stage10_1_policy_enforcement_coverage_matrix_preflight",
-    "description": "Stage 9 closed; Stage 10 started as policy enforcement planning-to-preflight. Current package targets a read-only enforcement coverage matrix with no runtime deny behavior change."
+    "status": "green_stage10_1_policy_enforcement_coverage_matrix_preflight",
+    "description": "Read-only policy enforcement coverage matrix preflight added. It reports visible tool coverage against resource/operation/profile policy without runtime deny behavior change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,7 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 10.1 enforcement coverage matrix preflight",
+    "Commit Stage 10.1 enforcement coverage matrix preflight",
     "Stage 10.2 deny reason-code dry-run design",
     "Stage 10.3 policy preflight receipt shape",
     "Stage 10 closeout after run_all GREEN",
@@ -676,10 +676,24 @@
     }
   },
   "stage10": {
-    "status": "started_10_1",
+    "status": "green_10_1",
     "plan": "_workflow/operator_decisions/stage10_policy_enforcement_preflight_plan.md",
     "stage10_1": {
-      "status": "started",
+      "status": "green",
+      "files": [
+        "src/policy_enforcement_coverage_matrix.js",
+        "_tests/smoke_stage10_policy_enforcement_coverage_matrix.js"
+      ],
+      "preflight_findings": {
+        "public_blocked": 0,
+        "authorized_blocked": 3,
+        "authorized_blocked_tools": [
+          "plugin_execution_governance",
+          "plugin_visibility_status",
+          "plugin_catalog_search"
+        ],
+        "reason": "operation_not_allowed_for_resource_class"
+      },
       "non_goals": [
         "no runtime enforcement",
         "no allow/deny behavior change",
@@ -688,7 +702,23 @@
         "no public connector reconnection",
         "no hotplug/list_changed emission",
         "no sessionless migration"
-      ]
+      ],
+      "targeted_smokes": [
+        "smoke_stage10_policy_enforcement_coverage_matrix",
+        "smoke_stage9_registry_policy_consistency_guard",
+        "smoke_stage12_step37_policy_runtime_negative_controls"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 146,
+        "targeted_smokes": [
+          "smoke_stage10_policy_enforcement_coverage_matrix",
+          "smoke_stage9_registry_policy_consistency_guard",
+          "smoke_stage12_step37_policy_runtime_negative_controls",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
     }
   }
 }
