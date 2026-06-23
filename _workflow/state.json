@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T06:45:00+02:00",
+  "updated_at": "2026-06-23T07:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage10_2_policy_preflight_reason_codes",
-    "stage": "Stage 10.2",
-    "status": "green_stage10_2_policy_preflight_reason_codes",
-    "description": "Stable policy preflight reason-code catalog and dry-run evaluator added. Evaluator produces would_allow/would_deny from coverage matrix without runtime enforcement or allow/deny behavior changes."
+    "id": "stage10_3_policy_preflight_receipt_shape",
+    "stage": "Stage 10.3",
+    "status": "green_stage10_3_policy_preflight_receipt_shape",
+    "description": "Redacted policy preflight receipt shape added. Receipts summarize dry-run decisions with shape/hash-only argument metadata and no runtime audit emission or enforcement change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 10.2 deny reason-code dry-run design",
-    "Stage 10.3 policy preflight receipt shape",
+    "Commit Stage 10.3 policy preflight receipt shape",
     "Stage 10 closeout after run_all GREEN",
     "Explicit operator approval required before any runtime policy enforcement or deny behavior change"
   ],
@@ -675,7 +674,7 @@
     }
   },
   "stage10": {
-    "status": "green_10_2",
+    "status": "green_10_3",
     "plan": "_workflow/operator_decisions/stage10_policy_enforcement_preflight_plan.md",
     "stage10_1": {
       "status": "green",
@@ -757,6 +756,45 @@
           "smoke_stage10_policy_preflight_reason_codes",
           "smoke_stage10_policy_enforcement_coverage_matrix",
           "smoke_stage12_step37_policy_runtime_negative_controls",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
+    },
+    "stage10_3": {
+      "status": "green",
+      "files": [
+        "src/policy_preflight_receipt.js",
+        "_tests/smoke_stage10_policy_preflight_receipt_shape.js"
+      ],
+      "dry_run_findings": {
+        "receipt_shape": "stage10-policy-preflight-receipt-v1",
+        "receipt_set_shape": "stage10-policy-preflight-receipt-set-v1",
+        "raw_arguments_included": false,
+        "runtime_audit_event_emitted": false
+      },
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector-visible schema change",
+        "no runtime audit event emission",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ],
+      "targeted_smokes": [
+        "smoke_stage10_policy_preflight_receipt_shape",
+        "smoke_stage10_policy_preflight_reason_codes",
+        "smoke_stage10_policy_enforcement_coverage_matrix"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 148,
+        "targeted_smokes": [
+          "smoke_stage10_policy_preflight_receipt_shape",
+          "smoke_stage10_policy_preflight_reason_codes",
+          "smoke_stage10_policy_enforcement_coverage_matrix",
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }

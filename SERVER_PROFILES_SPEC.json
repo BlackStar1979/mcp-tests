@@ -94,7 +94,8 @@
         "script_count_after_stage9_2": 6,
         "script_count_after_stage9_3": 6,
         "script_count_after_stage10_1": 6,
-        "script_count_after_stage10_2": 6
+        "script_count_after_stage10_2": 6,
+        "script_count_after_stage10_3": 6
       },
       "tests_authenticated": {
         "profile": "tests",
@@ -110,7 +111,7 @@
         "legacy_retired_auth_manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
         "stage5_status": "legacy access/bearer tests excluded from active run_all manifest",
         "tool_count_current": 43,
-        "script_count": 147,
+        "script_count": 148,
         "script_count_after_stage6_closeout": 136,
         "stage6_status": "green_source_aligned_active_run_all",
         "script_count_after_p1": 137,
@@ -134,7 +135,9 @@
         "script_count_after_stage10_1": 146,
         "stage10_1_smoke": "_tests/smoke_stage10_policy_enforcement_coverage_matrix.js",
         "script_count_after_stage10_2": 147,
-        "stage10_2_smoke": "_tests/smoke_stage10_policy_preflight_reason_codes.js"
+        "stage10_2_smoke": "_tests/smoke_stage10_policy_preflight_reason_codes.js",
+        "script_count_after_stage10_3": 148,
+        "stage10_3_smoke": "_tests/smoke_stage10_policy_preflight_receipt_shape.js"
       }
     },
     "run_all_smoke_scripts_manifest": "_tests/run_all_smoke_scripts.json",
