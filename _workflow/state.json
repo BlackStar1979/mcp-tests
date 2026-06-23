@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T07:05:00+02:00",
+  "updated_at": "2026-06-23T07:35:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage10_3_policy_preflight_receipt_shape",
-    "stage": "Stage 10.3",
-    "status": "green_stage10_3_policy_preflight_receipt_shape",
-    "description": "Redacted policy preflight receipt shape added. Receipts summarize dry-run decisions with shape/hash-only argument metadata and no runtime audit emission or enforcement change."
+    "id": "stage11_1_policy_gap_remediation",
+    "stage": "Stage 11.1",
+    "status": "green_stage11_1_policy_gap_remediation",
+    "description": "Declarative policy gaps found by Stage 10 preflight were remediated by updating resource allowed_operations. Public and authorized policy preflight now report blocked/would_deny=0 without runtime enforcement changes."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 10.3 policy preflight receipt shape",
-    "Stage 10 closeout after run_all GREEN",
-    "Explicit operator approval required before any runtime policy enforcement or deny behavior change"
+    "Commit Stage 11.1 policy gap remediation",
+    "Stage 11 closeout after run_all GREEN",
+    "Explicit operator approval required before runtime policy enforcement or deny behavior change"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -674,7 +674,7 @@
     }
   },
   "stage10": {
-    "status": "green_10_3",
+    "status": "green_stage10_closed",
     "plan": "_workflow/operator_decisions/stage10_policy_enforcement_preflight_plan.md",
     "stage10_1": {
       "status": "green",
@@ -795,6 +795,81 @@
           "smoke_stage10_policy_preflight_receipt_shape",
           "smoke_stage10_policy_preflight_reason_codes",
           "smoke_stage10_policy_enforcement_coverage_matrix",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
+    },
+    "closeout": {
+      "status": "green",
+      "commits": [
+        "71abbf4 feat: add policy enforcement coverage preflight",
+        "9d4d15b feat: add policy preflight reason codes",
+        "983e51f feat: add policy preflight receipt shape"
+      ],
+      "run_all_skip_network": {
+        "status": "ok",
+        "public": 6,
+        "tests_authenticated": 148
+      },
+      "preflight_findings": {
+        "public_blocked": 0,
+        "authorized_blocked": 3,
+        "authorized_would_deny": 3,
+        "authorized_denied_tools": [
+          "plugin_execution_governance",
+          "plugin_visibility_status",
+          "plugin_catalog_search"
+        ],
+        "reason": "operation_not_allowed_for_resource_class"
+      },
+      "runtime_enforcement_changed": false,
+      "allow_deny_behavior_changed": false,
+      "next_recommendation": "_workflow/operator_decisions/stage11_policy_gap_remediation_plan.md"
+    }
+  },
+  "stage11": {
+    "status": "green_11_1",
+    "plan": "_workflow/operator_decisions/stage11_policy_gap_remediation_plan.md",
+    "stage11_1": {
+      "status": "green",
+      "target_tools": [
+        "plugin_execution_governance",
+        "plugin_visibility_status",
+        "plugin_catalog_search"
+      ],
+      "target_reason": "operation_not_allowed_for_resource_class",
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector-visible schema change",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ],
+      "remediation": {
+        "updated_file": "SERVER_RESOURCE_POLICY_SPEC.json",
+        "changes": [
+          "plugin_execution_readonly allowed_operations add read",
+          "plugin_visibility_state_preview allowed_operations add read",
+          "plugin_registry_readonly allowed_operations add search"
+        ],
+        "preflight_after": {
+          "public_blocked": 0,
+          "public_would_deny": 0,
+          "authorized_blocked": 0,
+          "authorized_would_deny": 0
+        }
+      },
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 149,
+        "targeted_smokes": [
+          "smoke_stage11_policy_gap_remediation",
+          "smoke_stage10_policy_enforcement_coverage_matrix",
+          "smoke_stage10_policy_preflight_reason_codes",
+          "smoke_stage10_policy_preflight_receipt_shape",
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }

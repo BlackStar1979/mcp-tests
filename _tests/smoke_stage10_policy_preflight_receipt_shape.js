@@ -29,14 +29,25 @@ function assertNoRawSecrets(value) {
 
 (() => {
   const evaluation = buildEval();
-  const denied = evaluation.decisions.find((decision) => decision.tool === "plugin_execution_governance");
   const allowed = evaluation.decisions.find((decision) => decision.tool === "memory_save");
-  assert.ok(denied); assert.ok(allowed);
+  assert.ok(allowed);
+  const denied = {
+    schema_version: "stage10-policy-preflight-entry-v1",
+    tool: "synthetic_policy_gap",
+    would_allow: false,
+    would_deny: true,
+    reason_codes: ["operation_not_allowed_for_resource_class"],
+    resource_class: "plugin_execution_readonly",
+    operation_class: "unsupported_future_operation",
+    surface_class: "authorized_mcp_tools",
+    mutation: false,
+    audit_required: true,
+  };
   const sensitiveArgs = { token: "super-secret-token", path: "SECRET_PATH_VALUE", email: "raw@example.test", card: "4111111111111111", nested: { alpha: "beta", count: 3 }, list: ["x", 1, true] };
   const receipt = buildPolicyPreflightReceipt({ decision: denied, profileSurface: "authenticated", authMode: "oauth21", requestId: "r-10-3", args: sensitiveArgs });
   assert.equal(receipt.schema_version, "stage10-policy-preflight-receipt-v1");
   assert.equal(receipt.mode, "dry_run_only");
-  assert.equal(receipt.tool, "plugin_execution_governance");
+  assert.equal(receipt.tool, "synthetic_policy_gap");
   assert.equal(receipt.would_deny, true);
   assert.equal(receipt.would_allow, false);
   assert.deepEqual(receipt.reason_codes, ["operation_not_allowed_for_resource_class"]);
@@ -60,7 +71,7 @@ function assertNoRawSecrets(value) {
   const receiptSet = buildPolicyPreflightReceipts({ evaluation, profileSurface: "authenticated", authMode: "oauth21", argsByTool: { memory_save: { content: "super-secret-token" } } });
   assert.equal(receiptSet.schema_version, "stage10-policy-preflight-receipt-set-v1");
   assert.equal(receiptSet.receipt_count, 43);
-  assert.equal(receiptSet.denied_receipt_count, 3);
+  assert.equal(receiptSet.denied_receipt_count, 0);
   assert.equal(receiptSet.raw_arguments_included, false);
   assert.equal(receiptSet.runtime_audit_event_emitted, false);
   assert.equal(receiptSet.runtime_enforcement_changed, false);

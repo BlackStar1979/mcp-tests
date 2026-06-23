@@ -93,16 +93,9 @@ function buildMatrix({ authMode, runtimeProfile, surfaceName }) {
 
   const authorizedDecision = evaluatePolicyPreflightMatrix(buildMatrix({ authMode: "oauth21", runtimeProfile: "internal", surfaceName: "authenticated" }));
   assert.equal(authorizedDecision.tool_count, 43);
-  assert.equal(authorizedDecision.would_allow_count, 40);
-  assert.equal(authorizedDecision.would_deny_count, 3);
-  assert.deepEqual(authorizedDecision.denied_tools.map((item) => item.tool).sort(), [
-    "plugin_catalog_search",
-    "plugin_execution_governance",
-    "plugin_visibility_status",
-  ]);
-  for (const denied of authorizedDecision.denied_tools) {
-    assert.deepEqual(denied.reason_codes, ["operation_not_allowed_for_resource_class"]);
-  }
+  assert.equal(authorizedDecision.would_allow_count, 43);
+  assert.equal(authorizedDecision.would_deny_count, 0);
+  assert.deepEqual(authorizedDecision.denied_tools, []);
   const memorySave = authorizedDecision.decisions.find((decision) => decision.tool === "memory_save");
   assert.equal(memorySave.would_allow, true);
   assert.equal(memorySave.would_deny, false);

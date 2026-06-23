@@ -59,9 +59,10 @@
     "plugin_registry_readonly": {
       "description": "Read-only plugin registry/catalog metadata.",
       "allowed_operations": [
-        "read",
+        "audit",
         "list",
-        "audit"
+        "read",
+        "search"
       ],
       "public_surface_allowed": false
     },
@@ -70,6 +71,7 @@
       "allowed_operations": [
         "plan",
         "preview",
+        "read",
         "verify_receipt"
       ],
       "public_surface_allowed": false
@@ -78,6 +80,7 @@
       "description": "Read-only plugin execution governance/preflight/readonly execution receipt path.",
       "allowed_operations": [
         "preflight",
+        "read",
         "readonly_execute",
         "verify_receipt"
       ],

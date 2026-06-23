@@ -57,8 +57,7 @@ function assertMatrix(label, matrix, expected) {
   assert.equal(publicMatrix.audit_required_count, 0, "public has no audit-required tools");
   const auth = buildSupport({ authMode: "oauth21", runtimeProfile: "internal" });
   const authMatrix = buildPolicyEnforcementCoverageMatrix({ registryContext: auth.support.registryContext, serverProfileConfig: auth.serverProfileConfig, surfaceName: "authenticated", authMode: "oauth21", rootDir: ROOT, label: "authorized-policy-coverage" });
-  assertMatrix("authorized", authMatrix, { total: 43, blocked: 3, blocked_names: ["plugin_execution_governance", "plugin_visibility_status", "plugin_catalog_search"], required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "plugin_execution_governance"] });
-  for (const blocked of authMatrix.blocked_tools) assert.ok(blocked.errors.includes("operation_not_allowed_for_resource_class"));
+  assertMatrix("authorized", authMatrix, { total: 43, required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "plugin_execution_governance", "plugin_visibility_status", "plugin_catalog_search"] });
   assert.ok(authMatrix.mutating_tools.includes("memory_save"), "authorized mutating tool inventory includes memory_save");
   assert.ok(authMatrix.audit_required_tools.includes("memory_save"), "memory_save audit required");
   assert.ok(authMatrix.audit_required_tools.includes("plugin_visibility_plan"), "plugin_visibility_plan audit required");
