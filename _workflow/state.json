@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T08:10:00+02:00",
+  "updated_at": "2026-06-23T08:30:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage12_1_enforcement_apply_readiness_report",
-    "stage": "Stage 12.1",
-    "status": "green_stage12_1_enforcement_apply_readiness_report",
-    "description": "Read-only enforcement apply-readiness report added. It combines coverage matrix, reason-code dry-run, receipt redaction, and Stage 11 remediation signals. It is ready for operator review but not ready for runtime enforcement without explicit approval."
+    "id": "stage12_2_enforcement_wiring_plan_no_apply",
+    "stage": "Stage 12.2",
+    "status": "green_stage12_2_enforcement_wiring_plan_no_apply",
+    "description": "Plan-only enforcement wiring report added. It identifies future tools/call hook and required context/tests, while explicitly keeping apply disabled and dispatch behavior unchanged."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,7 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 12.1 enforcement apply-readiness report",
-    "Stage 12.2 enforcement wiring plan, no apply",
+    "Commit Stage 12.2 enforcement wiring plan, no apply",
     "Stage 12.3 operator approval boundary guard",
     "Explicit operator approval required before runtime policy enforcement or deny behavior change"
   ],
@@ -898,7 +897,7 @@
     }
   },
   "stage12": {
-    "status": "green_12_1",
+    "status": "green_12_2",
     "plan": "_workflow/operator_decisions/stage12_enforcement_apply_readiness_gate.md",
     "stage12_1": {
       "status": "green",
@@ -936,6 +935,43 @@
           "smoke_stage12_enforcement_apply_readiness_report",
           "smoke_stage11_policy_gap_remediation",
           "smoke_stage10_policy_preflight_receipt_shape",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
+    },
+    "stage12_2": {
+      "status": "green",
+      "files": [
+        "src/enforcement_wiring_plan.js",
+        "_tests/smoke_stage12_enforcement_wiring_plan_no_apply.js"
+      ],
+      "wiring_plan": {
+        "target_file": "src/runtime/tools_call_handler.js",
+        "target_function": "handleToolsCall",
+        "route": "tools/call",
+        "apply_allowed_now": false,
+        "dispatch_behavior_changed": false
+      },
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector-visible schema change",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ],
+      "targeted_smokes": [
+        "smoke_stage12_enforcement_wiring_plan_no_apply",
+        "smoke_stage12_enforcement_apply_readiness_report"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 151,
+        "targeted_smokes": [
+          "smoke_stage12_enforcement_wiring_plan_no_apply",
+          "smoke_stage12_enforcement_apply_readiness_report",
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }
