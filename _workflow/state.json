@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T07:50:00+02:00",
+  "updated_at": "2026-06-23T08:10:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage11_closeout",
-    "stage": "Stage 11",
-    "status": "green_stage11_closed",
-    "description": "Stage 11 closed after declarative policy gap remediation. Stage 10 preflight gaps are removed; runtime enforcement remains disabled and allow/deny behavior remains unchanged."
+    "id": "stage12_1_enforcement_apply_readiness_report",
+    "stage": "Stage 12.1",
+    "status": "green_stage12_1_enforcement_apply_readiness_report",
+    "description": "Read-only enforcement apply-readiness report added. It combines coverage matrix, reason-code dry-run, receipt redaction, and Stage 11 remediation signals. It is ready for operator review but not ready for runtime enforcement without explicit approval."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,10 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Recommended next: Stage 12.1 enforcement apply-readiness report",
-    "Explicit operator approval required before runtime policy enforcement or deny behavior change",
-    "Explicit operator approval required before connector refresh, public connector reconnection, hotplug/list_changed emission, or sessionless migration"
+    "Commit Stage 12.1 enforcement apply-readiness report",
+    "Stage 12.2 enforcement wiring plan, no apply",
+    "Stage 12.3 operator approval boundary guard",
+    "Explicit operator approval required before runtime policy enforcement or deny behavior change"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -894,6 +895,50 @@
       "runtime_enforcement_changed": false,
       "allow_deny_behavior_changed": false,
       "next_recommendation": "_workflow/operator_decisions/stage12_enforcement_apply_readiness_gate.md"
+    }
+  },
+  "stage12": {
+    "status": "green_12_1",
+    "plan": "_workflow/operator_decisions/stage12_enforcement_apply_readiness_gate.md",
+    "stage12_1": {
+      "status": "green",
+      "files": [
+        "src/enforcement_apply_readiness_report.js",
+        "_tests/smoke_stage12_enforcement_apply_readiness_report.js"
+      ],
+      "readiness": {
+        "ready_for_operator_review": true,
+        "ready_for_runtime_enforcement": false,
+        "public_blocked": 0,
+        "public_would_deny": 0,
+        "authorized_blocked": 0,
+        "authorized_would_deny": 0
+      },
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector-visible schema change",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ],
+      "targeted_smokes": [
+        "smoke_stage12_enforcement_apply_readiness_report",
+        "smoke_stage11_policy_gap_remediation",
+        "smoke_stage10_policy_preflight_receipt_shape"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 150,
+        "targeted_smokes": [
+          "smoke_stage12_enforcement_apply_readiness_report",
+          "smoke_stage11_policy_gap_remediation",
+          "smoke_stage10_policy_preflight_receipt_shape",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
     }
   }
 }
