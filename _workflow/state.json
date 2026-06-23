@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-23T05:55:00+02:00",
+  "updated_at": "2026-06-23T06:10:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage9_3_registry_policy_consistency_guard",
-    "stage": "Stage 9.3",
-    "status": "green_stage9_3_registry_policy_consistency_guard",
-    "description": "Test-only registry-policy consistency guard added to run_all. It validates public and authorized registry read models against descriptors, TOOL_POLICIES, SERVER_TOOLS_SPEC.tool_catalog, counts, and fingerprints without runtime enforcement changes."
+    "id": "stage10_1_policy_enforcement_coverage_matrix_preflight",
+    "stage": "Stage 10.1",
+    "status": "started_stage10_1_policy_enforcement_coverage_matrix_preflight",
+    "description": "Stage 9 closed; Stage 10 started as policy enforcement planning-to-preflight. Current package targets a read-only enforcement coverage matrix with no runtime deny behavior change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,10 +39,11 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 9.3 registry-policy consistency guard",
-    "Stage 9 closeout and next-stage recommendation",
-    "Future optional: C3 cooperative tool cancellation sample after operator approval",
-    "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
+    "Stage 10.1 enforcement coverage matrix preflight",
+    "Stage 10.2 deny reason-code dry-run design",
+    "Stage 10.3 policy preflight receipt shape",
+    "Stage 10 closeout after run_all GREEN",
+    "Explicit operator approval required before any runtime policy enforcement or deny behavior change"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -562,7 +563,7 @@
     }
   },
   "stage9": {
-    "status": "green_9_3",
+    "status": "green_stage9_closed",
     "proposal": "_workflow/operator_decisions/stage9_recommendation_after_stage8.md",
     "stage9_1": {
       "status": "green",
@@ -658,6 +659,36 @@
           "smoke_stage12_streamable_http_workflow_plan"
         ]
       }
+    },
+    "closeout": {
+      "status": "green",
+      "commits": [
+        "3817753 feat: assemble runtime registry context",
+        "0bde4c2 feat: add internal registry summary helper",
+        "baf91a1 test: add registry policy consistency guard"
+      ],
+      "run_all_skip_network": {
+        "status": "ok",
+        "public": 6,
+        "tests_authenticated": 145
+      },
+      "next_recommendation": "_workflow/operator_decisions/stage10_policy_enforcement_preflight_plan.md"
+    }
+  },
+  "stage10": {
+    "status": "started_10_1",
+    "plan": "_workflow/operator_decisions/stage10_policy_enforcement_preflight_plan.md",
+    "stage10_1": {
+      "status": "started",
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector-visible schema change",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ]
     }
   }
 }
