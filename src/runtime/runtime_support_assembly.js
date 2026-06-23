@@ -1,9 +1,8 @@
 "use strict";
 
-const { buildCoreToolDescriptors } = require("./core_tool_descriptors");
-const { createStaticToolRegistry } = require("../static_tool_registry");
 const { createAuditLogger } = require("./audit_log");
 const { createDocumentRuntimeContext } = require("./document_runtime_context");
+const { createRuntimeRegistryContextFactory } = require("./registry_context_assembly");
 
 function createRuntimeSupportAssembly({
   auditLogPath,
@@ -16,6 +15,7 @@ function createRuntimeSupportAssembly({
   maxFetchTextChars,
   outputMode,
   optionalTools,
+  rootDir,
 }) {
   const auditLog = createAuditLogger({
     auditLogPath,
@@ -32,23 +32,23 @@ function createRuntimeSupportAssembly({
     connectorShapeVersion,
   });
 
-  function toolsList() {
-    const baseTools = buildCoreToolDescriptors({
-      connectorShapeVersion,
-      outputMode,
-      maxFetchTextChars,
-    });
+  const registryContext = createRuntimeRegistryContextFactory({
+    connectorShapeVersion,
+    outputMode,
+    maxFetchTextChars,
+    optionalTools,
+    rootDir,
+    metadata: { source: "runtime_support_assembly" },
+  });
 
-    return createStaticToolRegistry({
-      coreDescriptors: baseTools,
-      optionalTools,
-      metadata: { source: "runtime_support_assembly" },
-    }).descriptors();
+  function toolsList() {
+    return registryContext({ label: "runtime-tools-list" }).descriptors();
   }
 
   return {
     auditLog,
     documentRuntimeContext,
+    registryContext,
     toolsList,
   };
 }

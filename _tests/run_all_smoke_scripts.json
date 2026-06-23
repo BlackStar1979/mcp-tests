@@ -56,6 +56,7 @@
   "_tests/smoke_stage8_static_tool_registry_equivalence.js",
   "_tests/smoke_stage8_registry_policy_read_model.js",
   "_tests/smoke_stage8_registry_diff_dry_run.js",
+  "_tests/smoke_stage9_runtime_registry_context_assembly.js",
   "_tests/smoke_stage8_34_tools_list_diff_model.js",
   "_tests/smoke_stage8_35_list_changed_notification_bus_dry_run.js",
   "_tests/smoke_stage8_36_list_changed_local_harness.js",

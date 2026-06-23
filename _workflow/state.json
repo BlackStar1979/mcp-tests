@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-22T21:55:00+02:00",
+  "updated_at": "2026-06-23T05:15:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage8_closeout",
-    "stage": "Stage 8",
-    "status": "green_stage8_closed",
-    "description": "Stage 8 closed after static registry foundation, registry-to-policy read model, and registry diff dry-run. No hotplug, list_changed emission, connector refresh, or runtime policy enforcement change was implemented."
+    "id": "stage9_1_runtime_registry_context_assembly",
+    "stage": "Stage 9.1",
+    "status": "green_stage9_1_runtime_registry_context_assembly",
+    "description": "Runtime registry context factory added and exposed through runtime support assembly as read-only context for registry, registry-policy read model, and registry diff snapshot. No runtime enforcement or hotplug behavior change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,11 +39,10 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Commit Stage 8 closeout",
-    "Recommended next: Stage 9 registry-backed runtime read model integration",
-    "Alternative future: C3 cooperative tool cancellation sample after operator approval",
-    "Alternative future: R1 runtime policy spec loader after operator approval",
-    "Alternative future: HPL1 dynamic registry abstraction after operator approval",
+    "Commit Stage 9.1 runtime registry context assembly",
+    "Stage 9.2 internal runtime registry summary helper/test only",
+    "Stage 9.3 registry-policy consistency guard in run_all",
+    "Future optional: C3 cooperative tool cancellation sample after operator approval",
     "Explicit operator approval required before connector refresh, public connector reconnection, runtime policy expansion, real hotplug/list_changed emission, or sessionless migration"
   ],
   "target_runtime_topology": {
@@ -561,6 +560,43 @@
         "tests_authenticated": 142
       },
       "next_recommendation": "_workflow/operator_decisions/stage9_recommendation_after_stage8.md"
+    }
+  },
+  "stage9": {
+    "status": "green_9_1",
+    "proposal": "_workflow/operator_decisions/stage9_recommendation_after_stage8.md",
+    "stage9_1": {
+      "status": "green",
+      "files": [
+        "src/runtime/registry_context_assembly.js",
+        "src/runtime/runtime_support_assembly.js",
+        "_tests/smoke_stage9_runtime_registry_context_assembly.js",
+        "_tests/smoke_stage12_step38w_runtime_support_assembly.js"
+      ],
+      "non_goals": [
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no connector refresh",
+        "no public connector reconnection",
+        "no hotplug/list_changed emission",
+        "no state-store writes"
+      ],
+      "targeted_smokes": [
+        "smoke_stage9_runtime_registry_context_assembly",
+        "smoke_stage12_step38w_runtime_support_assembly",
+        "smoke_stage8_static_tool_registry_equivalence"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 143,
+        "targeted_smokes": [
+          "smoke_stage9_runtime_registry_context_assembly",
+          "smoke_stage12_step38w_runtime_support_assembly",
+          "smoke_stage8_static_tool_registry_equivalence",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      }
     }
   }
 }
