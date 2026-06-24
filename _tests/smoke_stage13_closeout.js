@@ -34,7 +34,6 @@ assert.equal(state.stage13.status, "green_closed");
 assert.equal(state.stage13.closeout.status, "green");
 assert.equal(state.stage13.closeout.stage14_implementation_approved, false);
 assert.equal(state.stage13.closeout.runtime_enforcement_changed, false);
-assert.ok(state.next_allowed_work.includes("Present Stage 14 proposal/recommendation for operator review"));
 assert.ok(smokeScripts.includes("_tests/smoke_stage13_closeout.js"));
 
 console.log("smoke_stage13_closeout ok");

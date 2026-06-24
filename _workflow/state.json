@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T09:25:00+02:00",
+  "updated_at": "2026-06-24T09:50:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "post_stage13_workflow_navigation_hygiene",
-    "stage": "Post-Stage 13",
-    "status": "green_post_stage13_workflow_navigation_hygiene",
-    "description": "Workflow navigation hygiene completed without creating a new master document. Existing ACTIVE_WORKFLOW_INDEX and WORKFLOW_CANON were updated to separate active queue from historical evidence and remove stale current-state claims. No Stage 14 implementation approval or runtime change was performed."
+    "id": "stage14_1_runtime_enforcement_no_apply_package",
+    "stage": "Stage 14.1",
+    "status": "green_stage14_1_no_apply_package",
+    "description": "Stage 14 started as Runtime Enforcement Apply Package - No Apply. It records source-derived hook map and required future apply artifacts without runtime-imported code change, approval marker, tools_call_handler wiring, runtime enforcement, or allow/deny behavior change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,8 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Present Stage 14 proposal/recommendation for operator review",
-    "No Stage 14 implementation until operator accepts a proposal with scope, risks, non-actions, and validation plan",
+    "Stage 14.2 runtime enforcement apply design review, still no apply unless separately approved",
+    "No runtime enforcement implementation until operator accepts an apply proposal with exact code diff, restart/deploy/rollback plan, connector impact review, and validation plan",
     "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change",
     "Dedicated CRLF normalization batch only after separate operator approval"
   ],
@@ -1374,6 +1374,54 @@
         "no allow/deny behavior change",
         "no sessionless migration",
         "no mass CRLF normalization"
+      ]
+    }
+  },
+  "stage14": {
+    "status": "green_started_no_apply",
+    "stage14_1": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
+      "guard": "_tests/smoke_stage14_runtime_enforcement_no_apply_package.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "apply_allowed_now": false,
+      "runtime_enforcement_changed": false,
+      "allow_deny_behavior_changed": false,
+      "dispatch_behavior_changed": false,
+      "approval_marker_recorded": false,
+      "runtime_imported_code_changed": false,
+      "future_hook": "src/runtime/tools_call_handler.js after decision receipt and before tool_call_start/handler execution",
+      "validation": {
+        "targeted_smoke": "ok",
+        "stage13_closeout_guard": "ok",
+        "workflow_navigation_guard": "ok_after_one_tool_block_retry",
+        "stage12_step40_guard": "ok",
+        "stage12_step39_guard": "ok",
+        "post_stage13_hygiene_guard": "ok",
+        "server_self_test": "ok",
+        "run_all_skip_network": "blocked_by_tool_layer_after_reroute_attempts",
+        "streamable_http_workflow_guard": "blocked_by_tool_layer_after_prior_ok_in_session"
+      },
+      "non_actions": [
+        "no runtime-imported code change",
+        "no Stage 14 runtime enforcement apply",
+        "no approval marker recorded",
+        "no tools_call_handler wiring",
+        "no runtime policy denial behavior change",
+        "no allow/deny behavior change",
+        "no dispatch behavior change",
+        "no deploy",
+        "no runtime restart",
+        "no connector refresh",
+        "no public connector reconnect",
+        "no hotplug/list_changed emission",
+        "no sessionless migration",
+        "no CRLF normalization"
       ]
     }
   }
