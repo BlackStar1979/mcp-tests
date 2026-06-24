@@ -48,6 +48,7 @@ Checkpoint topology:
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in Stage 6.
 - Stage 13.1 ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; post-Stage 12 `f2830cb7817520ac` is historical measurement mismatch, not current runtime drift.
+- Stage 13.2 boundary confirms the runtime-stage label is a runtime compatibility label, not workflow progress truth; workflow progress truth remains `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 
 Recent committed stages:
 
@@ -81,7 +82,10 @@ Current records:
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
 
 - `stage13_live_repo_drift_ledger.md`
-  - Stage 13.1 read-only repo/runtime drift ledger. Current public local surface matches frozen baseline; runtime-stage label remains Stage 13.2 debt.
+  - Stage 13.1 read-only repo/runtime drift ledger. Current public local surface matches frozen baseline; runtime-stage label debt was closed by the Stage 13.2 boundary guard.
+
+- Stage 13.2 boundary guard
+  - `_tests/smoke_stage13_runtime_identity_workflow_boundary.js` guards that `runtime_stage_status` remains a runtime compatibility label and must not be used as workflow progress truth.
 
 ## Historical workflow plans retained in place
 

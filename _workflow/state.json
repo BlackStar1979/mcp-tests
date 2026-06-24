@@ -1,19 +1,19 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T06:52:00+02:00",
+  "updated_at": "2026-06-24T07:53:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage13_1_live_repo_drift_ledger",
-    "stage": "Stage 13.1",
-    "status": "green_live_repo_drift_ledger",
-    "description": "Stage 13.1 live/repo drift ledger recorded. Repo is clean at HEAD 7953781c08e3, local ports match target topology, current public local tools/list matches the frozen public baseline with hash 0852d07b373a25ed, OAuth21 runtime remains 43 tools with hash 8b62ecaf89227335, and no deploy/restart/connector refresh/runtime enforcement was performed."
+    "id": "stage13_2_runtime_identity_workflow_boundary",
+    "stage": "Stage 13.2",
+    "status": "green_runtime_identity_workflow_boundary",
+    "description": "Stage 13.2 runtime identity/workflow stage boundary recorded and guarded. runtime_stage_status is treated as a runtime/API compatibility label, not workflow progress truth. Workflow progress truth remains _workflow/state.json and _workflow/WORKFLOW_CANON.md. No runtime code patch, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
-    "public_sections": 8,
-    "tests_authenticated": 148,
-    "full_smoke_skip_network": "ok_0_40_0_8_148"
+    "public_sections": 6,
+    "tests_authenticated": 153,
+    "full_smoke_skip_network": "ok_0_40_0_6_153"
   },
   "active_controls": [
     "target runtime topology freeze: only auth none on 3009 and oauth21 on 3008 are active TEST MCP instances",
@@ -39,9 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 13.2 runtime identity versus workflow stage distinction",
     "Stage 13.3 CRLF hygiene plan",
     "Stage 13.4 process-runner ergonomics note",
+    "Stage 13 closeout after Stage 13.3 and Stage 13.4",
     "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change"
   ],
   "target_runtime_topology": {
@@ -1102,6 +1102,45 @@
         "classification": "historical_measurement_mismatch_not_current_runtime_drift"
       },
       "non_actions": [
+        "no deploy",
+        "no runtime restart",
+        "no connector refresh",
+        "no public connector reconnect",
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no dispatch behavior change",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ]
+    },
+    "stage13_2": {
+      "status": "green",
+      "guard": "_tests/smoke_stage13_runtime_identity_workflow_boundary.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "rollback_path": "revert workflow-only documentation/state/test-guard changes",
+      "restore_path": "_workflow/WORKFLOW_CANON.md, _workflow/ACTIVE_WORKFLOW_INDEX.md, _workflow/state.json, _tests/smoke_stage13_runtime_identity_workflow_boundary.js, _tests/run_all_smoke_scripts.json, _tests/smoke_stage12_streamable_http_workflow_plan.js",
+      "runtime_stage_status_semantics": "runtime-compatibility-label-not-repo-progress-label",
+      "workflow_truth": [
+        "_workflow/state.json",
+        "_workflow/WORKFLOW_CANON.md"
+      ],
+      "decision": "runtime_stage_status is a runtime/API compatibility label and must not be used as workflow progress truth",
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 153,
+        "targeted_smokes": [
+          "smoke_stage13_runtime_identity_workflow_boundary",
+          "smoke_stage12_streamable_http_workflow_plan"
+        ]
+      },
+      "non_actions": [
+        "no runtime code patch",
         "no deploy",
         "no runtime restart",
         "no connector refresh",
