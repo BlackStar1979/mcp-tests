@@ -65,6 +65,7 @@
   "_tests/smoke_stage11_policy_gap_remediation.js",
   "_tests/smoke_stage12_enforcement_apply_readiness_report.js",
   "_tests/smoke_stage12_enforcement_wiring_plan_no_apply.js",
+  "_tests/smoke_stage12_operator_approval_boundary_guard.js",
   "_tests/smoke_stage8_34_tools_list_diff_model.js",
   "_tests/smoke_stage8_35_list_changed_notification_bus_dry_run.js",
   "_tests/smoke_stage8_36_list_changed_local_harness.js",

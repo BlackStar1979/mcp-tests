@@ -98,7 +98,8 @@
         "script_count_after_stage10_3": 6,
         "script_count_after_stage11_1": 6,
         "script_count_after_stage12_1": 6,
-        "script_count_after_stage12_2": 6
+        "script_count_after_stage12_2": 6,
+        "script_count_after_stage12_3": 6
       },
       "tests_authenticated": {
         "profile": "tests",
@@ -114,7 +115,7 @@
         "legacy_retired_auth_manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
         "stage5_status": "legacy access/bearer tests excluded from active run_all manifest",
         "tool_count_current": 43,
-        "script_count": 151,
+        "script_count": 152,
         "script_count_after_stage6_closeout": 136,
         "stage6_status": "green_source_aligned_active_run_all",
         "script_count_after_p1": 137,
@@ -146,7 +147,9 @@
         "script_count_after_stage12_1": 150,
         "stage12_1_smoke": "_tests/smoke_stage12_enforcement_apply_readiness_report.js",
         "script_count_after_stage12_2": 151,
-        "stage12_2_smoke": "_tests/smoke_stage12_enforcement_wiring_plan_no_apply.js"
+        "stage12_2_smoke": "_tests/smoke_stage12_enforcement_wiring_plan_no_apply.js",
+        "script_count_after_stage12_3": 152,
+        "stage12_3_smoke": "_tests/smoke_stage12_operator_approval_boundary_guard.js"
       }
     },
     "run_all_smoke_scripts_manifest": "_tests/run_all_smoke_scripts.json",
