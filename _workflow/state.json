@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T09:50:00+02:00",
+  "updated_at": "2026-06-24T10:20:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage14_1_runtime_enforcement_no_apply_package",
-    "stage": "Stage 14.1",
-    "status": "green_stage14_1_no_apply_package",
-    "description": "Stage 14 started as Runtime Enforcement Apply Package - No Apply. It records source-derived hook map and required future apply artifacts without runtime-imported code change, approval marker, tools_call_handler wiring, runtime enforcement, or allow/deny behavior change."
+    "id": "stage14_2_workbench_debt_cleanup",
+    "stage": "Stage 14.2",
+    "status": "green_stage14_2_workbench_debt_cleanup",
+    "description": "Stage 14.2 removed developer-workbench debt before runtime enforcement apply design: backup path moved to control-plane, active validators now require control-plane snapshots, local root _backups was moved into ignored control-plane retired backups, and post-Stage6 decisions/baselines/scripts are recorded as mandatory checks. No runtime apply, restart, connector refresh, deploy, or allow/deny change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 14.2 runtime enforcement apply design review, still no apply unless separately approved",
+    "Stage 14.3 runtime enforcement apply design review, still no apply unless separately approved",
+    "Before Stage 14.3, reassess each blocker and state whether restart, connector refresh, baseline refreeze, snapshot, deploy, rollback, or backup is required",
     "No runtime enforcement implementation until operator accepts an apply proposal with exact code diff, restart/deploy/rollback plan, connector impact review, and validation plan",
-    "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change",
     "Dedicated CRLF normalization batch only after separate operator approval"
   ],
   "target_runtime_topology": {
@@ -1286,7 +1286,7 @@
       "run_all_skip_network": "ok",
       "version": "0.40.0",
       "public": 6,
-      "tests_authenticated": 158,
+      "tests_authenticated": 160,
       "self_test": "ok",
       "npm_test": "not_runnable_npm_enoent_tool_environment"
     },
@@ -1361,7 +1361,7 @@
         "expected_public": 6,
         "expected_tests_authenticated": 158,
         "public": 6,
-        "tests_authenticated": 158
+        "tests_authenticated": 160
       },
       "non_actions": [
         "no new master document",
@@ -1378,7 +1378,7 @@
     }
   },
   "stage14": {
-    "status": "green_started_no_apply",
+    "status": "green_no_apply_workbench_ready",
     "stage14_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
@@ -1404,8 +1404,10 @@
         "stage12_step39_guard": "ok",
         "post_stage13_hygiene_guard": "ok",
         "server_self_test": "ok",
-        "run_all_skip_network": "blocked_by_tool_layer_after_reroute_attempts",
-        "streamable_http_workflow_guard": "blocked_by_tool_layer_after_prior_ok_in_session"
+        "run_all_skip_network": "ok_in_stage14_2_full_run",
+        "streamable_http_workflow_guard": "blocked_by_tool_layer_after_prior_ok_in_session",
+        "tests_authenticated": 160,
+        "public": 6
       },
       "non_actions": [
         "no runtime-imported code change",
@@ -1423,6 +1425,54 @@
         "no sessionless migration",
         "no CRLF normalization"
       ]
+    },
+    "stage14_2": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage14_2_workbench_debt_cleanup.md",
+      "guard": "_tests/smoke_stage14_2_workbench_debt_cleanup.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "runtime_enforcement_changed": false,
+      "allow_deny_behavior_changed": false,
+      "dispatch_behavior_changed": false,
+      "root_backups_removed_from_active_workspace": true,
+      "backup_script_uses_control_plane": true,
+      "validators_use_control_plane_snapshots": true,
+      "post_stage6_binding_decisions_checked": true,
+      "baselines_checked": true,
+      "scripts_checked": true,
+      "stage14_3_must_reassess_blockers": true,
+      "validation": {
+        "targeted_smoke": "ok",
+        "stage14_1_guard": "ok",
+        "stage12_step40_guard": "ok",
+        "stage12_step39_guard": "ok",
+        "streamable_http_workflow_guard": "ok",
+        "server_self_test": "ok",
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 160
+      },
+      "non_actions": [
+        "no runtime enforcement apply",
+        "no runtime-imported code change",
+        "no server restart",
+        "no connector refresh",
+        "no deploy",
+        "no public connector reconnect",
+        "no allow/deny behavior change",
+        "no tools_call_handler wiring",
+        "no hotplug/list_changed emission",
+        "no sessionless migration",
+        "no baseline refreeze",
+        "no hard deletion of control-plane evidence"
+      ],
+      "legacy_longterm_scripts_identified": true,
+      "legacy_longterm_scripts_active_run_all": false
     }
   }
 }

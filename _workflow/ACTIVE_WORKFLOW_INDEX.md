@@ -117,11 +117,17 @@ Current records:
 - Stage 14.1 runtime enforcement no-apply guard
   - `_tests/smoke_stage14_runtime_enforcement_no_apply_package.js` guards the record, source/spec no-apply state, state markers, and absence of tools_call_handler wiring.
 
+- `stage14_2_workbench_debt_cleanup.md`
+  - Stage 14.2 developer workbench debt cleanup: blocker reassessment duty, restart/connector disclosure, control-plane-only backup path, post-Stage6 decisions, baselines, and scripts checks.
+
+- Stage 14.2 workbench debt cleanup guard
+  - `_tests/smoke_stage14_2_workbench_debt_cleanup.js` guards control-plane backup path, no root `_backups`, active validator paths, binding context, baselines, state markers, and no-apply boundary.
+
 ## Active remaining work queue
 
 Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
 
-1. Runtime Enforcement Apply Package - No Apply package started at Stage 14.1; next is Stage 14.2 apply design review, still no apply.
+1. Runtime Enforcement Apply Package - No Apply package started; Stage 14.2 workbench debt cleanup complete; next is Stage 14.3 apply design review, still no apply.
 2. Cooperative Tool Cancellation C3.
 3. Event-driven Hotplug Lifecycle.
 4. Sessionless / Explicit State Handles Target Selection.

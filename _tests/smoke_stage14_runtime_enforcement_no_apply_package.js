@@ -40,8 +40,6 @@ assert.ok(canon.includes("Stage 14.1 runtime enforcement no-apply package green"
 assert.ok(index.includes("stage14_runtime_enforcement_no_apply_package.md"));
 assert.ok(index.includes("Stage 14.1 runtime enforcement no-apply guard"));
 
-assert.equal(state.current_work_package.id, "stage14_1_runtime_enforcement_no_apply_package");
-assert.equal(state.current_work_package.status, "green_stage14_1_no_apply_package");
 assert.equal(state.stage14.stage14_1.status, "green");
 assert.equal(state.stage14.stage14_1.apply_allowed_now, false);
 assert.equal(state.stage14.stage14_1.runtime_enforcement_changed, false);

@@ -11,7 +11,7 @@ function fail(x){errors.push(x)}
 function b(o,k,v,n){if(!o||o[k]!==v)fail(n+'.'+k+' must be '+v)}
 function q(o,k,v,n){if(!o||o[k]!==v)fail(n+'.'+k+' must be '+JSON.stringify(v))}
 function f(p,n){if(typeof p!=='string'||!p||path.isAbsolute(p)||p.includes('..')||!fs.existsSync(path.join(root,p)))fail((n||p)+' must exist')}
-function bak(p,n){if(typeof p!=='string'||!p.startsWith('_backups/workflow_snapshots/'))fail((n||p)+' must be snapshot');else f(p,n)}
+function bak(p,n){if(typeof p!=='string'||!p.startsWith('_workflow/control_plane/snapshots/'))fail((n||p)+' must be snapshot');else f(p,n)}
 const rb=spec.runtime_boundary||{};['runtime_behavior_changed','server_js_changed','tools_list_changed','fingerprints_changed','restart_required','connector_refresh_required'].forEach(k=>b(rb,k,false,'runtime_boundary'));
 const ready=spec.decision_runtime_interface_contract_readiness_gate||{};q(ready,'status','passed_for_runtime_integration_planning_only','readiness_gate');
 const plan=spec.decision_runtime_integration_plan||{};q(plan,'status','plan_written_not_implemented','plan');q(plan,'mode','integration_plan_only_no_runtime_change','plan');['runtime_behavior_changed','server_runtime_integrated','mcp_tool_exposed','connector_visible_change_allowed'].forEach(k=>b(plan,k,false,'plan'));b(plan,'operator_approval_required_before_runtime_patch',true,'plan');b(plan,'restart_plan_required_before_runtime_patch',true,'plan');b(plan,'connector_refresh_plan_required_before_surface_change',true,'plan');

@@ -7,11 +7,11 @@ param(
 $ErrorActionPreference = "Stop"
 $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
 $Repo = Split-Path -Parent (Split-Path -Parent $ScriptDir)
-$BackupRoot = Join-Path $Repo "_backups"
-$SnapshotRoot = Join-Path $BackupRoot "snapshots"
+$ControlPlaneRoot = Join-Path (Join-Path $Repo "_workflow") "control_plane"
+$SnapshotRoot = Join-Path $ControlPlaneRoot "snapshots"
 $AuditLog = if ($env:MCP_TEST_AUDIT_LOG) { $env:MCP_TEST_AUDIT_LOG } else { Join-Path $Repo "_logs\.mcp-tests-audit.jsonl" }
 
-New-Item -ItemType Directory -Force -Path $BackupRoot | Out-Null
+New-Item -ItemType Directory -Force -Path $ControlPlaneRoot | Out-Null
 New-Item -ItemType Directory -Force -Path $SnapshotRoot | Out-Null
 New-Item -ItemType Directory -Force -Path (Split-Path $AuditLog) | Out-Null
 

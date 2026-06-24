@@ -70,8 +70,8 @@ function requireFile(relativePath, label = relativePath) {
 }
 
 function requireBackup(relativePath, label = relativePath) {
-  if (typeof relativePath !== 'string' || !relativePath.startsWith('_backups/workflow_snapshots/')) {
-    fail(`${label} must point under _backups/workflow_snapshots`);
+  if (typeof relativePath !== 'string' || !relativePath.startsWith('_workflow/control_plane/snapshots/')) {
+    fail(`${label} must point under _workflow/control_plane/snapshots`);
     return;
   }
   requireFile(relativePath, label);
