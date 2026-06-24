@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T07:30:00+02:00",
+  "updated_at": "2026-06-24T08:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage13_3_crlf_hygiene_plan",
-    "stage": "Stage 13.3",
-    "status": "green_crlf_hygiene_plan",
-    "description": "Stage 13.3 CRLF hygiene plan recorded and guarded. Existing .gitattributes policy is kept; read-only scan found 191 tracked text files with CRLF. No mass line-ending normalization, git add --renormalize, runtime code patch, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
+    "id": "stage13_4_process_runner_ergonomics_note",
+    "stage": "Stage 13.4",
+    "status": "green_process_runner_ergonomics_note",
+    "description": "Stage 13.4 process-runner ergonomics note recorded and guarded. This captures bounded command practice, observed tool-layer block handling, output truncation handling, CRLF warning interpretation, and alternate clean-tree probes. No process-runner policy, command allowlist, raw PowerShell, runtime code, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,8 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 13.4 process-runner ergonomics note",
-    "Stage 13 closeout after Stage 13.4",
+    "Stage 13 closeout",
+    "Stage 14 recommendation/proposal after Stage 13 closeout",
     "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change",
     "Dedicated CRLF normalization batch only after separate operator approval"
   ],
@@ -1075,7 +1075,7 @@
     "recommendation": "_workflow/operator_decisions/stage13_recommendation_after_stage12.md"
   },
   "stage13": {
-    "status": "green_in_progress",
+    "status": "green_ready_for_closeout",
     "stage13_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage13_live_repo_drift_ledger.md",
@@ -1183,6 +1183,44 @@
       "non_actions": [
         "no mass line-ending normalization",
         "no git add --renormalize .",
+        "no runtime code patch",
+        "no deploy",
+        "no runtime restart",
+        "no connector refresh",
+        "no public connector reconnect",
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no dispatch behavior change",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ]
+    },
+    "stage13_4": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage13_process_runner_ergonomics_note.md",
+      "guard": "_tests/smoke_stage13_process_runner_ergonomics_note.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "process_runner_policy_changed": false,
+      "command_allowlist_changed": false,
+      "raw_powershell_enabled": false,
+      "decision": "record process-runner ergonomics as operator practice; do not change policy or runtime behavior",
+      "validation": {
+        "targeted_smokes": [
+          "smoke_stage13_process_runner_ergonomics_note"
+        ],
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 155
+      },
+      "non_actions": [
+        "no process-runner policy change",
+        "no command allowlist change",
+        "no raw PowerShell enablement",
         "no runtime code patch",
         "no deploy",
         "no runtime restart",
