@@ -99,6 +99,12 @@ Current records:
 - Stage 13.4 process-runner ergonomics guard
   - `_tests/smoke_stage13_process_runner_ergonomics_note.js` guards the note-only boundary, policy snapshot, state markers, and non-actions.
 
+- `stage13_closeout.md`
+  - Stage 13 closeout record. It closes Stage 13 after 13.1-13.4 and explicitly records that no Stage 14 implementation approval is carried forward.
+
+- Stage 13 closeout guard
+  - `_tests/smoke_stage13_closeout.js` guards closed-state markers, final validation marker, Stage 14 consent boundary, and non-actions.
+
 ## Historical workflow plans retained in place
 
 These are historical but still useful. Do not read them as current truth without checking `WORKFLOW_CANON.md` and `state.json`.

@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T08:05:00+02:00",
+  "updated_at": "2026-06-24T08:35:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage13_4_process_runner_ergonomics_note",
-    "stage": "Stage 13.4",
-    "status": "green_process_runner_ergonomics_note",
-    "description": "Stage 13.4 process-runner ergonomics note recorded and guarded. This captures bounded command practice, observed tool-layer block handling, output truncation handling, CRLF warning interpretation, and alternate clean-tree probes. No process-runner policy, command allowlist, raw PowerShell, runtime code, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
+    "id": "stage13_closeout",
+    "stage": "Stage 13",
+    "status": "green_stage13_closed",
+    "description": "Stage 13 closed after live/repo drift ledger, runtime identity/workflow boundary, CRLF hygiene plan, and process-runner ergonomics note. No Stage 14 implementation approval is recorded; next allowed work is presentation of a Stage 14 proposal/recommendation for operator review."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,8 +39,8 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 13 closeout",
-    "Stage 14 recommendation/proposal after Stage 13 closeout",
+    "Present Stage 14 proposal/recommendation for operator review",
+    "No Stage 14 implementation until operator accepts a proposal with scope, risks, non-actions, and validation plan",
     "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change",
     "Dedicated CRLF normalization batch only after separate operator approval"
   ],
@@ -1075,7 +1075,7 @@
     "recommendation": "_workflow/operator_decisions/stage13_recommendation_after_stage12.md"
   },
   "stage13": {
-    "status": "green_ready_for_closeout",
+    "status": "green_closed",
     "stage13_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage13_live_repo_drift_ledger.md",
@@ -1231,6 +1231,49 @@
         "no dispatch behavior change",
         "no hotplug/list_changed emission",
         "no sessionless migration"
+      ]
+    },
+    "closeout": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage13_closeout.md",
+      "guard": "_tests/smoke_stage13_closeout.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "stage14_implementation_approved": false,
+      "runtime_enforcement_changed": false,
+      "allow_deny_behavior_changed": false,
+      "dispatch_behavior_changed": false,
+      "validation": {
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 156,
+        "marker": "ok_0_40_0_6_156"
+      },
+      "completed": [
+        "stage13_1_live_repo_drift_ledger",
+        "stage13_2_runtime_identity_workflow_boundary",
+        "stage13_3_crlf_hygiene_plan",
+        "stage13_4_process_runner_ergonomics_note"
+      ],
+      "non_actions": [
+        "no Stage 14 implementation approval",
+        "no runtime code patch",
+        "no deploy",
+        "no runtime restart",
+        "no connector refresh",
+        "no public connector reconnect",
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no dispatch behavior change",
+        "no hotplug/list_changed emission",
+        "no sessionless migration",
+        "no mass CRLF normalization",
+        "no git add --renormalize .",
+        "no process-runner policy change"
       ]
     }
   }
