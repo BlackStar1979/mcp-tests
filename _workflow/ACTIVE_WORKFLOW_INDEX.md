@@ -87,6 +87,12 @@ Current records:
 - Stage 13.2 boundary guard
   - `_tests/smoke_stage13_runtime_identity_workflow_boundary.js` guards that `runtime_stage_status` remains a runtime compatibility label and must not be used as workflow progress truth.
 
+- `stage13_crlf_hygiene_plan.md`
+  - Stage 13.3 plan-only CRLF hygiene record. It records the existing .gitattributes policy and current CRLF population, and rejects global renormalization without a separate approved migration.
+
+- Stage 13.3 CRLF hygiene guard
+  - `_tests/smoke_stage13_crlf_hygiene_plan.js` guards the plan-only boundary, .gitattributes declarations, state markers, and non-actions.
+
 ## Historical workflow plans retained in place
 
 These are historical but still useful. Do not read them as current truth without checking `WORKFLOW_CANON.md` and `state.json`.

@@ -32,8 +32,6 @@ assert.ok(canon.includes("Changing `src/stage_metadata.js` is a runtime-imported
 assert.ok(index.includes("runtime-stage label is a runtime compatibility label"));
 assert.ok(index.includes("Stage 13.2 boundary guard"));
 
-assert.equal(state.current_work_package.id, "stage13_2_runtime_identity_workflow_boundary");
-assert.equal(state.current_work_package.status, "green_runtime_identity_workflow_boundary");
 assert.equal(state.stage13.stage13_2.status, "green");
 assert.equal(state.stage13.stage13_2.runtime_stage_status_semantics, semanticMarker);
 assert.equal(state.stage13.stage13_2.server_change, false);

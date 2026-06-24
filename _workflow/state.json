@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T07:53:00+02:00",
+  "updated_at": "2026-06-24T07:30:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage13_2_runtime_identity_workflow_boundary",
-    "stage": "Stage 13.2",
-    "status": "green_runtime_identity_workflow_boundary",
-    "description": "Stage 13.2 runtime identity/workflow stage boundary recorded and guarded. runtime_stage_status is treated as a runtime/API compatibility label, not workflow progress truth. Workflow progress truth remains _workflow/state.json and _workflow/WORKFLOW_CANON.md. No runtime code patch, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
+    "id": "stage13_3_crlf_hygiene_plan",
+    "stage": "Stage 13.3",
+    "status": "green_crlf_hygiene_plan",
+    "description": "Stage 13.3 CRLF hygiene plan recorded and guarded. Existing .gitattributes policy is kept; read-only scan found 191 tracked text files with CRLF. No mass line-ending normalization, git add --renormalize, runtime code patch, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,10 +39,10 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 13.3 CRLF hygiene plan",
     "Stage 13.4 process-runner ergonomics note",
-    "Stage 13 closeout after Stage 13.3 and Stage 13.4",
-    "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change"
+    "Stage 13 closeout after Stage 13.4",
+    "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change",
+    "Dedicated CRLF normalization batch only after separate operator approval"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -1140,6 +1140,49 @@
         ]
       },
       "non_actions": [
+        "no runtime code patch",
+        "no deploy",
+        "no runtime restart",
+        "no connector refresh",
+        "no public connector reconnect",
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no dispatch behavior change",
+        "no hotplug/list_changed emission",
+        "no sessionless migration"
+      ]
+    },
+    "stage13_3": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage13_crlf_hygiene_plan.md",
+      "guard": "_tests/smoke_stage13_crlf_hygiene_plan.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "global_normalization_performed": false,
+      "git_add_renormalize_performed": false,
+      "tracked_text_files_checked": 632,
+      "observed_crlf_files_count": 191,
+      "observed_crlf_by_extension": {
+        ".js": 180,
+        ".md": 7,
+        ".json": 4
+      },
+      "decision": "keep CRLF as controlled debt; normalize only through substantive future edits or a separately approved small-batch migration",
+      "validation": {
+        "targeted_smokes": [
+          "smoke_stage13_crlf_hygiene_plan"
+        ],
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 154
+      },
+      "non_actions": [
+        "no mass line-ending normalization",
+        "no git add --renormalize .",
         "no runtime code patch",
         "no deploy",
         "no runtime restart",
