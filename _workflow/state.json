@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T10:20:00+02:00",
+  "updated_at": "2026-06-24T10:45:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage14_2_workbench_debt_cleanup",
-    "stage": "Stage 14.2",
-    "status": "green_stage14_2_workbench_debt_cleanup",
-    "description": "Stage 14.2 removed developer-workbench debt before runtime enforcement apply design: backup path moved to control-plane, active validators now require control-plane snapshots, local root _backups was moved into ignored control-plane retired backups, and post-Stage6 decisions/baselines/scripts are recorded as mandatory checks. No runtime apply, restart, connector refresh, deploy, or allow/deny change."
+    "id": "stage14_2b_repo_gremlin_double_scan",
+    "stage": "Stage 14.2B",
+    "status": "green_stage14_2b_repo_gremlin_double_scan",
+    "description": "Two additional repo scans completed after Stage 14.2. Hidden root-backup/control-plane gremlins and brittle workflow guard pins were corrected. Remaining _backups references are classified as intentional non-authority, negative test, ignored-root guard, historical frozen stage data, or documentation. No runtime apply, restart, connector refresh, deploy, or baseline refreeze."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -1286,7 +1286,7 @@
       "run_all_skip_network": "ok",
       "version": "0.40.0",
       "public": 6,
-      "tests_authenticated": 160,
+      "tests_authenticated": 161,
       "self_test": "ok",
       "npm_test": "not_runnable_npm_enoent_tool_environment"
     },
@@ -1361,7 +1361,7 @@
         "expected_public": 6,
         "expected_tests_authenticated": 158,
         "public": 6,
-        "tests_authenticated": 160
+        "tests_authenticated": 161
       },
       "non_actions": [
         "no new master document",
@@ -1378,7 +1378,7 @@
     }
   },
   "stage14": {
-    "status": "green_no_apply_workbench_ready",
+    "status": "green_no_apply_repo_gremlin_scan_complete",
     "stage14_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
@@ -1406,7 +1406,7 @@
         "server_self_test": "ok",
         "run_all_skip_network": "ok_in_stage14_2_full_run",
         "streamable_http_workflow_guard": "blocked_by_tool_layer_after_prior_ok_in_session",
-        "tests_authenticated": 160,
+        "tests_authenticated": 161,
         "public": 6
       },
       "non_actions": [
@@ -1455,7 +1455,7 @@
         "server_self_test": "ok",
         "run_all_skip_network": "ok",
         "public": 6,
-        "tests_authenticated": 160
+        "tests_authenticated": 161
       },
       "non_actions": [
         "no runtime enforcement apply",
@@ -1473,6 +1473,49 @@
       ],
       "legacy_longterm_scripts_identified": true,
       "legacy_longterm_scripts_active_run_all": false
+    },
+    "stage14_2b": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage14_2b_repo_gremlin_double_scan.md",
+      "guard": "_tests/smoke_stage14_2b_repo_gremlin_double_scan.js",
+      "scan_passes": 2,
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": true,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "baseline_refreeze_required": false,
+      "runtime_enforcement_changed": false,
+      "allow_deny_behavior_changed": false,
+      "no_root_backups_recreated": true,
+      "runtime_imported_server_path_changed": false,
+      "validation": {
+        "targeted_smoke": "ok",
+        "preflight_control_plane_guard": "ok",
+        "truth_parity_internal": "ok",
+        "repo_layout_contract": "ok",
+        "streamable_workflow_plan": "ok",
+        "stage14_2_guard": "ok",
+        "server_self_test": "ok",
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 161
+      },
+      "non_actions": [
+        "no runtime enforcement apply",
+        "no runtime-imported server path change",
+        "no server restart",
+        "no connector refresh",
+        "no deploy",
+        "no public connector reconnect",
+        "no allow/deny behavior change",
+        "no tools_call_handler wiring",
+        "no hotplug/list_changed emission",
+        "no sessionless migration",
+        "no baseline refreeze",
+        "no root _backups recreation"
+      ]
     }
   }
 }

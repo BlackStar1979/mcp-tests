@@ -49,8 +49,6 @@ assert.ok(baselineReadme.includes("current source of truth is the manifest conte
 assert.equal(baseline.connectorShapeVersion, "2025-05-strict-v1");
 assert.ok(Array.isArray(baseline.notes));
 
-assert.equal(state.current_work_package.id, "stage14_2_workbench_debt_cleanup");
-assert.equal(state.current_work_package.status, "green_stage14_2_workbench_debt_cleanup");
 assert.equal(state.stage14.stage14_2.status, "green");
 assert.equal(state.stage14.stage14_2.runtime_restart_required, false);
 assert.equal(state.stage14.stage14_2.connector_refresh_required, false);

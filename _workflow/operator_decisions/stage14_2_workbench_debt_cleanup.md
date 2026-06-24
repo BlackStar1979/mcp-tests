@@ -72,4 +72,4 @@ restore_path: this file, workflow scripts, workflow canon/index/state, Stage 14.
 - `node _tests/smoke_stage12_oauth_production_hardening_plan.js`: ok after historical next-work guard update.
 - `node _tests/smoke_stage12_streamable_http_workflow_plan.js`: ok after historical next-work guard update.
 - `node server.js --self-test`: ok.
-- `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=160.
+- `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=161.

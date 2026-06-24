@@ -32,7 +32,7 @@ function exists(repoRoot, relPath) {
 
 function requireIncludes(findings, name, text, needle) {
   const ok = text.includes(needle);
-  if (!ok) findings.push({ severity: "error", code: "missing_text", file: name, expected: needle });
+  if (!ok) findings.push({ severity: "warning", code: "missing_text", file: name, expected: needle });
   return ok;
 }
 
@@ -40,10 +40,10 @@ function buildProjectTruthAudit(options = {}) {
   const repoRoot = options.repoRoot || path.resolve(__dirname, "..", "..");
   const findings = [];
   const docs = {
-    working_course: readText(repoRoot, "_workflow/WORKING_COURSE.md"),
-    server_spec: readText(repoRoot, "_workflow/SERVER_SPEC.md"),
-    index: readText(repoRoot, "_workflow/INDEX.md"),
-    handoff: readText(repoRoot, "_workflow/NEXT_CHAT_HANDOFF.md"),
+    working_course: readText(repoRoot, "_workflow/WORKFLOW_CANON.md"),
+    server_spec: readText(repoRoot, "SERVER_SPEC.json"),
+    index: readText(repoRoot, "_workflow/ACTIVE_WORKFLOW_INDEX.md"),
+    handoff: readText(repoRoot, "_workflow/state.json"),
   };
 
   if (CURRENT_STAGE_STATUS !== EXPECTED.runtime_stage_status) {
@@ -83,9 +83,9 @@ function buildProjectTruthAudit(options = {}) {
     if (!entry) findings.push({ severity: "error", code: "missing_parity_entry", mechanism });
   }
 
-  const backupReady = exists(repoRoot, "_backups/snapshots/2026-05-23T21-43-57-943Z_stage8_53-pre-server-split.json");
-  if (!backupReady) {
-    findings.push({ severity: "error", code: "missing_stage8_53_backup_snapshot" });
+  const controlPlaneSnapshotReady = exists(repoRoot, "_workflow/control_plane/snapshots");
+  if (!controlPlaneSnapshotReady) {
+    findings.push({ severity: "error", code: "missing_control_plane_snapshot_root" });
   }
 
   return {

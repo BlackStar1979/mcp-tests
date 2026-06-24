@@ -190,8 +190,8 @@
         {
           "path": "server.js.bak-*",
           "status": "legacy_root_backup_file",
-          "target": "_backups/",
-          "rationale": "Historical local backup file tolerated until cleanup step."
+          "target": "_workflow/control_plane/retired_root_backups/",
+          "rationale": "Historical local backup files are retired under the control-plane retention area; root _backups must not be recreated."
         }
       ],
       "runtime_output_dirs": [

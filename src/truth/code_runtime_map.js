@@ -18,11 +18,10 @@ function buildCodeRuntimeMap(options = {}) {
     { file: "server.js", role: "current TEST MCP runtime entrypoint", planned_stage: "8.53b" },
   ];
   const canonicalDocs = [
-    "_workflow/PREFLIGHT.md",
-    "_workflow/WORKING_COURSE.md",
-    "_workflow/SERVER_SPEC.md",
-    "_workflow/INDEX.md",
-    "_workflow/NEXT_CHAT_HANDOFF.md",
+    "_workflow/WORKFLOW_CANON.md",
+    "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+    "_workflow/state.json",
+    "SERVER_SPEC.json",
   ];
   const controlPlane = [
     "_workflow/scripts/test_mcp_backup.ps1",

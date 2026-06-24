@@ -20,7 +20,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Repository code truth: `server.js`, `src/**`, `tools/**`, `profiles/**`, schema modules, runtime-imported code.
 - Runtime truth: active process, live port, live auth mode, live profile, live tool surface.
 - Connector/UI truth: ChatGPT connector action list, refresh state, approval dialogs.
-- Workflow truth: `_workflow/**`, `_tests/**`, `_backups/**`, `_logs/**`; governance and evidence only unless imported by runtime.
+- Workflow truth: `_workflow/**`, `_tests/**`, `_workflow/control_plane/**`, `_logs/**`; governance and evidence only unless imported by runtime. Root `_backups/**` is retired and must not be recreated.
 - External truth: current OpenAI/MCP/platform docs. Use web when current API/platform behavior matters.
 
 ## 3. Current validated state
@@ -29,7 +29,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_160`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_161`.
 - Latest validated public section count: `6`.
 - Latest validated authenticated smoke count: `158`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
@@ -233,7 +233,7 @@ Retention policy:
 
 - `.temp`: zero-retention scratch. Delete contents after use.
 - `.mcp_backups`: tool-generated edit backups and emergency pre-rewrite backups. Keep only recent or named recovery points.
-- `_backups`: controlled snapshots/deploy backups only. Not active knowledge.
+- `_backups`: retired root-level backup bucket. It must not be recreated; use `_workflow/control_plane/snapshots/**`, `_workflow/control_plane/file_backups/**`, and `_workflow/control_plane/retired_root_backups/**`.
 - `_logs`: runtime/audit logs only. Raw audit export remains prohibited. Rotate or summarize large logs before using them as workflow evidence.
 
 ## 13. Mechanism reference library
@@ -439,3 +439,5 @@ Post-Stage 13 repo hygiene audit green: `_workflow/operator_decisions/post_stage
 Stage 14.1 runtime enforcement no-apply package green: `_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md` starts Stage 14 as Runtime Enforcement Apply Package - No Apply. It records the source-derived future hook in `src/runtime/tools_call_handler.js` after decision receipt and before `tool_call_start`/handler execution; required future apply artifacts; and the approval marker id `operator_approved_runtime_policy_enforcement_apply`. No Stage 14 runtime enforcement apply is approved or implemented. `SERVER_POLICY_RUNTIME_SPEC.json` and `SERVER_RESOURCE_POLICY_SPEC.json` remain runtime_enforced=false. No runtime-imported code change, tools_call_handler wiring, runtime policy denial behavior change, allow/deny behavior change, deploy, restart, connector refresh, public connector reconnect, hotplug/list_changed emission, sessionless migration, or CRLF normalization was performed.
 
 Stage 14.2 developer workbench debt cleanup green: `_workflow/operator_decisions/stage14_2_workbench_debt_cleanup.md` records the operator corrections before any runtime enforcement apply design. The active backup/snapshot/deploy/rollback path is `_workflow/control_plane`, not root `_backups`; `test_mcp_backup.ps1` now writes to `_workflow/control_plane/snapshots`; active Stage 12 validators now require `_workflow/control_plane/snapshots`; local ignored root `_backups` was moved under ignored `_workflow/control_plane/retired_root_backups/local_ignored__backups_moved_2026-06-24`. Post-Stage6 binding decisions and `_workflow/baselines` are mandatory context before Stage 14.3. No runtime enforcement apply, runtime-imported code change, restart, connector refresh, deploy, allow/deny behavior change, tools_call_handler wiring, hotplug/list_changed emission, sessionless migration, or baseline refreeze was performed.
+
+Stage 14.2B repo gremlin double scan green: `_workflow/operator_decisions/stage14_2b_repo_gremlin_double_scan.md` records two additional whole-repo scan passes after Stage 14.2. Corrections: `SERVER_SPEC.json` legacy root backup target now points to `_workflow/control_plane/retired_root_backups/`; root `_backups/**` is no longer workflow truth; inactive but meaningful control-plane/preflight/stress/internal-truth checks no longer require or write root `_backups`; brittle `current_work_package` pins were removed from current Stage 14.2 and historical Streamable guards. Remaining tracked `_backups` references are intentional non-authority examples, negative tests, ignored-root/no-root-backups guards, historical frozen Stage12 data, or documentation. No runtime enforcement apply, runtime-imported server path change, restart, connector refresh, deploy, public connector reconnect, allow/deny behavior change, tools_call_handler wiring, hotplug/list_changed emission, sessionless migration, baseline refreeze, or root `_backups` recreation was performed.

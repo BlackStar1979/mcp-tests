@@ -11,7 +11,7 @@ const { createSnapshot } = require("../_workflow/scripts/workflow_snapshot");
 const ROOT = path.resolve(__dirname, "..");
 const WORKFLOW_ROOT = path.join(ROOT, "_workflow");
 const STATE_PATH = path.join(WORKFLOW_ROOT, "state.json");
-const ARTIFACT_ROOT = path.join(ROOT, "_backups", "workflow_stress");
+const ARTIFACT_ROOT = path.join(ROOT, "_workflow", "control_plane", "snapshots", "workflow_stress");
 
 function nowIso() {
   return new Date().toISOString();
