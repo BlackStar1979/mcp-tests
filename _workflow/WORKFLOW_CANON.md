@@ -29,41 +29,31 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_158`.
+- Latest validated public section count: `6`.
+- Latest validated authenticated smoke count: `158`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
 - Changing `src/stage_metadata.js` is a runtime-imported code change; it requires separate runtime-change scoping and restart decision if intended to affect live runtime identity.
-- Latest validated public section count: `8`.
-- Latest validated authenticated smoke count after HTTP boundary guard: `116`.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_157`.
+- Workflow file count is not a project-progress metric. `_workflow/control_plane/` contains many retained evidence artifacts; active navigation is `_workflow/ACTIVE_WORKFLOW_INDEX.md`, not a new master document.
+- Current active remaining work queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and mirrored in `_workflow/ACTIVE_WORKFLOW_INDEX.md`.
+- Stage 13 is closed. Post-Stage 13 repo hygiene audit is green. No Stage 14 implementation approval is recorded.
 - Step39 semantic correction: Step39 is a workstream boundary/control review. The P1 decision-runtime coverage package is supporting evidence, not the definition of Step39.
 - Step40 correction: workflow rules must be guarded by smoke, not merely documented.
-- Workflow memory compaction: `_workflow` reduced from 425 files to 45 files; historical longterm, patch manifest, policy, root narrative files, stage logs, temp scripts, public-sandbox workflow mirror, obsolete README generators, and one-off closeout scripts removed from active workflow memory.
-- State compaction: `_workflow/state.json` reduced from 250356 bytes to 1655 bytes.
-- Stage-log compaction: stage progress logs removed from active workspace; stage history is represented only by this canon.
-- Scratch cleanup: temp scratch removed from active workspace.
-- Backup cleanup: `_backups` removed from active workspace; `workflow_snapshot.js` recreates a clean snapshot root when needed.
-- Log cleanup: default raw audit log and old isolated audit log removed from active workspace; `_logs` retained only as runtime log target with small residual metadata.
 
-## 3A. Active Streamable HTTP / Sampling / OAuth workflow
+## 3A. Current active work queue
 
-Active roadmap: `_workflow/STREAMABLE_HTTP_SAMPLING_OAUTH_WORKFLOW.md`.
+The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-Execution order is fixed unless explicitly waived by the operator:
+1. Runtime Enforcement Apply Package - No Apply proposal.
+2. Cooperative Tool Cancellation C3.
+3. Event-driven Hotplug Lifecycle.
+4. Sessionless / Explicit State Handles Target Selection.
+5. Legacy Retired Auth Test Archive/Cleanup.
+6. CRLF Batch Normalization.
 
-```text
-Phase A - Streamable HTTP preflight
-Phase B - POST SSE response path
-Phase C - SessionStore and lifecycle
-Phase D - GET SSE stream and outbound queue
-Phase E - Pending request correlation
-Phase F - Sampling readiness
-Phase G - OAuth preflight and implementation
-```
-
-OAuth must not be implemented until Phase A-F are green or explicitly waived in writing. Capabilities must remain false until the associated transport/emitter/request path is implemented and guarded by smoke.
-
-Current workflow preparation status: `ready_streamable_http_workflow_plan`.
+Next recommended action: present Stage 14 proposal/recommendation for operator review. No Stage 14 implementation, runtime enforcement, deny behavior change, deploy, restart, connector refresh, hotplug/list_changed emission, sessionless migration, or CRLF normalization is approved by this queue.
 
 ## 4. Runtime architecture
 

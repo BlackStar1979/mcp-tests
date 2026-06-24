@@ -71,6 +71,7 @@
   "_tests/smoke_stage13_process_runner_ergonomics_note.js",
   "_tests/smoke_stage13_closeout.js",
   "_tests/smoke_post_stage13_repo_hygiene_audit.js",
+  "_tests/smoke_workflow_navigation_hygiene.js",
   "_tests/smoke_stage8_34_tools_list_diff_model.js",
   "_tests/smoke_stage8_35_list_changed_notification_bus_dry_run.js",
   "_tests/smoke_stage8_36_list_changed_local_harness.js",

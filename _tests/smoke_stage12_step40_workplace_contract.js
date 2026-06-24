@@ -6,25 +6,17 @@ const path = require("node:path");
 
 const root = path.resolve(__dirname, "..");
 const canon = fs.readFileSync(path.join(root, "_workflow", "WORKFLOW_CANON.md"), "utf8");
+const index = fs.readFileSync(path.join(root, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "utf8");
 
 for (const token of [
   "# TEST MCP WORKFLOW CANON",
   "## 1. Non-negotiable operating rules",
   "## 2. Truth layers",
   "## 3. Current validated state",
+  "## 3A. Current active work queue",
   "## 4. Runtime architecture",
   "## 5. Active controls",
   "## 6. Workflow/deploy vocabulary",
-  "## 7. Step history compressed",
-  "## 8. Mechanism endurance status",
-  "## 9. Known debts",
-  "## 10. Next safe development path",
-  "## 12. Directory roles and retention",
-  "State compaction",
-  "Stage-log compaction",
-  "Backup cleanup",
-  "Log cleanup",
-  "Scratch cleanup",
   "server_change",
   "workflow_change",
   "schema_change",
@@ -40,30 +32,30 @@ for (const token of [
   "Server schema change: MCP-visible change",
   "Restart: reload live MCP process",
   "Connector refresh: update/review connector-visible action surface",
-  "Historical `_workflow/longterm/**` and `_workflow/patch_manifests/**` are no longer active memory",
-  "Do not store progress logs in `_stages`",
-  "`.temp`: zero-retention scratch",
-  "`_workflow/baselines/**`: golden reference data",
-  "`_workflow/scripts/**`: workflow/control-plane utilities",
-  "Keep only reusable utilities",
-  "compact_runtime_logs.js",
-  "Control-plane safety mechanism",
-  "workflow safety mechanism",
-  "_workflow/control_plane/**",
-  "_workflow/control_plane/snapshots/**",
-  "_workflow/control_plane/retired_root_backups/**",
-  "_backups/**` must not be recreated",
-  "_fixtures/**`: ordinary static test fixtures",
-  "_backups/**`: old uncontrolled backup bucket",
-  "Test fixtures boundary",
-  "_tests/fixtures/**",
-  "test-only plugin template",
-  "Mechanism reference library",
-  "source material for server improvement",
-  "do not remove it as part of workflow compaction",
-  "`_tests/**`: executable validation surface"
+  "Workflow file count is not a project-progress metric",
+  "No Stage 14 implementation approval is recorded",
 ]) {
   assert.ok(canon.includes(token), `missing workflow canon token: ${token}`);
+}
+
+for (const token of [
+  "Status: active navigation index",
+  "Do not create a separate master document.",
+  "Do not infer active work from historical plan files",
+  "## Active remaining work queue",
+  "Closed historical stages and historical plans below are retained for traceability, not active next-work lists.",
+]) {
+  assert.ok(index.includes(token), `missing workflow index token: ${token}`);
+}
+
+for (const stale of [
+  "Latest validated public section count: `8`",
+  "Latest validated authenticated smoke count after HTTP boundary guard: `116`",
+  "State compaction",
+  "Workflow memory compaction: `_workflow` reduced from 425 files to 45 files",
+  "## 3A. Active Streamable HTTP / Sampling / OAuth workflow",
+]) {
+  assert.equal(canon.includes(stale), false, `stale workflow canon token remains: ${stale}`);
 }
 
 console.log("smoke_stage12_step40_workplace_contract ok");

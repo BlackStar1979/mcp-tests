@@ -1,23 +1,27 @@
 # Active Workflow Index
 
-Status: active compact index
-Date: 2026-06-21
-Purpose: reduce workflow navigation noise without moving or deleting historical records.
+Status: active navigation index
+Date: 2026-06-24
+Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
 ## Current source of truth
 
-Read these first:
+Read these first, in this order:
 
-1. `_workflow/state.json`
-   - Current package/status.
-   - Next allowed work.
-   - Recent validation summaries.
+1. `_workflow/ACTIVE_WORKFLOW_INDEX.md`
+   - Navigation and active queue.
+   - Separates current work from historical evidence.
 
-2. `_workflow/WORKFLOW_CANON.md`
+2. `_workflow/state.json`
+   - Machine-readable current package/status.
+   - `next_allowed_work`.
+   - `post_stage13_hygiene.active_remaining_work`.
+
+3. `_workflow/WORKFLOW_CANON.md`
    - Chronological canon and final decision ledger.
-   - Use as the authoritative workflow narrative.
+   - Current-state summary is near the top; older sections remain history unless repeated in current state.
 
-3. Root specs:
+4. Root specs:
    - `SERVER_SPEC.json`
    - `SERVER_AUTH_SPEC.json`
    - `SERVER_CONNECTOR_SURFACE_SPEC.json`
@@ -27,18 +31,23 @@ Read these first:
    - `SERVER_RESOURCE_POLICY_SPEC.json`
    - category policy specs as referenced by root specs.
 
-4. Current run-all manifest:
+5. Current run-all manifest:
    - `_tests/run_all_smoke_scripts.json`
+
+Do not infer active work from historical plan files unless `_workflow/state.json` or this index names it as active.
 
 ## Current GREEN baseline
 
-Stage 8 closeout:
+Post-Stage 13 baseline:
 
-- static registry foundation committed at `2385a03`;
-- registry-to-policy read model committed at `d538320`;
-- registry diff dry-run committed at `1f552ca`;
-- no hotplug/list_changed emission/runtime policy enforcement enabled.
-
+- HEAD after post-Stage 13 hygiene audit: `0932dd0`.
+- Server version: `0.40.0`.
+- Latest full smoke after workflow navigation hygiene: `ok_0_40_0_6_158` expected after `_tests/smoke_workflow_navigation_hygiene.js` enters run_all.
+- Public section count: `6`.
+- Authenticated smoke count: `158`.
+- Stage 13: closed.
+- Post-Stage 13 repo hygiene audit: green.
+- Stage 14 implementation approval: false.
 
 Checkpoint topology:
 
@@ -46,19 +55,14 @@ Checkpoint topology:
 - authorized runtime: `auth:oauth21`, port `3008`, 43 runtime tools;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
-- OAuth connector was refreshed and validated in Stage 6.
-- Stage 13.1 ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; post-Stage 12 `f2830cb7817520ac` is historical measurement mismatch, not current runtime drift.
-- Stage 13.2 boundary confirms the runtime-stage label is a runtime compatibility label, not workflow progress truth; workflow progress truth remains `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
+- OAuth connector was refreshed and validated in Stage 6;
+- Stage 13.1 ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; post-Stage 12 `f2830cb7817520ac` is historical measurement mismatch, not current runtime drift;
+- Stage 13.2 boundary confirms the runtime-stage label is a runtime compatibility label, not workflow progress truth.
 
 Recent committed stages:
 
-- Stage 1-6 checkpoint: `2c54b8cfb36767d021699f1d1a2b1198e0f525a0`
-- P1 batch SSE unsupported guard: `a125fd2641fdb57067ef11e0dfd0181fe38d9416`
-- P2 legacy auth triage: `44aeb8f`
-- P3 cancellation plan: `61a03b9`
-- P4 runtime policy expansion plan: `d123dc1`
-- P5 sessionless spec review: `f0b7d7c`
-- P6 hotplug design: `550ace4`
+- Stage 13 closeout: `c368433`.
+- Post-Stage 13 repo hygiene audit: `0932dd0`.
 
 ## Active operator decision records
 

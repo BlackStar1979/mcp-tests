@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T09:05:00+02:00",
+  "updated_at": "2026-06-24T09:25:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "post_stage13_repo_hygiene_audit",
+    "id": "post_stage13_workflow_navigation_hygiene",
     "stage": "Post-Stage 13",
-    "status": "green_post_stage13_repo_hygiene_audit",
-    "description": "Post-Stage 13 repo hygiene and debt audit completed. Code health is green via run_all and self-test; workflow queue was reduced to active remaining work only. No Stage 14 implementation approval, runtime patch, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
+    "status": "green_post_stage13_workflow_navigation_hygiene",
+    "description": "Workflow navigation hygiene completed without creating a new master document. Existing ACTIVE_WORKFLOW_INDEX and WORKFLOW_CANON were updated to separate active queue from historical evidence and remove stale current-state claims. No Stage 14 implementation approval or runtime change was performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -1286,7 +1286,7 @@
       "run_all_skip_network": "ok",
       "version": "0.40.0",
       "public": 6,
-      "tests_authenticated": 157,
+      "tests_authenticated": 158,
       "self_test": "ok",
       "npm_test": "not_runnable_npm_enoent_tool_environment"
     },
@@ -1343,6 +1343,38 @@
       "no sessionless migration",
       "no mass CRLF normalization",
       "no git add --renormalize ."
-    ]
+    ],
+    "workflow_navigation_hygiene": {
+      "status": "green",
+      "guard": "_tests/smoke_workflow_navigation_hygiene.js",
+      "new_master_document_created": false,
+      "active_index_updated": true,
+      "canon_current_state_updated": true,
+      "stale_current_state_claims_removed": [
+        "public_count_8",
+        "authenticated_count_116",
+        "workflow_reduced_425_to_45",
+        "active_streamable_oauth_roadmap"
+      ],
+      "validation": {
+        "run_all_skip_network": "ok",
+        "expected_public": 6,
+        "expected_tests_authenticated": 158,
+        "public": 6,
+        "tests_authenticated": 158
+      },
+      "non_actions": [
+        "no new master document",
+        "no Stage 14 implementation approval",
+        "no runtime code patch",
+        "no deploy",
+        "no runtime restart",
+        "no connector refresh",
+        "no runtime enforcement",
+        "no allow/deny behavior change",
+        "no sessionless migration",
+        "no mass CRLF normalization"
+      ]
+    }
   }
 }

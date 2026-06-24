@@ -29,8 +29,6 @@ assert.ok(canon.includes("Post-Stage 13 repo hygiene audit green"));
 assert.ok(index.includes("post_stage13_repo_hygiene_audit.md"));
 assert.ok(index.includes("Active remaining work queue"));
 
-assert.equal(state.current_work_package.id, "post_stage13_repo_hygiene_audit");
-assert.equal(state.current_work_package.status, "green_post_stage13_repo_hygiene_audit");
 assert.equal(state.post_stage13_hygiene.status, "green");
 assert.equal(state.post_stage13_hygiene.stage14_implementation_approved, false);
 assert.equal(state.post_stage13_hygiene.code_health.run_all_skip_network, "ok");
