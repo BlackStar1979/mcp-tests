@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T05:05:00+02:00",
+  "updated_at": "2026-06-24T05:30:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage12_closeout",
-    "stage": "Stage 12",
-    "status": "green_stage12_closed",
-    "description": "Stage 12 closed after apply-readiness report, no-apply wiring plan, and operator approval boundary guard. System is ready for operator review, not ready for runtime enforcement apply without separate approval."
+    "id": "post_stage12_server_environment_review",
+    "stage": "Post-Stage 12",
+    "status": "green_post_stage12_server_environment_review",
+    "description": "Post-Stage 12 server environment review recorded. Repo is clean, Stage 12 is closed, local ports were probed, public local surface is 13 tools, OAuth/internal unauthenticated probe returns 401, and no deploy/restart/connector refresh was performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,10 +39,11 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Post-Stage 12 server environment analysis",
-    "Debt register and remediation roadmap",
-    "Recommended next development path",
-    "Explicit operator approval required before runtime policy enforcement or deny behavior change"
+    "Commit post-Stage 12 server environment review",
+    "Stage 13.1 live/repo drift ledger",
+    "Stage 13.2 runtime identity versus workflow stage distinction",
+    "Stage 13.3 CRLF hygiene plan",
+    "Explicit operator approval required before deploy, restart, connector refresh, runtime enforcement, or deny behavior change"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -1033,5 +1034,45 @@
       "dispatch_behavior_changed": false,
       "next_recommendation": "post_stage12_server_environment_review"
     }
+  },
+  "post_stage12_server_environment_review": {
+    "status": "green",
+    "artifacts": [
+      "_workflow/operator_decisions/post_stage12_server_environment_analysis.md",
+      "_workflow/operator_decisions/stage13_recommendation_after_stage12.md"
+    ],
+    "repo": {
+      "stage12_closed": true,
+      "package_version": "0.40.0",
+      "run_all_public": 6,
+      "run_all_tests_authenticated": 152
+    },
+    "local_runtime": {
+      "port_3005": "NO_LISTENER",
+      "port_3006": "NO_LISTENER",
+      "port_3008": "LISTENING",
+      "port_3009": "LISTENING",
+      "public_tools_count": 13,
+      "public_tools_hash": "f2830cb7817520ac",
+      "oauth_unauthenticated_probe": "401 missing_bearer_token"
+    },
+    "non_actions": [
+      "no deploy",
+      "no runtime restart",
+      "no connector refresh",
+      "no public connector reconnect",
+      "no runtime enforcement",
+      "no allow/deny behavior change",
+      "no hotplug/list_changed emission",
+      "no sessionless migration"
+    ],
+    "debts": [
+      "live/repo drift ledger",
+      "runtime status stage-label distinction",
+      "CRLF warning hygiene",
+      "process-runner long-argument ergonomics",
+      "runtime enforcement apply remains intentionally blocked"
+    ],
+    "recommendation": "_workflow/operator_decisions/stage13_recommendation_after_stage12.md"
   }
 }
