@@ -47,6 +47,7 @@ Checkpoint topology:
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in Stage 6.
+- Stage 13.1 ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; post-Stage 12 `f2830cb7817520ac` is historical measurement mismatch, not current runtime drift.
 
 Recent committed stages:
 
@@ -78,6 +79,9 @@ Current records:
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
+
+- `stage13_live_repo_drift_ledger.md`
+  - Stage 13.1 read-only repo/runtime drift ledger. Current public local surface matches frozen baseline; runtime-stage label remains Stage 13.2 debt.
 
 ## Historical workflow plans retained in place
 
