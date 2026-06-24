@@ -105,6 +105,26 @@ Current records:
 - Stage 13 closeout guard
   - `_tests/smoke_stage13_closeout.js` guards closed-state markers, final validation marker, Stage 14 consent boundary, and non-actions.
 
+
+## Active remaining work queue
+
+Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
+
+1. Runtime Enforcement Apply Package - No Apply proposal.
+2. Cooperative Tool Cancellation C3.
+3. Event-driven Hotplug Lifecycle.
+4. Sessionless / Explicit State Handles Target Selection.
+5. Legacy Retired Auth Test Archive/Cleanup.
+6. CRLF Batch Normalization.
+
+Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
+
+- `post_stage13_repo_hygiene_audit.md`
+  - Post-Stage 13 audit record. It verifies code health, cleans the active workflow queue, and records the six remaining work items before any Stage 14 proposal.
+
+- Post-Stage 13 repo hygiene guard
+  - `_tests/smoke_post_stage13_repo_hygiene_audit.js` guards the audit record, active queue, state markers, and no-implementation boundary.
+
 ## Historical workflow plans retained in place
 
 These are historical but still useful. Do not read them as current truth without checking `WORKFLOW_CANON.md` and `state.json`.

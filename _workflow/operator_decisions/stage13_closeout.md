@@ -16,9 +16,9 @@ Stage 13 closed the server-environment debt remediation and drift-ledger package
 
 ## Final validation
 
-- Latest full smoke: node _tests/run_all_smokes.js --skip-network = ok_0_40_0_6_156.
+- Latest full smoke: node _tests/run_all_smokes.js --skip-network = ok_0_40_0_6_157.
 - Public section count: 6.
-- Authenticated test count: 156.
+- Authenticated test count: 157.
 - Runtime compatibility label remains stage8_20-runtime-status-compact-mode.
 - Workflow progress truth remains _workflow/state.json and _workflow/WORKFLOW_CANON.md.
 

@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T08:35:00+02:00",
+  "updated_at": "2026-06-24T09:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage13_closeout",
-    "stage": "Stage 13",
-    "status": "green_stage13_closed",
-    "description": "Stage 13 closed after live/repo drift ledger, runtime identity/workflow boundary, CRLF hygiene plan, and process-runner ergonomics note. No Stage 14 implementation approval is recorded; next allowed work is presentation of a Stage 14 proposal/recommendation for operator review."
+    "id": "post_stage13_repo_hygiene_audit",
+    "stage": "Post-Stage 13",
+    "status": "green_post_stage13_repo_hygiene_audit",
+    "description": "Post-Stage 13 repo hygiene and debt audit completed. Code health is green via run_all and self-test; workflow queue was reduced to active remaining work only. No Stage 14 implementation approval, runtime patch, deploy, restart, connector refresh, runtime enforcement, or allow/deny behavior change was performed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -1250,8 +1250,8 @@
       "validation": {
         "run_all_skip_network": "ok",
         "public": 6,
-        "tests_authenticated": 156,
-        "marker": "ok_0_40_0_6_156"
+        "tests_authenticated": 157,
+        "marker": "ok_0_40_0_6_157"
       },
       "completed": [
         "stage13_1_live_repo_drift_ledger",
@@ -1276,5 +1276,73 @@
         "no process-runner policy change"
       ]
     }
+  },
+  "post_stage13_hygiene": {
+    "status": "green",
+    "record": "_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md",
+    "guard": "_tests/smoke_post_stage13_repo_hygiene_audit.js",
+    "stage14_implementation_approved": false,
+    "code_health": {
+      "run_all_skip_network": "ok",
+      "version": "0.40.0",
+      "public": 6,
+      "tests_authenticated": 157,
+      "self_test": "ok",
+      "npm_test": "not_runnable_npm_enoent_tool_environment"
+    },
+    "workflow_hygiene": {
+      "unchecked_markdown_tasks": 0,
+      "active_pending_commit_refs": 0,
+      "historical_pending_commit_refs": "legacy whitelist only",
+      "stage13_closed": true
+    },
+    "active_remaining_work": [
+      {
+        "priority": 1,
+        "id": "runtime_enforcement_apply_package_no_apply",
+        "description": "Prepare Stage 14 proposal for runtime enforcement apply package without applying enforcement."
+      },
+      {
+        "priority": 2,
+        "id": "cooperative_tool_cancellation_c3",
+        "description": "Implement or propose C3 cooperative tool cancellation sample after C1/C2 foundation."
+      },
+      {
+        "priority": 3,
+        "id": "event_driven_hotplug_lifecycle",
+        "description": "Progress hotplug/list_changed lifecycle from dry-run toward proposal/local harness before any real mutation."
+      },
+      {
+        "priority": 4,
+        "id": "sessionless_explicit_state_handles_target_selection",
+        "description": "Select stable-vs-draft/sessionless target and migration strategy before implementation."
+      },
+      {
+        "priority": 5,
+        "id": "legacy_retired_auth_test_archive_cleanup",
+        "description": "Rewrite/archive/delete retired auth tests according to manifest without re-adding retired tests to run_all."
+      },
+      {
+        "priority": 6,
+        "id": "crlf_batch_normalization",
+        "description": "Optional small-batch line-ending normalization after separate approval."
+      }
+    ],
+    "recommended_next_stage": "Stage 14 proposal: Runtime Enforcement Apply Package - No Apply",
+    "non_actions": [
+      "no Stage 14 implementation approval",
+      "no runtime code patch",
+      "no deploy",
+      "no runtime restart",
+      "no connector refresh",
+      "no public connector reconnect",
+      "no runtime enforcement",
+      "no allow/deny behavior change",
+      "no dispatch behavior change",
+      "no hotplug/list_changed emission",
+      "no sessionless migration",
+      "no mass CRLF normalization",
+      "no git add --renormalize ."
+    ]
   }
 }

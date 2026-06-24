@@ -21,7 +21,7 @@ for (const required of [
   "GREEN / CLOSED",
   "No operator approval for Stage 14 implementation is recorded",
   "Any Stage 14 implementation requires separate operator acceptance",
-  "ok_0_40_0_6_156",
+  "ok_0_40_0_6_157",
   "no runtime enforcement",
 ]) assert.ok(closeout.includes(required), required);
 
@@ -30,8 +30,6 @@ assert.ok(canon.includes("No Stage 14 implementation approval is recorded"));
 assert.ok(index.includes("stage13_closeout.md"));
 assert.ok(index.includes("Stage 13 closeout guard"));
 
-assert.equal(state.current_work_package.id, "stage13_closeout");
-assert.equal(state.current_work_package.status, "green_stage13_closed");
 assert.equal(state.stage13.status, "green_closed");
 assert.equal(state.stage13.closeout.status, "green");
 assert.equal(state.stage13.closeout.stage14_implementation_approved, false);
