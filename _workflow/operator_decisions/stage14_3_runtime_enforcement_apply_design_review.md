@@ -190,4 +190,4 @@ restore_path: this record, guard, state, canon, active index, and manifest
 - `node _tests/smoke_stage12_operator_approval_boundary_guard.js`: ok after one tool-layer retry.
 - `node _tests/smoke_stage12_oauth_production_hardening_plan.js`: ok after historical next-work guard update.
 - `node server.js --self-test`: ok.
-- `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=162.
+- `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=163.

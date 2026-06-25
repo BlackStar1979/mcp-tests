@@ -135,11 +135,17 @@ Current records:
 - Stage 14.3 apply design review guard
   - `_tests/smoke_stage14_3_runtime_enforcement_apply_design_review.js` guards no-apply boundary, disabled runtime enforcement specs, no tools_call_handler wiring, blocker reassessment, future restart/connector/baseline decisions, and manifest inclusion.
 
+- `stage14_4_runtime_enforcement_apply_package_draft.md`
+  - Stage 14.4 runtime enforcement apply package draft, still no apply. It adds code-backed draft data for future diff envelope, approval marker template, tests, denial/audit contracts, and restart/connector/baseline/control-plane decisions.
+
+- Stage 14.4 apply package draft guard
+  - `_tests/smoke_stage14_4_runtime_enforcement_apply_package_draft.js` guards draft-only mode, no runtime enforcement, no tools_call_handler wiring, approval template not recorded, and conditional future restart/connector/baseline decisions.
+
 ## Active remaining work queue
 
 Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
 
-1. Runtime Enforcement Apply Package - No Apply package started; Stage 14.3 apply design review complete; next is Stage 14.4 apply package draft, still no apply.
+1. Runtime Enforcement Apply Package - No Apply package started; Stage 14.4 apply package draft complete; next is operator review / possible Stage 14.5 apply decision.
 2. Cooperative Tool Cancellation C3.
 3. Event-driven Hotplug Lifecycle.
 4. Sessionless / Explicit State Handles Target Selection.

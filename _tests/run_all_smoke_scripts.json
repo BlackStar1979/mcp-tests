@@ -76,6 +76,7 @@
   "_tests/smoke_stage14_2_workbench_debt_cleanup.js",
   "_tests/smoke_stage14_2b_repo_gremlin_double_scan.js",
   "_tests/smoke_stage14_3_runtime_enforcement_apply_design_review.js",
+  "_tests/smoke_stage14_4_runtime_enforcement_apply_package_draft.js",
   "_tests/smoke_stage8_34_tools_list_diff_model.js",
   "_tests/smoke_stage8_35_list_changed_notification_bus_dry_run.js",
   "_tests/smoke_stage8_36_list_changed_local_harness.js",
