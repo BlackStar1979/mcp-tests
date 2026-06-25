@@ -53,7 +53,7 @@ for (const spec of [
   "SERVER_DATABASE_POLICY_SPEC.json",
   "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
   "SERVER_SAMPLING_POLICY_SPEC.json",
-  "SERVER_STAGE12.json",
+  "SERVER_DECISION_RUNTIME_SPEC.json",
 ]) {
   assert.ok(Object.hasOwn(state.root_spec_map, spec), `missing root spec map entry ${spec}`);
 }
@@ -67,3 +67,5 @@ assert.equal(state.sessionless_inventory.coverage.unclassified, 0);
 assert.equal(state.current_work_constraints.do_not_use_state_json_as_log, true);
 
 console.log("smoke_workflow_state_compact_spec_map ok");
+
+assert.ok(!Object.hasOwn(state.root_spec_map, "SERVER_STAGE12.json"));

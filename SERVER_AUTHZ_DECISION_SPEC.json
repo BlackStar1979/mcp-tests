@@ -13,7 +13,7 @@
     "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
   ],
   "source_salvage": {
-    "from": "SERVER_STAGE12.json",
+    "from": "_workflow/historical/stage12_workflow_history.json",
     "sections": [
       "stage12_decision_model_contract",
       "rule_precedence",
@@ -24,8 +24,9 @@
       "_workflow/policies/stage12_step23_decision_runtime_interface_contract_v0.json"
     ],
     "salvage_status": "promoted_from_historical_stage12_workbench_to_neutral_cross_category_spec",
-    "runtime_enforced": false,
-    "connector_visible": false
+    "runtime_enforced": true,
+    "connector_visible": false,
+    "promoted_active_spec": "SERVER_DECISION_RUNTIME_SPEC.json"
   },
   "decision_model": {
     "input_sections": [
@@ -232,5 +233,6 @@
       "oauth21"
     ],
     "follow_up": "Stage 5 may keep these as library/security negative controls or move them out of active runtime policy fixtures."
-  }
+  },
+  "decision_runtime_spec_ref": "SERVER_DECISION_RUNTIME_SPEC.json"
 }

@@ -81,7 +81,6 @@
     "tools": "SERVER_TOOLS_SPEC.json",
     "cross_category_policy": "SERVER_AUTHZ_DECISION_SPEC.json",
     "authz_decision": "SERVER_AUTHZ_DECISION_SPEC.json",
-    "stage12": "SERVER_STAGE12.json",
     "policy_decision": "SERVER_AUTHZ_DECISION_SPEC.json",
     "resource_policy": "SERVER_RESOURCE_POLICY_SPEC.json",
     "memory_policy": "SERVER_MEMORY_POLICY_SPEC.json",
@@ -90,7 +89,11 @@
     "plugin_visibility_policy": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
     "policy_runtime": "SERVER_POLICY_RUNTIME_SPEC.json",
     "development_structure": "_workflow/REPO_DEVELOPMENT_STRUCTURE.md",
-    "layout_status": "_workflow/REPO_LAYOUT_STATUS.md"
+    "layout_status": "_workflow/REPO_LAYOUT_STATUS.md",
+    "decision_runtime": "SERVER_DECISION_RUNTIME_SPEC.json",
+    "historical_stage12": "_workflow/historical/stage12_workflow_history.json",
+    "connector_surface": "SERVER_CONNECTOR_SURFACE_SPEC.json",
+    "sampling_policy": "SERVER_SAMPLING_POLICY_SPEC.json"
   },
   "auth": {
     "summary": "Authentication modes and port policy are specified in SERVER_AUTH_SPEC.json.",
@@ -162,13 +165,15 @@
         "SERVER_PROFILES_SPEC.json",
         "SERVER_TOOLS_SPEC.json",
         "SERVER_AUTHZ_DECISION_SPEC.json",
-        "SERVER_STAGE12.json",
         "SERVER_RESOURCE_POLICY_SPEC.json",
         "SERVER_MEMORY_POLICY_SPEC.json",
         "SERVER_NETWORK_POLICY_SPEC.json",
         "SERVER_DATABASE_POLICY_SPEC.json",
         "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
-        "SERVER_POLICY_RUNTIME_SPEC.json"
+        "SERVER_POLICY_RUNTIME_SPEC.json",
+        "SERVER_DECISION_RUNTIME_SPEC.json",
+        "SERVER_CONNECTOR_SURFACE_SPEC.json",
+        "SERVER_SAMPLING_POLICY_SPEC.json"
       ],
       "reserved_root_dirs": [
         "tools/authorized",
@@ -292,8 +297,10 @@
     }
   },
   "stage12": {
-    "summary": "Historical Stage 12 planning/spec work moved out of root server spec.",
-    "spec_ref": "SERVER_STAGE12.json"
+    "status": "retired_from_root_specs",
+    "historical_source": "_workflow/historical/stage12_workflow_history.json",
+    "replacement_spec_ref": "SERVER_DECISION_RUNTIME_SPEC.json",
+    "reason": "Stage12 file was historical work-progress consolidation and is no longer an active root spec."
   },
   "policy_extension_model": {
     "status": "canonical",
@@ -354,7 +361,7 @@
     "non_target_modes": {
       "oauth": 3007
     },
-    "next_stage": "Stage 3 run_all authenticated harness migration to OAuth21 token flow",
+    "next_stage": "retired_historical_field_do_not_use_for_current_work",
     "active_runtime_topology": {
       "public": "none:3009",
       "authorized": "oauth21:3008"
@@ -371,5 +378,10 @@
       "oauth21_connector_tool_count": 43,
       "oauth21_connector_tool_names_hash": "8b62ecaf89227335"
     }
+  },
+  "decision_runtime": {
+    "summary": "Active decision runtime contract extracted from historical Stage12 work. Current truth is SERVER_DECISION_RUNTIME_SPEC.json and promoted policy specs.",
+    "spec_ref": "SERVER_DECISION_RUNTIME_SPEC.json",
+    "runtime_enforced": true
   }
 }

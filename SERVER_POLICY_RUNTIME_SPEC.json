@@ -1,7 +1,7 @@
 {
   "schema_version": "mcp-tests-server-policy-runtime-spec-v1",
   "spec_mode": "canonical_structured_spec_not_progress_log",
-  "scope": "Cross-category policy runtime composition contract for MCP-callable tool invocation. Defines how auth, profile, tool catalog, resource policy, specific policy refs and authz decision are assembled into a fail-closed decision envelope. Not a CLI extension and not runtime enforcement.",
+  "scope": "Cross-category policy runtime composition and enforcement contract for MCP-callable tool invocation. Defines how auth, profile, tool catalog, resource policy, specific policy refs and authz decision are assembled into a fail-closed decision envelope. Runtime enforcement is active for the Stage14.5 policy gate.",
   "applies_to": [
     "SERVER_AUTH_SPEC.json",
     "SERVER_PROFILES_SPEC.json",
@@ -174,5 +174,6 @@
     "connector_refresh_plan_required_before_connector_visible_change": true,
     "runtime_enforcement_implemented_now": true,
     "cli_extension_allowed": false
-  }
+  },
+  "decision_runtime_spec_ref": "SERVER_DECISION_RUNTIME_SPEC.json"
 }

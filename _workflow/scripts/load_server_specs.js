@@ -26,8 +26,12 @@ function loadDecisionSpec() {
   return readJson("SERVER_AUTHZ_DECISION_SPEC.json");
 }
 
+function loadDecisionRuntimeSpec() {
+  return readJson("SERVER_DECISION_RUNTIME_SPEC.json");
+}
+
 function loadStage12Spec() {
-  return readJson("SERVER_STAGE12.json");
+  return loadDecisionRuntimeSpec();
 }
 
 function loadCombinedServerSpec() {
@@ -35,10 +39,10 @@ function loadCombinedServerSpec() {
   const auth = loadAuthSpec();
   const profiles = loadProfilesSpec();
   const tools = loadToolsSpec();  const xspec = loadDecisionSpec();
-  const stage12 = loadStage12Spec();
+  const decisionRuntime = loadDecisionRuntimeSpec();
   return {
     ...root,
-    ...(stage12.sections || {}),
+    ...(decisionRuntime.sections || {}),
     auth_port_policy: auth.auth_port_policy,
     server_profiles: profiles.server_profiles,
     server_tools: tools,    server_decision_spec: xspec,
@@ -50,7 +54,9 @@ module.exports = {
   loadCombinedServerSpec,
   loadProfilesSpec,
   loadRootServerSpec,
-  loadDecisionSpec,  loadStage12Spec,
+  loadDecisionSpec,
+  loadDecisionRuntimeSpec,
+  loadStage12Spec,
   loadToolsSpec,
   readJson,
 };

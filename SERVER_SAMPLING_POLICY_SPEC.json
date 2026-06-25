@@ -14,7 +14,9 @@
     "low_risk": {
       "max_messages": 1,
       "max_tokens": 128,
-      "allowed_content_types": ["text"],
+      "allowed_content_types": [
+        "text"
+      ],
       "disallow_system_role": true
     },
     "requires_approval_when": [
@@ -32,7 +34,11 @@
   },
   "prompt_injection_policy": {
     "tool_hidden_instructions_must_not_bypass_approval": true,
-    "params_hidden_instruction_keys": ["hiddenInstructions", "systemOverride", "developerOverride"]
+    "params_hidden_instruction_keys": [
+      "hiddenInstructions",
+      "systemOverride",
+      "developerOverride"
+    ]
   },
   "audit_policy": {
     "audit_receipt_required": true,
@@ -41,5 +47,9 @@
       "sampling_request_denied"
     ]
   },
-  "guard": "_tests/smoke_stage12_sampling_user_approval_policy.js"
+  "guard": "_tests/smoke_stage12_sampling_user_approval_policy.js",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Client sampling policy: capability requirement, approval policy, low-risk classification, budget policy, prompt-injection guard and audit events.",
+  "runtime_enforced": "implemented_guarded_policy",
+  "connector_visible": false
 }
