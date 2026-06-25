@@ -169,5 +169,6 @@
   "_tests/smoke_stage12_sse_keepalive.js",
   "_tests/smoke_stage12_sampling_capability_gate.js",
   "_tests/smoke_stage12_get_sse_stream.js",
-  "_tests/smoke_stage12_get_sse_requires_auth.js"
+  "_tests/smoke_stage12_get_sse_requires_auth.js",
+  "_tests/smoke_stage14_6_sep_sessionless_inventory.js"
 ]

@@ -4,10 +4,10 @@
   "updated_at": "2026-06-25T16:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage14_5_runtime_enforcement_apply",
-    "stage": "Stage 14.5",
-    "status": "green_stage14_5_repo_committed_public_3009_restarted_oauth_3008_restart_pending",
-    "description": "Stage14.5 is committed in repo. Public auth:none port 3009 was restarted/replaced and validated. OAuth21/internal port 3008 was not restarted; TESTS_MCP runtime status was read-only observation of 3008."
+    "id": "stage14_6_sep_sessionless_inventory_repair",
+    "stage": "Stage 14.6",
+    "status": "green_candidate_docs_guard_no_runtime_change",
+    "description": "SEP-driven sessionless inventory repaired as living checklist; no runtime change."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 15 candidate: Cooperative Tool Cancellation C3 design and implementation in workbench",
-    "Alternative Stage 15 candidate: Hotplug lifecycle / list_changed readiness",
-    "Run CRLF normalization only after separate operator approval"
+    "Validate and commit Stage 14.6 SEP-driven sessionless inventory repair",
+    "Recover or recreate file-triggered restart authority before OAuth21 live-load work",
+    "Then choose C1 cancellation continuation or S2 stateless target-selection"
   ],
   "target_runtime_topology": {
     "active_instances": {

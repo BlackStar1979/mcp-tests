@@ -1,7 +1,35 @@
 {
-  "schema_version": "stage7-sessionless-inventory-v1",
-  "date": "2026-06-21",
-  "status": "stage7_s1_inventory_only_no_runtime_change",
+  "schema_version": "stage14_6-sep-driven-sessionless-inventory-v1",
+  "date": "2026-06-25",
+  "status": "sep_driven_living_checklist_no_runtime_change",
+  "purpose": "SEP-derived, operator-bound, machine-readable implementation checklist for MCP stateless/sessionless migration. Update this file when official SEP status or repo implementation status changes.",
+  "authority_chain": [
+    "_workflow/README.md",
+    "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+    "_workflow/state.json",
+    "_workflow/WORKFLOW_CANON.md",
+    "_workflow/operator_decisions/post_stage6_operator_decisions_2026-06-21.md",
+    "_workflow/operator_decisions/stage7_sessionless_inventory.md",
+    "_workflow/sessionless_inventory.json"
+  ],
+  "operator_binding": {
+    "decision_record": "_workflow/operator_decisions/post_stage6_operator_decisions_2026-06-21.md",
+    "source_context": "operator D1-D12 answers based on official MCP SEP index; chat attachment Wklejony tekst.txt 2026-06-25",
+    "summary": "D3-D6/D9 direct the workbench toward Sessionless MCP, explicit state handles, no DELETE /mcp teardown, per-request streams/cancellation, and event-driven list lifecycle. D7 directs Resource/Scope Matrix Enforcement as separate approved work."
+  },
+  "source_verification": {
+    "last_verified_date": "2026-06-25",
+    "source_index": "https://modelcontextprotocol.io/seps#all-seps",
+    "tracked_final_seps": [
+      { "sep": "SEP-2549", "title": "TTL for List Results", "status": "Final", "url": "https://modelcontextprotocol.io/seps/2549-TTL-for-list-results" },
+      { "sep": "SEP-2567", "title": "Sessionless MCP via Explicit State Handles", "status": "Final", "url": "https://modelcontextprotocol.io/seps/2567-sessionless-mcp" },
+      { "sep": "SEP-2575", "title": "Make MCP Stateless", "status": "Final", "url": "https://modelcontextprotocol.io/seps/2575-stateless-mcp" },
+      { "sep": "SEP-2577", "title": "Deprecate Roots, Sampling, and Logging", "status": "Final", "url": "https://modelcontextprotocol.io/seps/2577-deprecate-roots-sampling-and-logging" },
+      { "sep": "SEP-2596", "title": "Specification Feature Lifecycle and Deprecation Policy", "status": "Final", "url": "https://modelcontextprotocol.io/seps/2596-spec-feature-lifecycle-and-deprecation" }
+    ]
+  },
+  "status_values": ["done", "partial", "pending", "blocked_stable_compat", "blocked_pending_target_selection", "blocked_pending_client_support", "not_target", "unknown_needs_inventory"],
+  "feature_lifecycle_values": ["active", "deprecated", "removed", "legacy_compat", "operator_non_target", "operational_implication"],
   "source_review": [
     "src/runtime/mcp_entry_dispatcher.js",
     "src/runtime/session_tracker.js",
@@ -17,102 +45,206 @@
     "_tests/smoke_stage12_pending_request_correlation.js",
     "_tests/smoke_stage12_sampling_roundtrip.js"
   ],
-  "items": [
+  "deprecation_ledger": [
     {
-      "id": "initialize_handshake",
+      "feature_id": "initialize_handshake",
       "component": "initialize / initialized lifecycle",
-      "files": ["src/runtime/rpc_message_dispatcher.js", "src/runtime/initialize_message_handler.js", "src/runtime/initialize_response.js"],
-      "current_model": "stable_2025_11_25_compatible",
-      "classification": "keep_for_stable_compat",
-      "future_direction": "remove_or_parallelize_in_draft_sessionless_mode",
-      "notes": "Initialize creates/negotiates server info and capabilities for current runtime."
+      "sep_sources": ["SEP-2575", "SEP-2596"],
+      "target_lifecycle": "removed",
+      "repo_current_model": "stable initialize present",
+      "implementation_status": "blocked_stable_compat",
+      "migration_path": "server/discover plus per-request protocol version and client capability metadata",
+      "checklist": [
+        { "item": "map current initialize handlers", "status": "done", "evidence": ["src/runtime/initialize_message_handler.js", "src/runtime/initialize_response.js"] },
+        { "item": "design parallel stateless mode before removal", "status": "blocked_pending_target_selection" }
+      ]
     },
     {
-      "id": "mcp_session_id_header",
+      "feature_id": "mcp_session_id_header",
       "component": "MCP-Session-Id transport header",
-      "files": ["src/runtime/session_tracker.js", "src/runtime/mcp_entry_dispatcher.js"],
-      "current_model": "stable_session_header",
-      "classification": "keep_for_stable_compat",
-      "future_direction": "remove_in_draft_mode",
-      "notes": "Header parsing and validation are central to current stable Streamable HTTP path."
+      "sep_sources": ["SEP-2567", "SEP-2596"],
+      "target_lifecycle": "removed",
+      "repo_current_model": "stable Streamable HTTP session header present",
+      "implementation_status": "blocked_stable_compat",
+      "migration_path": "explicit state handles returned by tools and passed as ordinary arguments",
+      "checklist": [
+        { "item": "map session header sites", "status": "done", "evidence": ["src/runtime/session_tracker.js", "src/runtime/mcp_entry_dispatcher.js"] },
+        { "item": "prevent new strategic dependency on transport sessions", "status": "pending" }
+      ]
     },
     {
-      "id": "session_store",
+      "feature_id": "session_store",
       "component": "McpSession / SessionStore",
-      "files": ["src/runtime/session.js"],
-      "current_model": "in_memory_session_store",
-      "classification": "requires_parallel_mode",
-      "future_direction": "replace_transport_session_state_with_explicit_state_handles",
-      "notes": "Contains outbound queue, pending map, replay history, client capabilities and sampling budget."
+      "sep_sources": ["SEP-2567", "SEP-2575"],
+      "target_lifecycle": "legacy_compat",
+      "repo_current_model": "in-memory session store",
+      "implementation_status": "blocked_pending_target_selection",
+      "migration_path": "parallel sessionless target with request-scoped or explicit state handles",
+      "checklist": [
+        { "item": "map SessionStore responsibilities", "status": "done", "evidence": ["src/runtime/session.js"] },
+        { "item": "create S2 target-selection decision", "status": "pending" }
+      ]
     },
     {
-      "id": "get_sse_stream",
+      "feature_id": "get_mcp_sse_stream",
       "component": "GET /mcp SSE stream",
-      "files": ["src/runtime/mcp_get_stream_handler.js", "src/runtime/mcp_entry_dispatcher.js"],
-      "current_model": "stable_get_sse",
-      "classification": "keep_for_stable_compat",
-      "future_direction": "remove_in_draft_mode_or_replace_with_listen_subscription",
-      "notes": "Bound to session id; handles Last-Event-ID replay and close/aborted cleanup."
+      "sep_sources": ["SEP-2575", "SEP-2596"],
+      "target_lifecycle": "removed",
+      "repo_current_model": "stable GET /mcp SSE present",
+      "implementation_status": "blocked_stable_compat",
+      "migration_path": "subscriptions/listen RPC over POST in stateless target",
+      "checklist": [
+        { "item": "map GET SSE stream and tests", "status": "done", "evidence": ["src/runtime/mcp_get_stream_handler.js", "_tests/smoke_stage12_get_sse_stream.js"] },
+        { "item": "design subscriptions/listen compatibility matrix", "status": "pending" }
+      ]
     },
     {
-      "id": "delete_mcp_teardown",
-      "component": "DELETE /mcp teardown",
-      "files": ["src/runtime/mcp_entry_dispatcher.js"],
-      "current_model": "not_implemented_non_post_405",
-      "classification": "do_not_implement",
-      "future_direction": "out_of_scope_for_sessionless_target",
-      "notes": "Operator decision D4: do not implement DELETE teardown."
+      "feature_id": "subscriptions_listen",
+      "component": "subscriptions/listen notification stream",
+      "sep_sources": ["SEP-2575", "SEP-2549"],
+      "target_lifecycle": "active",
+      "repo_current_model": "not implemented in stable runtime",
+      "implementation_status": "pending",
+      "migration_path": "POST-based opt-in notification stream for list/resource updates",
+      "checklist": [
+        { "item": "record current official name subscriptions/listen", "status": "done" },
+        { "item": "test first on isolated port", "status": "pending" }
+      ]
     },
     {
-      "id": "pending_request_correlation",
-      "component": "server-originated pending requests",
-      "files": ["src/runtime/outbound_request_manager.js", "src/runtime/single_payload_dispatcher.js", "src/runtime/batch_payload_dispatcher.js"],
-      "current_model": "session_pending_map",
-      "classification": "requires_parallel_mode",
-      "future_direction": "request_scoped_or_handle_scoped_correlation_after_target_selection",
-      "notes": "Sampling and outbound requests resolve through session.pending."
+      "feature_id": "delete_mcp_teardown",
+      "component": "DELETE /mcp session teardown",
+      "sep_sources": ["SEP-2567", "SEP-2575"],
+      "target_lifecycle": "operator_non_target",
+      "repo_current_model": "not implemented; non-POST 405",
+      "implementation_status": "done",
+      "migration_path": "do not implement DELETE teardown; remove protocol sessions instead",
+      "checklist": [
+        { "item": "record operator D4", "status": "done", "evidence": "_workflow/operator_decisions/post_stage6_operator_decisions_2026-06-21.md" }
+      ]
     },
     {
-      "id": "sampling",
-      "component": "sampling/createMessage roundtrip",
-      "files": ["src/runtime/sampling_context.js", "SERVER_SAMPLING_POLICY_SPEC.json"],
-      "current_model": "session_capabilities_and_budget",
-      "classification": "blocked_by_client_support",
-      "future_direction": "re_evaluate_after_sessionless_target_selection",
-      "notes": "Depends on clientCapabilities.sampling, per-session budget, and pending response correlation."
+      "feature_id": "request_cancellation",
+      "component": "per-request active cancellation",
+      "sep_sources": ["SEP-2575"],
+      "target_lifecycle": "active",
+      "repo_current_model": "full cancellation context plumbing incomplete",
+      "implementation_status": "pending",
+      "migration_path": "HTTP stream close cancels that request; timeout remains fallback",
+      "checklist": [
+        { "item": "operator D6 recorded", "status": "done" },
+        { "item": "implement C1 cancellation context plumbing", "status": "pending" }
+      ]
     },
     {
-      "id": "replay_guard",
-      "component": "session-scoped replay guard",
-      "files": ["src/runtime/session_tracker.js", "src/runtime/mcp_runtime_handlers.js", "_tests/smoke_stage12_session_replay_guards.js"],
-      "current_model": "session_id_plus_rpc_id",
-      "classification": "keep_for_stable_compat",
-      "future_direction": "replace_with_request_id_or_state_handle_semantics_if_needed",
-      "notes": "Prevents replay per session in current runtime."
+      "feature_id": "resumable_sse_last_event_id",
+      "component": "Last-Event-ID resumable SSE replay",
+      "sep_sources": ["SEP-2575"],
+      "target_lifecycle": "removed",
+      "repo_current_model": "stable replay behavior present",
+      "implementation_status": "blocked_stable_compat",
+      "migration_path": "connection drop cancels request; durable work uses tasks primitive",
+      "checklist": [
+        { "item": "map replay tests", "status": "done", "evidence": ["_tests/smoke_stage12_get_sse_stream.js"] },
+        { "item": "avoid new dependency on resumable SSE", "status": "pending" }
+      ]
     },
     {
-      "id": "batch_sse",
-      "component": "batch SSE",
-      "files": ["src/runtime/batch_payload_dispatcher.js", "_tests/smoke_stage12_batch_sse_unsupported_guard.js"],
-      "current_model": "explicitly_unsupported",
-      "classification": "already_aligned_as_non_target",
-      "future_direction": "keep_unsupported",
-      "notes": "P1 guard returns batch_sse_not_supported."
+      "feature_id": "list_results_ttl_cache_scope",
+      "component": "list result freshness",
+      "sep_sources": ["SEP-2549", "SEP-2567"],
+      "target_lifecycle": "active",
+      "repo_current_model": "ttlMs/cacheScope not enforced on list results",
+      "implementation_status": "pending",
+      "migration_path": "add ttlMs and cacheScope; list_changed remains immediate invalidation",
+      "checklist": [
+        { "item": "record TTL/cacheScope target", "status": "done" },
+        { "item": "inventory all list/read result builders", "status": "pending" }
+      ]
     },
     {
-      "id": "oauth21_connector",
-      "component": "OAuth21 authorized connector",
-      "files": ["src/auth/oauth21_authorization_server.js", "src/auth/auth_policy.js"],
-      "current_model": "active_oauth21_internal_runtime",
-      "classification": "keep_for_stable_compat",
-      "future_direction": "do_not_migrate_until_client_connector_support_verified",
-      "notes": "Live connector validated with 43 tools and oauth21 on port 3008."
+      "feature_id": "dynamic_list_lifecycle_hotplug",
+      "component": "event-driven tool/resource list lifecycle",
+      "sep_sources": ["SEP-2549", "SEP-2575"],
+      "target_lifecycle": "active",
+      "repo_current_model": "static connector surface with manual refresh discipline",
+      "implementation_status": "pending",
+      "migration_path": "event-driven registry plus list_changed and TTL/cacheScope fallback",
+      "checklist": [
+        { "item": "operator D9 recorded", "status": "done" },
+        { "item": "create hotplug registry design", "status": "pending" }
+      ]
+    },
+    {
+      "feature_id": "roots_sampling_logging_deprecation",
+      "component": "Roots, Sampling, Logging",
+      "sep_sources": ["SEP-2577", "SEP-2596"],
+      "target_lifecycle": "deprecated",
+      "repo_current_model": "sampling exists; roots/logging need inventory",
+      "implementation_status": "unknown_needs_inventory",
+      "migration_path": "do not expand deprecated core features as strategic dependencies",
+      "checklist": [
+        { "item": "inventory sampling usage", "status": "partial", "evidence": ["src/runtime/sampling_context.js"] },
+        { "item": "inventory roots and protocol logging usage", "status": "pending" }
+      ]
+    },
+    {
+      "feature_id": "feature_lifecycle_deprecation_policy",
+      "component": "SEP feature lifecycle governance",
+      "sep_sources": ["SEP-2596"],
+      "target_lifecycle": "active",
+      "repo_current_model": "this inventory now tracks lifecycle/status/migration/checklist",
+      "implementation_status": "partial",
+      "migration_path": "each protocol-direction item tracks SEP source, lifecycle state, migration path, status, and evidence",
+      "checklist": [
+        { "item": "add lifecycle/status schema", "status": "done" },
+        { "item": "add smoke guard", "status": "done" }
+      ]
+    },
+    {
+      "feature_id": "restart_resilience",
+      "component": "runtime restart resilience and process topology boundary",
+      "sep_sources": ["SEP-2567", "SEP-2575"],
+      "target_lifecycle": "operational_implication",
+      "repo_current_model": "3008 OAuth21 restart authority missing or unverified; 3009 false closeout corrected",
+      "implementation_status": "pending",
+      "migration_path": "recover file-triggered restart authority before touching 3008; stateless direction reduces dependence on session/process lifetime",
+      "checklist": [
+        { "item": "record false closeout correction", "status": "done", "evidence": "_workflow/operator_decisions/stage14_5_live_validation_correction.md" },
+        { "item": "recover or recreate file-triggered restart authority", "status": "pending" },
+        { "item": "prove OAuth21 3008 restart preserves startup arguments", "status": "pending" }
+      ]
+    },
+    {
+      "feature_id": "runtime_policy_scope_matrix",
+      "component": "Resource/Scope Matrix Enforcement",
+      "sep_sources": ["operator-D7"],
+      "target_lifecycle": "operational_implication",
+      "repo_current_model": "Stage14.5 gate committed; OAuth21 live-load pending restart authority",
+      "implementation_status": "partial",
+      "migration_path": "continue as separately approved security work with negative controls and audit receipts",
+      "checklist": [
+        { "item": "Stage14.5 repo apply committed", "status": "done", "evidence": "d299cfa" },
+        { "item": "OAuth21 3008 runtime restart/load validation", "status": "pending" }
+      ]
     }
   ],
+  "items": [
+    { "id": "initialize_handshake", "ledger_ref": "initialize_handshake" },
+    { "id": "mcp_session_id_header", "ledger_ref": "mcp_session_id_header" },
+    { "id": "session_store", "ledger_ref": "session_store" },
+    { "id": "get_sse_stream", "ledger_ref": "get_mcp_sse_stream" },
+    { "id": "delete_mcp_teardown", "ledger_ref": "delete_mcp_teardown" },
+    { "id": "pending_request_correlation", "ledger_ref": "session_store" },
+    { "id": "sampling", "ledger_ref": "roots_sampling_logging_deprecation" },
+    { "id": "replay_guard", "ledger_ref": "resumable_sse_last_event_id" },
+    { "id": "oauth21_connector", "ledger_ref": "restart_resilience" }
+  ],
   "recommended_next": [
-    "Do not remove session code in Stage 7.",
-    "Implement C1 cancellation context plumbing only in current stable-compatible runtime.",
-    "Prepare Stage 8 registry foundation before protocol migration.",
-    "Create a future S2 target-selection decision before any sessionless runtime mode."
+    "Do not remove current stable-compatible session code before S2 target selection.",
+    "Treat this file as a living SEP-driven checklist.",
+    "Recover or recreate file-triggered restart authority before touching OAuth21 3008.",
+    "Implement C1 cancellation context plumbing unless operator reprioritizes protocol migration.",
+    "Design hotplug/list lifecycle with SEP-2549 TTL/cacheScope and SEP-2575 subscriptions/listen."
   ]
 }

@@ -222,3 +222,5 @@ This index is intentionally non-destructive. It does not move historical workflo
 Future archive compaction may move files only after a dedicated migration plan updates tests and references.
 
 Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 still requires an OAuth-aware restart to load Stage14.5 runtime code. Connector refresh not required; baseline refreeze not required.
+
+Stage 14.6 inventory repair: sessionless_inventory now tracks SEP-2549/2567/2575/2577/2596 with checklist evidence. Guard: smoke_stage14_6_sep_sessionless_inventory.

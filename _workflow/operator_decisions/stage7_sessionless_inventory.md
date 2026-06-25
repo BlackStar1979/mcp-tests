@@ -63,3 +63,9 @@ The correct next runtime step remains C1 cancellation context plumbing inside th
 2. Proceed to Stage 7.4 / C1 cancellation context plumbing.
 3. Keep Stage 8 proposal as static registry foundation before hotplug/policy enforcement.
 4. Open S2 stable-vs-draft target selection only after C1 or if operator explicitly prioritizes protocol migration.
+
+## Stage 14.6 correction
+
+On 2026-06-25 this inventory was corrected by `_workflow/operator_decisions/stage14_6_sep_sessionless_inventory_repair.md`.
+
+`_workflow/sessionless_inventory.json` is now the living SEP-driven checklist for sessionless/stateless direction, not only a one-time source inventory. It tracks SEP source, lifecycle state, migration path, implementation status, and checklist evidence.
