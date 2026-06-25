@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-25T06:35:00+02:00",
+  "updated_at": "2026-06-25T16:05:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
     "id": "stage14_5_runtime_enforcement_apply",
     "stage": "Stage 14.5",
     "status": "green_stage14_5_runtime_enforcement_apply",
-    "description": "Stage 14.5 runtime enforcement apply in progress after control-plane preapply snapshot. Runtime policy gate is wired into tools_call_handler and runtime/resource specs are enforced. Validation still in progress."
+    "description": "Stage 14.5 runtime enforcement apply committed and live-validated. Runtime policy gate is wired into tools_call_handler; runtime/resource specs are enforced; test server restart and runtime status validation passed."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,10 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Operator review of Stage 14.4 apply-package draft and decision whether to proceed to Stage 14.5 runtime enforcement apply or stop enforcement as designed-not-applied",
-    "No Stage 14.5 runtime apply unless operator explicitly accepts runtime mutation, restart plan, control-plane deploy/rollback plan, connector impact decision, and baseline decision",
-    "If accepted, Stage 14.5 must first create control-plane snapshot/deploy/rollback records before runtime mutation/deploy",
-    "Dedicated CRLF normalization batch only after separate operator approval"
+    "Stage 15 candidate: Cooperative Tool Cancellation C3 design and implementation in workbench",
+    "Alternative Stage 15 candidate: Hotplug lifecycle / list_changed readiness",
+    "Run CRLF normalization only after separate operator approval"
   ],
   "target_runtime_topology": {
     "active_instances": {
@@ -1378,7 +1377,7 @@
     }
   },
   "stage14": {
-    "status": "stage14_5_apply_in_progress",
+    "status": "green_stage14_5_committed_live_validated",
     "stage14_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
@@ -1650,7 +1649,7 @@
       ]
     },
     "stage14_5": {
-      "status": "green",
+      "status": "green_committed_live_validated",
       "snapshot": "_workflow/control_plane/snapshots/2026-06-25T04-13-13_stage14-5-preapply",
       "runtime_enforcement_changed": true,
       "allow_deny_behavior_changed": true,
@@ -1662,8 +1661,24 @@
       "apply_allowed_now": true,
       "approval_source": "operator workbench instruction in chat",
       "validation": {
-        "run_all_skip_network": "pending"
-      }
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 164,
+        "server_self_test": "ok",
+        "restart": "ok",
+        "runtime_status": "ok",
+        "schema_compatibility": "ok",
+        "security_boundary": "ok",
+        "tool_count": 43,
+        "tool_names_hash": "8b62ecaf89227335"
+      },
+      "commit": "d299cfa",
+      "restart": {
+        "status": "ok",
+        "pid": 22804,
+        "health": "http://127.0.0.1:3009/healthz"
+      },
+      "final_backup_record": "_workflow/control_plane/snapshots/2026-06-25T14-04-36-947Z_stage14-5-live-validated-targeted.json"
     }
   }
 }
