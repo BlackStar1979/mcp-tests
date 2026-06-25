@@ -15,7 +15,7 @@ const database = read("SERVER_DATABASE_POLICY_SPEC.json");
 const plugin = read("SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json");
 assert.equal(runtime.schema_version, "mcp-tests-server-policy-runtime-spec-v1");
 assert.equal(runtime.spec_mode, "canonical_structured_spec_not_progress_log");
-assert.equal(runtime.runtime_enforced, false);
+assert.equal(runtime.runtime_enforced, true);
 assert.equal(runtime.connector_visible, false);
 assert.equal(runtime.no_cli_extension, true);
 assert.deepEqual(runtime.applies_to, ["SERVER_AUTH_SPEC.json", "SERVER_PROFILES_SPEC.json", "SERVER_TOOLS_SPEC.json", "SERVER_AUTHZ_DECISION_SPEC.json", "SERVER_RESOURCE_POLICY_SPEC.json", "SERVER_MEMORY_POLICY_SPEC.json", "SERVER_NETWORK_POLICY_SPEC.json", "SERVER_DATABASE_POLICY_SPEC.json", "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"]);

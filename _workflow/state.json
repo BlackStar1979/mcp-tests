@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T11:35:00+02:00",
+  "updated_at": "2026-06-25T06:35:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage14_4_runtime_enforcement_apply_package_draft",
-    "stage": "Stage 14.4",
-    "status": "green_stage14_4_runtime_enforcement_apply_package_draft",
-    "description": "Stage 14.4 added a code-backed runtime enforcement apply-package draft module and guard while preserving no-apply. It records exact future diff envelope, test plan, approval marker template, denial/audit contracts, and restart/connector/baseline/control-plane decisions. No runtime-imported code path change, tools_call_handler wiring, runtime enforcement, restart, connector refresh, deploy, or baseline refreeze."
+    "id": "stage14_5_runtime_enforcement_apply",
+    "stage": "Stage 14.5",
+    "status": "green_stage14_5_runtime_enforcement_apply",
+    "description": "Stage 14.5 runtime enforcement apply in progress after control-plane preapply snapshot. Runtime policy gate is wired into tools_call_handler and runtime/resource specs are enforced. Validation still in progress."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -1378,7 +1378,7 @@
     }
   },
   "stage14": {
-    "status": "green_apply_package_draft_no_apply",
+    "status": "stage14_5_apply_in_progress",
     "stage14_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
@@ -1648,6 +1648,22 @@
         "no sessionless migration",
         "no CRLF normalization"
       ]
+    },
+    "stage14_5": {
+      "status": "green",
+      "snapshot": "_workflow/control_plane/snapshots/2026-06-25T04-13-13_stage14-5-preapply",
+      "runtime_enforcement_changed": true,
+      "allow_deny_behavior_changed": true,
+      "dispatch_behavior_changed": false,
+      "runtime_imported_code_changed": true,
+      "runtime_restart_required": true,
+      "connector_refresh_required": false,
+      "baseline_refreeze_required": false,
+      "apply_allowed_now": true,
+      "approval_source": "operator workbench instruction in chat",
+      "validation": {
+        "run_all_skip_network": "pending"
+      }
     }
   }
 }

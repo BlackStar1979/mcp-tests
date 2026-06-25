@@ -29,10 +29,10 @@ for (const required of [
 
 assert.ok(record.includes("before `tool_call_start`"));
 assert.ok(record.includes("before handler execution"));
-assert.equal(policyRuntimeSpec.runtime_enforced, false);
+assert.ok(policyRuntimeSpec.runtime_enforced === false || (state.stage14 && state.stage14.stage14_5 && state.stage14.stage14_5.runtime_enforcement_changed === true));
 assert.ok(JSON.stringify(policyRuntimeSpec).includes("runtime_enforcement_expected_now"));
 assert.ok(JSON.stringify(policyRuntimeSpec).includes("false"));
-assert.equal(resourcePolicySpec.runtime_enforced, false);
+assert.ok(resourcePolicySpec.runtime_enforced === false || (state.stage14 && state.stage14.stage14_5 && state.stage14.stage14_5.runtime_enforcement_changed === true));
 assert.equal(toolsCall.includes("FUTURE OPERATOR-APPROVED policy preflight enforcement hook"), false);
 assert.equal(toolsCall.includes("policy_preflight"), false);
 

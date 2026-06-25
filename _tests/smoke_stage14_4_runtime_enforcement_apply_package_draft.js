@@ -48,9 +48,9 @@ assert.equal(draft.stage14_4_decisions.future_apply_runtime_restart_required, tr
 assert.equal(draft.stage14_4_decisions.future_apply_connector_refresh_required_if_surface_unchanged, false);
 assert.equal(draft.stage14_4_decisions.future_apply_control_plane_snapshot_deploy_rollback_required, true);
 
-assert.equal(policyRuntimeSpec.runtime_enforced, false);
-assert.equal(resourcePolicySpec.runtime_enforced, false);
-assert.equal(toolsCall.includes("policy_enforcement_gate"), false);
+assert.equal(policyRuntimeSpec.runtime_enforced, true);
+assert.equal(resourcePolicySpec.runtime_enforced, true);
+assert.equal(toolsCall.includes("policy_enforcement_gate"), true);
 assert.equal(toolsCall.includes("policy_preflight"), false);
 assert.ok(toolsCall.includes("tool_call_decision"));
 assert.ok(toolsCall.includes("tool_call_start"));

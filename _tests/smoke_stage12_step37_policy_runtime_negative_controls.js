@@ -46,7 +46,7 @@ function validate(bundle) {
   const database = bundle.database || {};
   const plugin = bundle.plugin || {};
 
-  if (runtime.runtime_enforced !== false) add(errors, "runtime_enforced_must_stay_false", runtime.runtime_enforced);
+  if (runtime.runtime_enforced !== true) add(errors, "runtime_enforced_must_be_true", runtime.runtime_enforced);
   if (runtime.connector_visible !== false) add(errors, "connector_visible_must_stay_false", runtime.connector_visible);
   if (runtime.no_cli_extension !== true) add(errors, "no_cli_extension_must_stay_true", runtime.no_cli_extension);
 
@@ -87,7 +87,7 @@ function validate(bundle) {
     if ((runtime.fail_closed_rules || {})[rule] !== true) add(errors, "fail_closed_rule_missing", rule);
   }
 
-  if (((runtime.integration_policy || {}).runtime_enforcement_implemented_now) !== false) add(errors, "runtime_enforcement_claim_forbidden", (runtime.integration_policy || {}).runtime_enforcement_implemented_now);
+  if (((runtime.integration_policy || {}).runtime_enforcement_implemented_now) !== true) add(errors, "runtime_enforcement_claim_required", (runtime.integration_policy || {}).runtime_enforcement_implemented_now);
   if (((runtime.integration_policy || {}).cli_extension_allowed) !== false) add(errors, "cli_extension_claim_forbidden", (runtime.integration_policy || {}).cli_extension_allowed);
 
   const publicTools = (((tools.surface_classes || {}).public_mcp_tools || {}).tools) || [];
@@ -130,7 +130,7 @@ function assertInvalid(base, name, mutate, expectedCode) {
 const base = loadBundle();
 assertValid(base);
 
-assertInvalid(base, "runtime enforcement flag", (s) => { s.runtime.runtime_enforced = true; }, "runtime_enforced_must_stay_false");
+assertInvalid(base, "runtime enforcement flag", (s) => { s.runtime.runtime_enforced = false; }, "runtime_enforced_must_be_true");
 assertInvalid(base, "connector visible flag", (s) => { s.runtime.connector_visible = true; }, "connector_visible_must_stay_false");
 assertInvalid(base, "cli extension flag", (s) => { s.runtime.no_cli_extension = false; }, "no_cli_extension_must_stay_true");
 assertInvalid(base, "root ref", (s) => { delete s.root.spec_refs.policy_runtime; }, "root_policy_runtime_ref_missing");
@@ -146,6 +146,6 @@ assertInvalid(base, "removed legacy auth tool injected into public surface", (s)
 assertInvalid(base, "output field", (s) => { s.runtime.output_contract.required_fields = s.runtime.output_contract.required_fields.filter((field) => field !== "audit_receipt"); }, "output_contract_field_missing");
 assertInvalid(base, "fail closed", (s) => { s.runtime.fail_closed_rules.unknown_tool_denied = false; }, "fail_closed_rule_missing");
 assertInvalid(base, "root cli", (s) => { s.root.cli = { parameters: { "--policy-runtime": {} } }; }, "cli_extension_forbidden");
-assertInvalid(base, "runtime claim", (s) => { s.runtime.integration_policy.runtime_enforcement_implemented_now = true; }, "runtime_enforcement_claim_forbidden");
+assertInvalid(base, "runtime claim", (s) => { s.runtime.integration_policy.runtime_enforcement_implemented_now = false; }, "runtime_enforcement_claim_required");
 
 console.log("smoke_stage12_step37_policy_runtime_negative_controls ok");

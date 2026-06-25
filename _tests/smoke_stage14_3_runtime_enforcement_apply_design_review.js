@@ -41,11 +41,11 @@ assert.ok(record.includes("runtime_restart_required: true, if live test server m
 assert.ok(record.includes("connector_refresh_required: false if tools/list descriptors and connector contract are unchanged"));
 assert.ok(record.includes("control-plane snapshot/deploy/rollback plan: required before runtime mutation/deploy"));
 
-assert.equal(policyRuntimeSpec.runtime_enforced, false);
-assert.equal(resourcePolicySpec.runtime_enforced, false);
+assert.equal(policyRuntimeSpec.runtime_enforced, true);
+assert.equal(resourcePolicySpec.runtime_enforced, true);
 assert.equal(baseline.connectorShapeVersion, "2025-05-strict-v1");
 assert.equal(toolsCall.includes("policy_preflight"), false);
-assert.equal(toolsCall.includes("policy_enforcement_gate"), false);
+assert.equal(toolsCall.includes("policy_enforcement_gate"), true);
 assert.ok(postStage6.includes("Resource/Scope Matrix Enforcement"));
 assert.ok(postStage6.includes("separate operator approval"));
 

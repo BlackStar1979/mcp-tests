@@ -13,7 +13,7 @@
     "SERVER_DATABASE_POLICY_SPEC.json",
     "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json"
   ],
-  "runtime_enforced": false,
+  "runtime_enforced": true,
   "connector_visible": false,
   "no_cli_extension": true,
   "composition_pipeline": [
@@ -172,7 +172,7 @@
     "runtime_enforcement_requires_operator_approval": true,
     "restart_plan_required_before_runtime_enforcement": true,
     "connector_refresh_plan_required_before_connector_visible_change": true,
-    "runtime_enforcement_implemented_now": false,
+    "runtime_enforcement_implemented_now": true,
     "cli_extension_allowed": false
   }
 }

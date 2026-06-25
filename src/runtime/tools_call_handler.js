@@ -14,6 +14,9 @@ const { evaluateDecisionRuntimePolicy } = require("./decision_runtime_policy");
 const { buildDecisionRuntimeReceipt } = require("./decision_runtime_receipt");
 const { buildCoreToolDescriptors } = require("./core_tool_descriptors");
 const { validateToolInput } = require("./tool_input_validator");
+const { decide: decideRuntimePolicyGate } = require("./policy_enforcement_gate");
+const toolsSpec = require("../../SERVER_TOOLS_SPEC.json");
+const resourceSpec = require("../../SERVER_RESOURCE_POLICY_SPEC.json");
 
 async function handleToolsCall({
   id,
@@ -72,6 +75,24 @@ async function handleToolsCall({
     return rpcError(id, decision.json_rpc_error.code, decision.json_rpc_error.message, {
       decision_code: decision.deny_code,
       reason_codes: decision.decision_meta.reason_codes,
+    });
+  }
+
+  const gateDecision = decideRuntimePolicyGate({ toolName: name, profile, toolsSpec, resourceSpec });
+  if (gateDecision.allow !== true) {
+    auditLog("tool_call_policy_denied", {
+      request_id: context.requestId,
+      tool: typeof name === "string" ? name : "unknown",
+      duration_ms: Date.now() - startedAt,
+      decision_code: gateDecision.data.decision_code,
+      reason_codes: gateDecision.reasons,
+      decision_receipt: decisionReceipt,
+      policy_receipt: gateDecision.data,
+    });
+    return rpcError(id, gateDecision.error.code, gateDecision.error.message, {
+      decision_code: gateDecision.data.decision_code,
+      reason_codes: gateDecision.reasons,
+      policy_receipt: gateDecision.data,
     });
   }
 

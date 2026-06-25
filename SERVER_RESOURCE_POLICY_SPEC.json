@@ -7,7 +7,7 @@
     "SERVER_TOOLS_SPEC.json",
     "SERVER_AUTHZ_DECISION_SPEC.json"
   ],
-  "runtime_enforced": false,
+  "runtime_enforced": true,
   "connector_visible": false,
   "resource_classes": {
     "public_index": {
