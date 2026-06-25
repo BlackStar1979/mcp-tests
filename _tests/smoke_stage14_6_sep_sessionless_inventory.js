@@ -76,4 +76,22 @@ assert.match(ledger.get("restart_resilience").repo_current_model, /3009 false cl
 assert.ok(inventory.recommended_next.some((item) => item.includes("file-triggered restart authority")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 TTL/cacheScope")));
 
+assert.equal(inventory.source_verification.official_final_count, 41);
+assert.equal(inventory.coverage_summary.total_final_seps, 41);
+assert.equal(inventory.coverage_summary.unclassified, 0);
+assert.ok(Array.isArray(inventory.all_seps_index));
+assert.equal(inventory.all_seps_index.length, 41);
+const allSepIds = new Set(inventory.all_seps_index.map((item) => item.sep));
+for (const sep of [
+  "SEP-2663", "SEP-2596", "SEP-2577", "SEP-2575", "SEP-2567", "SEP-2549", "SEP-2484", "SEP-2468", "SEP-2322", "SEP-2260", "SEP-2243", "SEP-2207", "SEP-2164", "SEP-2149", "SEP-2148", "SEP-2133", "SEP-2106", "SEP-2085", "SEP-1865", "SEP-1850", "SEP-1730", "SEP-1699", "SEP-1686", "SEP-1613", "SEP-1577", "SEP-1330", "SEP-1319", "SEP-1303", "SEP-1302", "SEP-1046", "SEP-1036", "SEP-1034", "SEP-1024", "SEP-994", "SEP-991", "SEP-990", "SEP-986", "SEP-985", "SEP-973", "SEP-932", "SEP-414"
+]) {
+  assert.ok(allSepIds.has(sep), `missing all-SEPs coverage entry: ${sep}`);
+}
+for (const entry of inventory.all_seps_index) {
+  assert.equal(entry.status, "Final", `${entry.sep} must be Final`);
+  assert.ok(entry.impact_bucket, `${entry.sep} needs impact_bucket`);
+  assert.notEqual(entry.impact_bucket, "unclassified", `${entry.sep} must be classified`);
+  assert.ok(entry.inventory_action, `${entry.sep} needs inventory_action`);
+}
+
 console.log("smoke_stage14_6_sep_sessionless_inventory ok");
