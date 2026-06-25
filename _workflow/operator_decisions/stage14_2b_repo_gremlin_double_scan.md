@@ -90,4 +90,4 @@ restore_path: this file, guard, state, canon, active index, manifest, SERVER_SPE
 - `node _tests/smoke_stage12_streamable_http_workflow_plan.js`: ok.
 - `node _tests/smoke_stage14_2_workbench_debt_cleanup.js`: ok.
 - `node server.js --self-test`: ok.
-- `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=161.
+- `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=162.

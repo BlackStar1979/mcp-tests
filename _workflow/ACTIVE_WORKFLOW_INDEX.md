@@ -129,11 +129,17 @@ Current records:
 - Stage 14.2B repo gremlin double-scan guard
   - `_tests/smoke_stage14_2b_repo_gremlin_double_scan.js` guards SERVER_SPEC legacy backup target, retired root `_backups`, internal truth/stress/control-plane checks, no brittle Stage14.2 current-work pins, state markers, and no-apply boundary.
 
+- `stage14_3_runtime_enforcement_apply_design_review.md`
+  - Stage 14.3 runtime enforcement apply design review, still no apply. It reassesses blockers, restart/connector/baseline/control-plane implications, future denial/audit contracts, validation plan, and recommends Stage 14.4 apply package draft still no apply.
+
+- Stage 14.3 apply design review guard
+  - `_tests/smoke_stage14_3_runtime_enforcement_apply_design_review.js` guards no-apply boundary, disabled runtime enforcement specs, no tools_call_handler wiring, blocker reassessment, future restart/connector/baseline decisions, and manifest inclusion.
+
 ## Active remaining work queue
 
 Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
 
-1. Runtime Enforcement Apply Package - No Apply package started; Stage 14.2B double-scan cleanup complete; next is Stage 14.3 apply design review, still no apply.
+1. Runtime Enforcement Apply Package - No Apply package started; Stage 14.3 apply design review complete; next is Stage 14.4 apply package draft, still no apply.
 2. Cooperative Tool Cancellation C3.
 3. Event-driven Hotplug Lifecycle.
 4. Sessionless / Explicit State Handles Target Selection.

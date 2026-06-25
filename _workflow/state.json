@@ -1,13 +1,13 @@
 {
   "schema_version": "workflow-state-compact-v1",
   "project": "mcp-tests",
-  "updated_at": "2026-06-24T10:45:00+02:00",
+  "updated_at": "2026-06-24T11:10:00+02:00",
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "current_work_package": {
-    "id": "stage14_2b_repo_gremlin_double_scan",
-    "stage": "Stage 14.2B",
-    "status": "green_stage14_2b_repo_gremlin_double_scan",
-    "description": "Two additional repo scans completed after Stage 14.2. Hidden root-backup/control-plane gremlins and brittle workflow guard pins were corrected. Remaining _backups references are classified as intentional non-authority, negative test, ignored-root guard, historical frozen stage data, or documentation. No runtime apply, restart, connector refresh, deploy, or baseline refreeze."
+    "id": "stage14_3_runtime_enforcement_apply_design_review",
+    "stage": "Stage 14.3",
+    "status": "green_stage14_3_runtime_enforcement_apply_design_review",
+    "description": "Stage 14.3 completed runtime enforcement apply design review as no-apply work. It reassessed blockers, restart/connector/baseline/control-plane implications, proposed future denial/audit contracts and validation plan, and recommended Stage 14.4 apply package draft still no apply. No runtime-imported code change, tools_call_handler wiring, runtime enforcement, restart, connector refresh, deploy, or baseline refreeze."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -39,9 +39,9 @@
     "root narrative workflow markdown files"
   ],
   "next_allowed_work": [
-    "Stage 14.3 runtime enforcement apply design review, still no apply unless separately approved",
-    "Before Stage 14.3, reassess each blocker and state whether restart, connector refresh, baseline refreeze, snapshot, deploy, rollback, or backup is required",
-    "No runtime enforcement implementation until operator accepts an apply proposal with exact code diff, restart/deploy/rollback plan, connector impact review, and validation plan",
+    "Stage 14.4 runtime enforcement apply package draft, still no apply unless separately approved",
+    "Stage 14.4 may write exact future code diff plan, tests plan, control-plane deployment plan, rollback plan, and approval marker template, but must not modify runtime-imported code or enable runtime enforcement without explicit operator acceptance",
+    "Before any runtime apply, state whether restart, connector refresh, baseline refreeze, snapshot, deploy, rollback, or backup is required",
     "Dedicated CRLF normalization batch only after separate operator approval"
   ],
   "target_runtime_topology": {
@@ -1286,7 +1286,7 @@
       "run_all_skip_network": "ok",
       "version": "0.40.0",
       "public": 6,
-      "tests_authenticated": 161,
+      "tests_authenticated": 162,
       "self_test": "ok",
       "npm_test": "not_runnable_npm_enoent_tool_environment"
     },
@@ -1361,7 +1361,7 @@
         "expected_public": 6,
         "expected_tests_authenticated": 158,
         "public": 6,
-        "tests_authenticated": 161
+        "tests_authenticated": 162
       },
       "non_actions": [
         "no new master document",
@@ -1378,7 +1378,7 @@
     }
   },
   "stage14": {
-    "status": "green_no_apply_repo_gremlin_scan_complete",
+    "status": "green_apply_design_review_no_apply",
     "stage14_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
@@ -1406,7 +1406,7 @@
         "server_self_test": "ok",
         "run_all_skip_network": "ok_in_stage14_2_full_run",
         "streamable_http_workflow_guard": "blocked_by_tool_layer_after_prior_ok_in_session",
-        "tests_authenticated": 161,
+        "tests_authenticated": 162,
         "public": 6
       },
       "non_actions": [
@@ -1455,7 +1455,7 @@
         "server_self_test": "ok",
         "run_all_skip_network": "ok",
         "public": 6,
-        "tests_authenticated": 161
+        "tests_authenticated": 162
       },
       "non_actions": [
         "no runtime enforcement apply",
@@ -1500,7 +1500,7 @@
         "server_self_test": "ok",
         "run_all_skip_network": "ok",
         "public": 6,
-        "tests_authenticated": 161
+        "tests_authenticated": 162
       },
       "non_actions": [
         "no runtime enforcement apply",
@@ -1516,6 +1516,79 @@
         "no baseline refreeze",
         "no root _backups recreation"
       ]
+    },
+    "stage14_3": {
+      "status": "green",
+      "record": "_workflow/operator_decisions/stage14_3_runtime_enforcement_apply_design_review.md",
+      "guard": "_tests/smoke_stage14_3_runtime_enforcement_apply_design_review.js",
+      "server_change": false,
+      "workflow_change": true,
+      "schema_change": false,
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "backup_required": false,
+      "baseline_refreeze_required": false,
+      "deploy_required": false,
+      "rollback_required": false,
+      "apply_allowed_now": false,
+      "runtime_enforcement_changed": false,
+      "allow_deny_behavior_changed": false,
+      "dispatch_behavior_changed": false,
+      "approval_marker_recorded": false,
+      "runtime_imported_code_changed": false,
+      "future_apply_restart_required": true,
+      "future_apply_connector_refresh_required_if_surface_changes": true,
+      "future_apply_connector_refresh_required_if_surface_unchanged": false,
+      "future_apply_baseline_refreeze_required_if_surface_unchanged": false,
+      "future_apply_control_plane_snapshot_deploy_rollback_required": true,
+      "next_recommended_stage": "Stage 14.4 - Runtime Enforcement Apply Package Draft, Still No Apply",
+      "future_hook": "src/runtime/tools_call_handler.js after tool_call_decision and before input validation/tool_call_start/handler execution",
+      "future_denial_error": {
+        "json_rpc_code": -32602,
+        "message": "Tool call denied by runtime policy",
+        "decision_code": "runtime_policy_denied",
+        "raw_arguments_included": false
+      },
+      "future_audit_event": "tool_call_policy_denied",
+      "validation": {
+        "targeted_smoke": "ok",
+        "stage14_2b_guard": "ok",
+        "stage12_wiring_plan_guard": "ok",
+        "operator_approval_boundary_guard": "ok_after_one_tool_layer_retry",
+        "server_self_test": "ok",
+        "run_all_skip_network": "ok",
+        "public": 6,
+        "tests_authenticated": 162
+      },
+      "non_actions": [
+        "no runtime enforcement apply",
+        "no runtime-imported code change",
+        "no tools_call_handler wiring",
+        "no approval marker recorded",
+        "no runtime policy denial behavior change",
+        "no allow/deny behavior change",
+        "no dispatch behavior change",
+        "no server restart",
+        "no connector refresh",
+        "no deploy",
+        "no public connector reconnect",
+        "no baseline refreeze",
+        "no hotplug/list_changed emission",
+        "no sessionless migration",
+        "no CRLF normalization"
+      ],
+      "blocker_reassessment": {
+        "explicit_operator_approval_marker": "keep",
+        "stage12_specific_no_apply_wording": "retire_as_future_blocker_text",
+        "exact_runtime_diff": "keep",
+        "restart_planning": "keep_for_apply",
+        "connector_refresh_planning": "conditional_on_surface_or_contract_change",
+        "baseline_refreeze": "conditional_on_surface_fingerprint_change_and_separate_stage",
+        "control_plane_snapshot_backup_deploy_rollback": "keep_for_apply",
+        "denial_json_rpc_contract": "keep",
+        "audit_denial_contract": "keep",
+        "negative_and_regression_controls": "keep"
+      }
     }
   }
 }
