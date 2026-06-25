@@ -32,10 +32,13 @@ assert.ok(canon.includes("Changing `src/stage_metadata.js` is a runtime-imported
 assert.ok(index.includes("runtime-stage label is a runtime compatibility label"));
 assert.ok(index.includes("Stage 13.2 boundary guard"));
 
-assert.equal(state.stage13.stage13_2.status, "green");
-assert.equal(state.stage13.stage13_2.runtime_stage_status_semantics, semanticMarker);
-assert.equal(state.stage13.stage13_2.server_change, false);
-assert.equal(state.stage13.stage13_2.runtime_restart_required, false);
-assert.equal(state.stage13.stage13_2.connector_refresh_required, false);
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.equal(state.status, "compact_orientation_map_not_progress_log");
+assert.equal(state.server_identity.name, "mcp-tests-response-shape");
+assert.equal(state.server_identity.version, "0.40.0");
+assert.equal(state.runtime_topology.public.port, 3009);
+assert.equal(state.runtime_topology.authorized.port, 3008);
+assert.equal(state.current_work_constraints.do_not_use_state_json_as_log, true);
+assert.ok(!Object.hasOwn(state, "stage13"), "state.json must not store Stage 13 progress logs");
 
 console.log("smoke_stage13_runtime_identity_workflow_boundary ok");

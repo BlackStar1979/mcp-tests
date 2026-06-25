@@ -28,12 +28,8 @@ assert.ok(canon.includes("Process-runner policy, command allowlists, runtime cod
 assert.ok(index.includes("stage13_process_runner_ergonomics_note.md"));
 assert.ok(index.includes("Stage 13.4 process-runner ergonomics guard"));
 
-assert.equal(state.stage13.stage13_4.status, "green");
-assert.equal(state.stage13.stage13_4.server_change, false);
-assert.equal(state.stage13.stage13_4.process_runner_policy_changed, false);
-assert.equal(state.stage13.stage13_4.command_allowlist_changed, false);
-assert.equal(state.stage13.stage13_4.raw_powershell_enabled, false);
-assert.ok(state.stage13.stage13_4.non_actions.includes("no process-runner policy change"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage13"));
 assert.ok(smokeScripts.includes("_tests/smoke_stage13_process_runner_ergonomics_note.js"));
 
 console.log("smoke_stage13_process_runner_ergonomics_note ok");

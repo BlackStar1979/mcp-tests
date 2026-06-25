@@ -49,17 +49,8 @@ assert.equal(toolsCall.includes("policy_enforcement_gate"), true);
 assert.ok(postStage6.includes("Resource/Scope Matrix Enforcement"));
 assert.ok(postStage6.includes("separate operator approval"));
 
-assert.equal(state.stage14.stage14_3.status, "green");
-assert.equal(state.stage14.stage14_3.apply_allowed_now, false);
-assert.equal(state.stage14.stage14_3.runtime_restart_required, false);
-assert.equal(state.stage14.stage14_3.connector_refresh_required, false);
-assert.equal(state.stage14.stage14_3.baseline_refreeze_required, false);
-assert.equal(state.stage14.stage14_3.runtime_enforcement_changed, false);
-assert.equal(state.stage14.stage14_3.allow_deny_behavior_changed, false);
-assert.equal(state.stage14.stage14_3.next_recommended_stage, "Stage 14.4 - Runtime Enforcement Apply Package Draft, Still No Apply");
-assert.ok(state.stage14.stage14_3.blocker_reassessment.explicit_operator_approval_marker === "keep");
-assert.ok(state.stage14.stage14_3.blocker_reassessment.stage12_specific_no_apply_wording === "retire_as_future_blocker_text");
-assert.ok(state.stage14.stage14_3.non_actions.includes("no runtime enforcement apply"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 assert.ok(manifest.includes("_tests/smoke_stage14_3_runtime_enforcement_apply_design_review.js"));
 
 console.log("smoke_stage14_3_runtime_enforcement_apply_design_review ok");

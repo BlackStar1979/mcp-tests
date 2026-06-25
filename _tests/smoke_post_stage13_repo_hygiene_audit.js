@@ -29,13 +29,8 @@ assert.ok(canon.includes("Post-Stage 13 repo hygiene audit green"));
 assert.ok(index.includes("post_stage13_repo_hygiene_audit.md"));
 assert.ok(index.includes("Active remaining work queue"));
 
-assert.equal(state.post_stage13_hygiene.status, "green");
-assert.equal(state.post_stage13_hygiene.stage14_implementation_approved, false);
-assert.equal(state.post_stage13_hygiene.code_health.run_all_skip_network, "ok");
-assert.equal(state.post_stage13_hygiene.code_health.self_test, "ok");
-assert.equal(state.post_stage13_hygiene.workflow_hygiene.unchecked_markdown_tasks, 0);
-assert.equal(state.post_stage13_hygiene.active_remaining_work.length, 6);
-assert.equal(state.post_stage13_hygiene.recommended_next_stage, "Stage 14 proposal: Runtime Enforcement Apply Package - No Apply");
-assert.ok(smokeScripts.includes("_tests/smoke_post_stage13_repo_hygiene_audit.js"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.equal(state.status, "compact_orientation_map_not_progress_log");
+assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 
 console.log("smoke_post_stage13_repo_hygiene_audit ok");

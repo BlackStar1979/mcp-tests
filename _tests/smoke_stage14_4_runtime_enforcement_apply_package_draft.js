@@ -54,14 +54,8 @@ assert.equal(toolsCall.includes("policy_enforcement_gate"), true);
 assert.equal(toolsCall.includes("policy_preflight"), false);
 assert.ok(toolsCall.includes("tool_call_decision"));
 assert.ok(toolsCall.includes("tool_call_start"));
-assert.equal(state.stage14.stage14_4.status, "green");
-assert.equal(state.stage14.stage14_4.apply_allowed_now, false);
-assert.equal(state.stage14.stage14_4.runtime_restart_required, false);
-assert.equal(state.stage14.stage14_4.connector_refresh_required, false);
-assert.equal(state.stage14.stage14_4.baseline_refreeze_required, false);
-assert.equal(state.stage14.stage14_4.runtime_imported_code_changed, false);
-assert.equal(state.stage14.stage14_4.approval_marker_recorded, false);
-assert.ok(state.stage14.stage14_4.non_actions.includes("no runtime enforcement apply"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 assert.ok(manifest.includes("_tests/smoke_stage14_4_runtime_enforcement_apply_package_draft.js"));
 
 console.log("smoke_stage14_4_runtime_enforcement_apply_package_draft ok");

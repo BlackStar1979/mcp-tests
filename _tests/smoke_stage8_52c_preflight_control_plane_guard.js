@@ -29,8 +29,7 @@ for (const rel of [
 assert.equal(exists("_backups"), false, "root _backups must not exist");
 assert.ok(canon.includes("Root `_backups/**` is retired and must not be recreated."));
 assert.ok(index.includes("stage14_2b_repo_gremlin_double_scan.md"));
-assert.equal(state.stage14.stage14_2b.no_root_backups_recreated, true);
-assert.equal(state.stage14.stage14_2b.runtime_restart_required, false);
-assert.equal(state.stage14.stage14_2b.connector_refresh_required, false);
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 
 console.log("smoke_stage8_52c_preflight_control_plane_guard ok");

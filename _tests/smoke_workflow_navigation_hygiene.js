@@ -35,8 +35,8 @@ for (const stale of [
   assert.equal(canon.includes(stale), false, stale);
 }
 
-assert.equal(state.post_stage13_hygiene.workflow_navigation_hygiene.status, "green");
-assert.equal(state.post_stage13_hygiene.workflow_navigation_hygiene.new_master_document_created, false);
-assert.ok(smokeScripts.includes("_tests/smoke_workflow_navigation_hygiene.js"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.equal(state.status, "compact_orientation_map_not_progress_log");
+assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 
 console.log("smoke_workflow_navigation_hygiene ok");

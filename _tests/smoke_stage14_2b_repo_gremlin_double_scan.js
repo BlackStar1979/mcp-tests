@@ -62,12 +62,10 @@ assert.equal(stage14_2Guard.includes(currentPackageIdPin), false);
 assert.equal(stage14_2Guard.includes(currentPackageStatusPin), false);
 assert.equal(streamableGuard.includes("pending_commit"), false);
 assert.equal(streamableGuard.includes("green_stage14_2_workbench_debt_cleanup"), false);
-assert.ok(streamableGuard.includes('typeof state.current_work_package.id === "string"'));
+assert.equal(streamableGuard.includes('typeof state.current_work_package.id === "string"'), false);
 
-assert.equal(state.stage14.stage14_2b.status, "green");
-assert.equal(state.stage14.stage14_2b.runtime_restart_required, false);
-assert.equal(state.stage14.stage14_2b.connector_refresh_required, false);
-assert.equal(state.stage14.stage14_2b.no_root_backups_recreated, true);
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 assert.ok(manifest.includes("_tests/smoke_stage14_2b_repo_gremlin_double_scan.js"));
 assert.ok(index.includes("stage14_2b_repo_gremlin_double_scan.md"));
 

@@ -49,12 +49,8 @@ assert.ok(baselineReadme.includes("current source of truth is the manifest conte
 assert.equal(baseline.connectorShapeVersion, "2025-05-strict-v1");
 assert.ok(Array.isArray(baseline.notes));
 
-assert.equal(state.stage14.stage14_2.status, "green");
-assert.equal(state.stage14.stage14_2.runtime_restart_required, false);
-assert.equal(state.stage14.stage14_2.connector_refresh_required, false);
-assert.equal(state.stage14.stage14_2.legacy_longterm_scripts_identified, true);
-assert.equal(state.stage14.stage14_2.legacy_longterm_scripts_active_run_all, false);
-assert.ok(state.stage14.stage14_2.non_actions.includes("no runtime enforcement apply"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 assert.ok(smokeScripts.includes("_tests/smoke_stage14_2_workbench_debt_cleanup.js"));
 
 console.log("smoke_stage14_2_workbench_debt_cleanup ok");

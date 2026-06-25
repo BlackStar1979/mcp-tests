@@ -40,5 +40,6 @@ for (const guard of [
   assert.ok(plan.includes(guard), `${guard} missing`);
 }
 
-assert.ok(state.stage14);
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 console.log("smoke_stage12_oauth_production_hardening_plan ok");

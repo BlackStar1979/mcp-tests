@@ -38,8 +38,8 @@ for (const required of [
 }
 
 assert.ok(index.includes("STREAMABLE_HTTP_SAMPLING_OAUTH_WORKFLOW.md"));
-assert.ok(state.current_work_package && typeof state.current_work_package.id === "string");
-assert.ok(Array.isArray(state.next_allowed_work));
-assert.ok(state.next_allowed_work.length > 0);
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.equal(state.status, "compact_orientation_map_not_progress_log");
+assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_SPEC.json"));
 
 console.log("smoke_stage12_streamable_http_workflow_plan ok");

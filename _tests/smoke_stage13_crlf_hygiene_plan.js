@@ -37,12 +37,8 @@ assert.ok(canon.includes("No global normalization or git add --renormalize . was
 assert.ok(index.includes("stage13_crlf_hygiene_plan.md"));
 assert.ok(index.includes("Stage 13.3 CRLF hygiene guard"));
 
-assert.equal(state.stage13.stage13_3.status, "green");
-assert.equal(state.stage13.stage13_3.server_change, false);
-assert.equal(state.stage13.stage13_3.global_normalization_performed, false);
-assert.equal(state.stage13.stage13_3.git_add_renormalize_performed, false);
-assert.equal(state.stage13.stage13_3.observed_crlf_files_count, 191);
-assert.ok(state.stage13.stage13_3.non_actions.includes("no mass line-ending normalization"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage13"));
 assert.ok(smokeScripts.includes("_tests/smoke_stage13_crlf_hygiene_plan.js"));
 
 console.log("smoke_stage13_crlf_hygiene_plan ok");

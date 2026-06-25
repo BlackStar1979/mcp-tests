@@ -29,10 +29,10 @@ for (const required of [
 
 assert.ok(record.includes("before `tool_call_start`"));
 assert.ok(record.includes("before handler execution"));
-assert.ok(policyRuntimeSpec.runtime_enforced === false || (state.stage14 && state.stage14.stage14_5 && state.stage14.stage14_5.runtime_enforcement_changed === true));
+assert.equal(policyRuntimeSpec.runtime_enforced, true);
 assert.ok(JSON.stringify(policyRuntimeSpec).includes("runtime_enforcement_expected_now"));
 assert.ok(JSON.stringify(policyRuntimeSpec).includes("false"));
-assert.ok(resourcePolicySpec.runtime_enforced === false || (state.stage14 && state.stage14.stage14_5 && state.stage14.stage14_5.runtime_enforcement_changed === true));
+assert.equal(resourcePolicySpec.runtime_enforced, true);
 assert.equal(toolsCall.includes("FUTURE OPERATOR-APPROVED policy preflight enforcement hook"), false);
 assert.equal(toolsCall.includes("policy_preflight"), false);
 
@@ -40,12 +40,8 @@ assert.ok(canon.includes("Stage 14.1 runtime enforcement no-apply package green"
 assert.ok(index.includes("stage14_runtime_enforcement_no_apply_package.md"));
 assert.ok(index.includes("Stage 14.1 runtime enforcement no-apply guard"));
 
-assert.equal(state.stage14.stage14_1.status, "green");
-assert.equal(state.stage14.stage14_1.apply_allowed_now, false);
-assert.equal(state.stage14.stage14_1.runtime_enforcement_changed, false);
-assert.equal(state.stage14.stage14_1.allow_deny_behavior_changed, false);
-assert.equal(state.stage14.stage14_1.approval_marker_recorded, false);
-assert.ok(state.stage14.stage14_1.non_actions.includes("no tools_call_handler wiring"));
+assert.equal(state.schema_version, "workflow-state-spec-map-v2");
+assert.ok(!Object.hasOwn(state, "stage14"));
 assert.ok(smokeScripts.includes("_tests/smoke_stage14_runtime_enforcement_no_apply_package.js"));
 
 console.log("smoke_stage14_runtime_enforcement_no_apply_package ok");
