@@ -18,4 +18,8 @@ Stage 14.5 applies runtime Resource/Operation policy enforcement in the workbenc
 
 ## Live validation closeout
 
-Commit: d299cfa. Restart: ok, pid=22804, health=http://127.0.0.1:3009/healthz. Runtime status: ok, schema_compatibility=ok, security_boundary=ok, tool_count=43, tool_names_hash=8b62ecaf89227335. Final targeted backup record: _workflow/control_plane/snapshots/2026-06-25T14-04-36-947Z_stage14-5-live-validated-targeted.json.
+Commit: d299cfa. Public 3009 process was restarted by test_mcp_restart.ps1 and is now pid=22804 with health=http://127.0.0.1:3009/healthz, auth=none, profile=public, tools_count=13. OAuth21 3008 process was not restarted; it remains pid=3852 with command server.js --profile tests --auth oauth21 --oauth-secret-file ... . TESTS_MCP.test_mcp_runtime_status validated the OAuth21 3008 process read-only, not the restarted 3009 process. Therefore prior wording that coupled 3009 restart with 3008 runtime status was incorrect. OAuth21 live runtime still requires a separate OAuth-aware restart to load the Stage14.5 code. Final targeted backup record: _workflow/control_plane/snapshots/2026-06-25T14-04-36-947Z_stage14-5-live-validated-targeted.json.
+
+## Correction after port/session review
+
+The previous live-validation note mixed two runtimes. Port 3009 is public auth:none and was replaced by the restart script. Port 3008 is OAuth21/internal and was not restarted. TESTS_MCP runtime status observes 3008. Current corrected status: repo committed; public 3009 restarted and health/tools validated; OAuth21 3008 observed healthy but still pending restart if Stage14.5 enforcement must be live there.

@@ -221,4 +221,4 @@ This index is intentionally non-destructive. It does not move historical workflo
 
 Future archive compaction may move files only after a dedicated migration plan updates tests and references.
 
-Stage 14.5 runtime enforcement apply committed and live-validated: commit d299cfa, restart pid=22804, runtime status ok, schema compatibility ok, security boundary ok, tool_count=43, tool_names_hash=8b62ecaf89227335. Connector refresh not required; baseline refreeze not required.
+Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 still requires an OAuth-aware restart to load Stage14.5 runtime code. Connector refresh not required; baseline refreeze not required.

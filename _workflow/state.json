@@ -6,8 +6,8 @@
   "current_work_package": {
     "id": "stage14_5_runtime_enforcement_apply",
     "stage": "Stage 14.5",
-    "status": "green_stage14_5_runtime_enforcement_apply",
-    "description": "Stage 14.5 runtime enforcement apply committed and live-validated. Runtime policy gate is wired into tools_call_handler; runtime/resource specs are enforced; test server restart and runtime status validation passed."
+    "status": "green_stage14_5_repo_committed_public_3009_restarted_oauth_3008_restart_pending",
+    "description": "Stage14.5 is committed in repo. Public auth:none port 3009 was restarted/replaced and validated. OAuth21/internal port 3008 was not restarted; TESTS_MCP runtime status was read-only observation of 3008."
   },
   "last_validated_runtime": {
     "server_version": "0.40.0",
@@ -1377,7 +1377,7 @@
     }
   },
   "stage14": {
-    "status": "green_stage14_5_committed_live_validated",
+    "status": "green_stage14_5_repo_committed_public_3009_restarted_oauth_3008_restart_pending",
     "stage14_1": {
       "status": "green",
       "record": "_workflow/operator_decisions/stage14_runtime_enforcement_no_apply_package.md",
@@ -1649,7 +1649,7 @@
       ]
     },
     "stage14_5": {
-      "status": "green_committed_live_validated",
+      "status": "green_repo_committed_public_3009_restarted_oauth_3008_restart_pending",
       "snapshot": "_workflow/control_plane/snapshots/2026-06-25T04-13-13_stage14-5-preapply",
       "runtime_enforcement_changed": true,
       "allow_deny_behavior_changed": true,
@@ -1678,7 +1678,18 @@
         "pid": 22804,
         "health": "http://127.0.0.1:3009/healthz"
       },
-      "final_backup_record": "_workflow/control_plane/snapshots/2026-06-25T14-04-36-947Z_stage14-5-live-validated-targeted.json"
+      "final_backup_record": "_workflow/control_plane/snapshots/2026-06-25T14-04-36-947Z_stage14-5-live-validated-targeted.json",
+      "oauth21_3008_restart_required_for_stage14_5_code": true,
+      "restart_correction": {
+        "public_3009": "restarted_by_generic_script_pid_22804_auth_none_profile_public",
+        "oauth21_3008": "not_restarted_pid_3852_auth_oauth21_profile_internal",
+        "test_mcp_runtime_status": "observes_3008_not_3009"
+      },
+      "validation_correction": {
+        "public_3009_health": "ok",
+        "public_3009_tools_list": "ok_13_tools",
+        "oauth21_3008_runtime_status": "ok_read_only_not_restart_validation"
+      }
     }
   }
 }
