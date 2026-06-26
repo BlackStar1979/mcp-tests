@@ -47,6 +47,7 @@ for (const rel of [
   "SERVER_SAMPLING_POLICY_SPEC.json",
   "SERVER_DECISION_RUNTIME_SPEC.json",
   "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+  "SERVER_RUNTIME_CONFIG_SPEC.json",
 ]) {
   assert.ok(activeRootFiles.has(rel), `active root files missing ${rel}`);
 }

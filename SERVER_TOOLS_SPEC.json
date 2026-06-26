@@ -699,5 +699,23 @@
       "target_total_mcp_callable_tool_count_after_hard_removal": 42
     },
     "final_decision": "replacement_tool_plus_legacy_manifest_reclassification_not_hard_removal"
+  },
+  "source_layout": {
+    "loader_authority": [
+      "src/tool_loader.js",
+      "src/runtime/core_tool_descriptors.js"
+    ],
+    "mcp_surface_dirs": [
+      "tools/public",
+      "tools/authorized"
+    ],
+    "non_surface_flat_tools_dir": "tools",
+    "flat_tools_rule": "A file in tools/*.js is not MCP-callable unless loaded through core descriptors, tools/public facade, or tools/authorized facade. Root-only legacy auth tools are retained as retired/precutover implementation artifacts, not current surface.",
+    "root_only_legacy_auth_files": [
+      "auth_transition_status.js",
+      "auth_bearer_dry_run.js",
+      "auth_bearer_cutover_guard.js",
+      "auth_modular_parity_status.js"
+    ]
   }
 }

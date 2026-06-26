@@ -48,6 +48,11 @@ The file may contain operational implications, such as restart resilience, only 
 
 This file is the active machine-readable authority for runtime topology. It separates public `3009` from OAuth21 `3008`, defines validation surfaces, and records the restart-authority state. If restart authority is marked missing, OAuth21 live-load work is blocked until that authority is restored.
 
+
+## `SERVER_RUNTIME_CONFIG_SPEC.json`
+
+`SERVER_RUNTIME_CONFIG_SPEC.json` is the active machine-readable authority for runtime CLI flags, `MCP_TEST_*` environment variables, external HTTP routes, protocol versions, and code-derived behavior toggles. It exists to catch code capabilities that are not otherwise visible in policy/tool specs.
+
 ## Root specs
 
 Root `SERVER_*_SPEC.json` files are canonical structured server specifications. They are not progress logs. Workflow files may summarize or map them, but must not replace them as source of truth.

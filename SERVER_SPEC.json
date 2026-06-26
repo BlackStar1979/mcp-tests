@@ -94,7 +94,8 @@
     "historical_stage12": "_workflow/historical/stage12_workflow_history.json",
     "connector_surface": "SERVER_CONNECTOR_SURFACE_SPEC.json",
     "sampling_policy": "SERVER_SAMPLING_POLICY_SPEC.json",
-    "runtime_topology": "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
+    "runtime_topology": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+    "runtime_config": "SERVER_RUNTIME_CONFIG_SPEC.json"
   },
   "auth": {
     "summary": "Authentication modes and port policy are specified in SERVER_AUTH_SPEC.json.",
@@ -175,7 +176,8 @@
         "SERVER_DECISION_RUNTIME_SPEC.json",
         "SERVER_CONNECTOR_SURFACE_SPEC.json",
         "SERVER_SAMPLING_POLICY_SPEC.json",
-        "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
+        "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+        "SERVER_RUNTIME_CONFIG_SPEC.json"
       ],
       "reserved_root_dirs": [
         "tools/authorized",
@@ -391,5 +393,11 @@
     "spec_ref": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
     "restart_authority_state": "missing_not_recovered",
     "oauth21_3008_live_load_blocked_until_restart_authority_restored": true
+  },
+  "runtime_config_spec": {
+    "summary": "Active CLI/env/HTTP-route configuration surface derived from code.",
+    "spec_ref": "SERVER_RUNTIME_CONFIG_SPEC.json",
+    "env_var_count": 50,
+    "http_route_count": 11
   }
 }
