@@ -1,0 +1,91 @@
+{
+  "schema_version": "mcp-tests-event-catalog-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Runtime event names emitted by active runtime/tool code. Derived from code and validated by matrix_check.",
+  "events": [
+    {
+      "name": "pending_response_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "pending_response_resolved",
+      "status": "active_code_event"
+    },
+    {
+      "name": "request_cancelled_by_client",
+      "status": "active_code_event"
+    },
+    {
+      "name": "response_write_skipped_after_client_disconnect",
+      "status": "active_code_event"
+    },
+    {
+      "name": "rpc_protocol_error",
+      "status": "active_code_event"
+    },
+    {
+      "name": "rpc_received",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sampling_request_denied",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sampling_request_sent",
+      "status": "active_code_event"
+    },
+    {
+      "name": "server_error",
+      "status": "active_code_event"
+    },
+    {
+      "name": "server_start",
+      "status": "active_code_event"
+    },
+    {
+      "name": "session_created",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sse_replay_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sse_stream_closed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sse_stream_opened",
+      "status": "active_code_event"
+    },
+    {
+      "name": "streamable_http_preflight",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_call_decision",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_call_end",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_call_error",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_call_policy_denied",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_call_start",
+      "status": "active_code_event"
+    }
+  ],
+  "rules": {
+    "coverage": "Every literal audit event emitted through auditLog must be listed here.",
+    "not_progress_log": true
+  }
+}

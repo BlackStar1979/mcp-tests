@@ -100,5 +100,12 @@
     "env_coverage": "all active MCP_TEST_* tokens in src/tools must be listed",
     "route_coverage": "external HTTP routes from dispatcher/oauth21 server must be listed",
     "not_progress_log": true
-  }
+  },
+  "unsupported_cli_flags": [
+    "--enable-memory-tools",
+    "--memory-tools",
+    "--disable-memory-tools",
+    "--no-memory-tools"
+  ],
+  "retired_cli_flags": []
 }
