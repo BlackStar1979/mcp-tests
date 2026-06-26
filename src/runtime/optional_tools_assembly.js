@@ -12,6 +12,7 @@ function configureOptionalToolsAssembly({
   serverProfileConfig,
   runtimeStatusProvider,
   auditLogPath,
+  restartController,
 }) {
   optionalTools.push(
     ...loadOptionalTools({

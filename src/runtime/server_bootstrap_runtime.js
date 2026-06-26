@@ -21,6 +21,7 @@ const { createOAuth21AuthorizationServer } = require("../auth/oauth21_authorizat
 const { loadOAuth21SecretConfig } = require("./oauth21_secret_config");
 const { parseServerCliArgs } = require("./server_cli_args");
 const { loadServerProfileConfig } = require("../server_profile_loader");
+const { createRestartController } = require("./restart_controller");
 const { DOCS } = require("./static_docs");
 
 const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
@@ -103,6 +104,9 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     optionalTools,
   });
 
+  const restartController = createRestartController({ auditLog, env, rootDir });
+  restartController.start();
+
   const getRuntimeStatus = createRuntimeStatusAssembly({
     serverName: SERVER_NAME,
     serverVersion: SERVER_VERSION,
@@ -127,6 +131,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     serverProfileConfig,
     runtimeStatusProvider: getRuntimeStatus,
     auditLogPath,
+    restartController,
   });
 
   if (!VALID_OUTPUT_MODES.has(outputMode)) {

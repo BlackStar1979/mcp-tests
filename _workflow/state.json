@@ -148,12 +148,13 @@
   },
   "runtime_topology_spec": {
     "path": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
-    "restart_authority_state": "missing_not_recovered",
-    "oauth21_3008_blocked_until_authority_restored": true
+    "restart_authority_state": "repo_supervisor_authority_implemented_not_live_loaded",
+    "oauth21_3008_blocked_until_authority_restored": false,
+    "oauth21_3008_pending_supervisor_migration": true
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 50,
+    "env_var_count": 53,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -164,5 +165,18 @@
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
     "critical_policy_count": 6,
     "non_critical_missing_remain": true
+  },
+  "restart_supervisor": {
+    "scripts": [
+      "scripts/server.sh",
+      "scripts/server.ps1"
+    ],
+    "request_helper": "scripts/request-restart.js",
+    "controlled_exit_codes": [
+      42,
+      43,
+      44
+    ],
+    "live_3008_status": "not assumed supervisor-managed until operator migration"
   }
 }

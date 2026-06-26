@@ -43,7 +43,7 @@
     "oauth_3007": "non_target_resource_server_validation_only"
   },
   "restart_authority": {
-    "state": "missing_not_recovered",
+    "state": "repo_supervisor_authority_implemented_not_live_loaded",
     "required_before_touching_oauth21_3008": true,
     "expected_model": "file-triggered or supervisor-mediated restart preserving original runtime topology and startup arguments",
     "known_missing_authority": "previous file-triggered restart mechanism is not present in active repo authority as of this audit",
@@ -58,7 +58,36 @@
       "repo-only tests",
       "isolated-port prototype of restart mechanism",
       "operator-approved creation of explicit restart authority"
-    ]
+    ],
+    "supervisor_model": {
+      "scripts": [
+        "scripts/server.sh",
+        "scripts/server.ps1"
+      ],
+      "request_helper": "scripts/request-restart.js",
+      "trigger_file_env": "MCP_TEST_RESTART_TRIGGER_FILE",
+      "enabled_env": "MCP_TEST_ENABLE_RESTART_TRIGGER",
+      "controlled_exit_codes": [
+        42,
+        43,
+        44
+      ],
+      "restart_only_for_controlled_exit_codes": true,
+      "non_restart_exit_codes": [
+        0,
+        1,
+        2,
+        130,
+        143
+      ],
+      "preserves_topology_via_env": [
+        "MCP_SUPERVISOR_PROFILE",
+        "MCP_SUPERVISOR_AUTH",
+        "MCP_SUPERVISOR_OAUTH_SECRET_FILE",
+        "MCP_SUPERVISOR_PORT"
+      ]
+    },
+    "current_live_status": "existing 3008 process is not assumed to be supervisor-managed until operator restarts it with scripts/server.ps1 or scripts/server.sh"
   },
   "validation_matrix": {
     "public_3009": [
@@ -82,14 +111,13 @@
     "live_validation_correction": "_workflow/operator_decisions/stage14_5_live_validation_correction.md"
   },
   "next_required_repair": {
-    "id": "recover_or_recreate_file_trigger_restart_authority",
-    "status": "pending",
+    "id": "operator_migrate_oauth21_3008_to_supervisor",
+    "status": "pending_live_operator_action",
     "minimum_output": [
-      "dedicated authority file or spec section with trigger path",
-      "implementation preserving oauth21_3008 startup args",
-      "isolated-port proof",
-      "negative guard against generic restart",
-      "operator approval before active 3008 restart"
+      "operator starts 3008 through scripts/server.ps1 or scripts/server.sh",
+      "healthz on 3008",
+      "authenticated runtime status confirms oauth21/tests/internal",
+      "controlled trigger exits with code 42/43/44 and supervisor restarts with same topology"
     ]
   }
 }

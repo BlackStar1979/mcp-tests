@@ -407,13 +407,13 @@
   "runtime_topology_spec": {
     "summary": "Active runtime topology, port ownership and restart-authority boundary. Current source of truth for 3008/3009 operational distinction.",
     "spec_ref": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
-    "restart_authority_state": "missing_not_recovered",
+    "restart_authority_state": "repo_supervisor_authority_implemented_not_live_loaded",
     "oauth21_3008_live_load_blocked_until_restart_authority_restored": true
   },
   "runtime_config_spec": {
     "summary": "Active CLI/env/HTTP-route configuration surface derived from code.",
     "spec_ref": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 50,
+    "env_var_count": 53,
     "http_route_count": 11
   },
   "audit_events_spec": {

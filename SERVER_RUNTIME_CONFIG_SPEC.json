@@ -54,6 +54,7 @@
     "MCP_TEST_ENABLE_PLUGIN_EXECUTION_TOOLS",
     "MCP_TEST_ENABLE_PLUGIN_REGISTRY_TOOLS",
     "MCP_TEST_ENABLE_PLUGIN_VISIBILITY_TOOLS",
+    "MCP_TEST_ENABLE_RESTART_TRIGGER",
     "MCP_TEST_ENABLE_RUNTIME_STATUS",
     "MCP_TEST_ENABLE_SESSION_TOOLSET_TOOLS",
     "MCP_TEST_FETCH_CAP_CHARS",
@@ -82,6 +83,8 @@
     "MCP_TEST_PROFILE",
     "MCP_TEST_PUBLIC_BASE_URL",
     "MCP_TEST_PYTHON_BIN",
+    "MCP_TEST_RESTART_EXIT_DELAY_MS",
+    "MCP_TEST_RESTART_TRIGGER_FILE",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "MCP_TEST_TOKEN_FILE"
   ],
@@ -107,5 +110,24 @@
     "--disable-memory-tools",
     "--no-memory-tools"
   ],
-  "retired_cli_flags": []
+  "retired_cli_flags": [],
+  "restart_supervisor": {
+    "scripts": [
+      "scripts/server.sh",
+      "scripts/server.ps1",
+      "scripts/request-restart.js"
+    ],
+    "controlled_exit_codes": [
+      42,
+      43,
+      44
+    ],
+    "trigger_env": {
+      "enabled": "MCP_TEST_ENABLE_RESTART_TRIGGER",
+      "file": "MCP_TEST_RESTART_TRIGGER_FILE",
+      "delay_ms": "MCP_TEST_RESTART_EXIT_DELAY_MS"
+    },
+    "default_trigger_file": "_control/restart-request.json",
+    "surface_change": false
+  }
 }

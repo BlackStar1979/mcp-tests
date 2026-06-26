@@ -82,6 +82,22 @@
     {
       "name": "tool_call_start",
       "status": "active_code_event"
+    },
+    {
+      "name": "runtime_restart_requested",
+      "status": "active_code_event"
+    },
+    {
+      "name": "runtime_restart_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "runtime_restart_exit_scheduled",
+      "status": "active_code_event"
+    },
+    {
+      "name": "runtime_restart_trigger_file_ignored",
+      "status": "active_code_event"
     }
   ],
   "rules": {
