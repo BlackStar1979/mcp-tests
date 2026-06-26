@@ -87,7 +87,8 @@
     "SERVER_DATABASE_POLICY_SPEC.json": "database/state-store policy",
     "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json": "plugin visibility and hotplug/list_changed policy",
     "SERVER_SAMPLING_POLICY_SPEC.json": "client sampling approval and budget policy",
-    "SERVER_DECISION_RUNTIME_SPEC.json": "active decision model, fixture, runtime interface and integration contract extracted from historical Stage12 work"
+    "SERVER_DECISION_RUNTIME_SPEC.json": "active decision model, fixture, runtime interface and integration contract extracted from historical Stage12 work",
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "active runtime topology, port ownership, restart authority boundary and validation matrix"
   },
   "policy_layers": {
     "runtime_policy_gate": {
@@ -135,5 +136,10 @@
     ],
     "guard": "_tests/smoke_stage14_6_sep_sessionless_inventory.js",
     "handling_rule": "Update checklist/lifecycle/status/evidence only; do not use as chronological log."
+  },
+  "runtime_topology_spec": {
+    "path": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+    "restart_authority_state": "missing_not_recovered",
+    "oauth21_3008_blocked_until_authority_restored": true
   }
 }

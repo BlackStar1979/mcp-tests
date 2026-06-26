@@ -86,7 +86,8 @@
     "_tests/smoke_stage12_streamable_http_session_lifecycle.js",
     "_tests/smoke_stage12_get_sse_stream.js",
     "_tests/smoke_stage12_pending_request_correlation.js",
-    "_tests/smoke_stage12_sampling_roundtrip.js"
+    "_tests/smoke_stage12_sampling_roundtrip.js",
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
   ],
   "deprecation_ledger": [
     {
@@ -376,8 +377,8 @@
         "SEP-2575"
       ],
       "target_lifecycle": "operational_implication",
-      "repo_current_model": "3008 OAuth21 restart authority missing or unverified; 3009 false closeout corrected",
-      "implementation_status": "pending",
+      "repo_current_model": "SERVER_RUNTIME_TOPOLOGY_SPEC.json now defines the active topology and marks restart authority as missing_not_recovered; 3008 OAuth21 live-load remains blocked until authority is restored; 3009 false closeout corrected and must not recur.",
+      "implementation_status": "partial",
       "migration_path": "recover file-triggered restart authority before touching 3008; stateless direction reduces dependence on session/process lifetime",
       "checklist": [
         {
@@ -392,6 +393,11 @@
         {
           "item": "prove OAuth21 3008 restart preserves startup arguments",
           "status": "pending"
+        },
+        {
+          "item": "create machine-readable runtime topology/restart authority boundary",
+          "status": "done",
+          "evidence": "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
         }
       ]
     },
@@ -457,7 +463,8 @@
     }
   ],
   "recommended_next": [
-    "Audit all 41 Final SEPs from official index before declaring sessionless inventory complete.",
+    "Restore or implement file-trigger/supervisor restart authority defined by SERVER_RUNTIME_TOPOLOGY_SPEC.json before any OAuth21 3008 live-load work.",
+    "Triage 19 adjacent runtime-contract SEPs and 7 auth/security SEPs into dedicated ledgers or explicit non-target decisions.",
     "Do not remove current stable-compatible session code before S2 target selection.",
     "Treat this file as a living SEP-driven checklist.",
     "Recover or recreate file-triggered restart authority before touching OAuth21 3008.",

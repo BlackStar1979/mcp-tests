@@ -18,6 +18,7 @@ const connector = json("SERVER_CONNECTOR_SURFACE_SPEC.json");
 const policyRuntime = json("SERVER_POLICY_RUNTIME_SPEC.json");
 const resourcePolicy = json("SERVER_RESOURCE_POLICY_SPEC.json");
 const sampling = json("SERVER_SAMPLING_POLICY_SPEC.json");
+const topology = json("SERVER_RUNTIME_TOPOLOGY_SPEC.json");
 const state = json("_workflow/state.json");
 const loader = read("_workflow/scripts/load_server_specs.js");
 
@@ -44,6 +45,7 @@ for (const rel of [
   "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
   "SERVER_SAMPLING_POLICY_SPEC.json",
   "SERVER_DECISION_RUNTIME_SPEC.json",
+  "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
 ]) {
   assert.ok(activeRootFiles.has(rel), `active root files missing ${rel}`);
 }
@@ -70,8 +72,13 @@ assert.equal(connector.public_connector.expected_tool_count, 13);
 
 assert.equal(sampling.spec_mode, "canonical_structured_spec_not_progress_log");
 assert.equal(sampling.connector_visible, false);
+assert.equal(topology.schema_version, "mcp-tests-runtime-topology-spec-v1");
+assert.equal(topology.restart_authority.state, "missing_not_recovered");
+assert.equal(topology.runtime_instances.public_3009.port, 3009);
+assert.equal(topology.runtime_instances.oauth21_3008.port, 3008);
 
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_DECISION_RUNTIME_SPEC.json"));
+assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 assert.ok(!Object.hasOwn(state.root_spec_map, "SERVER_STAGE12.json"));
 assert.ok(loader.includes('readJson("SERVER_DECISION_RUNTIME_SPEC.json")'));
 assert.equal(loader.includes('readJson("SERVER_STAGE12.json")'), false);

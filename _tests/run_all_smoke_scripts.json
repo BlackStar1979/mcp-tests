@@ -172,5 +172,6 @@
   "_tests/smoke_stage12_get_sse_requires_auth.js",
   "_tests/smoke_stage14_6_sep_sessionless_inventory.js",
   "_tests/smoke_workflow_state_compact_spec_map.js",
-  "_tests/smoke_root_server_specs_consistency.js"
+  "_tests/smoke_root_server_specs_consistency.js",
+  "_tests/smoke_runtime_topology_authority.js"
 ]

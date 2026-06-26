@@ -1086,7 +1086,6 @@
         "state_current_package_recorded": true,
         "state_previous_package_recorded": true,
         "state_validation_evidence_recorded": true,
-        "state_recent_completed_work_packages_updated": true,
         "server_spec_gate_recorded": true,
         "handoff_rendered": true,
         "working_course_rendered": true,
@@ -1094,8 +1093,7 @@
         "policy_doc_written": true,
         "correction_notes": [
           "Added dedicated decision_runtime_interface_contract_readiness_gate section to SERVER_SPEC.json.",
-          "Added Step 26 current package, acceptance state, and validation evidence to _workflow/state.json.",
-          "Added recent Stage 12 decision-runtime work packages to completed_work_packages for easier manual audit."
+          "Added Step 26 current package, acceptance state, and validation evidence to _workflow/state.json."
         ]
       },
       "runtime_boundary": {

@@ -43,6 +43,11 @@ Current rule: all Final SEPs from `https://modelcontextprotocol.io/seps#all-seps
 
 The file may contain operational implications, such as restart resilience, only when those implications are derived from the protocol direction. The actual process-control procedure belongs in a dedicated runtime topology/restart authority record, not as a log inside this inventory.
 
+
+## `SERVER_RUNTIME_TOPOLOGY_SPEC.json`
+
+This file is the active machine-readable authority for runtime topology. It separates public `3009` from OAuth21 `3008`, defines validation surfaces, and records the restart-authority state. If restart authority is marked missing, OAuth21 live-load work is blocked until that authority is restored.
+
 ## Root specs
 
 Root `SERVER_*_SPEC.json` files are canonical structured server specifications. They are not progress logs. Workflow files may summarize or map them, but must not replace them as source of truth.

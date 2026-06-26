@@ -69,7 +69,8 @@ assert.deepEqual(ledger.get("initialize_handshake").sep_sources, ["SEP-2575", "S
 assert.ok(ledger.get("mcp_session_id_header").sep_sources.includes("SEP-2567"));
 assert.ok(ledger.get("list_results_ttl_cache_scope").sep_sources.includes("SEP-2549"));
 assert.ok(ledger.get("roots_sampling_logging_deprecation").sep_sources.includes("SEP-2577"));
-assert.equal(ledger.get("restart_resilience").implementation_status, "pending");
+assert.equal(ledger.get("restart_resilience").implementation_status, "partial");
+assert.ok(JSON.stringify(ledger.get("restart_resilience")).includes("SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 assert.match(ledger.get("restart_resilience").repo_current_model, /3008 OAuth21/);
 assert.match(ledger.get("restart_resilience").repo_current_model, /3009 false closeout corrected/);
 

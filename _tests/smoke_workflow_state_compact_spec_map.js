@@ -54,6 +54,7 @@ for (const spec of [
   "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
   "SERVER_SAMPLING_POLICY_SPEC.json",
   "SERVER_DECISION_RUNTIME_SPEC.json",
+  "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
 ]) {
   assert.ok(Object.hasOwn(state.root_spec_map, spec), `missing root spec map entry ${spec}`);
 }
@@ -65,6 +66,7 @@ assert.equal(state.tool_surfaces.authenticated_total.count, 43);
 assert.equal(state.sessionless_inventory.coverage.official_final_seps, 41);
 assert.equal(state.sessionless_inventory.coverage.unclassified, 0);
 assert.equal(state.current_work_constraints.do_not_use_state_json_as_log, true);
+assert.equal(state.runtime_topology_spec.restart_authority_state, "missing_not_recovered");
 
 console.log("smoke_workflow_state_compact_spec_map ok");
 

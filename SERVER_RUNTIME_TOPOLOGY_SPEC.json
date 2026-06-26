@@ -1,0 +1,95 @@
+{
+  "schema_version": "mcp-tests-runtime-topology-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Active runtime topology, port ownership, process-start intent, restart authority boundaries and validation rules for TEST MCP. This file is an authority map, not a deployment log.",
+  "runtime_instances": {
+    "public_3009": {
+      "port": 3009,
+      "auth_mode": "none",
+      "profile": "public",
+      "expected_tool_count": 13,
+      "role": "public connector/runtime",
+      "validation": [
+        "healthz on 3009",
+        "public tools/list count 13"
+      ],
+      "current_process_source": "may be replaced independently from oauth21_3008; do not use TESTS_MCP runtime_status as validation for this runtime"
+    },
+    "oauth21_3008": {
+      "port": 3008,
+      "auth_mode": "oauth21",
+      "profile": "tests/internal",
+      "expected_tool_count": 43,
+      "role": "authenticated TESTS_MCP runtime",
+      "required_startup_args": [
+        "server.js",
+        "--profile",
+        "tests",
+        "--auth",
+        "oauth21",
+        "--oauth-secret-file"
+      ],
+      "validation": [
+        "healthz on 3008",
+        "TESTS_MCP.test_mcp_runtime_status observes 3008",
+        "authenticated smoke harness"
+      ],
+      "live_load_status": "repo_commits_may_not_be_live_until oauth21_3008 is restarted through approved authority"
+    }
+  },
+  "retired_or_non_target_runtimes": {
+    "access_3005": "retired_from_server_startup_path",
+    "bearer_3006": "retired_from_server_startup_path",
+    "oauth_3007": "non_target_resource_server_validation_only"
+  },
+  "restart_authority": {
+    "state": "missing_not_recovered",
+    "required_before_touching_oauth21_3008": true,
+    "expected_model": "file-triggered or supervisor-mediated restart preserving original runtime topology and startup arguments",
+    "known_missing_authority": "previous file-triggered restart mechanism is not present in active repo authority as of this audit",
+    "forbidden_operations": [
+      "generic port-kill restart for oauth21_3008",
+      "using _workflow/scripts/test_mcp_restart.ps1 for oauth21_3008",
+      "treating public_3009 restart as oauth21_3008 live-load validation",
+      "claiming Stage14.5 OAuth21 live-load from TESTS_MCP status without an approved oauth21_3008 restart"
+    ],
+    "allowed_until_restored": [
+      "read-only process inspection",
+      "repo-only tests",
+      "isolated-port prototype of restart mechanism",
+      "operator-approved creation of explicit restart authority"
+    ]
+  },
+  "validation_matrix": {
+    "public_3009": [
+      "direct 3009 healthz",
+      "direct 3009 tools/list"
+    ],
+    "oauth21_3008": [
+      "direct 3008 healthz",
+      "TESTS_MCP.test_mcp_runtime_status",
+      "authenticated run_all section"
+    ],
+    "cross_runtime_forbidden": [
+      "restart 3009 plus TESTS_MCP 3008 status must not be described as one live validation"
+    ]
+  },
+  "source_refs": {
+    "server_spec": "SERVER_SPEC.json",
+    "connector_surface": "SERVER_CONNECTOR_SURFACE_SPEC.json",
+    "tools_spec": "SERVER_TOOLS_SPEC.json",
+    "sessionless_inventory": "_workflow/sessionless_inventory.json",
+    "live_validation_correction": "_workflow/operator_decisions/stage14_5_live_validation_correction.md"
+  },
+  "next_required_repair": {
+    "id": "recover_or_recreate_file_trigger_restart_authority",
+    "status": "pending",
+    "minimum_output": [
+      "dedicated authority file or spec section with trigger path",
+      "implementation preserving oauth21_3008 startup args",
+      "isolated-port proof",
+      "negative guard against generic restart",
+      "operator approval before active 3008 restart"
+    ]
+  }
+}

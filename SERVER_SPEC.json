@@ -93,7 +93,8 @@
     "decision_runtime": "SERVER_DECISION_RUNTIME_SPEC.json",
     "historical_stage12": "_workflow/historical/stage12_workflow_history.json",
     "connector_surface": "SERVER_CONNECTOR_SURFACE_SPEC.json",
-    "sampling_policy": "SERVER_SAMPLING_POLICY_SPEC.json"
+    "sampling_policy": "SERVER_SAMPLING_POLICY_SPEC.json",
+    "runtime_topology": "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
   },
   "auth": {
     "summary": "Authentication modes and port policy are specified in SERVER_AUTH_SPEC.json.",
@@ -173,7 +174,8 @@
         "SERVER_POLICY_RUNTIME_SPEC.json",
         "SERVER_DECISION_RUNTIME_SPEC.json",
         "SERVER_CONNECTOR_SURFACE_SPEC.json",
-        "SERVER_SAMPLING_POLICY_SPEC.json"
+        "SERVER_SAMPLING_POLICY_SPEC.json",
+        "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
       ],
       "reserved_root_dirs": [
         "tools/authorized",
@@ -383,5 +385,11 @@
     "summary": "Active decision runtime contract extracted from historical Stage12 work. Current truth is SERVER_DECISION_RUNTIME_SPEC.json and promoted policy specs.",
     "spec_ref": "SERVER_DECISION_RUNTIME_SPEC.json",
     "runtime_enforced": true
+  },
+  "runtime_topology_spec": {
+    "summary": "Active runtime topology, port ownership and restart-authority boundary. Current source of truth for 3008/3009 operational distinction.",
+    "spec_ref": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+    "restart_authority_state": "missing_not_recovered",
+    "oauth21_3008_live_load_blocked_until_restart_authority_restored": true
   }
 }
