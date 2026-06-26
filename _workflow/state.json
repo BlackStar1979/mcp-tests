@@ -148,9 +148,10 @@
   },
   "runtime_topology_spec": {
     "path": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
-    "restart_authority_state": "repo_supervisor_authority_implemented_not_live_loaded",
+    "restart_authority_state": "repo_supervisor_authority_live_loaded_on_3008",
     "oauth21_3008_blocked_until_authority_restored": false,
-    "oauth21_3008_pending_supervisor_migration": true
+    "oauth21_3008_pending_supervisor_migration": false,
+    "oauth21_3008_supervisor_managed": true
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
@@ -177,6 +178,7 @@
       43,
       44
     ],
-    "live_3008_status": "not assumed supervisor-managed until operator migration"
+    "live_3008_status": "operator_confirmed_supervisor_managed",
+    "operator_controlled_restart_test": "passed_code_42"
   }
 }

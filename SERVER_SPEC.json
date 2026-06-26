@@ -407,8 +407,9 @@
   "runtime_topology_spec": {
     "summary": "Active runtime topology, port ownership and restart-authority boundary. Current source of truth for 3008/3009 operational distinction.",
     "spec_ref": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
-    "restart_authority_state": "repo_supervisor_authority_implemented_not_live_loaded",
-    "oauth21_3008_live_load_blocked_until_restart_authority_restored": true
+    "restart_authority_state": "repo_supervisor_authority_live_loaded_on_3008",
+    "oauth21_3008_live_load_blocked_until_restart_authority_restored": false,
+    "oauth21_3008_supervisor_managed": true
   },
   "runtime_config_spec": {
     "summary": "Active CLI/env/HTTP-route configuration surface derived from code.",

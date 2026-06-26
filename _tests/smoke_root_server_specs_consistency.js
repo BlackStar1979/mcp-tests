@@ -75,7 +75,7 @@ assert.equal(connector.public_connector.expected_tool_count, 13);
 assert.equal(sampling.spec_mode, "canonical_structured_spec_not_progress_log");
 assert.equal(sampling.connector_visible, false);
 assert.equal(topology.schema_version, "mcp-tests-runtime-topology-spec-v1");
-assert.equal(topology.restart_authority.state, "repo_supervisor_authority_implemented_not_live_loaded");
+assert.equal(topology.restart_authority.state, "repo_supervisor_authority_live_loaded_on_3008");
 assert.equal(topology.runtime_instances.public_3009.port, 3009);
 assert.equal(topology.runtime_instances.oauth21_3008.port, 3008);
 assert.ok(topology.restart_authority.supervisor_model.scripts.includes("scripts/server.sh"));

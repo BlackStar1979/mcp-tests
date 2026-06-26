@@ -68,7 +68,7 @@ assert.equal(state.tool_surfaces.authenticated_total.count, 43);
 assert.equal(state.sessionless_inventory.coverage.official_final_seps, 41);
 assert.equal(state.sessionless_inventory.coverage.unclassified, 0);
 assert.equal(state.current_work_constraints.do_not_use_state_json_as_log, true);
-assert.equal(state.runtime_topology_spec.restart_authority_state, "repo_supervisor_authority_implemented_not_live_loaded");
+assert.equal(state.runtime_topology_spec.restart_authority_state, "repo_supervisor_authority_live_loaded_on_3008");
 assert.equal(state.runtime_config_spec.path, "SERVER_RUNTIME_CONFIG_SPEC.json");
 
 console.log("smoke_workflow_state_compact_spec_map ok");

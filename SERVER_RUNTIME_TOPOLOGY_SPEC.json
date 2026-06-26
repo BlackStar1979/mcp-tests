@@ -43,8 +43,8 @@
     "oauth_3007": "non_target_resource_server_validation_only"
   },
   "restart_authority": {
-    "state": "repo_supervisor_authority_implemented_not_live_loaded",
-    "required_before_touching_oauth21_3008": true,
+    "state": "repo_supervisor_authority_live_loaded_on_3008",
+    "required_before_touching_oauth21_3008": false,
     "expected_model": "file-triggered or supervisor-mediated restart preserving original runtime topology and startup arguments",
     "known_missing_authority": "previous file-triggered restart mechanism is not present in active repo authority as of this audit",
     "forbidden_operations": [
@@ -87,7 +87,16 @@
         "MCP_SUPERVISOR_PORT"
       ]
     },
-    "current_live_status": "existing 3008 process is not assumed to be supervisor-managed until operator restarts it with scripts/server.ps1 or scripts/server.sh"
+    "current_live_status": "operator reported successful oauth21_3008 migration to scripts/server.ps1 supervisor; controlled restart trigger code 42 tested successfully and healthz remained available after restart",
+    "live_supervisor_status": {
+      "runtime": "oauth21_3008",
+      "status": "operator_confirmed_supervisor_managed",
+      "supervisor_script": "scripts/server.ps1",
+      "controlled_restart_test": "passed_by_operator_report",
+      "controlled_exit_code": 42,
+      "connector_refresh_required": false,
+      "port_kill_allowed": false
+    }
   },
   "validation_matrix": {
     "public_3009": [
@@ -111,13 +120,13 @@
     "live_validation_correction": "_workflow/operator_decisions/stage14_5_live_validation_correction.md"
   },
   "next_required_repair": {
-    "id": "operator_migrate_oauth21_3008_to_supervisor",
-    "status": "pending_live_operator_action",
+    "id": "maintain_supervisor_restart_authority",
+    "status": "complete_for_oauth21_3008",
     "minimum_output": [
-      "operator starts 3008 through scripts/server.ps1 or scripts/server.sh",
-      "healthz on 3008",
-      "authenticated runtime status confirms oauth21/tests/internal",
-      "controlled trigger exits with code 42/43/44 and supervisor restarts with same topology"
+      "keep 3008 started through scripts/server.ps1 or scripts/server.sh",
+      "use scripts/request-restart.js or trigger file for controlled restart",
+      "do not use generic port-kill restart",
+      "re-run healthz and authenticated runtime status after future live restart changes"
     ]
   }
 }
