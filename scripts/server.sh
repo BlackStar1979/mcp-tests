@@ -6,24 +6,52 @@ cd "$ROOT_DIR"
 
 PROFILE="${MCP_SUPERVISOR_PROFILE:-public}"
 AUTH="${MCP_SUPERVISOR_AUTH:-none}"
+PORT="${MCP_SUPERVISOR_PORT:-}"
+TOKEN_FILE="${MCP_SUPERVISOR_TOKEN_FILE:-}"
+OAUTH_SECRET_FILE="${MCP_SUPERVISOR_OAUTH_SECRET_FILE:-}"
 RESTART_CODES="${MCP_SUPERVISOR_RESTART_CODES:-42 43 44}"
 DELAY_SECONDS="${MCP_SUPERVISOR_RESTART_DELAY_SECONDS:-1}"
+RESTART_TRIGGER="${MCP_TEST_ENABLE_RESTART_TRIGGER:-1}"
+TRIGGER_FILE="${MCP_TEST_RESTART_TRIGGER_FILE:-$ROOT_DIR/_control/restart-request.json}"
+FORWARD_ARGS=()
 
-export MCP_TEST_ENABLE_RESTART_TRIGGER="${MCP_TEST_ENABLE_RESTART_TRIGGER:-1}"
-export MCP_TEST_RESTART_TRIGGER_FILE="${MCP_TEST_RESTART_TRIGGER_FILE:-$ROOT_DIR/_control/restart-request.json}"
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  value=""
+  case "$key" in
+    --*=*) value="${key#*=}"; key="${key%%=*}" ;;
+    --*) if [[ $# -gt 1 && "$2" != --* ]]; then value="$2"; shift; else value="1"; fi ;;
+  esac
+  case "$key" in
+    --profile) PROFILE="$value" ;;
+    --auth) AUTH="$value" ;;
+    --port) PORT="$value" ;;
+    --token-file) TOKEN_FILE="$value" ;;
+    --oauth-secret-file) OAUTH_SECRET_FILE="$value" ;;
+    --restart-trigger) RESTART_TRIGGER="$value" ;;
+    --trigger-file) TRIGGER_FILE="$value" ;;
+    --restart-codes) RESTART_CODES="$value" ;;
+    --restart-delay-seconds) DELAY_SECONDS="$value" ;;
+    *) FORWARD_ARGS+=("$1"); if [[ -n "$value" && "$value" != "1" ]]; then FORWARD_ARGS+=("$value"); fi ;;
+  esac
+  shift
+done
+
+export MCP_TEST_ENABLE_RESTART_TRIGGER="$RESTART_TRIGGER"
+export MCP_TEST_RESTART_TRIGGER_FILE="$TRIGGER_FILE"
 mkdir -p "$(dirname "$MCP_TEST_RESTART_TRIGGER_FILE")"
 
 ARGS=(server.js --profile "$PROFILE" --auth "$AUTH")
-if [[ -n "${MCP_SUPERVISOR_PORT:-}" ]]; then ARGS+=(--port "$MCP_SUPERVISOR_PORT"); fi
-if [[ -n "${MCP_SUPERVISOR_TOKEN_FILE:-}" ]]; then ARGS+=(--token-file "$MCP_SUPERVISOR_TOKEN_FILE"); fi
+if [[ -n "$PORT" ]]; then ARGS+=(--port "$PORT"); fi
+if [[ -n "$TOKEN_FILE" ]]; then ARGS+=(--token-file "$TOKEN_FILE"); fi
 if [[ "$AUTH" == "oauth21" ]]; then
-  if [[ -z "${MCP_SUPERVISOR_OAUTH_SECRET_FILE:-}" ]]; then
-    echo "MCP_SUPERVISOR_OAUTH_SECRET_FILE is required for oauth21." >&2
+  if [[ -z "$OAUTH_SECRET_FILE" ]]; then
+    echo "OAuth21 requires --oauth-secret-file or MCP_SUPERVISOR_OAUTH_SECRET_FILE." >&2
     exit 2
   fi
-  ARGS+=(--oauth-secret-file "$MCP_SUPERVISOR_OAUTH_SECRET_FILE")
+  ARGS+=(--oauth-secret-file "$OAUTH_SECRET_FILE")
 fi
-ARGS+=("$@")
+ARGS+=("${FORWARD_ARGS[@]}")
 
 stop_requested=0
 child_pid=""

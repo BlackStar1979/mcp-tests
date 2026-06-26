@@ -15,19 +15,18 @@ $env:MCP_SUPERVISOR_AUTH = 'none'
 OAuth21 tests runtime example:
 
 ```powershell
-$env:MCP_SUPERVISOR_PROFILE = 'tests'
-$env:MCP_SUPERVISOR_AUTH = 'oauth21'
-$env:MCP_SUPERVISOR_OAUTH_SECRET_FILE = 'C:\\Users\\mczyz\\.romion\\tests_oauth_secret.json'
-.\scripts\server.ps1
+.\scripts\server.ps1 --profile tests --auth oauth21 --oauth-secret-file C:\\Users\\mczyz\\.romion\\tests_oauth_secret.json --restart-trigger 1 --trigger-file C:\\Work\\mcp-tests\\_control\\restart-request.json
 ```
 
 ## Ubuntu / bash
 
 ```bash
-MCP_SUPERVISOR_PROFILE=tests \
-MCP_SUPERVISOR_AUTH=oauth21 \
-MCP_SUPERVISOR_OAUTH_SECRET_FILE=/secrets/tests_oauth_secret.json \
-./scripts/server.sh
+./scripts/server.sh \
+  --profile tests \
+  --auth oauth21 \
+  --oauth-secret-file /secrets/tests_oauth_secret.json \
+  --restart-trigger 1 \
+  --trigger-file /work/mcp-tests/_control/restart-request.json
 ```
 
 ## Trigger file
@@ -39,3 +38,7 @@ node scripts/request-restart.js --code=42 --reason=manual
 ```
 
 Controlled codes are 42, 43 and 44. Other exit codes stop the supervisor.
+
+## Argument priority
+
+CLI arguments override `MCP_SUPERVISOR_*` and `MCP_TEST_RESTART_*` environment variables. Unknown CLI arguments are forwarded to `node server.js`. Both `--key value` and `--key=value` are supported.

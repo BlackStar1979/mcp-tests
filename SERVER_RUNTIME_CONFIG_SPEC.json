@@ -128,6 +128,22 @@
       "delay_ms": "MCP_TEST_RESTART_EXIT_DELAY_MS"
     },
     "default_trigger_file": "_control/restart-request.json",
-    "surface_change": false
+    "surface_change": false,
+    "cli_args": [
+      "--profile",
+      "--auth",
+      "--port",
+      "--token-file",
+      "--oauth-secret-file",
+      "--restart-trigger",
+      "--trigger-file",
+      "--restart-codes",
+      "--restart-delay-seconds"
+    ],
+    "arg_priority": "cli_args_override_supervisor_env_then_defaults",
+    "arg_formats": [
+      "--key value",
+      "--key=value"
+    ]
   }
 }

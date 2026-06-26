@@ -11,6 +11,11 @@ const sh = fs.readFileSync(path.join(__dirname, "..", "scripts/server.sh"), "utf
 assert.ok(sh.includes("MCP_SUPERVISOR_PROFILE"));
 assert.ok(sh.includes("MCP_SUPERVISOR_AUTH"));
 assert.ok(sh.includes("MCP_SUPERVISOR_OAUTH_SECRET_FILE"));
+assert.ok(sh.includes("--profile"));
+assert.ok(sh.includes("--auth"));
+assert.ok(sh.includes("--oauth-secret-file"));
+assert.ok(sh.includes("--restart-trigger"));
+assert.ok(sh.includes("--trigger-file"));
 assert.ok(sh.includes("MCP_TEST_RESTART_TRIGGER_FILE"));
 assert.ok(sh.includes("42 43 44"));
 if (process.platform !== "win32") {
@@ -21,6 +26,11 @@ const ps = fs.readFileSync(path.join(__dirname, "..", "scripts/server.ps1"), "ut
 assert.ok(ps.includes("MCP_SUPERVISOR_PROFILE"));
 assert.ok(ps.includes("MCP_SUPERVISOR_AUTH"));
 assert.ok(ps.includes("MCP_TEST_RESTART_TRIGGER_FILE"));
+assert.ok(ps.includes("--profile"));
+assert.ok(ps.includes("--auth"));
+assert.ok(ps.includes("oauth-secret-file"));
+assert.ok(ps.includes("restart-trigger"));
+assert.ok(ps.includes("trigger-file"));
 assert.ok(ps.includes("$RestartCodes"));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-trigger-"));
 const file = path.join(tmp, "request.json");
