@@ -177,5 +177,6 @@
   "_tests/smoke_no_progress_state_active_artifacts.js",
   "_tests/smoke_runtime_config_spec.js",
   "_tests/smoke_tool_source_layout_spec.js",
-  "_tests/smoke_matrix_check.js"
+  "_tests/smoke_matrix_check.js",
+  "_tests/smoke_policy_coverage_matrix.js"
 ]

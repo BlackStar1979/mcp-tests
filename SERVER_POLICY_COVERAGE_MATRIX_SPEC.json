@@ -1,0 +1,189 @@
+{
+  "schema_version": "mcp-tests-policy-coverage-matrix-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "scope": "Target policy coverage matrix for MCP server. This is the machine-readable record of the full target policy set and current coverage status.",
+  "status_values": [
+    "implemented",
+    "partial",
+    "specified_only",
+    "critical_specified",
+    "target_missing",
+    "non_target"
+  ],
+  "critical_policy_rule": "No critical policy may be missing. Critical specified policies are active authority even when runtime enforcement is not complete.",
+  "policies": [
+    {
+      "id": "auth_oauth21",
+      "status": "implemented",
+      "spec_ref": "SERVER_AUTH_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "resource_policy",
+      "status": "implemented",
+      "spec_ref": "SERVER_RESOURCE_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "runtime_policy_gate",
+      "status": "implemented",
+      "spec_ref": "SERVER_POLICY_RUNTIME_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "network_policy",
+      "status": "partial",
+      "spec_ref": "SERVER_NETWORK_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "memory_policy",
+      "status": "specified_only",
+      "spec_ref": "SERVER_MEMORY_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "database_policy",
+      "status": "specified_only",
+      "spec_ref": "SERVER_DATABASE_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "plugin_visibility_policy",
+      "status": "partial",
+      "spec_ref": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "sampling_policy",
+      "status": "partial",
+      "spec_ref": "SERVER_SAMPLING_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "runtime_config",
+      "status": "implemented",
+      "spec_ref": "SERVER_RUNTIME_CONFIG_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "runtime_topology",
+      "status": "partial",
+      "spec_ref": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "event_catalog",
+      "status": "implemented",
+      "spec_ref": "SERVER_EVENT_CATALOG_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "tool_source_layout",
+      "status": "implemented",
+      "spec_ref": "SERVER_TOOLS_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "consent_policy",
+      "status": "critical_specified",
+      "spec_ref": "SERVER_CONSENT_POLICY_SPEC.json",
+      "critical": true,
+      "required": true
+    },
+    {
+      "id": "scope_minimization_policy",
+      "status": "critical_specified",
+      "spec_ref": "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json",
+      "critical": true,
+      "required": true
+    },
+    {
+      "id": "transport_security_policy",
+      "status": "critical_specified",
+      "spec_ref": "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json",
+      "critical": true,
+      "required": true
+    },
+    {
+      "id": "session_security_policy",
+      "status": "critical_specified",
+      "spec_ref": "SERVER_SESSION_SECURITY_POLICY_SPEC.json",
+      "critical": true,
+      "required": true
+    },
+    {
+      "id": "prompt_content_policy",
+      "status": "critical_specified",
+      "spec_ref": "SERVER_PROMPT_CONTENT_POLICY_SPEC.json",
+      "critical": true,
+      "required": true
+    },
+    {
+      "id": "output_dlp_policy",
+      "status": "critical_specified",
+      "spec_ref": "SERVER_OUTPUT_DLP_POLICY_SPEC.json",
+      "critical": true,
+      "required": true
+    },
+    {
+      "id": "rate_limit_quota_policy",
+      "status": "target_missing",
+      "spec_ref": "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "roots_boundary_policy",
+      "status": "target_missing",
+      "spec_ref": "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "elicitation_policy",
+      "status": "target_missing",
+      "spec_ref": "SERVER_ELICITATION_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "capability_attestation_policy",
+      "status": "target_missing",
+      "spec_ref": "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "supply_chain_policy",
+      "status": "target_missing",
+      "spec_ref": "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    },
+    {
+      "id": "incident_response_policy",
+      "status": "target_missing",
+      "spec_ref": "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json",
+      "critical": false,
+      "required": true
+    }
+  ],
+  "rules": {
+    "target_set_is_authoritative": true,
+    "no_complete_claim_if_any_required_policy_target_missing": true,
+    "no_runtime_change_claim_from_spec_only": true
+  }
+}

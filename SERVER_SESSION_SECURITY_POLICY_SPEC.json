@@ -1,0 +1,25 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "critical",
+  "status": "active_authority_specified_runtime_enforcement_partial",
+  "schema_version": "mcp-tests-session-security-policy-v1",
+  "scope": "Security policy for current stable-compatible MCP sessions while sessionless migration remains target direction.",
+  "policy": {
+    "session_id_entropy": "cryptographically_strong_required",
+    "session_not_authentication": true,
+    "bind_session_to_authorized_context": true,
+    "replay_guard": "required",
+    "sse_resume": "legacy_compat_only",
+    "cross_runtime_session_injection": "forbidden",
+    "expiration_or_ttl": "required_before_expansion"
+  },
+  "current_repo_bindings": [
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+    "_workflow/sessionless_inventory.json"
+  ],
+  "runtime_gaps": [
+    "session model remains stable-compatible legacy",
+    "sessionless target selection still pending"
+  ]
+}

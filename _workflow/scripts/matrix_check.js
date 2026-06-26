@@ -81,12 +81,27 @@ function auditEvents(findings){
   if (missing.length||stale.length) push(findings,"warn","audit_events_spec_mismatch",{missing,stale});
 }
 
+
+function auditPolicyCoverage(findings){
+  if (!exists("SERVER_POLICY_COVERAGE_MATRIX_SPEC.json")) { push(findings,"error","missing_policy_coverage_matrix",{}); return; }
+  const matrix = json("SERVER_POLICY_COVERAGE_MATRIX_SPEC.json");
+  const required = matrix.policies || [];
+  for (const p of required) {
+    if (p.critical && !exists(p.spec_ref)) push(findings,"error","critical_policy_spec_missing",{id:p.id,spec_ref:p.spec_ref});
+    if (p.critical && p.status === "target_missing") push(findings,"error","critical_policy_marked_missing",{id:p.id});
+  }
+  const missingNonCritical = required.filter(p=>p.required && p.status === "target_missing").map(p=>p.id);
+  if (!matrix.rules || matrix.rules.no_complete_claim_if_any_required_policy_target_missing !== true) push(findings,"error","policy_matrix_missing_no_complete_rule",{});
+  if (missingNonCritical.length && matrix.rules.no_complete_claim_if_any_required_policy_target_missing !== true) push(findings,"error","policy_matrix_missing_target_rule",{missingNonCritical});
+}
+
 function runMatrixAudit(){
   const findings = [];
   const root = auditRootSpecs(findings);
   auditRuntimeConfig(findings);
   auditCliFlags(findings);
   auditEvents(findings);
+  auditPolicyCoverage(findings);
   const summary = { ok: findings.filter(f=>f.severity==="error").length===0, error_count: findings.filter(f=>f.severity==="error").length, warn_count: findings.filter(f=>f.severity==="warn").length, root_spec_count: root.rootSpecs.length };
   const out = { summary, findings };
   return out;

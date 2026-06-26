@@ -1,0 +1,25 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "critical",
+  "status": "active_authority_specified_runtime_enforcement_partial",
+  "schema_version": "mcp-tests-output-dlp-policy-v1",
+  "scope": "Tool output sanitization, secret leakage prevention, untrusted resource links and output-to-model boundary.",
+  "policy": {
+    "structured_content_schema_validation": "required_where_schema_exists",
+    "secret_redaction": "required",
+    "resource_link_filtering": "required",
+    "embedded_resource_trust": "untrusted_by_default",
+    "output_to_model_boundary": "explicit_context_label_required",
+    "logs_must_not_expose_secrets": true
+  },
+  "current_repo_bindings": [
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_EVENT_CATALOG_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "DLP is not yet a centralized runtime filter",
+    "current coverage is by scattered redaction/schema tests"
+  ]
+}

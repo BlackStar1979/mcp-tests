@@ -1,0 +1,24 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "critical",
+  "status": "active_authority_specified_runtime_enforcement_partial",
+  "schema_version": "mcp-tests-scope-minimization-policy-v1",
+  "scope": "Minimum privilege and progressive scope governance for auth, tools, resources, connectors and runtime operations.",
+  "policy": {
+    "initial_scope": "minimum_viable",
+    "wildcard_scopes": "forbidden",
+    "scope_elevation": "explicit_consent_required",
+    "scope_to_tool_matrix_required": true,
+    "deny_unknown_scope": true,
+    "scope_inflation_detection": true
+  },
+  "current_repo_bindings": [
+    "SERVER_AUTH_SPEC.json",
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_POLICY_RUNTIME_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "scope taxonomy exists only indirectly through auth/resource/runtime policy"
+  ]
+}

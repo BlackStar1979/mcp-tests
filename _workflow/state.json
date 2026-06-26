@@ -90,7 +90,14 @@
     "SERVER_DECISION_RUNTIME_SPEC.json": "active decision model, fixture, runtime interface and integration contract extracted from historical Stage12 work",
     "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "active runtime topology, port ownership, restart authority boundary and validation matrix",
     "SERVER_RUNTIME_CONFIG_SPEC.json": "active CLI/env/HTTP-route runtime configuration surface derived from code",
-    "SERVER_EVENT_CATALOG_SPEC.json": "active runtime audit event catalog derived from code"
+    "SERVER_EVENT_CATALOG_SPEC.json": "active runtime audit event catalog derived from code",
+    "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_CONSENT_POLICY_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_SESSION_SECURITY_POLICY_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_PROMPT_CONTENT_POLICY_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_OUTPUT_DLP_POLICY_SPEC.json": "policy coverage / critical policy authority"
   },
   "policy_layers": {
     "runtime_policy_gate": {
@@ -152,5 +159,10 @@
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
     "event_count": 20
+  },
+  "policy_coverage_matrix": {
+    "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
+    "critical_policy_count": 6,
+    "non_critical_missing_remain": true
   }
 }
