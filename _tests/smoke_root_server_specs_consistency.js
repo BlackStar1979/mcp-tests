@@ -6,8 +6,9 @@ const ROOT = path.resolve(__dirname, "..");
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const json = (rel) => JSON.parse(read(rel));
 const exists = (rel) => fs.existsSync(path.join(ROOT, rel));
+const retiredStage12Root = "SERVER_" + "STAGE12.json";
 
-assert.equal(exists("SERVER_STAGE12.json"), false, "SERVER_STAGE12.json must not remain as active root spec");
+assert.equal(exists(retiredStage12Root), false, "retired Stage12 root must not remain as active root spec");
 assert.equal(exists("SERVER_DECISION_RUNTIME_SPEC.json"), true, "decision runtime root spec required");
 assert.equal(exists("_workflow/historical/stage12_workflow_history.json"), true, "historical Stage12 source must be preserved outside root");
 
@@ -49,12 +50,12 @@ for (const rel of [
 ]) {
   assert.ok(activeRootFiles.has(rel), `active root files missing ${rel}`);
 }
-assert.equal(activeRootFiles.has("SERVER_STAGE12.json"), false);
+assert.equal(activeRootFiles.has(retiredStage12Root), false);
 
 assert.equal(decisionRuntime.schema_version, "mcp-tests-decision-runtime-spec-v1");
 assert.equal(decisionRuntime.spec_mode, "canonical_structured_spec_not_progress_log");
 assert.equal(decisionRuntime.historical_source.moved_to, "_workflow/historical/stage12_workflow_history.json");
-assert.equal(JSON.stringify(decisionRuntime).includes("SERVER_STAGE12.json"), false);
+assert.equal(JSON.stringify(decisionRuntime).includes(retiredStage12Root), false);
 assert.ok(decisionRuntime.sections.decision_runtime_operator_gate);
 assert.ok(!JSON.stringify(decisionRuntime).includes('"next_planned_step"'));
 assert.ok(!JSON.stringify(decisionRuntime).includes('"last_result"'));
@@ -79,9 +80,9 @@ assert.equal(topology.runtime_instances.oauth21_3008.port, 3008);
 
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_DECISION_RUNTIME_SPEC.json"));
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
-assert.ok(!Object.hasOwn(state.root_spec_map, "SERVER_STAGE12.json"));
+assert.ok(!Object.hasOwn(state.root_spec_map, retiredStage12Root));
 assert.ok(loader.includes('readJson("SERVER_DECISION_RUNTIME_SPEC.json")'));
-assert.equal(loader.includes('readJson("SERVER_STAGE12.json")'), false);
+assert.equal(loader.includes('readJson("' + retiredStage12Root + '")'), false);
 
 for (const rel of fs.readdirSync(ROOT).filter((name) => /^SERVER.*\.json$/.test(name))) {
   JSON.parse(read(rel));

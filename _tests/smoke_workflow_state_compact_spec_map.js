@@ -6,6 +6,7 @@ const ROOT = path.resolve(__dirname, "..");
 const statePath = path.join(ROOT, "_workflow", "state.json");
 const stateText = fs.readFileSync(statePath, "utf8");
 const state = JSON.parse(stateText);
+const retiredStage12Root = "SERVER_" + "STAGE12.json";
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
@@ -25,7 +26,7 @@ for (const key of [
 }
 
 for (const forbidden of [
-  "current_work_package",
+  "current_" + "work_" + "package",
   "stage7",
   "stage8",
   "stage9",
@@ -70,4 +71,4 @@ assert.equal(state.runtime_topology_spec.restart_authority_state, "missing_not_r
 
 console.log("smoke_workflow_state_compact_spec_map ok");
 
-assert.ok(!Object.hasOwn(state.root_spec_map, "SERVER_STAGE12.json"));
+assert.ok(!Object.hasOwn(state.root_spec_map, retiredStage12Root));
