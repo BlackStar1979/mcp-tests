@@ -140,42 +140,42 @@
     },
     {
       "id": "rate_limit_quota_policy",
-      "status": "target_missing",
+      "status": "specified_only",
       "spec_ref": "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "roots_boundary_policy",
-      "status": "target_missing",
+      "status": "specified_only",
       "spec_ref": "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "elicitation_policy",
-      "status": "target_missing",
+      "status": "specified_only",
       "spec_ref": "SERVER_ELICITATION_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "capability_attestation_policy",
-      "status": "target_missing",
+      "status": "specified_only",
       "spec_ref": "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "supply_chain_policy",
-      "status": "target_missing",
+      "status": "specified_only",
       "spec_ref": "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "incident_response_policy",
-      "status": "target_missing",
+      "status": "specified_only",
       "spec_ref": "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json",
       "critical": false,
       "required": true
@@ -184,6 +184,8 @@
   "rules": {
     "target_set_is_authoritative": true,
     "no_complete_claim_if_any_required_policy_target_missing": true,
-    "no_runtime_change_claim_from_spec_only": true
+    "no_runtime_change_claim_from_spec_only": true,
+    "no_complete_claim_if_any_required_policy_not_implemented": true,
+    "specified_only_is_not_runtime_enforced": true
   }
 }

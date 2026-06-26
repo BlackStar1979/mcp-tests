@@ -1,0 +1,23 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "target",
+  "status": "specified_only_runtime_enforcement_pending",
+  "schema_version": "mcp-tests-elicitation-policy-v1",
+  "scope": "MCP elicitation feature boundary and prohibition on sensitive-information collection through server-initiated prompts.",
+  "policy": {
+    "elicitation_support": "unsupported_by_default",
+    "sensitive_information_request": "forbidden",
+    "user_decline_or_cancel": "must_be_supported_if_enabled",
+    "schema_shape": "flat_primitive_object_only_if_enabled",
+    "pii_retention": "deny_by_default"
+  },
+  "current_repo_bindings": [
+    "SERVER_CONSENT_POLICY_SPEC.json",
+    "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "elicitation protocol feature is not implemented",
+    "if enabled later it needs explicit consent UI boundary"
+  ]
+}

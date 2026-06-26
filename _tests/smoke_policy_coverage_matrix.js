@@ -12,5 +12,10 @@ assert.equal(matrix.rules.no_complete_claim_if_any_required_policy_target_missin
 const urgent = matrix.policies.filter((p) => p.critical);
 assert.equal(urgent.length, 6);
 for (const p of urgent) { assert.notEqual(p.status, "target_missing"); assert.ok(fs.existsSync(path.join(ROOT, p.spec_ref))); const spec = read(p.spec_ref); assert.equal(spec.spec_mode, "canonical_structured_spec_not_progress_log"); assert.equal(spec.priority, "critical"); assert.equal(spec.runtime_change, false); assert.ok(server.repository_layout_contract.root_policy.active_root_files.includes(p.spec_ref)); assert.ok(Object.hasOwn(state.root_spec_map, p.spec_ref)); }
-assert.ok(matrix.policies.some((p) => p.status === "target" + "_missing"));
+assert.equal(matrix.policies.some((p) => p.status === "target" + "_missing"), false);
+assert.equal(matrix.rules.no_complete_claim_if_any_required_policy_not_implemented, true);
+assert.equal(matrix.rules.specified_only_is_not_runtime_enforced, true);
 console.log("smoke_policy_coverage_matrix ok");
+
+const nonCriticalTargetSpecs = ["SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json","SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json","SERVER_ELICITATION_POLICY_SPEC.json","SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json","SERVER_SUPPLY_CHAIN_POLICY_SPEC.json","SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json"];
+for (const rel of nonCriticalTargetSpecs) { const spec = read(rel); assert.equal(spec.spec_mode, "canonical_structured_spec_not_progress_log"); assert.equal(spec.runtime_change, false); assert.ok(server.repository_layout_contract.root_policy.active_root_files.includes(rel)); assert.ok(Object.hasOwn(state.root_spec_map, rel)); }

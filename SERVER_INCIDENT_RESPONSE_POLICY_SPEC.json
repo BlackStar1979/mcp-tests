@@ -1,0 +1,25 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "target",
+  "status": "specified_only_runtime_enforcement_pending",
+  "schema_version": "mcp-tests-incident-response-policy-v1",
+  "scope": "Incident classes, triage, evidence preservation and recovery procedure for runtime/security events.",
+  "policy": {
+    "incident_classification": "required",
+    "evidence_preservation": "required",
+    "audit_log_retention": "required",
+    "secret_rotation_trigger": "required_for_secret_exposure",
+    "connector_revocation_procedure": "required",
+    "operator_notification": "required"
+  },
+  "current_repo_bindings": [
+    "SERVER_EVENT_CATALOG_SPEC.json",
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+    "SERVER_OUTPUT_DLP_POLICY_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "incident runbooks are specified but not automated",
+    "revocation/rotation remains operator procedure"
+  ]
+}

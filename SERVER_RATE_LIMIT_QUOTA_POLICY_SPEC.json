@@ -1,0 +1,26 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "target",
+  "status": "specified_only_runtime_enforcement_pending",
+  "schema_version": "mcp-tests-rate-limit-quota-policy-v1",
+  "scope": "Rate limit, quota and budget policy for tool calls, batch requests, network/process/sampling operations and controlled restart triggers.",
+  "policy": {
+    "default": "bounded_by_profile_and_operation_class",
+    "per_tool_limits": "required_before_public_expansion",
+    "batch_budget": "required",
+    "network_budget": "required_for_network_tools",
+    "process_budget": "required_for_process_tools",
+    "restart_trigger_cooldown": "required",
+    "burst_handling": "reject_with_policy_receipt"
+  },
+  "current_repo_bindings": [
+    "SERVER_POLICY_RUNTIME_SPEC.json",
+    "SERVER_RUNTIME_CONFIG_SPEC.json",
+    "SERVER_NETWORK_POLICY_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "centralized runtime rate limiter not implemented yet",
+    "restart trigger cooldown not centrally enforced yet"
+  ]
+}

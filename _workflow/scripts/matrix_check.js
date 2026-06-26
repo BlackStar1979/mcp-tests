@@ -93,6 +93,8 @@ function auditPolicyCoverage(findings){
   }
   const missingNonCritical = required.filter(p=>p.required && p.status === "target_missing").map(p=>p.id);
   if (!matrix.rules || matrix.rules.no_complete_claim_if_any_required_policy_target_missing !== true) push(findings,"error","policy_matrix_missing_no_complete_rule",{});
+  if (!matrix.rules || matrix.rules.no_complete_claim_if_any_required_policy_not_implemented !== true) push(findings,"error","policy_matrix_missing_nonimplemented_rule",{});
+  if (!matrix.rules || matrix.rules.specified_only_is_not_runtime_enforced !== true) push(findings,"error","policy_matrix_missing_specified_only_rule",{});
   if (missingNonCritical.length && matrix.rules.no_complete_claim_if_any_required_policy_target_missing !== true) push(findings,"error","policy_matrix_missing_target_rule",{missingNonCritical});
 }
 

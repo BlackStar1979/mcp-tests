@@ -97,7 +97,13 @@
     "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json": "policy coverage / critical policy authority",
     "SERVER_SESSION_SECURITY_POLICY_SPEC.json": "policy coverage / critical policy authority",
     "SERVER_PROMPT_CONTENT_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_OUTPUT_DLP_POLICY_SPEC.json": "policy coverage / critical policy authority"
+    "SERVER_OUTPUT_DLP_POLICY_SPEC.json": "policy coverage / critical policy authority",
+    "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
+    "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
+    "SERVER_ELICITATION_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
+    "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
+    "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
+    "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending"
   },
   "policy_layers": {
     "runtime_policy_gate": {
@@ -165,7 +171,8 @@
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
     "critical_policy_count": 6,
-    "non_critical_missing_remain": true
+    "non_critical_missing_remain": false,
+    "all_target_policy_classes_specified": true
   },
   "restart_supervisor": {
     "scripts": [

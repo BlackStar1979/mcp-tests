@@ -103,7 +103,13 @@
     "transport_security_policy": "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json",
     "session_security_policy": "SERVER_SESSION_SECURITY_POLICY_SPEC.json",
     "prompt_content_policy": "SERVER_PROMPT_CONTENT_POLICY_SPEC.json",
-    "output_dlp_policy": "SERVER_OUTPUT_DLP_POLICY_SPEC.json"
+    "output_dlp_policy": "SERVER_OUTPUT_DLP_POLICY_SPEC.json",
+    "rate_limit_quota_policy": "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json",
+    "roots_boundary_policy": "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json",
+    "elicitation_policy": "SERVER_ELICITATION_POLICY_SPEC.json",
+    "capability_attestation_policy": "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json",
+    "supply_chain_policy": "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json",
+    "incident_response_policy": "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json"
   },
   "auth": {
     "summary": "Authentication modes and port policy are specified in SERVER_AUTH_SPEC.json.",
@@ -193,7 +199,13 @@
         "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json",
         "SERVER_SESSION_SECURITY_POLICY_SPEC.json",
         "SERVER_PROMPT_CONTENT_POLICY_SPEC.json",
-        "SERVER_OUTPUT_DLP_POLICY_SPEC.json"
+        "SERVER_OUTPUT_DLP_POLICY_SPEC.json",
+        "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json",
+        "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json",
+        "SERVER_ELICITATION_POLICY_SPEC.json",
+        "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json",
+        "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json",
+        "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json"
       ],
       "reserved_root_dirs": [
         "tools/authorized",
@@ -433,6 +445,7 @@
       "SERVER_PROMPT_CONTENT_POLICY_SPEC.json",
       "SERVER_OUTPUT_DLP_POLICY_SPEC.json"
     ],
-    "non_critical_missing_remain": true
+    "non_critical_missing_remain": false,
+    "all_target_policy_classes_specified": true
   }
 }

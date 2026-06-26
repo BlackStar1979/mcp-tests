@@ -1,0 +1,24 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "target",
+  "status": "specified_only_runtime_enforcement_pending",
+  "schema_version": "mcp-tests-capability-attestation-policy-v1",
+  "scope": "Capability, tool descriptor and profile-surface attestation policy.",
+  "policy": {
+    "tool_descriptor_fingerprint": "required",
+    "profile_surface_fingerprint": "required",
+    "descriptor_mutation_detection": "required",
+    "list_changed_event_trust": "deny_unless_attested",
+    "signed_descriptors": "future_target"
+  },
+  "current_repo_bindings": [
+    "SERVER_TOOLS_SPEC.json",
+    "SERVER_PROFILES_SPEC.json",
+    "SERVER_CONNECTOR_SURFACE_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "fingerprint generation not yet centralized",
+    "descriptor signing not implemented"
+  ]
+}

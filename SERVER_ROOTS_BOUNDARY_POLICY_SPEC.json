@@ -1,0 +1,25 @@
+{
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "runtime_change": false,
+  "priority": "target",
+  "status": "specified_only_runtime_enforcement_pending",
+  "schema_version": "mcp-tests-roots-boundary-policy-v1",
+  "scope": "Filesystem roots boundary for MCP roots semantics and repository FS tools.",
+  "policy": {
+    "roots_capability": "not_exposed_unless_explicitly_enabled",
+    "file_uri_only_for_roots": true,
+    "path_traversal": "deny",
+    "symlink_escape": "deny",
+    "root_list_changed": "audit_and_revalidate",
+    "fs_tools_must_respect_configured_root": true
+  },
+  "current_repo_bindings": [
+    "SERVER_RESOURCE_POLICY_SPEC.json",
+    "SERVER_RUNTIME_CONFIG_SPEC.json",
+    "SERVER_TOOLS_SPEC.json"
+  ],
+  "runtime_gaps": [
+    "MCP roots protocol capability is not exposed as target runtime feature",
+    "symlink escape tests need expansion"
+  ]
+}
