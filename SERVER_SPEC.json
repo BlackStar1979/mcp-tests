@@ -426,7 +426,7 @@
   "runtime_config_spec": {
     "summary": "Active CLI/env/HTTP-route configuration surface derived from code.",
     "spec_ref": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 53,
+    "env_var_count": 59,
     "http_route_count": 11
   },
   "audit_events_spec": {

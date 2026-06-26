@@ -28,6 +28,7 @@ async function handleToolsCall({
   authMode,
   profile,
   getOptionalTool,
+  rateLimiter,
 }) {
   const name = params.name;
   const args = params.arguments || {};
@@ -94,6 +95,22 @@ async function handleToolsCall({
       reason_codes: gateDecision.reasons,
       policy_receipt: gateDecision.data,
     });
+  }
+
+  if (rateLimiter && typeof rateLimiter.evaluateToolCall === "function") {
+    const rateDecision = rateLimiter.evaluateToolCall({ toolName: name, profile, authMode, requestId: context.requestId });
+    if (rateDecision.allow !== true) {
+      auditLog("tool_call_rate_limited", {
+        request_id: context.requestId,
+        tool: typeof name === "string" ? name : "unknown",
+        duration_ms: Date.now() - startedAt,
+        rate_limit: rateDecision,
+      });
+      return rpcError(id, -32029, "Rate limit exceeded", {
+        decision_code: "rate_limit_exceeded",
+        rate_limit: rateDecision,
+      });
+    }
   }
 
   const coreDescriptor = buildCoreToolDescriptors({

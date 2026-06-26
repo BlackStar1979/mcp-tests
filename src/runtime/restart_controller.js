@@ -13,6 +13,7 @@ function createRestartController(opts = {}) {
   const auditLog = typeof opts.auditLog === "function" ? opts.auditLog : () => {};
   const endProcess = typeof opts.exit === "function" ? opts.exit : process.exit;
   const logger = typeof opts.logger === "function" ? opts.logger : console.log;
+  const rateLimiter = opts.rateLimiter || null;
   const enabled = flag(env.MCP_TEST_ENABLE_RESTART_TRIGGER);
   const triggerFile = String(env.MCP_TEST_RESTART_TRIGGER_FILE || defaultTriggerFile(rootDir));
   const delayMs = delay(env.MCP_TEST_RESTART_EXIT_DELAY_MS);
@@ -26,6 +27,13 @@ function createRestartController(opts = {}) {
     const reason = input.reason || "unspecified";
     if (!n.ok) { audit("runtime_restart_rejected", { request_id: requestId, source, reason: n.reason, requested_code: n.code, allowed: n.allowed }); return { ok: false, scheduled: false, ...n }; }
     if (scheduled) { audit("runtime_restart_rejected", { request_id: requestId, source, reason: "restart_already_scheduled", requested_code: n.code }); return { ok: false, scheduled: true, reason: "restart_already_scheduled", code: n.code }; }
+    if (rateLimiter && typeof rateLimiter.evaluateRestart === "function") {
+      const rateDecision = rateLimiter.evaluateRestart({ code: n.code, source });
+      if (rateDecision.allow !== true) {
+        audit("runtime_restart_rate_limited", { request_id: requestId, source, reason, exit_code: n.code, rate_limit: rateDecision });
+        return { ok: false, scheduled: false, reason: "rate_limit_exceeded", code: n.code, rate_limit: rateDecision };
+      }
+    }
     scheduled = true;
     audit("runtime_restart_requested", { request_id: requestId, source, reason, exit_code: n.code, delay_ms: delayMs });
     setTimeout(() => { audit("runtime_restart_exit_scheduled", { request_id: requestId, source, reason, exit_code: n.code }); endProcess(n.code); }, delayMs).unref?.();

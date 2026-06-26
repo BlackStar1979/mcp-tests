@@ -23,6 +23,7 @@ function createMcpRuntimeHandlers({
   auditLog,
   getOptionalTool,
   publicBaseUrl,
+  rateLimiter,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
@@ -68,6 +69,7 @@ function createMcpRuntimeHandlers({
       documentRuntimeContext,
       auditLog,
       getOptionalTool,
+      rateLimiter,
     });
   }
 

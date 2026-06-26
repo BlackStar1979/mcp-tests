@@ -83,6 +83,12 @@
     "MCP_TEST_PROFILE",
     "MCP_TEST_PUBLIC_BASE_URL",
     "MCP_TEST_PYTHON_BIN",
+    "MCP_TEST_RATE_LIMIT_ENABLED",
+    "MCP_TEST_RATE_LIMIT_RESTART_MAX",
+    "MCP_TEST_RATE_LIMIT_RESTART_WINDOW_MS",
+    "MCP_TEST_RATE_LIMIT_STATE_FILE",
+    "MCP_TEST_RATE_LIMIT_TOOL_MAX",
+    "MCP_TEST_RATE_LIMIT_TOOL_WINDOW_MS",
     "MCP_TEST_RESTART_EXIT_DELAY_MS",
     "MCP_TEST_RESTART_TRIGGER_FILE",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
@@ -93,7 +99,8 @@
     "health_full": "MCP_TEST_HEALTH_FULL",
     "batch_limit": "MCP_TEST_MAX_BATCH_ITEMS",
     "strict_accept": "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
-    "public_bind_guard": "MCP_TEST_ALLOW_PUBLIC_BIND"
+    "public_bind_guard": "MCP_TEST_ALLOW_PUBLIC_BIND",
+    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED"
   },
   "protocol_versions": [
     "2025-06-18",
@@ -144,6 +151,27 @@
     "arg_formats": [
       "--key value",
       "--key=value"
+    ]
+  },
+  "rate_limit_quota_runtime": {
+    "source_refs": [
+      "src/runtime/rate_limit_policy.js",
+      "src/runtime/rate_limit_state.js",
+      "src/runtime/tools_call_handler.js",
+      "src/runtime/restart_controller.js"
+    ],
+    "tool_call_default": {
+      "window_ms": 60000,
+      "max": 10000
+    },
+    "restart_default": {
+      "window_ms": 600000,
+      "max": 3,
+      "state_file": "_control/rate-limit-state.json"
+    },
+    "denial_events": [
+      "tool_call_rate_limited",
+      "runtime_restart_rate_limited"
     ]
   }
 }

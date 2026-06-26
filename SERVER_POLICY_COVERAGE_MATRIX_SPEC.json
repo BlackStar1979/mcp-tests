@@ -140,7 +140,7 @@
     },
     {
       "id": "rate_limit_quota_policy",
-      "status": "specified_only",
+      "status": "partial",
       "spec_ref": "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json",
       "critical": false,
       "required": true

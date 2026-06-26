@@ -22,6 +22,7 @@ const { loadOAuth21SecretConfig } = require("./oauth21_secret_config");
 const { parseServerCliArgs } = require("./server_cli_args");
 const { loadServerProfileConfig } = require("../server_profile_loader");
 const { createRestartController } = require("./restart_controller");
+const { createRuntimeRateLimiter } = require("./rate_limit_policy");
 const { DOCS } = require("./static_docs");
 
 const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
@@ -104,7 +105,8 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     optionalTools,
   });
 
-  const restartController = createRestartController({ auditLog, env, rootDir });
+  const rateLimiter = createRuntimeRateLimiter({ env, rootDir });
+  const restartController = createRestartController({ auditLog, env, rootDir, rateLimiter });
   restartController.start();
 
   const getRuntimeStatus = createRuntimeStatusAssembly({
@@ -178,6 +180,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     startupReportVersion: STARTUP_REPORT_VERSION,
     labelsVersion: LABELS_VERSION,
     auditLogPath,
+    rateLimiter,
   });
 }
 

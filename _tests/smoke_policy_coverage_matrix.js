@@ -18,4 +18,4 @@ assert.equal(matrix.rules.specified_only_is_not_runtime_enforced, true);
 console.log("smoke_policy_coverage_matrix ok");
 
 const nonCriticalTargetSpecs = ["SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json","SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json","SERVER_ELICITATION_POLICY_SPEC.json","SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json","SERVER_SUPPLY_CHAIN_POLICY_SPEC.json","SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json"];
-for (const rel of nonCriticalTargetSpecs) { const spec = read(rel); assert.equal(spec.spec_mode, "canonical_structured_spec_not_progress_log"); assert.equal(spec.runtime_change, false); assert.ok(server.repository_layout_contract.root_policy.active_root_files.includes(rel)); assert.ok(Object.hasOwn(state.root_spec_map, rel)); }
+for (const rel of nonCriticalTargetSpecs) { const spec = read(rel); assert.equal(spec.spec_mode, "canonical_structured_spec_not_progress_log"); if (rel === "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json") assert.equal(spec.runtime_change, true); else assert.equal(spec.runtime_change, false); assert.ok(server.repository_layout_contract.root_policy.active_root_files.includes(rel)); assert.ok(Object.hasOwn(state.root_spec_map, rel)); }

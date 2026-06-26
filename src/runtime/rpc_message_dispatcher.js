@@ -19,6 +19,7 @@ async function dispatchRpcMessage({
   documentRuntimeContext,
   auditLog,
   getOptionalTool,
+  rateLimiter,
 }) {
   const { id, method, params } = prelude;
 
@@ -56,6 +57,7 @@ async function dispatchRpcMessage({
         authMode,
         profile,
         getOptionalTool,
+        rateLimiter,
       });
     }
 

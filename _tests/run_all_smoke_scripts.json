@@ -180,5 +180,7 @@
   "_tests/smoke_matrix_check.js",
   "_tests/smoke_policy_coverage_matrix.js",
   "_tests/smoke_restart_controller.js",
-  "_tests/smoke_restart_supervisor_scripts.js"
+  "_tests/smoke_restart_supervisor_scripts.js",
+  "_tests/smoke_rate_limit_policy.js",
+  "_tests/smoke_quota_runtime_integration.js"
 ]
