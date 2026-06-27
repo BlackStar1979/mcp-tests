@@ -33,13 +33,14 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   if (!issuer) throw new Error("oauth21_issuer_required");
   if (operatorSecret.length < 8) throw new Error("oauth21_operator_secret_required");
 
-  // DCR client registry is persisted to disk (outside C:\Work) so a process
-  // restart does NOT invalidate connectors' previously-registered client_id
-  // (which would surface as invalid_client and force a full re-auth). Only the
-  // long-lived client registrations are persisted; pending/codes/tokens stay
-  // in-RAM ephemeral session artifacts by design.
+  // DCR client registry and OAuth access/refresh state are persisted to disk
+  // so a controlled process restart does not invalidate the connector client_id
+  // or force a full operator re-authorization. Pending authorization requests
+  // and one-time authorization codes remain in RAM by design.
   const clientsPath = clientsFile || process.env.MCP_TEST_OAUTH_CLIENTS_FILE
     || path.join(os.homedir(), ".romion", "tests_oauth_clients.json");
+  const oauthStatePath = process.env.MCP_TEST_OAUTH_STATE_FILE
+    || path.join(os.homedir(), ".romion", "tests_oauth_state.json");
 
   const clients = new Map();
   const pending = new Map();
@@ -69,14 +70,43 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     }
   }
 
+  function saveOAuthState() {
+    try {
+      fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
+      const body = { access: [...accessTokens.values()], refresh: [...refreshTokens.values()] };
+      fs.writeFileSync(oauthStatePath, JSON.stringify(body, null, 2), { encoding: "utf8", mode: 0o600 });
+    } catch (e) {
+      console.error(`[oauth21] could not save oauth state: ${e.message}`);
+    }
+  }
+
+  function loadOAuthState() {
+    try {
+      if (!fs.existsSync(oauthStatePath)) return;
+      const body = JSON.parse(fs.readFileSync(oauthStatePath, "utf8") || "{}");
+      const t = now();
+      for (const item of Array.isArray(body.access) ? body.access : []) {
+        if (item && item.token && item.expiresAt > t) accessTokens.set(String(item.token), item);
+      }
+      for (const item of Array.isArray(body.refresh) ? body.refresh : []) {
+        if (item && item.token && item.expiresAt > t) refreshTokens.set(String(item.token), item);
+      }
+    } catch (e) {
+      console.error(`[oauth21] could not load oauth state: ${e.message}`);
+    }
+  }
+
   loadClients();
+  loadOAuthState();
 
   function cleanup() {
     const t = now();
+    let oauthStateChanged = false;
     for (const [pid, item] of pending) if (item.expiresAt <= t) pending.delete(pid);
     for (const [code, item] of codes) if (item.expiresAt <= t || item.used) codes.delete(code);
-    for (const [token, item] of accessTokens) if (item.expiresAt <= t) accessTokens.delete(token);
-    for (const [token, item] of refreshTokens) if (item.expiresAt <= t) refreshTokens.delete(token);
+    for (const [key, item] of accessTokens) if (item.expiresAt <= t) { accessTokens.delete(key); oauthStateChanged = true; }
+    for (const [key, item] of refreshTokens) if (item.expiresAt <= t) { refreshTokens.delete(key); oauthStateChanged = true; }
+    if (oauthStateChanged) saveOAuthState();
   }
 
   function metadata() {
@@ -170,6 +200,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     const scopes = String(scope || "mcp:tools").split(/\s+/).filter(Boolean);
     accessTokens.set(accessToken, { token: accessToken, clientId, scopes, subject: "operator", expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
     refreshTokens.set(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
+    saveOAuthState();
     return { access_token: accessToken, token_type: "Bearer", expires_in: ACCESS_TTL_SECONDS, refresh_token: refreshToken, scope: scopes.join(" ") };
   }
 
@@ -197,8 +228,8 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
 
   function revoke(body = {}) {
     const value = String(body.token || "");
-    accessTokens.delete(value);
-    refreshTokens.delete(value);
+    const changed = accessTokens.delete(value) || refreshTokens.delete(value);
+    if (changed) saveOAuthState();
     return { status: 200, body: {} };
   }
 
@@ -238,7 +269,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return false;
   }
 
-  return { issuer, metadata, registerClient, authorize, completeLogin, token, revoke, validateAccessToken, handleRoute, status: () => ({ issuer, clients: clients.size, pending: pending.size, codes: codes.size, access_tokens: accessTokens.size }) };
+  return { issuer, metadata, registerClient, authorize, completeLogin, token, revoke, validateAccessToken, handleRoute, status: () => ({ issuer, clients: clients.size, pending: pending.size, codes: codes.size, access_tokens: accessTokens.size, refresh_tokens: refreshTokens.size, oauth_state_file: oauthStatePath }) };
 }
 
 module.exports = { createOAuth21AuthorizationServer, sha256Base64Url };

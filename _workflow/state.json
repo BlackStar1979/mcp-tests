@@ -161,7 +161,7 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 59,
+    "env_var_count": 60,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -192,5 +192,10 @@
     "status": "partial_runtime_enforcement_active",
     "tool_call_limits": "active_generic_sliding_window",
     "restart_limits": "active_persistent_sliding_window"
+  },
+  "oauth21_durable_state": {
+    "status": "implemented_repo_not_live_loaded_until_controlled_restart",
+    "env": "MCP_TEST_OAUTH_STATE_FILE",
+    "default": "~/.romion/tests_oauth_state.json"
   }
 }

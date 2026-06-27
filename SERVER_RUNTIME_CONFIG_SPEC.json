@@ -78,6 +78,7 @@
     "MCP_TEST_OAUTH_ISSUER",
     "MCP_TEST_OAUTH_JWKS_FILE",
     "MCP_TEST_OAUTH_OPERATOR_SECRET",
+    "MCP_TEST_OAUTH_STATE_FILE",
     "MCP_TEST_OUTPUT_MODE",
     "MCP_TEST_PORT",
     "MCP_TEST_PROFILE",
@@ -173,5 +174,12 @@
       "tool_call_rate_limited",
       "runtime_restart_rate_limited"
     ]
+  },
+  "oauth21_runtime": {
+    "durable_state": {
+      "env": "MCP_TEST_OAUTH_STATE_FILE",
+      "default": "~/.romion/tests_oauth_state.json",
+      "purpose": "preserve connector authorization across controlled process restarts"
+    }
   }
 }
