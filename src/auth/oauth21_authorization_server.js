@@ -48,6 +48,26 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   const accessTokens = new Map();
   const refreshTokens = new Map();
   const loginAttempts = new Map();
+  let auditLog = null;
+  const deferredAuditEvents = [];
+
+  function auditOAuth(name, data = {}) {
+    const payload = { issuer, ...data };
+    if (typeof auditLog === "function") {
+      try { auditLog(name, payload); } catch (_) {}
+      return;
+    }
+    deferredAuditEvents.push({ name, payload });
+  }
+
+  function setAuditLog(fn) {
+    if (typeof fn !== "function") return;
+    auditLog = fn;
+    while (deferredAuditEvents.length) {
+      const event = deferredAuditEvents.shift();
+      try { auditLog(event.name, event.payload); } catch (_) {}
+    }
+  }
 
   function persistClients() {
     try {
@@ -75,23 +95,34 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
       const body = { access: [...accessTokens.values()], refresh: [...refreshTokens.values()] };
       fs.writeFileSync(oauthStatePath, JSON.stringify(body, null, 2), { encoding: "utf8", mode: 0o600 });
+      auditOAuth("oauth21_state_saved", { state_file: oauthStatePath, access_count: accessTokens.size, refresh_count: refreshTokens.size });
     } catch (e) {
+      auditOAuth("oauth21_state_save_failed", { state_file: oauthStatePath, error_message: e.message });
       console.error(`[oauth21] could not save oauth state: ${e.message}`);
     }
   }
 
   function loadOAuthState() {
     try {
-      if (!fs.existsSync(oauthStatePath)) return;
+      if (!fs.existsSync(oauthStatePath)) {
+        auditOAuth("oauth21_state_missing", { state_file: oauthStatePath });
+        return;
+      }
       const body = JSON.parse(fs.readFileSync(oauthStatePath, "utf8") || "{}");
       const t = now();
+      let expiredAccess = 0;
+      let expiredRefresh = 0;
       for (const item of Array.isArray(body.access) ? body.access : []) {
         if (item && item.token && item.expiresAt > t) accessTokens.set(String(item.token), item);
+        else expiredAccess += 1;
       }
       for (const item of Array.isArray(body.refresh) ? body.refresh : []) {
         if (item && item.token && item.expiresAt > t) refreshTokens.set(String(item.token), item);
+        else expiredRefresh += 1;
       }
+      auditOAuth("oauth21_state_loaded", { state_file: oauthStatePath, access_count: accessTokens.size, refresh_count: refreshTokens.size, expired_access_count: expiredAccess, expired_refresh_count: expiredRefresh });
     } catch (e) {
+      auditOAuth("oauth21_state_load_failed", { state_file: oauthStatePath, error_message: e.message });
       console.error(`[oauth21] could not load oauth state: ${e.message}`);
     }
   }
@@ -177,14 +208,15 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
 
   function completeLogin({ pid, password, req }) {
     cleanup();
-    if (!checkLoginThrottle(req)) return { status: 429, body: "Too many attempts" };
+    if (!checkLoginThrottle(req)) { auditOAuth("oauth21_operator_login_rejected", { reason: "login_throttled" }); return { status: 429, body: "Too many attempts" }; }
     const item = pending.get(String(pid || ""));
     if (!item) return { status: 400, body: "Invalid or expired authorization request" };
     const left = Buffer.from(String(password || ""));
     const right = Buffer.from(operatorSecret);
     const ok = left.length === right.length && crypto.timingSafeEqual(left, right);
-    if (!ok) return { status: 401, body: "Unauthorized" };
+    if (!ok) { auditOAuth("oauth21_operator_login_rejected", { reason: "bad_operator_secret" }); return { status: 401, body: "Unauthorized" }; }
     pending.delete(String(pid));
+    auditOAuth("oauth21_operator_login_accepted", { client_id: item.clientId, scope: item.scope });
     const code = randomToken(32);
     codes.set(code, { ...item, code, expiresAt: now() + CODE_TTL_MS, used: false });
     const target = new URL(item.redirectUri);
@@ -219,8 +251,12 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     if (grant === "refresh_token") {
       const client = clients.get(String(body.client_id || ""));
       const refresh = refreshTokens.get(String(body.refresh_token || ""));
-      if (!client || !refresh || refresh.clientId !== client.client_id) return { status: 400, body: { error: "invalid_grant" } };
+      if (!client || !refresh || refresh.clientId !== client.client_id) {
+        auditOAuth("oauth21_refresh_token_rejected", { reason: !client ? "unknown_client" : (!refresh ? "unknown_refresh_token" : "client_mismatch") });
+        return { status: 400, body: { error: "invalid_grant" } };
+      }
       refreshTokens.delete(refresh.token);
+      auditOAuth("oauth21_refresh_token_accepted", { client_id: client.client_id, scope_count: refresh.scopes.length });
       return { status: 200, body: issue(client.client_id, refresh.scopes.join(" ")) };
     }
     return { status: 400, body: { error: "unsupported_grant_type" } };
@@ -236,7 +272,11 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   function validateAccessToken(value) {
     cleanup();
     const item = accessTokens.get(String(value || ""));
-    if (!item) return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
+    if (!item) {
+      auditOAuth("oauth21_access_token_rejected", { reason: "unknown_or_expired_access_token", access_count: accessTokens.size, refresh_count: refreshTokens.size });
+      return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
+    }
+    auditOAuth("oauth21_access_token_accepted", { subject: item.subject, scope_count: item.scopes.length, access_count: accessTokens.size, refresh_count: refreshTokens.size });
     return { ok: true, status: 200, error: "", mode: "oauth21", subject: item.subject, scopes: item.scopes };
   }
 
@@ -269,7 +309,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return false;
   }
 
-  return { issuer, metadata, registerClient, authorize, completeLogin, token, revoke, validateAccessToken, handleRoute, status: () => ({ issuer, clients: clients.size, pending: pending.size, codes: codes.size, access_tokens: accessTokens.size, refresh_tokens: refreshTokens.size, oauth_state_file: oauthStatePath }) };
+  return { issuer, metadata, registerClient, authorize, completeLogin, token, revoke, validateAccessToken, handleRoute, setAuditLog, status: () => ({ issuer, clients: clients.size, pending: pending.size, codes: codes.size, access_tokens: accessTokens.size, refresh_tokens: refreshTokens.size, oauth_state_file: oauthStatePath }) };
 }
 
 module.exports = { createOAuth21AuthorizationServer, sha256Base64Url };

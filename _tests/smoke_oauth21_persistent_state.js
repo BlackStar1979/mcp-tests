@@ -14,7 +14,10 @@ const operatorSecret = "operator-secret";
 const redirectUri = "https://chat.openai.com/aip/callback";
 const verifier = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz";
 
+const events1 = [];
 const server1 = createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile });
+server1.setAuditLog((event, data) => events1.push({ event, data }));
+assert.ok(events1.some((x) => x.event === "oauth21_state_missing"));
 const registration = server1.registerClient({ redirect_uris: [redirectUri], token_endpoint_auth_method: "none" });
 assert.equal(registration.status, 201);
 const clientId = registration.body.client_id;
@@ -36,11 +39,17 @@ assert.equal(issued.status, 200);
 assert.ok(issued.body.access_token);
 assert.ok(issued.body.refresh_token);
 assert.ok(fs.existsSync(stateFile));
+assert.ok(events1.some((x) => x.event === "oauth21_state_saved"));
 
+const events2 = [];
 const server2 = createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile });
+server2.setAuditLog((event, data) => events2.push({ event, data }));
+assert.ok(events2.some((x) => x.event === "oauth21_state_loaded"));
 assert.equal(server2.validateAccessToken(issued.body.access_token).ok, true);
+assert.ok(events2.some((x) => x.event === "oauth21_access_token_accepted"));
 const refreshed = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token });
 assert.equal(refreshed.status, 200);
+assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_accepted"));
 assert.ok(refreshed.body.access_token);
 assert.notEqual(refreshed.body.refresh_token, issued.body.refresh_token);
 console.log("smoke_oauth21_persistent_state ok");

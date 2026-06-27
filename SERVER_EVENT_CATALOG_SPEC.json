@@ -106,6 +106,50 @@
     {
       "name": "runtime_restart_rate_limited",
       "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_missing",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_loaded",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_saved",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_load_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_save_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_access_token_accepted",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_access_token_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_refresh_token_accepted",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_refresh_token_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_operator_login_accepted",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_operator_login_rejected",
+      "status": "active_code_event"
     }
   ],
   "rules": {

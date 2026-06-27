@@ -105,6 +105,10 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     optionalTools,
   });
 
+  if (oauth21AuthorizationServer && typeof oauth21AuthorizationServer.setAuditLog === "function") {
+    oauth21AuthorizationServer.setAuditLog(auditLog);
+  }
+
   const rateLimiter = createRuntimeRateLimiter({ env, rootDir });
   const restartController = createRestartController({ auditLog, env, rootDir, rateLimiter });
   restartController.start();

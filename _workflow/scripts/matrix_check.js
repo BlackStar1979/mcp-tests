@@ -73,7 +73,8 @@ function auditEvents(findings){
   const events = [];
   for (const part of text.split(token).slice(1)) { const name = part.split("\"")[0]; if (/^[a-z0-9_]+$/.test(name)) events.push(name); }
   const runtimeControllerEvents = [...text.matchAll(/audit\(\"(runtime_restart_[a-z0-9_]+)\"/g)].map(m=>m[1]);
-  const uniqEvents = uniq(events.concat(runtimeControllerEvents));
+  const oauthEvents = [...text.matchAll(/auditOAuth\(\"(oauth21_[a-z0-9_]+)\"/g)].map(m=>m[1]);
+  const uniqEvents = uniq(events.concat(runtimeControllerEvents, oauthEvents));
   if (!exists("SERVER_EVENT_CATALOG_SPEC.json")) { push(findings,"warn","missing_audit_events_spec",{event_count:uniqEvents.length, events:uniqEvents}); return; }
   const spec = json("SERVER_EVENT_CATALOG_SPEC.json");
   const listed = (spec.events||[]).map(e=>typeof e==="string"?e:e.name).sort();

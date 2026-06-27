@@ -25,6 +25,7 @@ yarn-debug.log*
 yarn-error.log*
 
 # Local runtime/workflow backups and generated control-plane artifacts
+_control/
 _backups/
 _stages/
 .mcp_backups/
