@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-25T19:05:00+02:00",
+  "updated_at": "2026-06-27T14:40:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -197,5 +197,23 @@
     "status": "implemented_repo_not_live_loaded_until_controlled_restart",
     "env": "MCP_TEST_OAUTH_STATE_FILE",
     "default": "~/.romion/tests_oauth_state.json"
+  },
+  "active_planned_work": [
+    {
+      "id": "stage14_7_tools_list_cache_diagnostics",
+      "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
+      "status": "planned_no_apply_awaiting_external_server_audit_review",
+      "runtime_restart_required": "not_for_planning; required only after code apply to live behavior",
+      "connector_refresh_required": "not_for_planning; reassess only if descriptor/name/schema surface changes",
+      "preserve_existing_work_queue": true
+    }
+  ],
+  "tools_list_cache_diagnostics": {
+    "id": "stage14_7_tools_list_cache_diagnostics",
+    "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
+    "status": "planned_no_apply_awaiting_external_server_audit_review",
+    "runtime_restart_required": "not_for_planning; required only after code apply to live behavior",
+    "connector_refresh_required": "not_for_planning; reassess only if descriptor/name/schema surface changes",
+    "preserve_existing_work_queue": true
   }
 }

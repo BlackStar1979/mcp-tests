@@ -52,8 +52,9 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 4. Sessionless / Explicit State Handles Target Selection.
 5. Legacy Retired Auth Test Archive/Cleanup.
 6. CRLF Batch Normalization.
+7. Tools/list cache diagnostics D1 - plan-only until external server audit review is read; do not fake listChanged or refresh connector during planning.
 
-Next recommended action: present Stage 14 proposal/recommendation for operator review. No Stage 14 implementation, runtime enforcement, deny behavior change, deploy, restart, connector refresh, hotplug/list_changed emission, sessionless migration, or CRLF normalization is approved by this queue.
+Next recommended action: review the external server audit before applying Stage 14.7 / Sprint D1 tools-list cache diagnostics. No further runtime implementation, deploy, restart, connector refresh, fake listChanged emission, sessionless migration, or CRLF normalization is approved merely by listing the plan.
 
 ## 4. Runtime architecture
 

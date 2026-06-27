@@ -141,6 +141,10 @@ Current records:
 - Stage 14.4 apply package draft guard
   - `_tests/smoke_stage14_4_runtime_enforcement_apply_package_draft.js` guards draft-only mode, no runtime enforcement, no tools_call_handler wiring, approval template not recorded, and conditional future restart/connector/baseline decisions.
 
+
+- `stage14_7_tools_list_cache_diagnostics_plan.md`
+  - Stage 14.7 / Sprint D1 tools/list cache diagnostics plan. It records SEP-2549 ttlMs/cacheScope direction, fingerprint/serverStartId diagnostics, audit/test requirements, no-fake-listChanged guardrails, and explicit separation from OAuth durability. Status: planned/no apply, awaiting external server audit review.
+
 ## Active remaining work queue
 
 Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
@@ -151,6 +155,7 @@ Current active queue is maintained in `_workflow/state.json` under `post_stage13
 4. Sessionless / Explicit State Handles Target Selection.
 5. Legacy Retired Auth Test Archive/Cleanup.
 6. CRLF Batch Normalization.
+7. Tools/list cache diagnostics D1: ttlMs/cacheScope, fingerprint/serverStartId, audit, and no-fake-listChanged plan; awaiting external server audit review.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 
