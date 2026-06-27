@@ -131,3 +131,17 @@ Implemented after external server audit review:
 - notifications/stream/ready was not implemented because it is not part of the approved D1-A scope.
 
 Live implication: TESTS_MCP must be supervisor-restarted with controlled code 43 before D1-A behavior is live on 3008. Connector refresh is not required unless descriptor names/count/schema change after validation.
+
+## D1-C observability closeout
+
+Status: repo-applied, not live-loaded.
+
+Implemented:
+
+- added `src/tools_list_cache_diagnostics.js`;
+- observability_status now exposes `tools_list_cache_diagnostics`;
+- diagnostic classifies initialize + tools/call without observed tools/list for the current server_start_id;
+- diagnostic reports last initialize, last tools/list RPC, last tools_list_served, last cache directive, last tool_call_start, current surface fingerprint, and per-current-start counters;
+- no listChanged behavior changed; no connector refresh performed.
+
+Live implication: TESTS_MCP requires controlled restart code 43 before D1-C is live on 3008.

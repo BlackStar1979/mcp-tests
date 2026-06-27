@@ -99,6 +99,7 @@ const OBSERVABILITY_STATUS_OUTPUT_SCHEMA = {
     audit_jsonl_health: STATUS_OBJECT,
     runtime: STATUS_OBJECT,
     connector_map: STATUS_OBJECT,
+    tools_list_cache_diagnostics: STATUS_OBJECT,
     connector_map_health: STATUS_OBJECT,
     events: STATUS_OBJECT,
     tool_call_balance: STATUS_OBJECT,

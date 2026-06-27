@@ -52,7 +52,7 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 4. Sessionless / Explicit State Handles Target Selection.
 5. Legacy Retired Auth Test Archive/Cleanup.
 6. CRLF Batch Normalization.
-7. Tools/list cache diagnostics D1 - D1-A repo-applied/not live-loaded; D1-B pending; do not fake listChanged or refresh connector merely because D1-A exists.
+7. Tools/list cache diagnostics D1 - D1-A and D1-C repo-applied/not live-loaded; D1-B pending; do not fake listChanged or refresh connector merely because D1-A exists.
 
 Next recommended action: review the external server audit before applying Stage 14.7 / Sprint D1 tools-list cache diagnostics. No further runtime implementation, deploy, restart, connector refresh, fake listChanged emission, sessionless migration, or CRLF normalization is approved merely by listing the plan.
 

@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-27T15:15:00+02:00",
+  "updated_at": "2026-06-27T17:45:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -202,18 +202,20 @@
     {
       "id": "stage14_7_tools_list_cache_diagnostics",
       "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-      "status": "d1a_repo_applied_not_live_loaded",
-      "runtime_restart_required": "required to load D1-A into live TESTS_MCP",
-      "connector_refresh_required": "not required unless connector-visible descriptors/names/schemas changed; reassess after live validation",
-      "preserve_existing_work_queue": true
+      "status": "d1c_repo_applied_not_live_loaded",
+      "runtime_restart_required": "required to load D1-C into live TESTS_MCP",
+      "connector_refresh_required": "not required; no tool descriptor/name/schema surface change intended",
+      "preserve_existing_work_queue": true,
+      "d1c": "observability tools-list cache diagnostics added; live restart required"
     }
   ],
   "tools_list_cache_diagnostics": {
     "id": "stage14_7_tools_list_cache_diagnostics",
     "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-    "status": "d1a_repo_applied_not_live_loaded",
-    "runtime_restart_required": "required to load D1-A into live TESTS_MCP",
-    "connector_refresh_required": "not required unless connector-visible descriptors/names/schemas changed; reassess after live validation",
-    "preserve_existing_work_queue": true
+    "status": "d1c_repo_applied_not_live_loaded",
+    "runtime_restart_required": "required to load D1-C into live TESTS_MCP",
+    "connector_refresh_required": "not required; no tool descriptor/name/schema surface change intended",
+    "preserve_existing_work_queue": true,
+    "d1c": "observability tools-list cache diagnostics added; live restart required"
   }
 }

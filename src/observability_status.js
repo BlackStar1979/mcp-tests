@@ -3,6 +3,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { CURRENT_STAGE_STATUS } = require("./stage_metadata");
 const { assessAuditExportSafety } = require("./audit_export_safety");
+const { buildToolsListCacheDiagnostics } = require("./tools_list_cache_diagnostics");
 
 const OBSERVABILITY_VERSION = "test-mcp-observability-v1";
 const DEFAULT_WINDOW_SIZE = 800;
@@ -487,6 +488,7 @@ function buildObservabilityStatus(options = {}) {
       : "missing";
 
   const auditExportSafety = assessAuditExportSafety(parsedAuditEntries, { maxSamples: 10 });
+  const toolsListCacheDiagnostics = buildToolsListCacheDiagnostics(parsedAuditEntries, runtimeStatus);
 
   const recommendedActions = buildRecommendedActions({
     connectorComparison,
@@ -500,6 +502,9 @@ function buildObservabilityStatus(options = {}) {
     argSummaryFailureCount,
     pathRisk,
   });
+  if (toolsListCacheDiagnostics.tools_call_after_initialize_without_tools_list) {
+    recommendedActions.unshift("tools-list cache diagnostic indicates initialize + tools/call without observed tools/list for the current server_start_id; manually refresh connector tools and re-check tools_list_served/cache_directive.");
+  }
 
   return {
     success: !recent.read_error,
@@ -538,6 +543,7 @@ function buildObservabilityStatus(options = {}) {
       security_boundary_status: runtimeStatus.security_boundary?.status || "unknown",
     },
     connector_map: connectorComparison,
+    tools_list_cache_diagnostics: toolsListCacheDiagnostics,
     connector_map_health: {
       status: connectorComparison.status,
       comparison_available: connectorComparison.comparison_available,

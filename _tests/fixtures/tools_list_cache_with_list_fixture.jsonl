@@ -1,0 +1,11 @@
+{"ts": "2026-06-27T10:00:00.000Z", "event": "server_start", "server_start_id": "start-a"}
+{"ts": "2026-06-27T10:00:01.000Z", "event": "oauth21_state_loaded", "access_count": 1, "refresh_count": 1}
+{"ts": "2026-06-27T10:00:02.000Z", "event": "session_created", "request_id": "r1"}
+{"ts": "2026-06-27T10:00:02.010Z", "event": "rpc_received", "request_id": "r1", "method": "initialize"}
+{"ts": "2026-06-27T10:00:02.020Z", "event": "initialize_received", "request_id": "r1", "session_id": "s1", "server_start_id": "start-a", "auth_mode": "oauth21", "profile": "internal"}
+{"ts": "2026-06-27T10:00:02.100Z", "event": "rpc_received", "request_id": "r-list", "method": "tools/list"}
+{"ts": "2026-06-27T10:00:02.110Z", "event": "tools_list_served", "request_id": "r-list", "session_id": "s1", "server_start_id": "start-a", "tool_count": 43, "fingerprint": "fp-a", "tool_names_hash": "hash-a"}
+{"ts": "2026-06-27T10:00:02.120Z", "event": "tools_list_cache_directive", "request_id": "r-list", "session_id": "s1", "server_start_id": "start-a", "ttl_ms": 0, "cache_scope": "private", "fingerprint": "fp-a"}
+{"ts": "2026-06-27T10:00:03.000Z", "event": "rpc_received", "request_id": "r2", "method": "tools/call"}
+{"ts": "2026-06-27T10:00:03.010Z", "event": "tool_call_start", "request_id": "r2", "tool": "test_mcp_runtime_status"}
+{"ts": "2026-06-27T10:00:03.020Z", "event": "tool_call_end", "request_id": "r2", "tool": "test_mcp_runtime_status", "duration_ms": 10}
