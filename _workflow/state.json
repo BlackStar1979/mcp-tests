@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-27T14:40:00+02:00",
+  "updated_at": "2026-06-27T15:15:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -166,7 +166,7 @@
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 20
+    "event_count": 40
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
@@ -202,18 +202,18 @@
     {
       "id": "stage14_7_tools_list_cache_diagnostics",
       "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-      "status": "planned_no_apply_awaiting_external_server_audit_review",
-      "runtime_restart_required": "not_for_planning; required only after code apply to live behavior",
-      "connector_refresh_required": "not_for_planning; reassess only if descriptor/name/schema surface changes",
+      "status": "d1a_repo_applied_not_live_loaded",
+      "runtime_restart_required": "required to load D1-A into live TESTS_MCP",
+      "connector_refresh_required": "not required unless connector-visible descriptors/names/schemas changed; reassess after live validation",
       "preserve_existing_work_queue": true
     }
   ],
   "tools_list_cache_diagnostics": {
     "id": "stage14_7_tools_list_cache_diagnostics",
     "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-    "status": "planned_no_apply_awaiting_external_server_audit_review",
-    "runtime_restart_required": "not_for_planning; required only after code apply to live behavior",
-    "connector_refresh_required": "not_for_planning; reassess only if descriptor/name/schema surface changes",
+    "status": "d1a_repo_applied_not_live_loaded",
+    "runtime_restart_required": "required to load D1-A into live TESTS_MCP",
+    "connector_refresh_required": "not required unless connector-visible descriptors/names/schemas changed; reassess after live validation",
     "preserve_existing_work_queue": true
   }
 }

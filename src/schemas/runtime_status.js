@@ -106,6 +106,7 @@ const RUNTIME_STATUS_OUTPUT_SCHEMA = {
     public_base_url: { type: "string" },
     host: { type: "string" },
     port: { type: "integer" },
+    server_start_id: { type: "string" },
     runtime_identity: {
       type: "object",
       additionalProperties: true,

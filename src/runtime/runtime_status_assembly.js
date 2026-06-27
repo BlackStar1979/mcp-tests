@@ -25,6 +25,7 @@ function createRuntimeStatusAssembly({
   stageStatus,
   runtimeProfile,
   toolsList,
+  serverStartId,
 }) {
   return createRuntimeStatusProvider({
     serverName,
@@ -54,6 +55,7 @@ function createRuntimeStatusAssembly({
       getMaxBytes,
       getTimeoutMs,
     },
+    serverStartId,
     fs: {
       envFlagEnabled,
       getPublicFsRoot,

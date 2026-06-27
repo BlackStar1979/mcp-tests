@@ -20,6 +20,7 @@ async function dispatchRpcMessage({
   auditLog,
   getOptionalTool,
   rateLimiter,
+  serverStartId,
 }) {
   const { id, method, params } = prelude;
 
@@ -35,6 +36,10 @@ async function dispatchRpcMessage({
         authMode,
         profile,
         tools,
+        serverStartId,
+        auditLog,
+        requestId: context.requestId,
+        sessionId: context.sessionId,
       });
     }
 
@@ -43,7 +48,7 @@ async function dispatchRpcMessage({
     }
 
     case "tools/list": {
-      return handleToolsListMessage(id, tools, { authMode });
+      return handleToolsListMessage(id, tools, { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId, serverStartId });
     }
 
     case "tools/call": {

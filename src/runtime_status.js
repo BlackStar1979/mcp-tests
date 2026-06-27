@@ -58,6 +58,7 @@ function buildRuntimeStatus(context) {
     toolLabels,
     network,
     fs,
+    serverStartId,
     includeTools = true,
   } = context;
 
@@ -90,6 +91,7 @@ function buildRuntimeStatus(context) {
     public_base_url: publicBaseUrl,
     host,
     port,
+    server_start_id: typeof serverStartId === "string" ? serverStartId : "",
     runtime_identity: identity,
     auth: buildRuntimeAuthStatus(authPolicy),
     profile: {

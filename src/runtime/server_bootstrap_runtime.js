@@ -53,6 +53,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     .toLowerCase();
 
   const maxFetchTextChars = Number(env.MCP_TEST_FETCH_CAP_CHARS || 2500);
+  const serverStartId = new Date().toISOString();
 
   const auditLogDir = env.MCP_TEST_LOG_DIR || path.join(rootDir, "_logs");
   const auditLogPath = env.MCP_TEST_AUDIT_LOG || path.join(auditLogDir, ".mcp-tests-audit.jsonl");
@@ -128,6 +129,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     stageStatus,
     runtimeProfile,
     toolsList,
+    serverStartId,
   });
 
   const { getOptionalTool } = configureOptionalToolsAssembly({
@@ -185,6 +187,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     labelsVersion: LABELS_VERSION,
     auditLogPath,
     rateLimiter,
+    serverStartId,
   });
 }
 

@@ -26,6 +26,7 @@ function createRuntimeStatusProvider({
   toolLabels,
   network,
   fs,
+  serverStartId,
 }) {
   return function getRuntimeStatus(options = {}) {
     return buildRuntimeStatus({
@@ -52,6 +53,7 @@ function createRuntimeStatusProvider({
       toolLabels,
       network,
       fs,
+      serverStartId,
     });
   };
 }

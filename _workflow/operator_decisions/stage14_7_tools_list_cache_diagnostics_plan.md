@@ -1,6 +1,6 @@
 # Stage 14.7 / Sprint D1 - tools/list cache diagnostics plan
 
-Status: PLANNED / NO APPLY YET / AWAITING EXTERNAL SERVER AUDIT REVIEW
+Status: D1-A REPO APPLIED / NOT LIVE LOADED / D1-B PENDING
 Date: 2026-06-27
 
 ## Problem statement
@@ -115,3 +115,19 @@ Package D1-B, only after D1-A evidence:
 - conditional list_changed emitter;
 - old-session/404 test hardening;
 - live TESTS_MCP restart validation.
+
+## D1-A apply closeout
+
+Status: repo-applied, not live-loaded.
+
+Implemented after external server audit review:
+
+- tools/list now returns ttlMs: 0 and cacheScope: private;
+- tools/list now includes metadata for tool surface fingerprint, tool names hash, tool count, and serverStartId;
+- initialize serverInfo now includes serverStartId;
+- runtime status now includes server_start_id;
+- initialize_received, tools_list_served, and tools_list_cache_directive audit events are active;
+- listChanged remains false; no fake list_changed notification was added;
+- notifications/stream/ready was not implemented because it is not part of the approved D1-A scope.
+
+Live implication: TESTS_MCP must be supervisor-restarted with controlled code 43 before D1-A behavior is live on 3008. Connector refresh is not required unless descriptor names/count/schema change after validation.

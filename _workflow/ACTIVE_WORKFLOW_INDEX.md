@@ -143,7 +143,7 @@ Current records:
 
 
 - `stage14_7_tools_list_cache_diagnostics_plan.md`
-  - Stage 14.7 / Sprint D1 tools/list cache diagnostics plan. It records SEP-2549 ttlMs/cacheScope direction, fingerprint/serverStartId diagnostics, audit/test requirements, no-fake-listChanged guardrails, and explicit separation from OAuth durability. Status: planned/no apply, awaiting external server audit review.
+  - Stage 14.7 / Sprint D1 tools/list cache diagnostics plan. It records SEP-2549 ttlMs/cacheScope direction, fingerprint/serverStartId diagnostics, audit/test requirements, no-fake-listChanged guardrails, and explicit separation from OAuth durability. Status: D1-A repo-applied/not live-loaded; D1-B pending.
 
 ## Active remaining work queue
 

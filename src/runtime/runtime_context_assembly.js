@@ -36,6 +36,7 @@ function runConfiguredRuntime({
   labelsVersion,
   auditLogPath,
   rateLimiter,
+  serverStartId,
 }) {
   const { handleMcp } = createMcpRuntimeHandlers({
     serverName,
@@ -50,6 +51,7 @@ function runConfiguredRuntime({
     getOptionalTool,
     publicBaseUrl,
     rateLimiter,
+    serverStartId,
   });
 
   return runServerLifecycle({
@@ -65,6 +67,7 @@ function runConfiguredRuntime({
       connectorShapeVersion,
       documentRuntimeContext,
       auditLogPath,
+      serverStartId,
     },
     startupContext: {
       host,
@@ -97,6 +100,7 @@ function runConfiguredRuntime({
       startupReportVersion,
       labelsVersion,
       auditLogPath,
+      serverStartId,
     },
   });
 }

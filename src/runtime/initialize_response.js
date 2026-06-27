@@ -12,6 +12,7 @@ function buildInitializeResponse({
   authMode,
   profile,
   tools,
+  serverStartId,
 }) {
   const negotiated = negotiateInitializeProtocolVersion(protocolVersion);
   return {
@@ -28,6 +29,7 @@ function buildInitializeResponse({
       outputMode,
       authMode,
       profile,
+      serverStartId: typeof serverStartId === "string" ? serverStartId : "",
       enabledTools: tools.map((tool) => tool.name),
       toolSurface: buildToolSurfaceFingerprint(tools),
       schemaCompatibility: assertToolSchemas(tools),

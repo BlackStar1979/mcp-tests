@@ -150,6 +150,18 @@
     {
       "name": "oauth21_operator_login_rejected",
       "status": "active_code_event"
+    },
+    {
+      "name": "initialize_received",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tools_list_served",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tools_list_cache_directive",
+      "status": "active_code_event"
     }
   ],
   "rules": {

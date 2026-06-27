@@ -16,6 +16,7 @@ function runSelfTestBranch({
   connectorShapeVersion,
   documentRuntimeContext,
   auditLogPath,
+  serverStartId,
   logger = console.log,
   errorLogger = console.error,
   exit = process.exit,
@@ -76,6 +77,7 @@ function startRuntimeServer({
   startupReportVersion,
   labelsVersion,
   auditLogPath,
+  serverStartId,
   logger = console.log,
   errorLogger = console.error,
   exit = process.exit,
@@ -128,6 +130,7 @@ function startRuntimeServer({
         outputMode,
         fetchTextCapChars: maxFetchTextChars,
         audit_log_path: auditLogPath,
+        server_start_id: typeof serverStartId === "string" ? serverStartId : "",
       });
 
       logger(`Auth mode: ${bootstrapAuthMode}`);
@@ -143,6 +146,7 @@ function startRuntimeServer({
         publicBaseUrl,
         maxFetchTextChars,
         auditLogPath,
+        serverStartId,
         tools: toolsList(),
       });
 
