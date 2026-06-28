@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-28T20:20:00+02:00",
+  "updated_at": "2026-06-28T21:05:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -58,7 +58,7 @@
     "no_runtime_restart_without_explicit_operator_intent": true,
     "no_connector_refresh_without_explicit_operator_intent": true,
     "do_not_use_generic_restart_for_oauth21_3008": true,
-    "recover_file_trigger_restart_authority_before_3008_live_load": true,
+    "recover_file_trigger_restart_authority_before_3008_live_load": false,
     "do_not_remove_stable_session_code_before_S2_target_selection": true,
     "do_not_use_state_json_as_log": true
   },
@@ -113,7 +113,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_after_stage14_5",
-      "live_3008_server_start_id": "2026-06-28T16:18:17.295Z",
+      "live_3008_server_start_id": "2026-06-28T18:29:15.549Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -173,7 +173,7 @@
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 47
+    "event_count": 48
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
@@ -204,7 +204,7 @@
     "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "env": "MCP_TEST_OAUTH_STATE_FILE",
     "default": "~/.romion/tests_oauth_state.json",
-    "live_server_start_id": "2026-06-28T16:18:17.295Z",
+    "live_server_start_id": "2026-06-28T18:29:15.549Z",
     "evidence": "oauth21_state_loaded observed after controlled restart; current TESTS_MCP is OAuth21/internal on 3008"
   },
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
@@ -221,10 +221,11 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 43,
-      "server_start_id": "2026-06-28T16:18:17.295Z",
+      "server_start_id": "2026-06-28T18:29:15.549Z",
       "runtime_gate_live_loaded_after_stage14_5": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false
+      "restart_required_now": false,
+      "c3_cooperative_cancellation_live_loaded": true
     },
     "public_3009": {
       "auth_mode": "none",

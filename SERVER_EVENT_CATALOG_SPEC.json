@@ -76,6 +76,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "tool_call_cancelled_cooperative",
+      "status": "active_code_event"
+    },
+    {
       "name": "tool_call_policy_denied",
       "status": "active_code_event"
     },

@@ -35,6 +35,7 @@ assert.equal(state.policy_layers.runtime_policy_gate.runtime_enforced, true);
 assert.equal(state.policy_layers.runtime_policy_gate.live_3008_status, "live_loaded_after_stage14_5");
 assert.equal(state.policy_layers.runtime_policy_gate.public_3009_status, "not_currently_live");
 assert.equal(state.current_runtime_truth.oauth21_3008.runtime_gate_live_loaded_after_stage14_5, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);

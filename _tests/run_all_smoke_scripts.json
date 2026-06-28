@@ -189,5 +189,6 @@
   "_tests/smoke_tools_list_changed_runtime.js",
   "_tests/smoke_stage14_7_tools_list_cache_live_validation.js",
   "_tests/smoke_stage14_8_runtime_enforcement_state_reconciliation.js",
-  "_tests/smoke_stage14_9_workflow_truth_repair.js"
+  "_tests/smoke_stage14_9_workflow_truth_repair.js",
+  "_tests/smoke_c3_cooperative_tool_cancellation.js"
 ]

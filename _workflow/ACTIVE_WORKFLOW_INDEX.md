@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_184`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_185`.
 - Public section count: `6`.
-- Authenticated smoke count: `184`.
+- Authenticated smoke count: `185`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -75,6 +75,9 @@ Current records:
 
 - `p3_cancellation_path_client_disconnect_plan.md`
   - Plan-only cancellation path based on client disconnect / AbortSignal, with timeout fallback.
+
+- `c3_cooperative_tool_cancellation.md`
+  - C3 cooperative tool cancellation implementation. Removes stale C1/C2 blockers, adds cooperative optional-tool cancellation, records no connector refresh, and is live-loaded on OAuth21 3008 with server_start_id 2026-06-28T18:29:15.549Z.
 
 - `p4_runtime_policy_expansion_scope_plan.md`
   - Plan-only Resource/Scope Matrix Enforcement expansion.
@@ -155,13 +158,10 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Workflow truth repair / state compaction - Stage 14.9 green; state.json is compact orientation map again, Stage 14.8 remains current runtime-enforcement truth, and future recommendations must reassess blockers, connector refresh, and workbench restart.
-2. Cooperative Tool Cancellation C3.
-3. Event-driven Hotplug Lifecycle.
-4. Sessionless / Explicit State Handles Target Selection.
-5. Legacy Retired Auth Test Archive/Cleanup.
-6. CRLF Batch Normalization.
-7. Tools/list cache diagnostics D1: D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008. Connector-visible map is in sync 43/43; manual connector refresh produced tools/list and cache directive for the active server start.
+1. Event-driven Hotplug Lifecycle.
+2. Sessionless / Explicit State Handles Target Selection.
+3. Legacy Retired Auth Test Archive/Cleanup.
+4. CRLF Batch Normalization.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 
@@ -232,6 +232,6 @@ This index is intentionally non-destructive. It does not move historical workflo
 
 Future archive compaction may move files only after a dedicated migration plan updates tests and references.
 
-Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 still requires an OAuth-aware restart to load Stage14.5 runtime code. Connector refresh not required; baseline refreeze not required.
+Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 Stage14.5 restart requirement is superseded by Stage 14.8/14.9 evidence and current supervisor authority. Connector refresh not required; baseline refreeze not required.
 
 Stage 14.6 inventory repair: sessionless_inventory now tracks SEP-2549/2567/2575/2577/2596 with checklist evidence. Guard: smoke_stage14_6_sep_sessionless_inventory.
