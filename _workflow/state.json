@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-28T18:54:00+02:00",
+  "updated_at": "2026-06-28T19:06:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -202,28 +202,33 @@
     {
       "id": "stage14_7_tools_list_cache_diagnostics",
       "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-      "status": "d1a_d1b_d1c_repo_applied_live_validated_baseline_same_fingerprint",
+      "status": "d1a_d1b_d1c_repo_applied_live_validated_refresh_observed",
       "runtime_restart_required": "not required for current live validation; TESTS_MCP 3008 current server_start_id 2026-06-28T16:18:17.295Z already shows D1-B state tracking live",
-      "connector_refresh_required": "not required for current unchanged surface; connector-visible map comparison is in_sync 43/43; manual refresh remains diagnostic only for observing a fresh tools/list RPC",
+      "connector_refresh_required": "manual connector refresh completed once for diagnostic observation; connector-visible map comparison remains in_sync 43/43; no further refresh required for current unchanged surface",
       "preserve_existing_work_queue": true,
-      "d1c": "live validated; observability reports initialize plus tools/call without tools/list for current server_start_id",
+      "d1c": "live validated; manual connector refresh produced discovery and cache directive for current server_start_id",
       "d1b": "live validated; tool surface state load/save observed; previous/current fingerprint match, so no surface-change notification expected"
     }
   ],
   "tools_list_cache_diagnostics": {
     "id": "stage14_7_tools_list_cache_diagnostics",
     "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-    "status": "d1a_d1b_d1c_repo_applied_live_validated_baseline_same_fingerprint",
+    "status": "d1a_d1b_d1c_repo_applied_live_validated_refresh_observed",
     "live_server_start_id": "2026-06-28T16:18:17.295Z",
     "live_tool_surface_fingerprint": "476c7d832021acb9",
     "live_tool_names_hash": "8b62ecaf89227335",
     "live_tool_count": 43,
     "connector_map_status": "in_sync_43_of_43",
-    "host_cache_status": "tools_call_after_initialize_without_tools_list_for_current_start",
+    "host_cache_status": "manual_connector_refresh_observed_tools_list_for_current_start",
     "runtime_restart_required": "not required for current live validation",
-    "connector_refresh_required": "not required for current unchanged surface; diagnostic-only if tools/list observation must be forced",
+    "connector_refresh_required": "completed once for diagnostic observation; not required for current unchanged surface",
     "preserve_existing_work_queue": true,
-    "d1c": "live validated; tools-list cache diagnostics active",
-    "d1b": "live validated; state tracking active, baseline same fingerprint, no notification expected"
+    "d1c": "live validated; refresh observation active, discovery and cache directive seen",
+    "d1b": "live validated; state tracking active, baseline same fingerprint, no notification expected",
+    "last_observed_tools_list_request_id": "mqy1eq6w-10",
+    "last_observed_tools_list_served_at": "2026-06-28T17:02:47.583Z",
+    "last_observed_tools_list_cache_directive_at": "2026-06-28T17:02:47.584Z",
+    "last_observed_ttl_ms": 0,
+    "last_observed_cache_scope": "private"
   }
 }

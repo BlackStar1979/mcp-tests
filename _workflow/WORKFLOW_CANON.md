@@ -52,9 +52,9 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 4. Sessionless / Explicit State Handles Target Selection.
 5. Legacy Retired Auth Test Archive/Cleanup.
 6. CRLF Batch Normalization.
-7. Tools/list cache diagnostics D1 - D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008; connector-visible map is in sync 43/43; current host/cache behavior still omits tools/list after initialize for the active server start; do not fake listChanged or refresh connector merely because D1 is live.
+7. Tools/list cache diagnostics D1 - D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008; connector-visible map is in sync 43/43; manual connector refresh caused tools/list and cache directive for the active server start; do not fake listChanged or change tool names merely because D1 is live.
 
-Next recommended action: for Stage 14.7, observe whether a manual connector-tools refresh causes `tools_list_served` and `tools_list_cache_directive` for the active `server_start_id`; do not restart runtime, fake listChanged emission, change tool names, or refresh connector merely because D1 is live. Other active queue items remain unchanged and require separate operator decisions.
+Next recommended action: Stage 14.7 D1 observation is closed. Proceed to Stage 14.x runtime-enforcement state reconciliation: separate repo-applied, live-loaded on OAuth21 3008, public 3009, and workflow-only truth before further implementation. Other active queue items remain unchanged and require separate operator decisions.
 
 ## 4. Runtime architecture
 

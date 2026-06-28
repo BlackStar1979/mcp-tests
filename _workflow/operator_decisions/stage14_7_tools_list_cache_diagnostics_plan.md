@@ -144,7 +144,7 @@ Implemented:
 - diagnostic reports last initialize, last tools/list RPC, last tools_list_served, last cache directive, last tool_call_start, current surface fingerprint, and per-current-start counters;
 - no listChanged behavior changed; no connector refresh performed.
 
-Live status: D1-C is live on TESTS_MCP 3008. Current observability classifies the active host behavior as `tools_call_after_initialize_without_tools_list`: initialize and tools/call were observed for current `server_start_id`, but tools/list was not observed for that start. This remains a host/cache behavior signal, not a runtime/OAuth failure.
+Live status: D1-C is live on TESTS_MCP 3008. Before manual connector refresh, observability classified active host behavior as `tools_call_after_initialize_without_tools_list`. After manual connector refresh, the same `server_start_id` observed `tools_list_rpc=1`, `tools_list_served=1`, and `tools_list_cache_directive` with `ttlMs=0`, `cacheScope=private`. This confirms the server-side discovery path is healthy and the earlier gap was host/cache behavior.
 
 ## D1-B conditional listChanged closeout
 
