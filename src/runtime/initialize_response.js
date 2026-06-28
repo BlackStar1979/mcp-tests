@@ -13,13 +13,14 @@ function buildInitializeResponse({
   profile,
   tools,
   serverStartId,
+  listChangedEnabled = false,
 }) {
   const negotiated = negotiateInitializeProtocolVersion(protocolVersion);
   return {
     protocolVersion: negotiated.protocolVersion,
     capabilities: {
       tools: {
-        listChanged: false,
+        listChanged: listChangedEnabled === true,
       },
     },
     serverInfo: {

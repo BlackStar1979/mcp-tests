@@ -1,6 +1,6 @@
 # Stage 14.7 / Sprint D1 - tools/list cache diagnostics plan
 
-Status: D1-A REPO APPLIED / NOT LIVE LOADED / D1-B PENDING
+Status: D1-A/D1-B/D1-C REPO APPLIED / NOT LIVE LOADED
 Date: 2026-06-27
 
 ## Problem statement
@@ -145,3 +145,31 @@ Implemented:
 - no listChanged behavior changed; no connector refresh performed.
 
 Live implication: TESTS_MCP requires controlled restart code 43 before D1-C is live on 3008.
+
+## D1-B conditional listChanged closeout
+
+Status: repo-applied, not live-loaded.
+
+Implemented:
+
+- persisted tool surface state in `_control/tool-surface-state.json`;
+- `MCP_TEST_TOOL_SURFACE_STATE_FILE` override;
+- first start with no previous state records baseline and does not emit a change notification;
+- same fingerprint after restart does not emit;
+- changed fingerprint sets `surface_changed_since_last_start`;
+- initialize can advertise `capabilities.tools.listChanged=true` only when the runtime has the real notifier wired;
+- active SSE sessions receive `notifications/tools/list_changed` only when a previous fingerprint exists and differs from current;
+- a session is notified at most once;
+- audit events record state load/save/change and notification emission;
+- no artificial tool rename, no unconditional notification after initialized, no connector refresh.
+
+Validation:
+
+- `smoke_tools_list_changed_runtime`;
+- `smoke_stage8_33_list_changed_readiness_contract`;
+- `smoke_stage8_35_list_changed_notification_bus_dry_run`;
+- `smoke_stage8_36_list_changed_local_harness`;
+- `matrix_check`;
+- `node _tests/run_all_smokes.js --skip-network` with public=6 and tests_authenticated=181.
+
+Live implication: TESTS_MCP must be restarted with controlled code 43 before D1-B is active on 3008. Because initialize capability changed from listChanged=false to true, connector/tool discovery behavior should be observed after restart; manual connector refresh may still be needed because host-side cache behavior is not controlled by the server.

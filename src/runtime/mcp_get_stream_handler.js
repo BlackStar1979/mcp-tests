@@ -22,7 +22,7 @@ function startKeepalive(res, intervalMs = DEFAULT_SSE_KEEPALIVE_INTERVAL_MS) {
   return timer;
 }
 
-function handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, auditLog, keepaliveIntervalMs = DEFAULT_SSE_KEEPALIVE_INTERVAL_MS } = {}) {
+function handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, auditLog, keepaliveIntervalMs = DEFAULT_SSE_KEEPALIVE_INTERVAL_MS, listChangedNotifier } = {}) {
   if (sessionId === undefined) {
     jsonResponse(res, 400, rpcError(null, -32000, "Missing session", { reason: "missing_session" }));
     return;
@@ -53,6 +53,10 @@ function handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, audi
       params: { sessionId: session.id },
     },
   });
+
+  if (listChangedNotifier && typeof listChangedNotifier.emitToSession === "function") {
+    listChangedNotifier.emitToSession({ session, auditLog, requestId });
+  }
 
   const keepaliveTimer = startKeepalive(res, keepaliveIntervalMs);
   const detach = () => {

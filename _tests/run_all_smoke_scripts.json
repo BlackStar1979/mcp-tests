@@ -185,5 +185,6 @@
   "_tests/smoke_quota_runtime_integration.js",
   "_tests/smoke_oauth21_persistent_state.js",
   "_tests/smoke_tools_list_cache_directives.js",
-  "_tests/smoke_tools_list_cache_observability.js"
+  "_tests/smoke_tools_list_cache_observability.js",
+  "_tests/smoke_tools_list_changed_runtime.js"
 ]

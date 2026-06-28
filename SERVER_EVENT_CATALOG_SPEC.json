@@ -162,6 +162,34 @@
     {
       "name": "tools_list_cache_directive",
       "status": "active_code_event"
+    },
+    {
+      "name": "tool_surface_state_missing",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_surface_state_loaded",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_surface_state_saved",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_surface_state_load_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_surface_state_save_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tool_surface_changed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "tools_list_changed_emitted",
+      "status": "active_code_event"
     }
   ],
   "rules": {

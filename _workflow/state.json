@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-27T17:45:00+02:00",
+  "updated_at": "2026-06-28T00:20:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -161,12 +161,12 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 60,
+    "env_var_count": 61,
     "http_route_count": 11
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 40
+    "event_count": 47
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
@@ -202,20 +202,22 @@
     {
       "id": "stage14_7_tools_list_cache_diagnostics",
       "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-      "status": "d1c_repo_applied_not_live_loaded",
-      "runtime_restart_required": "required to load D1-C into live TESTS_MCP",
-      "connector_refresh_required": "not required; no tool descriptor/name/schema surface change intended",
+      "status": "d1a_d1b_d1c_repo_applied_not_live_loaded",
+      "runtime_restart_required": "required to load D1-B into live TESTS_MCP",
+      "connector_refresh_required": "observe after restart; initialize capability changed to listChanged=true, but manual refresh may still be needed if host cache ignores notifications",
       "preserve_existing_work_queue": true,
-      "d1c": "observability tools-list cache diagnostics added; live restart required"
+      "d1c": "observability tools-list cache diagnostics added; live restart required",
+      "d1b": "persisted tool surface fingerprint and conditional real listChanged emitter added; live restart required"
     }
   ],
   "tools_list_cache_diagnostics": {
     "id": "stage14_7_tools_list_cache_diagnostics",
     "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-    "status": "d1c_repo_applied_not_live_loaded",
-    "runtime_restart_required": "required to load D1-C into live TESTS_MCP",
-    "connector_refresh_required": "not required; no tool descriptor/name/schema surface change intended",
+    "status": "d1a_d1b_d1c_repo_applied_not_live_loaded",
+    "runtime_restart_required": "required to load D1-B into live TESTS_MCP",
+    "connector_refresh_required": "observe after restart; initialize capability changed to listChanged=true, but manual refresh may still be needed if host cache ignores notifications",
     "preserve_existing_work_queue": true,
-    "d1c": "observability tools-list cache diagnostics added; live restart required"
+    "d1c": "observability tools-list cache diagnostics added; live restart required",
+    "d1b": "persisted tool surface fingerprint and conditional real listChanged emitter added; live restart required"
   }
 }

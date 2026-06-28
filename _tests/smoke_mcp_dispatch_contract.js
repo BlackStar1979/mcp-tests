@@ -181,7 +181,7 @@ function postJson(value) {
       const result = body.result;
       assert.ok(result, "initialize result exists");
       assert.equal(result.protocolVersion, "2025-06-18", "initialize protocolVersion");
-      assert.equal(result.capabilities.tools.listChanged, false, "initialize listChanged");
+      assert.equal(result.capabilities.tools.listChanged, true, "initialize listChanged real emitter advertised");
       assert.equal(result.serverInfo.name, "mcp-tests-response-shape", "initialize serverInfo.name");
       assert.equal(result.serverInfo.version, "0.40.0", "initialize serverInfo.version");
       assert.equal(

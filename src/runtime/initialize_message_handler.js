@@ -14,6 +14,7 @@ function handleInitializeMessage({
   profile,
   tools,
   serverStartId,
+  listChangedEnabled,
   auditLog,
   requestId,
   sessionId,
@@ -41,6 +42,7 @@ function handleInitializeMessage({
     profile,
     tools,
     serverStartId,
+    listChangedEnabled,
   }));
 }
 

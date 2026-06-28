@@ -5,6 +5,7 @@ const { getPluginVisibilityStatus, planPluginVisibility } = require("../src/plug
 const { getSessionToolsetStatus } = require("../src/session_toolset");
 const { getPluginExecutionGovernance } = require("../src/plugin_execution");
 const { getPluginRegistryStatus } = require("../src/plugin_registry");
+const { buildInitializeResponse } = require("../src/runtime/initialize_response");
 
 function read(relativePath) {
   return fs.readFileSync(path.resolve(__dirname, "..", relativePath), "utf8");
@@ -13,11 +14,15 @@ function read(relativePath) {
 (async () => {
   const serverJs = read("server.js");
   const initializeResponseJs = read("src/runtime/initialize_response.js");
-  assert.match(initializeResponseJs, /listChanged:\s*false/);
   assert.equal(serverJs.includes("notifications/tools/list_changed"), false, "server.js must not emit tools/list_changed yet");
   assert.equal(initializeResponseJs.includes("notifications/tools/list_changed"), false, "initialize response builder must not emit tools/list_changed yet");
   assert.equal(/jsonrpc[\s\S]{0,160}notifications\/tools\/list_changed/.test(serverJs), false, "no raw list_changed notification should be present in server.js");
   assert.equal(/jsonrpc[\s\S]{0,160}notifications\/tools\/list_changed/.test(initializeResponseJs), false, "no raw list_changed notification should be present in initialize_response.js");
+
+  const initDefault = buildInitializeResponse({ protocolVersion: "2025-06-18", serverName: "s", serverVersion: "1", connectorShapeVersion: "shape", outputMode: "structured", authMode: "none", profile: "public", tools: [] });
+  assert.equal(initDefault.capabilities.tools.listChanged, false);
+  const initEnabled = buildInitializeResponse({ protocolVersion: "2025-06-18", serverName: "s", serverVersion: "1", connectorShapeVersion: "shape", outputMode: "structured", authMode: "oauth21", profile: "internal", tools: [], listChangedEnabled: true });
+  assert.equal(initEnabled.capabilities.tools.listChanged, true);
 
   const visibility = await getPluginVisibilityStatus({ activeCoreTools: Array.from({ length: 40 }, (_, i) => `core_${i}`) });
   assert.equal(visibility.tool_surface_mutation_enabled, false);

@@ -24,6 +24,9 @@ const { loadServerProfileConfig } = require("../server_profile_loader");
 const { createRestartController } = require("./restart_controller");
 const { createRuntimeRateLimiter } = require("./rate_limit_policy");
 const { DOCS } = require("./static_docs");
+const { buildToolSurfaceFingerprint } = require("../schema_compat");
+const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
+const { createToolsListChangedNotifier } = require("./tools_list_changed_emitter");
 
 const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
 
@@ -142,6 +145,15 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     restartController,
   });
 
+  const toolSurfaceStateFile = env.MCP_TEST_TOOL_SURFACE_STATE_FILE || defaultToolSurfaceStateFile(rootDir);
+  const toolSurfaceState = evaluateToolSurfaceState({
+    stateFile: toolSurfaceStateFile,
+    currentSurface: buildToolSurfaceFingerprint(toolsList()),
+    serverStartId,
+    auditLog,
+  });
+  const listChangedNotifier = createToolsListChangedNotifier({ state: toolSurfaceState, serverStartId });
+
   if (!VALID_OUTPUT_MODES.has(outputMode)) {
     console.error(`Invalid MCP_TEST_OUTPUT_MODE: ${outputMode}`);
     console.error("Allowed values: structured, content-only");
@@ -188,6 +200,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     auditLogPath,
     rateLimiter,
     serverStartId,
+    listChangedNotifier,
   });
 }
 

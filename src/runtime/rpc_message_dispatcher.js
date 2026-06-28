@@ -21,6 +21,7 @@ async function dispatchRpcMessage({
   getOptionalTool,
   rateLimiter,
   serverStartId,
+  listChangedNotifier,
 }) {
   const { id, method, params } = prelude;
 
@@ -37,6 +38,7 @@ async function dispatchRpcMessage({
         profile,
         tools,
         serverStartId,
+        listChangedEnabled: Boolean(listChangedNotifier?.enabled),
         auditLog,
         requestId: context.requestId,
         sessionId: context.sessionId,

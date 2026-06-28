@@ -37,6 +37,7 @@ function runConfiguredRuntime({
   auditLogPath,
   rateLimiter,
   serverStartId,
+  listChangedNotifier,
 }) {
   const { handleMcp } = createMcpRuntimeHandlers({
     serverName,
@@ -52,6 +53,7 @@ function runConfiguredRuntime({
     publicBaseUrl,
     rateLimiter,
     serverStartId,
+    listChangedNotifier,
   });
 
   return runServerLifecycle({

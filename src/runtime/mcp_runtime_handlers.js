@@ -25,6 +25,7 @@ function createMcpRuntimeHandlers({
   publicBaseUrl,
   rateLimiter,
   serverStartId,
+  listChangedNotifier,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
@@ -72,6 +73,7 @@ function createMcpRuntimeHandlers({
       getOptionalTool,
       rateLimiter,
       serverStartId,
+      listChangedNotifier,
     });
   }
 
@@ -87,6 +89,7 @@ function createMcpRuntimeHandlers({
       handleRpcMessage,
       publicBaseUrl,
       sessionStore,
+      listChangedNotifier,
     });
   }
 

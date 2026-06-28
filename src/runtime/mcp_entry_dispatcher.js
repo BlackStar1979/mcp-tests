@@ -24,6 +24,7 @@ async function dispatchMcpEntry({
   handleRpcMessage,
   publicBaseUrl,
   sessionStore,
+  listChangedNotifier,
 }) {
   const sessionId = getRequestSessionId(req);
   if (sessionId === null) {
@@ -58,7 +59,7 @@ async function dispatchMcpEntry({
       handleAuthRejection({ res, auditLog, requestId, sessionId, httpMethod: req.method, authResult, authPolicy });
       return;
     }
-    handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, auditLog });
+    handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, auditLog, listChangedNotifier });
     return;
   }
 

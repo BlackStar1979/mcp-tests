@@ -66,8 +66,7 @@ assert.equal(future.envelope.notification_emitted, false, "bus envelope remains 
 
 const serverJs = read("server.js");
 const initializeResponseJs = read("src/runtime/initialize_response.js");
-assert.match(initializeResponseJs, /listChanged:\s*false/);
 assert.equal(serverJs.includes("notifications/tools/list_changed"), false, "server.js must still not emit list_changed");
-assert.equal(initializeResponseJs.includes("notifications/tools/list_changed"), false, "initialize response builder must still not emit list_changed");
+assert.equal(initializeResponseJs.includes("notifications/tools/list_changed"), false, "initialize response builder must still not emit raw list_changed notification");
 
 console.log("smoke_stage8_36_list_changed_local_harness ok");

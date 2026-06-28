@@ -93,7 +93,8 @@
     "MCP_TEST_RESTART_EXIT_DELAY_MS",
     "MCP_TEST_RESTART_TRIGGER_FILE",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
-    "MCP_TEST_TOKEN_FILE"
+    "MCP_TEST_TOKEN_FILE",
+    "MCP_TEST_TOOL_SURFACE_STATE_FILE"
   ],
   "behavior_refs": {
     "cors": "MCP_TEST_CORS_ALLOW_ORIGIN",
@@ -181,5 +182,10 @@
       "default": "~/.romion/tests_oauth_state.json",
       "purpose": "preserve connector authorization across controlled process restarts"
     }
+  },
+  "tool_surface_state_runtime": {
+    "env": "MCP_TEST_TOOL_SURFACE_STATE_FILE",
+    "default": "_control/tool-surface-state.json",
+    "purpose": "persist last tool surface fingerprint and support conditional tools/list changed notifications for active sessions"
   }
 }
