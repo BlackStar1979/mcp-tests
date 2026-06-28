@@ -74,7 +74,8 @@ assert.ok(JSON.stringify(ledger.get("restart_resilience")).includes("SERVER_RUNT
 assert.match(ledger.get("restart_resilience").repo_current_model, /3008 OAuth21/);
 assert.match(ledger.get("restart_resilience").repo_current_model, /3009 false closeout corrected/);
 
-assert.ok(inventory.recommended_next.some((item) => item.includes("file-triggered restart authority")));
+assert.equal(inventory.recommended_next.some((item) => item.includes("restart authority before touching")), false);
+assert.ok(inventory.recommended_next.some((item) => item.includes("reassess blockers")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 TTL/cacheScope")));
 
 assert.equal(inventory.source_verification.official_final_count, 41);

@@ -8,6 +8,12 @@ Start every repo/workflow session with this sequence:
 4. `_workflow/WORKFLOW_CANON.md`
 5. Any referenced operator decision or machine-readable inventory file.
 
+## Next-step recommendation duty
+
+Every recommendation for the next step must explicitly assess blocker validity, connector refresh need, OAuth21 workbench server `3008` restart need, and whether `3008` can be restarted by the assistant without asking the operator.
+
+Current rule: the assistant can restart TESTS_MCP/OAuth21 workbench server on port `3008` when the active workflow step and operator intent authorize it. Do not ask the operator to restart `3008`. Connector refresh is separate and must be requested only when materially required by connector/UI truth, surface change, or diagnostic need.
+
 ## `_workflow/state.json`
 
 `state.json` is the compact machine-readable orientation map for the TEST MCP server. It is not a progress log, transcript, diary, scratchpad, or stage-history dump.

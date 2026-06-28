@@ -33,12 +33,12 @@ assert.ok(handler.indexOf("decideRuntimePolicyGate") < handler.indexOf("tool_cal
 assert.equal(state.oauth21_durable_state.status, "implemented_repo_and_live_loaded_on_oauth21_3008");
 assert.equal(state.policy_layers.runtime_policy_gate.runtime_enforced, true);
 assert.equal(state.policy_layers.runtime_policy_gate.live_3008_status, "live_loaded_after_stage14_5");
-assert.equal(state.policy_layers.runtime_policy_gate.public_3009_status, "not_listening_during_stage14_8_reconciliation");
-assert.equal(state.runtime_enforcement_reconciliation.status, "green_repo_live_workflow_reconciled");
-assert.equal(state.runtime_enforcement_reconciliation.oauth21_3008_live_loaded, true);
-assert.equal(state.runtime_enforcement_reconciliation.public_3009_currently_live, false);
-assert.equal(state.runtime_enforcement_reconciliation.runtime_restart_required, false);
-assert.equal(state.runtime_enforcement_reconciliation.connector_refresh_required, false);
+assert.equal(state.policy_layers.runtime_policy_gate.public_3009_status, "not_currently_live");
+assert.equal(state.current_runtime_truth.oauth21_3008.runtime_gate_live_loaded_after_stage14_5, true);
+assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
+assert.equal(Object.hasOwn(state, "runtime_enforcement_reconciliation"), false);
 
 assert.ok(canon.includes("Stage 14.8 runtime enforcement state reconciliation green"));
 assert.ok(canon.includes("public 3009 is not currently live"));

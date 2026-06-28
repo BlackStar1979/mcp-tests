@@ -377,9 +377,9 @@
         "SEP-2575"
       ],
       "target_lifecycle": "operational_implication",
-      "repo_current_model": "SERVER_RUNTIME_TOPOLOGY_SPEC.json now defines the active topology and marks restart authority as missing_not_recovered; 3008 OAuth21 live-load remains blocked until authority is restored; 3009 false closeout corrected and must not recur.",
+      "repo_current_model": "SERVER_RUNTIME_TOPOLOGY_SPEC.json defines active topology; 3008 OAuth21 is supervisor-managed and live-loaded after Stage 14.5; public 3009 is not currently live locally; 3009 false closeout corrected and must not recur.",
       "implementation_status": "partial",
-      "migration_path": "recover file-triggered restart authority before touching 3008; stateless direction reduces dependence on session/process lifetime",
+      "migration_path": "use supervisor-controlled 3008 restart only when a workflow step and operator intent authorize it; stateless direction reduces dependence on session/process lifetime",
       "checklist": [
         {
           "item": "record false closeout correction",
@@ -388,11 +388,13 @@
         },
         {
           "item": "recover or recreate file-triggered restart authority",
-          "status": "pending"
+          "status": "done",
+          "evidence": "SERVER_RUNTIME_TOPOLOGY_SPEC.json restart_authority.state=repo_supervisor_authority_live_loaded_on_3008"
         },
         {
           "item": "prove OAuth21 3008 restart preserves startup arguments",
-          "status": "pending"
+          "status": "done",
+          "evidence": "oauth21_3008_supervisor_live_migration_2026-06-26.md and active server_start_id 2026-06-28T16:18:17.295Z"
         },
         {
           "item": "create machine-readable runtime topology/restart authority boundary",
@@ -408,7 +410,7 @@
         "operator-D7"
       ],
       "target_lifecycle": "operational_implication",
-      "repo_current_model": "Stage14.5 gate committed; OAuth21 live-load pending restart authority",
+      "repo_current_model": "Stage14.5 gate committed and OAuth21 3008 live-loaded after later supervisor-managed restart; no current restart-authority blocker remains for 3008.",
       "implementation_status": "partial",
       "migration_path": "continue as separately approved security work with negative controls and audit receipts",
       "checklist": [
@@ -419,7 +421,8 @@
         },
         {
           "item": "OAuth21 3008 runtime restart/load validation",
-          "status": "pending"
+          "status": "done",
+          "evidence": "stage14_8_runtime_enforcement_state_reconciliation.md"
         }
       ]
     }
@@ -463,11 +466,10 @@
     }
   ],
   "recommended_next": [
-    "Restore or implement file-trigger/supervisor restart authority defined by SERVER_RUNTIME_TOPOLOGY_SPEC.json before any OAuth21 3008 live-load work.",
+    "For every next-step recommendation, reassess blockers, connector refresh, and whether OAuth21 3008 restart is required; assistant may restart 3008 when workflow and operator intent authorize it.",
     "Triage 19 adjacent runtime-contract SEPs and 7 auth/security SEPs into dedicated ledgers or explicit non-target decisions.",
     "Do not remove current stable-compatible session code before S2 target selection.",
     "Treat this file as a living SEP-driven checklist.",
-    "Recover or recreate file-triggered restart authority before touching OAuth21 3008.",
     "Implement C1 cancellation context plumbing unless operator reprioritizes protocol migration.",
     "Design hotplug/list lifecycle with SEP-2549 TTL/cacheScope and SEP-2575 subscriptions/listen."
   ],

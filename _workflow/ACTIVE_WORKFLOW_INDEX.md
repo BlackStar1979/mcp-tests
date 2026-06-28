@@ -42,12 +42,12 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_183`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_184`.
 - Public section count: `6`.
-- Authenticated smoke count: `183`.
+- Authenticated smoke count: `184`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
-- Stage 14 implementation approval: false.
+- Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
 
 Checkpoint topology:
 
@@ -148,11 +148,14 @@ Current records:
 - `stage14_8_runtime_enforcement_state_reconciliation.md`
   - Stage 14.8 runtime enforcement state reconciliation. It records repo-applied Stage 14.5 runtime gate, OAuth21 3008 live-loaded status after later restart, public 3009 currently not listening, unchanged connector surface, and no restart/refresh boundary.
 
+- `stage14_9_workflow_truth_repair.md`
+  - Stage 14.9 workflow truth repair / state compaction. It records the operator rule that every next-step recommendation must reassess blocker validity, connector refresh, and workbench restart; it also records that the assistant can restart the workbench when workflow and operator intent authorize it.
+
 ## Active remaining work queue
 
-Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
+Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Runtime Enforcement state reconciliation - Stage 14.8 green; repo-applied runtime gate is live-loaded on OAuth21 3008, public 3009 is not currently live, and no restart/connector refresh was performed.
+1. Workflow truth repair / state compaction - Stage 14.9 green; state.json is compact orientation map again, Stage 14.8 remains current runtime-enforcement truth, and future recommendations must reassess blockers, connector refresh, and workbench restart.
 2. Cooperative Tool Cancellation C3.
 3. Event-driven Hotplug Lifecycle.
 4. Sessionless / Explicit State Handles Target Selection.
