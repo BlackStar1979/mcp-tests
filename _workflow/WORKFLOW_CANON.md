@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_163`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_182`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `158`.
+- Latest validated authenticated smoke count: `182`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -52,9 +52,9 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 4. Sessionless / Explicit State Handles Target Selection.
 5. Legacy Retired Auth Test Archive/Cleanup.
 6. CRLF Batch Normalization.
-7. Tools/list cache diagnostics D1 - D1-A/D1-B/D1-C repo-applied/not live-loaded; do not fake listChanged or refresh connector merely because D1-A exists.
+7. Tools/list cache diagnostics D1 - D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008; connector-visible map is in sync 43/43; current host/cache behavior still omits tools/list after initialize for the active server start; do not fake listChanged or refresh connector merely because D1 is live.
 
-Next recommended action: review the external server audit before applying Stage 14.7 / Sprint D1 tools-list cache diagnostics. No further runtime implementation, deploy, restart, connector refresh, fake listChanged emission, sessionless migration, or CRLF normalization is approved merely by listing the plan.
+Next recommended action: for Stage 14.7, observe whether a manual connector-tools refresh causes `tools_list_served` and `tools_list_cache_directive` for the active `server_start_id`; do not restart runtime, fake listChanged emission, change tool names, or refresh connector merely because D1 is live. Other active queue items remain unchanged and require separate operator decisions.
 
 ## 4. Runtime architecture
 

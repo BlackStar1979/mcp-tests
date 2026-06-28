@@ -19,7 +19,7 @@ assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Closed historical stages and historical plans below are retained for traceability, not active next-work lists."));
 
 assert.ok(canon.includes("Latest validated public section count: `6`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `158`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `182`"));
 assert.ok(canon.includes("## 3A. Current active work queue"));
 assert.ok(canon.includes("Workflow file count is not a project-progress metric."));
 assert.ok(canon.includes("No Stage 14 implementation approval is recorded."));

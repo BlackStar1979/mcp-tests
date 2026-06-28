@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-28T00:20:00+02:00",
+  "updated_at": "2026-06-28T18:54:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -202,22 +202,28 @@
     {
       "id": "stage14_7_tools_list_cache_diagnostics",
       "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-      "status": "d1a_d1b_d1c_repo_applied_not_live_loaded",
-      "runtime_restart_required": "required to load D1-B into live TESTS_MCP",
-      "connector_refresh_required": "observe after restart; initialize capability changed to listChanged=true, but manual refresh may still be needed if host cache ignores notifications",
+      "status": "d1a_d1b_d1c_repo_applied_live_validated_baseline_same_fingerprint",
+      "runtime_restart_required": "not required for current live validation; TESTS_MCP 3008 current server_start_id 2026-06-28T16:18:17.295Z already shows D1-B state tracking live",
+      "connector_refresh_required": "not required for current unchanged surface; connector-visible map comparison is in_sync 43/43; manual refresh remains diagnostic only for observing a fresh tools/list RPC",
       "preserve_existing_work_queue": true,
-      "d1c": "observability tools-list cache diagnostics added; live restart required",
-      "d1b": "persisted tool surface fingerprint and conditional real listChanged emitter added; live restart required"
+      "d1c": "live validated; observability reports initialize plus tools/call without tools/list for current server_start_id",
+      "d1b": "live validated; tool surface state load/save observed; previous/current fingerprint match, so no surface-change notification expected"
     }
   ],
   "tools_list_cache_diagnostics": {
     "id": "stage14_7_tools_list_cache_diagnostics",
     "record": "_workflow/operator_decisions/stage14_7_tools_list_cache_diagnostics_plan.md",
-    "status": "d1a_d1b_d1c_repo_applied_not_live_loaded",
-    "runtime_restart_required": "required to load D1-B into live TESTS_MCP",
-    "connector_refresh_required": "observe after restart; initialize capability changed to listChanged=true, but manual refresh may still be needed if host cache ignores notifications",
+    "status": "d1a_d1b_d1c_repo_applied_live_validated_baseline_same_fingerprint",
+    "live_server_start_id": "2026-06-28T16:18:17.295Z",
+    "live_tool_surface_fingerprint": "476c7d832021acb9",
+    "live_tool_names_hash": "8b62ecaf89227335",
+    "live_tool_count": 43,
+    "connector_map_status": "in_sync_43_of_43",
+    "host_cache_status": "tools_call_after_initialize_without_tools_list_for_current_start",
+    "runtime_restart_required": "not required for current live validation",
+    "connector_refresh_required": "not required for current unchanged surface; diagnostic-only if tools/list observation must be forced",
     "preserve_existing_work_queue": true,
-    "d1c": "observability tools-list cache diagnostics added; live restart required",
-    "d1b": "persisted tool surface fingerprint and conditional real listChanged emitter added; live restart required"
+    "d1c": "live validated; tools-list cache diagnostics active",
+    "d1b": "live validated; state tracking active, baseline same fingerprint, no notification expected"
   }
 }

@@ -1,6 +1,6 @@
 # Stage 14.7 / Sprint D1 - tools/list cache diagnostics plan
 
-Status: D1-A/D1-B/D1-C REPO APPLIED / NOT LIVE LOADED
+Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON TESTS_MCP 3008
 Date: 2026-06-27
 
 ## Problem statement
@@ -118,7 +118,7 @@ Package D1-B, only after D1-A evidence:
 
 ## D1-A apply closeout
 
-Status: repo-applied, not live-loaded.
+Status: repo-applied, live-validated on TESTS_MCP 3008.
 
 Implemented after external server audit review:
 
@@ -130,11 +130,11 @@ Implemented after external server audit review:
 - listChanged remains false; no fake list_changed notification was added;
 - notifications/stream/ready was not implemented because it is not part of the approved D1-A scope.
 
-Live implication: TESTS_MCP must be supervisor-restarted with controlled code 43 before D1-A behavior is live on 3008. Connector refresh is not required unless descriptor names/count/schema change after validation.
+Live status: D1-A behavior is live on TESTS_MCP 3008. Current validation observed runtime fingerprint `476c7d832021acb9`, tool names hash `8b62ecaf89227335`, tool count `43`, and prior tools/list cache directive `ttlMs=0`, `cacheScope=private`. Connector refresh is not required for the current unchanged tool surface.
 
 ## D1-C observability closeout
 
-Status: repo-applied, not live-loaded.
+Status: repo-applied, live-validated on TESTS_MCP 3008.
 
 Implemented:
 
@@ -144,11 +144,11 @@ Implemented:
 - diagnostic reports last initialize, last tools/list RPC, last tools_list_served, last cache directive, last tool_call_start, current surface fingerprint, and per-current-start counters;
 - no listChanged behavior changed; no connector refresh performed.
 
-Live implication: TESTS_MCP requires controlled restart code 43 before D1-C is live on 3008.
+Live status: D1-C is live on TESTS_MCP 3008. Current observability classifies the active host behavior as `tools_call_after_initialize_without_tools_list`: initialize and tools/call were observed for current `server_start_id`, but tools/list was not observed for that start. This remains a host/cache behavior signal, not a runtime/OAuth failure.
 
 ## D1-B conditional listChanged closeout
 
-Status: repo-applied, not live-loaded.
+Status: repo-applied, live-validated on TESTS_MCP 3008.
 
 Implemented:
 
@@ -170,6 +170,6 @@ Validation:
 - `smoke_stage8_35_list_changed_notification_bus_dry_run`;
 - `smoke_stage8_36_list_changed_local_harness`;
 - `matrix_check`;
-- `node _tests/run_all_smokes.js --skip-network` with public=6 and tests_authenticated=181.
+- `node _tests/run_all_smokes.js --skip-network` with public=6 and tests_authenticated=182 after adding `smoke_stage14_7_tools_list_cache_live_validation`.
 
-Live implication: TESTS_MCP must be restarted with controlled code 43 before D1-B is active on 3008. Because initialize capability changed from listChanged=false to true, connector/tool discovery behavior should be observed after restart; manual connector refresh may still be needed because host-side cache behavior is not controlled by the server.
+Live status: D1-B is active on TESTS_MCP 3008. Audit evidence observed `tool_surface_state_missing`, `tool_surface_state_loaded`, and `tool_surface_state_saved`. Current `_control/tool-surface-state.json` records matching previous/current fingerprint `476c7d832021acb9`, so no `tool_surface_changed` and no `tools_list_changed_emitted` are expected. Connector-visible map comparison is `in_sync` at `43/43`; manual connector refresh is not required for the current unchanged surface, but remains a diagnostic action if future host tools/list observation is needed.

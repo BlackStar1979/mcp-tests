@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after workflow navigation hygiene: `ok_0_40_0_6_158` expected after `_tests/smoke_workflow_navigation_hygiene.js` enters run_all.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_182`.
 - Public section count: `6`.
-- Authenticated smoke count: `158`.
+- Authenticated smoke count: `182`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 implementation approval: false.
@@ -143,7 +143,7 @@ Current records:
 
 
 - `stage14_7_tools_list_cache_diagnostics_plan.md`
-  - Stage 14.7 / Sprint D1 tools/list cache diagnostics plan. It records SEP-2549 ttlMs/cacheScope direction, fingerprint/serverStartId diagnostics, audit/test requirements, no-fake-listChanged guardrails, and explicit separation from OAuth durability. Status: D1-A/D1-B/D1-C repo-applied/not live-loaded.
+  - Stage 14.7 / Sprint D1 tools/list cache diagnostics plan. It records SEP-2549 ttlMs/cacheScope direction, fingerprint/serverStartId diagnostics, audit/test requirements, no-fake-listChanged guardrails, explicit separation from OAuth durability, and live TESTS_MCP 3008 validation. Status: D1-A/D1-B/D1-C repo-applied/live-validated; connector-visible map is in sync 43/43; current host behavior still shows initialize + tools/call without tools/list for the active server start.
 
 ## Active remaining work queue
 
@@ -155,7 +155,7 @@ Current active queue is maintained in `_workflow/state.json` under `post_stage13
 4. Sessionless / Explicit State Handles Target Selection.
 5. Legacy Retired Auth Test Archive/Cleanup.
 6. CRLF Batch Normalization.
-7. Tools/list cache diagnostics D1: ttlMs/cacheScope, fingerprint/serverStartId, audit, and no-fake-listChanged plan; awaiting external server audit review.
+7. Tools/list cache diagnostics D1: D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008. Connector-visible map is in sync 43/43; current host/cache behavior still omits tools/list after initialize for the active server start.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 
