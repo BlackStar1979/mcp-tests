@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_182`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_183`.
 - Public section count: `6`.
-- Authenticated smoke count: `182`.
+- Authenticated smoke count: `183`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 implementation approval: false.
@@ -145,11 +145,14 @@ Current records:
 - `stage14_7_tools_list_cache_diagnostics_plan.md`
   - Stage 14.7 / Sprint D1 tools/list cache diagnostics plan. It records SEP-2549 ttlMs/cacheScope direction, fingerprint/serverStartId diagnostics, audit/test requirements, no-fake-listChanged guardrails, explicit separation from OAuth durability, live TESTS_MCP 3008 validation, and manual connector refresh observation. Status: D1-A/D1-B/D1-C repo-applied/live-validated; connector-visible map is in sync 43/43; manual connector refresh produced tools/list and cache directive for the active server start.
 
+- `stage14_8_runtime_enforcement_state_reconciliation.md`
+  - Stage 14.8 runtime enforcement state reconciliation. It records repo-applied Stage 14.5 runtime gate, OAuth21 3008 live-loaded status after later restart, public 3009 currently not listening, unchanged connector surface, and no restart/refresh boundary.
+
 ## Active remaining work queue
 
 Current active queue is maintained in `_workflow/state.json` under `post_stage13_hygiene.active_remaining_work` and summarized in `_workflow/operator_decisions/post_stage13_repo_hygiene_audit.md`.
 
-1. Runtime Enforcement Apply Package - No Apply package started; Stage 14.4 apply package draft complete; next is operator review / possible Stage 14.5 apply decision.
+1. Runtime Enforcement state reconciliation - Stage 14.8 green; repo-applied runtime gate is live-loaded on OAuth21 3008, public 3009 is not currently live, and no restart/connector refresh was performed.
 2. Cooperative Tool Cancellation C3.
 3. Event-driven Hotplug Lifecycle.
 4. Sessionless / Explicit State Handles Target Selection.

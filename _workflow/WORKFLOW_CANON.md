@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_182`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_183`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `182`.
+- Latest validated authenticated smoke count: `183`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,7 +46,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. Runtime Enforcement Apply Package - No Apply proposal.
+1. Runtime Enforcement state reconciliation - Stage 14.8 green; repo-applied runtime gate is live-loaded on OAuth21 3008, public 3009 is not currently live, and no restart/connector refresh was performed.
 2. Cooperative Tool Cancellation C3.
 3. Event-driven Hotplug Lifecycle.
 4. Sessionless / Explicit State Handles Target Selection.
@@ -54,7 +54,7 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 6. CRLF Batch Normalization.
 7. Tools/list cache diagnostics D1 - D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008; connector-visible map is in sync 43/43; manual connector refresh caused tools/list and cache directive for the active server start; do not fake listChanged or change tool names merely because D1 is live.
 
-Next recommended action: Stage 14.7 D1 observation is closed. Proceed to Stage 14.x runtime-enforcement state reconciliation: separate repo-applied, live-loaded on OAuth21 3008, public 3009, and workflow-only truth before further implementation. Other active queue items remain unchanged and require separate operator decisions.
+Next recommended action: Stage 14.7 D1 observation is closed; Stage 14.8 runtime enforcement state reconciliation green. Either design a narrow OAuth21 3008 live denial-path probe before execution, or move to Cooperative Tool Cancellation C3. Do not start public 3009 without explicit operator intent.
 
 ## 4. Runtime architecture
 
@@ -448,5 +448,6 @@ Stage 14.3 runtime enforcement apply design review green: `_workflow/operator_de
 Stage 14.4 runtime enforcement apply package draft green: `src/stage14_runtime_enforcement_apply_package_draft.js` and `_tests/smoke_stage14_4_runtime_enforcement_apply_package_draft.js` add a code-backed no-apply draft package for future runtime enforcement. The draft records approval marker template with `approved=false`, exact future diff envelope for `src/runtime/tools_call_handler.js` and future `src/runtime/policy_enforcement_gate.js`, future test plan, denial JSON-RPC shape, `tool_call_policy_denied` audit contract, and restart/connector/baseline/control-plane decisions. Stage12-specific no-apply wording is retired as an active Stage14 blocker while the explicit approval boundary remains. No runtime enforcement apply, runtime-imported code path change, `tools_call_handler.js` wiring, approval marker, runtime policy denial behavior change, allow/deny behavior change, dispatch behavior change, restart, connector refresh, deploy, public connector reconnect, baseline refreeze, hotplug/list_changed emission, sessionless migration, or CRLF normalization was performed.
 
 Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 still requires an OAuth-aware restart to load Stage14.5 runtime code. Connector refresh not required; baseline refreeze not required.
+Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 
 Stage 14.6 inventory repair: sessionless_inventory now tracks SEP-2549/2567/2575/2577/2596 with checklist evidence. Guard: smoke_stage14_6_sep_sessionless_inventory.

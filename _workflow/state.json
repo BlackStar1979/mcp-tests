@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-28T19:06:00+02:00",
+  "updated_at": "2026-06-28T19:35:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -24,7 +24,9 @@
       "auth_mode": "none",
       "profile": "public",
       "expected_tool_count": 13,
-      "public_base_url": "https://mcp-tests.romionologic.dev"
+      "public_base_url": "https://mcp-tests.romionologic.dev",
+      "current_local_status": "not_listening_during_stage14_8_reconciliation",
+      "last_probe": "2026-06-28 local 127.0.0.1:3009 connection refused"
     },
     "authorized": {
       "port": 3008,
@@ -108,7 +110,12 @@
   "policy_layers": {
     "runtime_policy_gate": {
       "source_spec": "SERVER_POLICY_RUNTIME_SPEC.json",
-      "runtime_enforced": true
+      "runtime_enforced": true,
+      "repo_applied_commit": "d299cfa",
+      "live_3008_status": "live_loaded_after_stage14_5",
+      "live_3008_server_start_id": "2026-06-28T16:18:17.295Z",
+      "public_3009_status": "not_listening_during_stage14_8_reconciliation",
+      "live_denial_probe": "not_injected_in_stage14_8"
     },
     "resource_policy": {
       "source_spec": "SERVER_RESOURCE_POLICY_SPEC.json",
@@ -194,9 +201,11 @@
     "restart_limits": "active_persistent_sliding_window"
   },
   "oauth21_durable_state": {
-    "status": "implemented_repo_not_live_loaded_until_controlled_restart",
+    "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "env": "MCP_TEST_OAUTH_STATE_FILE",
-    "default": "~/.romion/tests_oauth_state.json"
+    "default": "~/.romion/tests_oauth_state.json",
+    "live_server_start_id": "2026-06-28T16:18:17.295Z",
+    "evidence": "oauth21_state_loaded observed after controlled restart; current TESTS_MCP is OAuth21/internal on 3008"
   },
   "active_planned_work": [
     {
@@ -208,6 +217,14 @@
       "preserve_existing_work_queue": true,
       "d1c": "live validated; manual connector refresh produced discovery and cache directive for current server_start_id",
       "d1b": "live validated; tool surface state load/save observed; previous/current fingerprint match, so no surface-change notification expected"
+    },
+    {
+      "id": "stage14_8_runtime_enforcement_state_reconciliation",
+      "record": "_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md",
+      "status": "green_repo_live_workflow_reconciled",
+      "runtime_restart_required": false,
+      "connector_refresh_required": false,
+      "preserve_existing_work_queue": true
     }
   ],
   "tools_list_cache_diagnostics": {
@@ -230,5 +247,19 @@
     "last_observed_tools_list_cache_directive_at": "2026-06-28T17:02:47.584Z",
     "last_observed_ttl_ms": 0,
     "last_observed_cache_scope": "private"
+  },
+  "runtime_enforcement_reconciliation": {
+    "id": "stage14_8_runtime_enforcement_state_reconciliation",
+    "record": "_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md",
+    "status": "green_repo_live_workflow_reconciled",
+    "repo_applied_commit": "d299cfa",
+    "oauth21_3008_live_loaded": true,
+    "oauth21_3008_server_start_id": "2026-06-28T16:18:17.295Z",
+    "public_3009_currently_live": false,
+    "connector_surface_changed": false,
+    "runtime_restart_required": false,
+    "connector_refresh_required": false,
+    "live_denial_probe_executed": false,
+    "next_recommended_step": "design narrow OAuth21 3008 live denial-path probe before execution, or move to next active queue item"
   }
 }

@@ -187,5 +187,6 @@
   "_tests/smoke_tools_list_cache_directives.js",
   "_tests/smoke_tools_list_cache_observability.js",
   "_tests/smoke_tools_list_changed_runtime.js",
-  "_tests/smoke_stage14_7_tools_list_cache_live_validation.js"
+  "_tests/smoke_stage14_7_tools_list_cache_live_validation.js",
+  "_tests/smoke_stage14_8_runtime_enforcement_state_reconciliation.js"
 ]
