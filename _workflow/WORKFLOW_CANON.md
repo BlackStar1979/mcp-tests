@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_194`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_195`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `194`.
+- Latest validated authenticated smoke count: `195`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,9 +46,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. S8 isolated sessionless activation/regression run on a higher local port.
+1. S9 OAuth21 3008 sessionless activation trial, still no connector migration.
 
-Next recommended action: S7 SEP-2575 request contract is repo-applied on the hidden `/mcp/sessionless` route. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to S8 isolated sessionless activation/regression run on a higher local port before any OAuth21 3008 activation or connector migration.
+Next recommended action: S8 isolated activation/regression passed on port 3020. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to S9 OAuth21 3008 sessionless activation trial only if operator wants live-load of hidden `/mcp/sessionless`; keep connector migration separate.
 
 ## 4. Runtime architecture
 
@@ -444,6 +444,8 @@ Stage 14.4 runtime enforcement apply package draft green: `src/stage14_runtime_e
 Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 Stage14.5 restart requirement is superseded by Stage 14.8/14.9 evidence and current supervisor authority. Connector refresh not required; baseline refreeze not required.
 Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
+
+S8 isolated sessionless activation regression green: `_workflow/operator_decisions/s8_isolated_sessionless_activation_regression.md` records real local activation on port 3020 with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1`, auth `oauth`, profile `internal`, 43 tools, protocol version `2025-06-18`, and route `/mcp/sessionless`. Results passed: post-only 405, auth-required 401, missing protocol header 400, header/meta mismatch 400, unsupported version JSON-RPC `-32004`, `server/discover`, initialize rejection, state handle create/read/deny/destroy/revoked, audit raw-handle absence across 15 audit lines, temp cleanup, and port close. No OAuth21 3008 restart, public 3009 start, connector refresh, connector route migration, stable `/mcp` removal, or stable session code removal was performed.
 
 S7 SEP-2575 sessionless request contract green: `_workflow/operator_decisions/s7_sep2575_sessionless_request_contract.md` records runtime enforcement on hidden `/mcp/sessionless`: `MCP-Protocol-Version` required, `_meta.io.modelcontextprotocol/protocolVersion` required and must match the header, `_meta.io.modelcontextprotocol/clientInfo` and `_meta.io.modelcontextprotocol/clientCapabilities` required, supported sessionless version `2025-06-18`, unsupported version returns JSON-RPC `-32004` with HTTP 400, and `server/discover` returns `supportedVersions`, `capabilities`, and `serverInfo`. Current `/mcp`, connector surface, OAuth21 3008 activation state, public 3009, and stable session code remain unchanged.
 

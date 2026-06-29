@@ -1183,6 +1183,40 @@
         "server_discover_supported": true,
         "initialize_supported": false
       }
+    },
+    "s8_isolated_activation": {
+      "status": "passed_higher_port_no_connector_change",
+      "port": 3020,
+      "auth": "oauth",
+      "profile": "internal",
+      "tools_count": 43,
+      "protocol_version": "2025-06-18",
+      "route": "/mcp/sessionless",
+      "tests": [
+        "post_only",
+        "auth_required",
+        "missing_header",
+        "version_mismatch",
+        "bad_version",
+        "discover",
+        "initialize_rejected",
+        "create",
+        "read_owner",
+        "deny_other",
+        "destroy",
+        "revoked",
+        "audit_no_raw_handle"
+      ],
+      "audit_lines": 15,
+      "audit_raw_handle_seen": false,
+      "cleanup": {
+        "tmp_exists_after": false,
+        "port_open_after": false
+      },
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "guard": "_tests/smoke_s8_isolated_sessionless_activation_regression.js"
     }
   }
 }
