@@ -1140,6 +1140,20 @@
         ],
         "raw_handle_in_audit_forbidden": true
       }
+    },
+    "s6_legacy_cleanup_and_root_specs_ready": {
+      "status": "complete_no_runtime_change",
+      "legacy_auth_archive": "_tests/archive/legacy_retired_auth",
+      "legacy_auth_archived_count": 17,
+      "legacy_auth_negative_guard": "_tests/smoke_s6_legacy_retired_auth_negative_controls.js",
+      "root_specs_sessionless_ready": true,
+      "root_spec_count": 30,
+      "root_spec_field": "sessionless_ready_review",
+      "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "schema_change_required_now": false,
+      "public_3009_start_required_now": false
     }
   }
 }

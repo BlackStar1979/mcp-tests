@@ -21,5 +21,22 @@
   "runtime_gaps": [
     "MCP roots protocol capability is not exposed as target runtime feature",
     "symlink escape tests need expansion"
-  ]
+  ],
+  "sessionless_ready_review": {
+    "status": "sessionless_ready_reviewed",
+    "date": "2026-06-29",
+    "source_of_truth": "_workflow/sessionless_inventory.json#target_selection_readiness",
+    "workflow_record": "_workflow/operator_decisions/s6_legacy_auth_cleanup_sessionless_ready_review.md",
+    "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js",
+    "current_stable_route": "/mcp",
+    "current_stable_route_status": "legacy_compatible_do_not_remove",
+    "sessionless_workbench_standard_route": "/mcp/sessionless",
+    "sessionless_workbench_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+    "root_spec_runtime_change": false,
+    "connector_visible_surface_changed": false,
+    "connector_refresh_required_now": false,
+    "runtime_restart_required_now": false,
+    "public_3009_start_required_now": false,
+    "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages."
+  }
 }

@@ -195,5 +195,7 @@
   "_tests/smoke_sessionless_target_selection_readiness.js",
   "_tests/smoke_s3_explicit_state_handle_design_rules.js",
   "_tests/smoke_s4_sessionless_runtime_prototype.js",
-  "_tests/smoke_s5_workbench_sessionless_standardization.js"
+  "_tests/smoke_s5_workbench_sessionless_standardization.js",
+  "_tests/smoke_s6_legacy_retired_auth_negative_controls.js",
+  "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js"
 ]

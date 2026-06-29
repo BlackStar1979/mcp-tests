@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_190`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_192`.
 - Public section count: `6`.
-- Authenticated smoke count: `190`.
+- Authenticated smoke count: `192`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -99,6 +99,9 @@ Current records:
 
 - `s5_workbench_sessionless_standardization.md`
   - S5 preparation for deprecating stable session-based `/mcp` as the method for new workbench development and standardizing isolated `/mcp/sessionless` tests as the new workbench method. No runtime change, restart, or connector refresh.
+
+- `s6_legacy_auth_cleanup_sessionless_ready_review.md`
+  - Legacy retired auth test archive/cleanup and root `SERVER_*_SPEC.json` sessionless-ready review. Archives 17 retired access/bearer smoke files, adds consolidated negative controls, and keeps runtime/connector unchanged.
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
@@ -176,8 +179,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Legacy Retired Auth Test Archive/Cleanup.
-2. CRLF Batch Normalization.
+1. CRLF Batch Normalization.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 

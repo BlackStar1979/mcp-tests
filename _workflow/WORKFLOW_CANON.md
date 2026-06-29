@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_190`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_192`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `190`.
+- Latest validated authenticated smoke count: `192`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,10 +46,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. Legacy Retired Auth Test Archive/Cleanup.
-2. CRLF Batch Normalization.
+1. CRLF Batch Normalization.
 
-Next recommended action: S5 workbench standardization is prepared. Previous stable session-based `/mcp` remains legacy-compatible and soft-deprecated only for new workbench development. New workbench standard is isolated `/mcp/sessionless` testing with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1`. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly approves OAuth21 3008 activation or connector migration.
+Next recommended action: Legacy retired auth archive/cleanup and sessionless-ready root spec review are complete. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to CRLF Batch Normalization if still desired.
 
 ## 4. Runtime architecture
 
@@ -445,6 +444,8 @@ Stage 14.4 runtime enforcement apply package draft green: `src/stage14_runtime_e
 Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 Stage14.5 restart requirement is superseded by Stage 14.8/14.9 evidence and current supervisor authority. Connector refresh not required; baseline refreeze not required.
 Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
+
+S6 legacy retired auth cleanup and sessionless-ready spec review green: `_workflow/operator_decisions/s6_legacy_auth_cleanup_sessionless_ready_review.md` records that 17 retired access/bearer smoke files were archived under `_tests/archive/legacy_retired_auth/` with no hard delete, consolidated negative controls now live in `_tests/smoke_s6_legacy_retired_auth_negative_controls.js`, and all 30 root `SERVER*SPEC.json` files carry `sessionless_ready_review`. This is workflow/spec posture only: no runtime code patch, no OAuth21 3008 restart, no public 3009 start, no connector refresh, no connector route migration, and no stable `/mcp` removal.
 
 S5 workbench sessionless standardization green: `_workflow/operator_decisions/s5_workbench_sessionless_standardization.md` records soft deprecation of the stable session-based `/mcp` method for new workbench development only, while preserving `/mcp` as legacy-compatible. `_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization` is authoritative. The new workbench standard is S4 `/mcp/sessionless` with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1` for isolated higher-port tests. OAuth21 3008 activation and connector migration remain separate explicit operator stages. No runtime code change, restart, public 3009 start, or connector refresh was performed.
 
