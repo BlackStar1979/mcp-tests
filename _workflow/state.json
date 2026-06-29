@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T11:20:00+02:00",
+  "updated_at": "2026-06-29T12:05:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -320,6 +320,9 @@
     "s9_live_activation": {
       "status": "active",
       "port": 3008
+    },
+    "s10a_manual_probe_contract": {
+      "status": "manual_pending"
     }
   },
   "legacy_retired_auth_cleanup": {

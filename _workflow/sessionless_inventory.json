@@ -1230,6 +1230,16 @@
       "public_3009_start_required_now": false,
       "stable_mcp_changed": false,
       "guard": "_tests/smoke_s9_oauth21_sessionless_activation_trial.js"
+    },
+    "s10a_manual_probe_contract": {
+      "status": "prepared_manual_evidence_pending",
+      "route": "/mcp/sessionless",
+      "port": 3008,
+      "guard": "_tests/smoke_s10a_manual_live_probe_contract.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "stable_mcp_changed": false
     }
   }
 }

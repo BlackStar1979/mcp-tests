@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_196`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_197`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `196`.
+- Latest validated authenticated smoke count: `197`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,9 +46,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. S10 live authenticated SEP-2575 probes on OAuth21 3008, still no connector migration.
+1. S10B manual evidence ingestion after operator-run sessionless probe.
 
-Next recommended action: S9 activated the hidden `/mcp/sessionless` route on OAuth21 3008. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to S10 live authenticated SEP-2575 probes on 3008 before any connector migration or stable `/mcp` removal.
+Next recommended action: S10B should ingest sanitized manual output from the operator-run sessionless probe. No restart or refresh is required now.
 
 ## 4. Runtime architecture
 
