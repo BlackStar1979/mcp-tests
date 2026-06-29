@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_186`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_187`.
 - Public section count: `6`.
-- Authenticated smoke count: `186`.
+- Authenticated smoke count: `187`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -84,6 +84,9 @@ Current records:
 
 - `p5_sessionless_explicit_state_handles_spec_review.md`
   - Official-source review of stable 2025-11-25 vs Final SEP-2567/2575 and draft sessionless direction.
+
+- `sessionless_target_selection_preparation.md`
+  - Sessionless / Explicit State Handles target-selection preparation. Recommends dual-track: keep current OAuth21 stable-compatible connector route unchanged and prepare a parallel draft/sessionless prototype behind a non-default route or mode. No runtime migration, connector refresh, or restart.
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
@@ -161,7 +164,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Sessionless / Explicit State Handles Target Selection.
+1. Sessionless target operator selection or S3 explicit state handle design rules.
 2. Legacy Retired Auth Test Archive/Cleanup.
 3. CRLF Batch Normalization.
 

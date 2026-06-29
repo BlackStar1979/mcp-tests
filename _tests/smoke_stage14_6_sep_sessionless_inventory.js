@@ -20,7 +20,7 @@ for (const required of [
   assert.ok(inventory.authority_chain.includes(required), `missing authority chain item: ${required}`);
 }
 
-assert.equal(inventory.source_verification.last_verified_date, "2026-06-25");
+assert.equal(inventory.source_verification.last_verified_date, "2026-06-29");
 const seps = new Set(inventory.source_verification.tracked_final_seps.map((item) => item.sep));
 for (const sep of ["SEP-2549", "SEP-2567", "SEP-2575", "SEP-2577", "SEP-2596"]) {
   assert.ok(seps.has(sep), `missing tracked SEP: ${sep}`);
@@ -76,6 +76,9 @@ assert.match(ledger.get("restart_resilience").repo_current_model, /3009 false cl
 
 assert.equal(inventory.recommended_next.some((item) => item.includes("restart authority before touching")), false);
 assert.ok(inventory.recommended_next.some((item) => item.includes("reassess blockers")));
+assert.equal(inventory.target_selection_readiness.status, "prepared_pending_operator_selection");
+assert.equal(inventory.target_selection_readiness.connector_refresh_required_now, false);
+assert.equal(inventory.target_selection_readiness.runtime_restart_required_now, false);
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 TTL/cacheScope")));
 
 assert.equal(inventory.source_verification.official_final_count, 41);

@@ -1,6 +1,6 @@
 {
   "schema_version": "stage14_6-sep-driven-sessionless-inventory-v1",
-  "date": "2026-06-25",
+  "date": "2026-06-29",
   "status": "sep_driven_living_checklist_no_runtime_change",
   "purpose": "SEP-derived, operator-bound, machine-readable implementation checklist for MCP stateless/sessionless migration. Update this file when official SEP status or repo implementation status changes.",
   "authority_chain": [
@@ -18,7 +18,7 @@
     "summary": "D3-D6/D9 direct the workbench toward Sessionless MCP, explicit state handles, no DELETE /mcp teardown, per-request streams/cancellation, and event-driven list lifecycle. D7 directs Resource/Scope Matrix Enforcement as separate approved work."
   },
   "source_verification": {
-    "last_verified_date": "2026-06-25",
+    "last_verified_date": "2026-06-29",
     "source_index": "https://modelcontextprotocol.io/seps#all-seps",
     "tracked_final_seps": [
       {
@@ -87,7 +87,8 @@
     "_tests/smoke_stage12_get_sse_stream.js",
     "_tests/smoke_stage12_pending_request_correlation.js",
     "_tests/smoke_stage12_sampling_roundtrip.js",
-    "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+    "src/sessionless_target_selection_readiness.js"
   ],
   "deprecation_ledger": [
     {
@@ -138,7 +139,8 @@
         },
         {
           "item": "prevent new strategic dependency on transport sessions",
-          "status": "pending"
+          "status": "done",
+          "evidence": "src/sessionless_target_selection_readiness.js / guard prevents full switch and session-code removal before target selection"
         }
       ]
     },
@@ -164,6 +166,11 @@
         {
           "item": "create S2 target-selection decision",
           "status": "pending"
+        },
+        {
+          "item": "prepare S2 target-selection readiness packet",
+          "status": "done",
+          "evidence": "src/sessionless_target_selection_readiness.js"
         }
       ]
     },
@@ -241,8 +248,8 @@
         "SEP-2575"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "full cancellation context plumbing incomplete",
-      "implementation_status": "pending",
+      "repo_current_model": "C1/C2/C3 cancellation path implemented for stable-compatible runtime; JSON-RPC notifications/cancelled and draft transport semantics remain target-selection dependent",
+      "implementation_status": "partial",
       "migration_path": "HTTP stream close cancels that request; timeout remains fallback",
       "checklist": [
         {
@@ -251,7 +258,13 @@
         },
         {
           "item": "implement C1 cancellation context plumbing",
-          "status": "pending"
+          "status": "done",
+          "evidence": "_tests/smoke_stage7_c1_cancellation_context_plumbing.js"
+        },
+        {
+          "item": "implement C2/C3 cancellation guards",
+          "status": "done",
+          "evidence": "_tests/smoke_stage7_c2_client_disconnect_write_guard.js and _tests/smoke_c3_cooperative_tool_cancellation.js"
         }
       ]
     },
@@ -309,8 +322,8 @@
         "SEP-2575"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "static connector surface with manual refresh discipline",
-      "implementation_status": "pending",
+      "repo_current_model": "HPL1-HPL4 reconciled; HPL5 runtime apply prototype remains gated pending explicit operator runtime step",
+      "implementation_status": "partial",
       "migration_path": "event-driven registry plus list_changed and TTL/cacheScope fallback",
       "checklist": [
         {
@@ -319,7 +332,8 @@
         },
         {
           "item": "create hotplug registry design",
-          "status": "pending"
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/event_driven_hotplug_lifecycle.md and src/hotplug_lifecycle_readiness.js"
         }
       ]
     },
@@ -466,12 +480,14 @@
     }
   ],
   "recommended_next": [
+    "Operator should select whether to approve S4 parallel draft/sessionless prototype behind a non-default route or mode; recommendation is yes, while keeping current OAuth21 stable-compatible connector unchanged.",
+    "If operator does not approve runtime prototype yet, next safe non-runtime step is S3 explicit state handle design rules.",
+    "Do not remove current stable-compatible session code before prototype/client support evidence.",
+    "Keep SEP-2549 TTL/cacheScope list freshness in the next sessionless target stage.",
     "For every next-step recommendation, reassess blockers, connector refresh, and whether OAuth21 3008 restart is required; assistant may restart 3008 when workflow and operator intent authorize it.",
     "Triage 19 adjacent runtime-contract SEPs and 7 auth/security SEPs into dedicated ledgers or explicit non-target decisions.",
     "Do not remove current stable-compatible session code before S2 target selection.",
-    "Treat this file as a living SEP-driven checklist.",
-    "Implement C1 cancellation context plumbing unless operator reprioritizes protocol migration.",
-    "Design hotplug/list lifecycle with SEP-2549 TTL/cacheScope and SEP-2575 subscriptions/listen."
+    "Treat this file as a living SEP-driven checklist."
   ],
   "all_seps_index": [
     {
@@ -892,5 +908,20 @@
     "auth_security_adjacent": 7,
     "process_or_governance": 10,
     "unclassified": 0
+  },
+  "target_selection_readiness": {
+    "status": "prepared_pending_operator_selection",
+    "readiness_module": "src/sessionless_target_selection_readiness.js",
+    "guard": "_tests/smoke_sessionless_target_selection_readiness.js",
+    "recommended_target": "parallel_draft_sessionless_prototype_while_keeping_stable_connector_current",
+    "stable_connector_current_target": "keep_current_oauth21_3008_stable_compatible_route",
+    "draft_sessionless_target": "parallel_non_default_route_or_mode_before_connector_migration",
+    "full_switch_now": "not_recommended",
+    "do_not_remove_current_session_code": true,
+    "connector_refresh_required_now": false,
+    "runtime_restart_required_now": false,
+    "schema_change_required_now": false,
+    "public_3009_start_required_now": false,
+    "operator_selection_required_before_runtime_prototype": true
   }
 }
