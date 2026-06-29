@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T13:00:05+02:00",
+  "updated_at": "2026-06-29T14:05:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -58,7 +58,6 @@
     "no_runtime_restart_without_explicit_operator_intent": true,
     "no_connector_refresh_without_explicit_operator_intent": true,
     "do_not_use_generic_restart_for_oauth21_3008": true,
-    "recover_file_trigger_restart_authority_before_3008_live_load": false,
     "do_not_remove_stable_session_code_before_S2_target_selection": true,
     "do_not_use_state_json_as_log": true
   },
@@ -203,9 +202,7 @@
   "oauth21_durable_state": {
     "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "env": "MCP_TEST_OAUTH_STATE_FILE",
-    "default": "~/.romion/tests_oauth_state.json",
-    "live_server_start_id": "2026-06-28T18:29:15.549Z",
-    "evidence": "oauth21_state_loaded observed after controlled restart; current TESTS_MCP is OAuth21/internal on 3008"
+    "default": "~/.romion/tests_oauth_state.json"
   },
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
   "next_step_recommendation_policy": {
@@ -321,13 +318,17 @@
       "status": "active",
       "port": 3008
     },
-    "s10a_manual_probe_contract": {
-      "status": "historical_prepared_only"
-    },
     "s10b_live_authenticated_probe": {
       "status": "passed",
-      "guard": "_tests/smoke_s10b_live_authenticated_sessionless_probe.js",
-      "runtime_restart_required_now": false
+      "guard": "_tests/smoke_s10b_live_authenticated_sessionless_probe.js"
+    },
+    "s11_connector_migration_readiness": {
+      "status": "prepared_no_migration",
+      "guard": "_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "stable_mcp_removal_forbidden_now": true
     }
   },
   "legacy_retired_auth_cleanup": {

@@ -1273,6 +1273,19 @@
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
       "stable_mcp_changed": false
+    },
+    "s11_connector_migration_readiness": {
+      "status": "prepared_no_migration",
+      "record": "_workflow/operator_decisions/s11_connector_migration_readiness_coexistence_boundary.md",
+      "guard": "_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js",
+      "sessionless_route_ready_as_workbench_target": true,
+      "stable_mcp_status": "legacy_compatible_do_not_remove",
+      "connector_migration_requires_separate_operator_decision": true,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "stable_mcp_removal_forbidden_now": true,
+      "next_recommended_step": "S12 connector migration dry-run plan / no refresh"
     }
   }
 }

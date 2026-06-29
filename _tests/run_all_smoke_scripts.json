@@ -203,5 +203,6 @@
   "_tests/smoke_s8_isolated_sessionless_activation_regression.js",
   "_tests/smoke_s9_oauth21_sessionless_activation_trial.js",
   "_tests/smoke_s10a_manual_live_probe_contract.js",
-  "_tests/smoke_s10b_live_authenticated_sessionless_probe.js"
+  "_tests/smoke_s10b_live_authenticated_sessionless_probe.js",
+  "_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js"
 ]
