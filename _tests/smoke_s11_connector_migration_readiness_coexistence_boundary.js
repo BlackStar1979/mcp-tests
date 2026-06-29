@@ -39,12 +39,12 @@ assert.equal(inventory.target_selection_readiness.s11_connector_migration_readin
 assert.equal(inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_removal_forbidden_now, true);
 
 assert.ok(canon.includes("S11 connector migration readiness / stable `/mcp` coexistence boundary green"));
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_200`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `200`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_201`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `201`"));
 assert.ok(canon.includes("S12 connector migration dry-run plan / no refresh"));
-assert.ok(index.includes("Authenticated smoke count: `200`."));
+assert.ok(index.includes("Authenticated smoke count: `201`."));
 assert.ok(index.includes("s11_connector_migration_readiness_coexistence_boundary.md"));
-assert.ok(index.includes("S13 connector migration dry-run execution harness / still no refresh."));
+assert.ok(index.includes("S14 connector refresh approval package / no execution."));
 
 assert.ok(manifest.includes("_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js"));
 

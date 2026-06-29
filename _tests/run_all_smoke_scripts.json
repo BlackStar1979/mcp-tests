@@ -205,5 +205,6 @@
   "_tests/smoke_s10a_manual_live_probe_contract.js",
   "_tests/smoke_s10b_live_authenticated_sessionless_probe.js",
   "_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js",
-  "_tests/smoke_s12_connector_migration_dry_run_plan.js"
+  "_tests/smoke_s12_connector_migration_dry_run_plan.js",
+  "_tests/smoke_s13_connector_migration_dry_run_execution_harness.js"
 ]

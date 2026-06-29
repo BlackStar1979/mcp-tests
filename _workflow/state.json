@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T14:05:00+02:00",
+  "updated_at": "2026-06-29T14:27:56.2988028+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
   "read_order": [
@@ -333,6 +333,14 @@
     "s12_connector_migration_dry_run_plan": {
       "status": "prepared_no_refresh",
       "guard": "_tests/smoke_s12_connector_migration_dry_run_plan.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "connector_migration_performed_now": false
+    },
+    "s13_connector_migration_dry_run_execution_harness": {
+      "status": "executed_no_refresh",
+      "guard": "_tests/smoke_s13_connector_migration_dry_run_execution_harness.js",
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,

@@ -40,14 +40,14 @@ assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_ru
 assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_run_plan.connector_migration_performed_now, false);
 assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_run_plan.next_recommended_step, "S13 connector migration dry-run execution harness / still no refresh");
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_200`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `200`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_201`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `201`"));
 assert.ok(canon.includes("S12 connector migration dry-run plan / no refresh green"));
 assert.ok(canon.includes("S13 connector migration dry-run execution harness / still no refresh"));
-assert.ok(index.includes("Latest full smoke after S12 connector-migration-dry-run-plan guard: `ok_0_40_0_6_200`."));
-assert.ok(index.includes("Authenticated smoke count: `200`."));
+assert.ok(index.includes("Latest full smoke after S13 connector-migration-dry-run-harness guard: `ok_0_40_0_6_201`."));
+assert.ok(index.includes("Authenticated smoke count: `201`."));
 assert.ok(index.includes("s12_connector_migration_dry_run_plan.md"));
-assert.ok(index.includes("S13 connector migration dry-run execution harness / still no refresh."));
+assert.ok(index.includes("S14 connector refresh approval package / no execution."));
 
 assert.ok(manifest.includes("_tests/smoke_s12_connector_migration_dry_run_plan.js"));
 

@@ -1298,6 +1298,18 @@
       "stable_mcp_status": "legacy_compatible_preserved",
       "next_recommended_step": "S13 connector migration dry-run execution harness / still no refresh",
       "alternative_next_step": "S13 connector refresh approval package / no execution"
+    },
+    "s13_connector_migration_dry_run_execution_harness": {
+      "status": "executed_no_refresh",
+      "record": "_workflow/operator_decisions/s13_connector_migration_dry_run_execution_harness.md",
+      "guard": "_tests/smoke_s13_connector_migration_dry_run_execution_harness.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "connector_migration_performed_now": false,
+      "stable_mcp_status": "legacy_compatible_preserved",
+      "next_recommended_step": "S14 connector refresh approval package / no execution",
+      "alternative_next_step": "S14 stable /mcp and /mcp/sessionless coexistence regression hardening"
     }
   }
 }
