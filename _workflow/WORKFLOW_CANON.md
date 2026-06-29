@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_192`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_193`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `192`.
+- Latest validated authenticated smoke count: `193`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,9 +46,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. CRLF Batch Normalization.
+No active remaining work queue item is pending after CRLF Batch Normalization.
 
-Next recommended action: Legacy retired auth archive/cleanup and sessionless-ready root spec review are complete. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to CRLF Batch Normalization if still desired.
+Next recommended action: CRLF Batch Normalization is complete. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. No active queued workflow item remains; propose the next stage explicitly before implementation.
 
 ## 4. Runtime architecture
 
@@ -444,6 +444,8 @@ Stage 14.4 runtime enforcement apply package draft green: `src/stage14_runtime_e
 Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 Stage14.5 restart requirement is superseded by Stage 14.8/14.9 evidence and current supervisor authority. Connector refresh not required; baseline refreeze not required.
 Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
+
+CRLF Batch Normalization and LF Policy green: `_workflow/operator_decisions/crlf_batch_normalization_lf_policy.md` records repo-wide LF normalization and future prevention policy. Before scan found 321 tracked text files with CRLF; after normalization tracked text CRLF count is 0. `.gitattributes` now uses repo-wide `* text=auto eol=lf`, `.editorconfig` enforces `end_of_line = lf`, and PowerShell files are normalized to LF. Guard `_tests/smoke_crlf_batch_normalization_lf_policy.js` checks no tracked text file contains CRLF. No runtime code behavior change, OAuth21 3008 restart, public 3009 start, connector refresh, or MCP-visible schema change was performed.
 
 S6 legacy retired auth cleanup and sessionless-ready spec review green: `_workflow/operator_decisions/s6_legacy_auth_cleanup_sessionless_ready_review.md` records that 17 retired access/bearer smoke files were archived under `_tests/archive/legacy_retired_auth/` with no hard delete, consolidated negative controls now live in `_tests/smoke_s6_legacy_retired_auth_negative_controls.js`, and all 30 root `SERVER*SPEC.json` files carry `sessionless_ready_review`. This is workflow/spec posture only: no runtime code patch, no OAuth21 3008 restart, no public 3009 start, no connector refresh, no connector route migration, and no stable `/mcp` removal.
 

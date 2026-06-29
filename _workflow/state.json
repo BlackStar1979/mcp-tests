@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T09:15:00+02:00",
+  "updated_at": "2026-06-29T09:55:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -319,5 +319,17 @@
     "root_spec_count": 30,
     "field": "sessionless_ready_review",
     "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js"
+  },
+  "crlf_batch_normalization": {
+    "status": "normalized_lf_policy_active",
+    "before_crlf_count": 321,
+    "after_crlf_count": 0,
+    "guard": "_tests/smoke_crlf_batch_normalization_lf_policy.js",
+    "policy_files": [
+      ".gitattributes",
+      ".editorconfig"
+    ],
+    "restart_now": false,
+    "refresh_now": false
   }
 }

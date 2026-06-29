@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_192`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_193`.
 - Public section count: `6`.
-- Authenticated smoke count: `192`.
+- Authenticated smoke count: `193`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -118,6 +118,9 @@ Current records:
 - `stage13_crlf_hygiene_plan.md`
   - Stage 13.3 plan-only CRLF hygiene record. It records the existing .gitattributes policy and current CRLF population, and rejects global renormalization without a separate approved migration.
 
+- `crlf_batch_normalization_lf_policy.md`
+  - CRLF Batch Normalization and LF Policy. Normalizes tracked text files to LF, adds `.editorconfig`, changes `.gitattributes` to repo-wide LF including PowerShell, and adds a guard that rejects CRLF in tracked text.
+
 - Stage 13.3 CRLF hygiene guard
   - `_tests/smoke_stage13_crlf_hygiene_plan.js` guards the plan-only boundary, .gitattributes declarations, state markers, and non-actions.
 
@@ -179,7 +182,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. CRLF Batch Normalization.
+No active remaining work queue item is pending after CRLF Batch Normalization.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 

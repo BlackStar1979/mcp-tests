@@ -197,5 +197,6 @@
   "_tests/smoke_s4_sessionless_runtime_prototype.js",
   "_tests/smoke_s5_workbench_sessionless_standardization.js",
   "_tests/smoke_s6_legacy_retired_auth_negative_controls.js",
-  "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js"
+  "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js",
+  "_tests/smoke_crlf_batch_normalization_lf_policy.js"
 ]

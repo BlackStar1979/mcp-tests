@@ -59,3 +59,7 @@ The Stage 13.3 guard checks that the policy remains plan-only, that .gitattribut
 - no dispatch behavior change
 - no hotplug/list_changed emission
 - no sessionless migration
+
+## Supersession
+
+Superseded by CRLF Batch Normalization and LF Policy on 2026-06-29. Stage 13.3 remains historical evidence for the earlier plan-only boundary; the later approved batch normalization changes repository policy to repo-wide LF, including `*.ps1 text eol=lf`, and records before/after counts in `_workflow/operator_decisions/crlf_batch_normalization_lf_policy.md`.
