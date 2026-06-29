@@ -88,6 +88,9 @@ Current records:
 - `sessionless_target_selection_preparation.md`
   - Sessionless / Explicit State Handles target-selection preparation. Recommends dual-track: keep current OAuth21 stable-compatible connector route unchanged and prepare a parallel draft/sessionless prototype behind a non-default route or mode. No runtime migration, connector refresh, or restart.
 
+- `sessionless_inventory_truth_consolidation.md`
+  - Corrects target-selection preparation by removing duplicate source projection and making `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative SEP/sessionless target source.
+
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
 
@@ -164,7 +167,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Sessionless target operator selection or S3 explicit state handle design rules.
+1. S3 explicit state handle design rules, unless operator explicitly approves S4 parallel draft/sessionless runtime prototype.
 2. Legacy Retired Auth Test Archive/Cleanup.
 3. CRLF Batch Normalization.
 

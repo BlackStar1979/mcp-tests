@@ -46,11 +46,11 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. Sessionless target operator selection or S3 explicit state handle design rules.
+1. S3 explicit state handle design rules, unless operator explicitly approves S4 parallel draft/sessionless runtime prototype.
 2. Legacy Retired Auth Test Archive/Cleanup.
 3. CRLF Batch Normalization.
 
-Next recommended action: Sessionless target selection is prepared, not applied. Before the next step, reassess blockers, connector refresh, and OAuth21 3008 restart. Current blocker assessment: connector refresh is not required and OAuth21 3008 restart is not required now. Recommendation: operator approve S4 parallel draft/sessionless prototype behind a non-default route or mode while keeping current OAuth21 stable-compatible connector unchanged; otherwise proceed to S3 explicit state handle design rules.
+Next recommended action: Sessionless inventory truth is consolidated. Before the next step, reassess blockers, connector refresh, and OAuth21 3008 restart. Current blocker assessment: connector refresh is not required and OAuth21 3008 restart is not required now. Proceed to S3 explicit state handle design rules unless the operator explicitly approves S4 parallel draft/sessionless runtime prototype.
 
 ## 4. Runtime architecture
 
@@ -447,7 +447,7 @@ Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied.
 Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
 
-Sessionless target selection preparation green: `_workflow/operator_decisions/sessionless_target_selection_preparation.md` records source refresh and target-selection readiness. Added `src/sessionless_target_selection_readiness.js`, guard `_tests/smoke_sessionless_target_selection_readiness.js`, and updated `_workflow/sessionless_inventory.json` as checklist. C1/C2/C3 and hotplug are no longer blockers. Recommended target is dual-track: keep current OAuth21 stable-compatible connector unchanged and prepare a parallel draft/sessionless prototype behind a non-default route or mode. No session code removal, POST-only draft mode, `server/discover`, `subscriptions/listen`, connector refresh, public 3009 start, or OAuth21 3008 restart was performed.
+Sessionless target selection preparation green, then truth-consolidated: `_workflow/operator_decisions/sessionless_target_selection_preparation.md` records source refresh and target-selection readiness. `_workflow/operator_decisions/sessionless_inventory_truth_consolidation.md` removes the duplicate source projection and makes `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative source. Guard `_tests/smoke_sessionless_target_selection_readiness.js` reads inventory directly. C1/C2/C3 and hotplug are no longer blockers. Recommended target remains dual-track, but runtime prototype still requires explicit approval.
 
 Event-driven Hotplug Lifecycle green: `_workflow/operator_decisions/event_driven_hotplug_lifecycle.md` records HPL1-HPL4 reconciled and HPL5 gated. Added `src/hotplug_lifecycle_readiness.js`, guard `_tests/smoke_event_driven_hotplug_lifecycle.js`, and `SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json#hotplug_lifecycle_readiness`. No runtime hotplug apply, no real `notifications/tools/list_changed` emission, no runtime `tools/list` mutation, no state-store write, no dynamic import enablement, no connector refresh, no public 3009 start, and no OAuth21 3008 restart was performed.
 

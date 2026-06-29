@@ -87,8 +87,7 @@
     "_tests/smoke_stage12_get_sse_stream.js",
     "_tests/smoke_stage12_pending_request_correlation.js",
     "_tests/smoke_stage12_sampling_roundtrip.js",
-    "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
-    "src/sessionless_target_selection_readiness.js"
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
   ],
   "deprecation_ledger": [
     {
@@ -140,7 +139,7 @@
         {
           "item": "prevent new strategic dependency on transport sessions",
           "status": "done",
-          "evidence": "src/sessionless_target_selection_readiness.js / guard prevents full switch and session-code removal before target selection"
+          "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness and _tests/smoke_sessionless_target_selection_readiness.js"
         }
       ]
     },
@@ -170,7 +169,7 @@
         {
           "item": "prepare S2 target-selection readiness packet",
           "status": "done",
-          "evidence": "src/sessionless_target_selection_readiness.js"
+          "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness"
         }
       ]
     },
@@ -911,7 +910,6 @@
   },
   "target_selection_readiness": {
     "status": "prepared_pending_operator_selection",
-    "readiness_module": "src/sessionless_target_selection_readiness.js",
     "guard": "_tests/smoke_sessionless_target_selection_readiness.js",
     "recommended_target": "parallel_draft_sessionless_prototype_while_keeping_stable_connector_current",
     "stable_connector_current_target": "keep_current_oauth21_3008_stable_compatible_route",
@@ -922,6 +920,19 @@
     "runtime_restart_required_now": false,
     "schema_change_required_now": false,
     "public_3009_start_required_now": false,
-    "operator_selection_required_before_runtime_prototype": true
+    "operator_selection_required_before_runtime_prototype": true,
+    "source_of_truth": "_workflow/sessionless_inventory.json",
+    "truth_consolidation": "inventory_authoritative_no_src_projection",
+    "explicit_state_handle_rules": {
+      "handles_are_tool_design_pattern_not_protocol_feature": true,
+      "handles_are_ordinary_tool_arguments_and_structured_content_fields": true,
+      "opaque_ids_required": true,
+      "possession_is_not_authorization": true,
+      "auth_context_must_be_checked_on_every_handle_use": true,
+      "expiry_and_destroy_semantics_required": true,
+      "useful_expired_handle_errors_required": true,
+      "list_or_recover_tools_recommended": true,
+      "raw_handles_in_audit_must_be_redacted_or_hashed": true
+    }
   }
 }

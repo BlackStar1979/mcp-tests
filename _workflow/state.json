@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T00:15:00+02:00",
+  "updated_at": "2026-06-29T00:45:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -263,13 +263,14 @@
   },
   "sessionless_target_selection": {
     "status": "prepared_pending_operator_selection",
-    "readiness_module": "src/sessionless_target_selection_readiness.js",
     "guard": "_tests/smoke_sessionless_target_selection_readiness.js",
     "recommended_target": "dual_track_stable_current_plus_parallel_draft_prototype",
     "do_not_remove_current_session_code": true,
     "connector_refresh_required_now": false,
     "runtime_restart_required_now": false,
     "schema_change_required_now": false,
-    "public_3009_start_required_now": false
+    "public_3009_start_required_now": false,
+    "source_of_truth": "_workflow/sessionless_inventory.json",
+    "truth_consolidation": "inventory_authoritative_no_src_projection"
   }
 }

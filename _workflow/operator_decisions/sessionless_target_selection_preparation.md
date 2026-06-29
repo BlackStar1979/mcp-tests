@@ -39,8 +39,8 @@ Still valid:
 
 ## Changes
 
-- Added `src/sessionless_target_selection_readiness.js`.
-- Added `_tests/smoke_sessionless_target_selection_readiness.js`.
+- Added then superseded `src/sessionless_target_selection_readiness.js`; later correction removed this duplicate projection.
+- Added `_tests/smoke_sessionless_target_selection_readiness.js`; after correction it reads `_workflow/sessionless_inventory.json` directly.
 - Updated `_workflow/sessionless_inventory.json` as a checklist, not a progress log.
 
 ## Declarations
@@ -68,6 +68,10 @@ Still valid:
 ## Validation
 
 Targeted guards plus full `node _tests/run_all_smokes.js --skip-network` and `git diff --check`.
+
+## Correction
+
+`_workflow/sessionless_inventory.json#target_selection_readiness` is the authoritative sessionless target-selection source. The duplicate `src/sessionless_target_selection_readiness.js` projection was removed by `_workflow/operator_decisions/sessionless_inventory_truth_consolidation.md`.
 
 ## Next recommendation
 
