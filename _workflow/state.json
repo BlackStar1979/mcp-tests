@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T01:20:00+02:00",
+  "updated_at": "2026-06-29T02:05:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -168,12 +168,12 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 61,
-    "http_route_count": 11
+    "env_var_count": 62,
+    "http_route_count": 12
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 48
+    "event_count": 52
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
@@ -278,6 +278,17 @@
       "guard": "_tests/smoke_s3_explicit_state_handle_design_rules.js",
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
+      "schema_change_required_now": false,
+      "public_3009_start_required_now": false
+    },
+    "s4_prototype": {
+      "status": "repo_applied_pending_live_restart",
+      "route": "/mcp/sessionless",
+      "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+      "default_enabled": false,
+      "current_mcp_route_changed": false,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": true,
       "schema_change_required_now": false,
       "public_3009_start_required_now": false
     }

@@ -277,7 +277,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
     }
     auditOAuth("oauth21_access_token_accepted", { subject: item.subject, scope_count: item.scopes.length, access_count: accessTokens.size, refresh_count: refreshTokens.size });
-    return { ok: true, status: 200, error: "", mode: "oauth21", subject: item.subject, scopes: item.scopes };
+    return { ok: true, status: 200, error: "", mode: "oauth21", subject: item.subject, clientId: item.clientId, scopes: item.scopes };
   }
 
   async function handleRoute({ req, res, url }) {

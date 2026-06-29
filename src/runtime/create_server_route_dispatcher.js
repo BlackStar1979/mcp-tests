@@ -26,11 +26,18 @@ async function dispatchCreateServerRoute({
   toolsList,
   authorizationServerMetadataProvider,
   oauth21AuthorizationServer,
+  auditLog,
+  sessionlessPrototypeRouteHandler,
 }) {
   if (oauth21AuthorizationServer) {
     const handled = await oauth21AuthorizationServer.handleRoute({ req, res, url });
     if (handled !== false) return handled;
   }
+  if (url.pathname === "/mcp/sessionless" && sessionlessPrototypeRouteHandler) {
+    const handled = await sessionlessPrototypeRouteHandler.handleRoute({ req, res, url });
+    if (handled !== false) return handled;
+  }
+
   if (url.pathname === "/.well-known/oauth-protected-resource") {
     const { buildProtectedResourceMetadata } = require("./oauth_metadata");
     let authorizationServerMetadata;

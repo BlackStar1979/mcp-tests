@@ -27,6 +27,7 @@ const { DOCS } = require("./static_docs");
 const { buildToolSurfaceFingerprint } = require("../schema_compat");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
 const { createToolsListChangedNotifier } = require("./tools_list_changed_emitter");
+const { createSessionlessPrototypeRouteHandler } = require("./sessionless_prototype_route_handler");
 
 const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
 
@@ -153,6 +154,17 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     auditLog,
   });
   const listChangedNotifier = createToolsListChangedNotifier({ state: toolSurfaceState, serverStartId });
+  const sessionlessPrototypeRouteHandler = createSessionlessPrototypeRouteHandler({
+    env,
+    authPolicy,
+    auditLog,
+    publicBaseUrl,
+    runtimeProfile,
+    serverName: SERVER_NAME,
+    serverVersion: SERVER_VERSION,
+    connectorShapeVersion: CONNECTOR_SHAPE_VERSION,
+  });
+
 
   if (!VALID_OUTPUT_MODES.has(outputMode)) {
     console.error(`Invalid MCP_TEST_OUTPUT_MODE: ${outputMode}`);
@@ -201,6 +213,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     rateLimiter,
     serverStartId,
     listChangedNotifier,
+    sessionlessPrototypeRouteHandler,
   });
 }
 

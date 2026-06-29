@@ -8,7 +8,9 @@
     "src/runtime/server_cli_args.js",
     "src/runtime/create_server_route_dispatcher.js",
     "src/auth/oauth21_authorization_server.js",
-    "src/tool_loader.js"
+    "src/tool_loader.js",
+    "src/runtime/sessionless_prototype_route_handler.js",
+    "src/runtime/state_handle_prototype.js"
   ],
   "cli_flags": [
     "--profile",
@@ -31,7 +33,8 @@
     "/authorize",
     "/oauth/operator-login",
     "/token",
-    "/revoke"
+    "/revoke",
+    "/mcp/sessionless"
   ],
   "env_vars": [
     "MCP_TEST_ACCESS_TRUSTED_PROXY",
@@ -94,7 +97,8 @@
     "MCP_TEST_RESTART_TRIGGER_FILE",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "MCP_TEST_TOKEN_FILE",
-    "MCP_TEST_TOOL_SURFACE_STATE_FILE"
+    "MCP_TEST_TOOL_SURFACE_STATE_FILE",
+    "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE"
   ],
   "behavior_refs": {
     "cors": "MCP_TEST_CORS_ALLOW_ORIGIN",
@@ -102,7 +106,8 @@
     "batch_limit": "MCP_TEST_MAX_BATCH_ITEMS",
     "strict_accept": "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "public_bind_guard": "MCP_TEST_ALLOW_PUBLIC_BIND",
-    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED"
+    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED",
+    "sessionless_prototype": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE"
   },
   "protocol_versions": [
     "2025-06-18",
@@ -187,5 +192,13 @@
     "env": "MCP_TEST_TOOL_SURFACE_STATE_FILE",
     "default": "_control/tool-surface-state.json",
     "purpose": "persist last tool surface fingerprint and support conditional tools/list changed notifications for active sessions"
+  },
+  "sessionless_prototype": {
+    "route": "/mcp/sessionless",
+    "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+    "default_enabled": false,
+    "connector_surface_change": false,
+    "current_mcp_route_changed": false,
+    "purpose": "parallel draft/sessionless runtime prototype behind non-default route"
   }
 }

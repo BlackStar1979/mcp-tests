@@ -194,6 +194,22 @@
     {
       "name": "tools_list_changed_emitted",
       "status": "active_code_event"
+    },
+    {
+      "name": "sessionless_prototype_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sessionless_prototype_auth_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sessionless_prototype_parse_error",
+      "status": "active_code_event"
+    },
+    {
+      "name": "sessionless_prototype_rpc",
+      "status": "active_code_event"
     }
   ],
   "rules": {

@@ -17,6 +17,7 @@ function runSelfTestBranch({
   documentRuntimeContext,
   auditLogPath,
   serverStartId,
+  sessionlessPrototypeRouteHandler,
   logger = console.log,
   errorLogger = console.error,
   exit = process.exit,
@@ -78,6 +79,7 @@ function startRuntimeServer({
   labelsVersion,
   auditLogPath,
   serverStartId,
+  sessionlessPrototypeRouteHandler,
   logger = console.log,
   errorLogger = console.error,
   exit = process.exit,
@@ -108,6 +110,8 @@ function startRuntimeServer({
     toolsList,
     authorizationServerMetadataProvider,
     oauth21AuthorizationServer,
+    auditLog,
+    sessionlessPrototypeRouteHandler,
   });
 
   return startServer({

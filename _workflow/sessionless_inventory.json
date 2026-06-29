@@ -140,6 +140,11 @@
           "item": "prevent new strategic dependency on transport sessions",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness and _tests/smoke_sessionless_target_selection_readiness.js"
+        },
+        {
+          "item": "keep current stable session route separate from S4 prototype",
+          "status": "done",
+          "evidence": "_tests/smoke_s4_sessionless_runtime_prototype.js"
         }
       ]
     },
@@ -152,7 +157,7 @@
       ],
       "target_lifecycle": "legacy_compat",
       "repo_current_model": "in-memory session store",
-      "implementation_status": "blocked_pending_target_selection",
+      "implementation_status": "partial",
       "migration_path": "parallel sessionless target with request-scoped or explicit state handles",
       "checklist": [
         {
@@ -170,6 +175,11 @@
           "item": "prepare S2 target-selection readiness packet",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness"
+        },
+        {
+          "item": "implement S4 hidden sessionless prototype",
+          "status": "done",
+          "evidence": "_tests/smoke_s4_sessionless_runtime_prototype.js"
         }
       ]
     },
@@ -1048,6 +1058,18 @@
           "handle-bearing tools require S3 compliance guard"
         ]
       }
+    },
+    "s4_sessionless_runtime_prototype": {
+      "status": "repo_applied_pending_live_restart",
+      "route": "/mcp/sessionless",
+      "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+      "default_enabled": false,
+      "current_mcp_route_changed": false,
+      "current_oauth21_connector_route_changed": false,
+      "session_code_removed": false,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": true,
+      "guard": "_tests/smoke_s4_sessionless_runtime_prototype.js"
     }
   }
 }
