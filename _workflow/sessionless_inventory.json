@@ -933,6 +933,121 @@
       "useful_expired_handle_errors_required": true,
       "list_or_recover_tools_recommended": true,
       "raw_handles_in_audit_must_be_redacted_or_hashed": true
+    },
+    "s3_explicit_state_handle_design_rules": {
+      "status": "prepared_no_runtime_change",
+      "source_of_truth": "_workflow/sessionless_inventory.json",
+      "guard": "_tests/smoke_s3_explicit_state_handle_design_rules.js",
+      "purpose": "prepare explicit state handle policy before S4 runtime prototype",
+      "protocol_boundary": "tool_design_pattern_not_wire_protocol_feature",
+      "current_runtime_behavior_changed": false,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "schema_change_required_now": false,
+      "public_3009_start_required_now": false,
+      "handle_model": {
+        "handle_value": "opaque bearer reference, never self-authorizing",
+        "handle_is_secret": true,
+        "recommended_id_prefix": "esh_",
+        "min_entropy_bits": 128,
+        "max_raw_length": 256,
+        "parse_policy": "do_not_encode_authorization_or_business_state_in_handle",
+        "allowed_handle_kinds": [
+          "document_context",
+          "result_page",
+          "task",
+          "subscription_cursor",
+          "tool_workflow_state"
+        ],
+        "required_record_fields": [
+          "handle_id_hash",
+          "kind",
+          "owner_subject_hash",
+          "client_id_hash",
+          "audience",
+          "profile",
+          "scopes",
+          "issued_at",
+          "expires_at",
+          "status",
+          "state_version",
+          "state_payload_ref"
+        ]
+      },
+      "authorization_rules": {
+        "possession_is_not_authorization": true,
+        "validate_on_every_use": true,
+        "bind_to": [
+          "oauth_subject",
+          "oauth_client_id",
+          "audience",
+          "profile",
+          "authorized_scopes"
+        ],
+        "reject_cross_profile_use": true,
+        "reject_missing_or_weaker_scope": true,
+        "allow_delegation": false,
+        "require_current_auth_context": true
+      },
+      "lifecycle_rules": {
+        "create_requires_authorized_tool_result": true,
+        "default_ttl_ms": 1800000,
+        "max_ttl_ms": 86400000,
+        "idle_timeout_ms": 1800000,
+        "refresh_requires_reauthorization": true,
+        "destroy_required_for_user_visible_long_lived_state": true,
+        "revoke_on_auth_context_loss": true,
+        "expired_or_revoked_handles_must_fail_closed": true
+      },
+      "tool_contract_rules": {
+        "handles_returned_in_structured_content_only": true,
+        "raw_handles_never_in_logs_or_human_text": true,
+        "handle_arguments_must_be_named": "state_handle",
+        "tools_must_document_handle_kind": true,
+        "handle_bearing_tools_must_define_destroy_or_expire_path": true,
+        "list_or_recover_tool_required_before_durable_state": true
+      },
+      "audit_redaction_rules": {
+        "raw_handle_forbidden": true,
+        "audit_handle_hash_only": true,
+        "hash_algorithm": "sha256_or_hmac_sha256",
+        "include_kind_status_and_age_bucket": true,
+        "forbid_first_last_character_logging": true,
+        "redact_payload_ref": true
+      },
+      "error_contract": {
+        "invalid": "state_handle_invalid",
+        "expired": "state_handle_expired",
+        "revoked": "state_handle_revoked",
+        "not_found": "state_handle_not_found",
+        "unauthorized": "state_handle_unauthorized",
+        "scope_denied": "state_handle_scope_denied",
+        "kind_mismatch": "state_handle_kind_mismatch"
+      },
+      "s4_readiness_gate": {
+        "runtime_code_required_for_s4": true,
+        "implement_behind_non_default_route_or_mode": true,
+        "keep_current_oauth21_3008_stable_route_unchanged": true,
+        "do_not_remove_session_code_in_s4": true,
+        "connector_refresh_before_s4": false,
+        "restart_3008_after_runtime_code": true,
+        "required_s4_components": [
+          "state_handle_store_adapter",
+          "handle_authorization_gate",
+          "handle_redaction_utility",
+          "negative_controls"
+        ]
+      },
+      "blocker_reassessment": {
+        "stale_blockers_removed": [
+          "missing explicit handle rules before S4"
+        ],
+        "valid_blockers_remaining": [
+          "S4 runtime prototype still requires explicit operator approval",
+          "current OAuth21 connector remains stable-compatible",
+          "handle-bearing tools require S3 compliance guard"
+        ]
+      }
     }
   }
 }

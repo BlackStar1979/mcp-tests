@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_187`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_188`.
 - Public section count: `6`.
-- Authenticated smoke count: `187`.
+- Authenticated smoke count: `188`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -90,6 +90,9 @@ Current records:
 
 - `sessionless_inventory_truth_consolidation.md`
   - Corrects target-selection preparation by removing duplicate source projection and making `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative SEP/sessionless target source.
+
+- `s3_explicit_state_handle_design_rules.md`
+  - S3 no-runtime preparation for S4. Inventory is authoritative for opaque handle model, authorization binding, lifecycle, audit redaction, error contract, and S4 readiness gate. No connector refresh or restart.
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
@@ -167,7 +170,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. S3 explicit state handle design rules, unless operator explicitly approves S4 parallel draft/sessionless runtime prototype.
+1. S4 parallel draft/sessionless runtime prototype behind a non-default route or mode.
 2. Legacy Retired Auth Test Archive/Cleanup.
 3. CRLF Batch Normalization.
 
