@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T07:42:00+02:00",
+  "updated_at": "2026-06-29T08:25:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -293,6 +293,20 @@
       "public_3009_start_required_now": false,
       "live_3008_server_start_id": "2026-06-29T05:38:06.443Z",
       "default_disabled_probe": "GET /mcp/sessionless -> 404 Not found"
+    },
+    "s5_workbench_standardization": {
+      "status": "prepared_no_runtime_change",
+      "source_of_truth": "_workflow/sessionless_inventory.json",
+      "guard": "_tests/smoke_s5_workbench_sessionless_standardization.js",
+      "previous_method_deprecation": "soft_deprecated_for_new_workbench_development_only",
+      "new_standard_route": "/mcp/sessionless",
+      "new_standard_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+      "oauth21_3008_activation_requires_separate_stage": true,
+      "connector_migration_requires_separate_decision_and_refresh": true,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "schema_change_required_now": false,
+      "public_3009_start_required_now": false
     }
   }
 }

@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_189`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_190`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `189`.
+- Latest validated authenticated smoke count: `190`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -49,7 +49,7 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 1. Legacy Retired Auth Test Archive/Cleanup.
 2. CRLF Batch Normalization.
 
-Next recommended action: S4 is live-loaded on OAuth21 3008 with the hidden prototype route default-disabled. Current assessment: connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requests S4 prototype route activation testing with the env flag.
+Next recommended action: S5 workbench standardization is prepared. Previous stable session-based `/mcp` remains legacy-compatible and soft-deprecated only for new workbench development. New workbench standard is isolated `/mcp/sessionless` testing with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1`. Connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly approves OAuth21 3008 activation or connector migration.
 
 ## 4. Runtime architecture
 
@@ -445,6 +445,8 @@ Stage 14.4 runtime enforcement apply package draft green: `src/stage14_runtime_e
 Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied. Public 3009 auth:none was restarted/replaced as pid=22804 and validated by health/tools-list. OAuth21 3008 was not restarted; TESTS_MCP runtime status observes 3008 read-only, not the restarted 3009 process. OAuth21 3008 Stage14.5 restart requirement is superseded by Stage 14.8/14.9 evidence and current supervisor authority. Connector refresh not required; baseline refreeze not required.
 Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
+
+S5 workbench sessionless standardization green: `_workflow/operator_decisions/s5_workbench_sessionless_standardization.md` records soft deprecation of the stable session-based `/mcp` method for new workbench development only, while preserving `/mcp` as legacy-compatible. `_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization` is authoritative. The new workbench standard is S4 `/mcp/sessionless` with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1` for isolated higher-port tests. OAuth21 3008 activation and connector migration remain separate explicit operator stages. No runtime code change, restart, public 3009 start, or connector refresh was performed.
 
 S4 sessionless runtime prototype live-loaded: `_workflow/operator_decisions/s4_sessionless_runtime_prototype.md` records hidden `/mcp/sessionless` route gated by `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE`, default disabled. Added `src/runtime/state_handle_prototype.js` and `src/runtime/sessionless_prototype_route_handler.js`; OAuth21 auth result now includes `clientId` for state-handle binding. Current `/mcp`, stable session code, connector-visible tool surface, and connector refresh remain unchanged. OAuth21 3008 was restarted through supervisor; live server_start_id is `2026-06-29T05:38:06.443Z`. The route remains default-disabled without `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE`; connector-visible tool surface remains 43 tools with hash `8b62ecaf89227335`; connector refresh is not required.
 

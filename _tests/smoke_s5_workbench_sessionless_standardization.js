@@ -1,0 +1,56 @@
+"use strict";
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+const ROOT = path.resolve(__dirname, "..");
+function readJson(rel) { return JSON.parse(fs.readFileSync(path.join(ROOT, rel), "utf8")); }
+function read(rel) { return fs.readFileSync(path.join(ROOT, rel), "utf8"); }
+const inventory = readJson("_workflow/sessionless_inventory.json");
+const s5 = inventory.target_selection_readiness.s5_workbench_deprecation_standardization;
+assert.ok(s5);
+assert.equal(s5.status, "prepared_no_runtime_change");
+assert.equal(s5.source_of_truth, "_workflow/sessionless_inventory.json");
+assert.equal(s5.guard, "_tests/smoke_s5_workbench_sessionless_standardization.js");
+assert.equal(s5.current_stable_route, "/mcp");
+assert.equal(s5.current_stable_route_status, "legacy_compatible_do_not_remove");
+assert.equal(s5.previous_method_deprecation, "soft_deprecated_for_new_workbench_development_only");
+assert.equal(s5.new_standard_route, "/mcp/sessionless");
+assert.equal(s5.new_standard_env, "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE");
+assert.equal(s5.workbench_standardization_status, "standard_for_isolated_higher_port_tests");
+assert.equal(s5.default_3008_enabled_now, false);
+assert.equal(s5.connector_visible_surface_changed, false);
+assert.equal(s5.connector_refresh_required_now, false);
+assert.equal(s5.runtime_restart_required_now, false);
+assert.equal(s5.schema_change_required_now, false);
+assert.equal(s5.public_3009_start_required_now, false);
+assert.equal(s5.stress_evidence.port, 3019);
+assert.equal(s5.stress_evidence.n_per_class, 300);
+assert.equal(s5.stress_evidence.total_calls, 900);
+assert.equal(s5.stress_evidence.failures, 0);
+assert.equal(s5.stress_evidence.audit_raw_handle_seen, false);
+assert.equal(s5.activation_policy.isolated_higher_port_tests, "allowed_with_env_flag_and_cleanup");
+assert.equal(s5.activation_policy.oauth21_3008_activation, "requires_separate_explicit_operator_stage");
+assert.equal(s5.activation_policy.connector_migration, "requires_separate_route_surface_decision_and_refresh");
+assert.equal(s5.activation_policy.stable_mcp_removal, "forbidden_until_client_support_and_migration_evidence");
+assert.equal(s5.standard_contract.post_only, true);
+assert.equal(s5.standard_contract.protocol_sessions, false);
+assert.equal(s5.standard_contract.initialize_required, false);
+assert.equal(s5.standard_contract.state_handle_argument, "state_handle");
+assert.equal(s5.standard_contract.state_handle_prefix, "esh_");
+assert.ok(s5.standard_contract.auth_binding.includes("client_id"));
+assert.equal(s5.standard_contract.raw_handle_in_audit_forbidden, true);
+const runtimeSpec = readJson("SERVER_RUNTIME_CONFIG_SPEC.json");
+assert.ok(runtimeSpec.http_routes.includes("/mcp"));
+assert.ok(runtimeSpec.http_routes.includes("/mcp/sessionless"));
+assert.equal(runtimeSpec.sessionless_prototype.default_enabled, false);
+assert.equal(runtimeSpec.sessionless_prototype.connector_surface_change, false);
+assert.equal(runtimeSpec.sessionless_prototype.current_mcp_route_changed, false);
+const dispatcher = read("src/runtime/create_server_route_dispatcher.js");
+assert.ok(dispatcher.includes('url.pathname === "/mcp"'));
+assert.ok(dispatcher.includes('url.pathname === "/mcp/sessionless"'));
+for (const feature of ["initialize_handshake", "mcp_session_id_header", "session_store", "get_mcp_sse_stream"]) {
+  const entry = inventory.deprecation_ledger.find((item) => item.feature_id === feature);
+  assert.ok(entry, feature);
+  assert.ok(entry.checklist.some((item) => item.item === "prepare S5 workbench deprecation/standardization boundary" && item.status === "done"), feature);
+}
+console.log("smoke_s5_workbench_sessionless_standardization ok");

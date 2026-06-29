@@ -113,6 +113,11 @@
         {
           "item": "design parallel stateless mode before removal",
           "status": "blocked_pending_target_selection"
+        },
+        {
+          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "status": "done",
+          "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
         }
       ]
     },
@@ -145,6 +150,11 @@
           "item": "keep current stable session route separate from S4 prototype",
           "status": "done",
           "evidence": "_tests/smoke_s4_sessionless_runtime_prototype.js"
+        },
+        {
+          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "status": "done",
+          "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
         }
       ]
     },
@@ -180,6 +190,11 @@
           "item": "implement S4 hidden sessionless prototype",
           "status": "done",
           "evidence": "_tests/smoke_s4_sessionless_runtime_prototype.js"
+        },
+        {
+          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "status": "done",
+          "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
         }
       ]
     },
@@ -206,6 +221,11 @@
         {
           "item": "design subscriptions/listen compatibility matrix",
           "status": "pending"
+        },
+        {
+          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "status": "done",
+          "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
         }
       ]
     },
@@ -1072,6 +1092,54 @@
       "guard": "_tests/smoke_s4_sessionless_runtime_prototype.js",
       "live_3008_server_start_id": "2026-06-29T05:38:06.443Z",
       "default_disabled_probe": "GET /mcp/sessionless -> 404 Not found"
+    },
+    "s5_workbench_deprecation_standardization": {
+      "status": "prepared_no_runtime_change",
+      "source_of_truth": "_workflow/sessionless_inventory.json",
+      "guard": "_tests/smoke_s5_workbench_sessionless_standardization.js",
+      "purpose": "prepare deprecation of stable session-based workbench method for new work and standardize S4 sessionless prototype as the new workbench method",
+      "current_stable_route": "/mcp",
+      "current_stable_route_status": "legacy_compatible_do_not_remove",
+      "previous_method": "stable_streamable_http_sessions_initialize_mcp_session_id_get_sse",
+      "previous_method_deprecation": "soft_deprecated_for_new_workbench_development_only",
+      "new_standard_method": "s4_sessionless_prototype_explicit_state_handles",
+      "new_standard_route": "/mcp/sessionless",
+      "new_standard_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+      "workbench_standardization_status": "standard_for_isolated_higher_port_tests",
+      "default_3008_enabled_now": false,
+      "connector_visible_surface_changed": false,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "schema_change_required_now": false,
+      "public_3009_start_required_now": false,
+      "stress_evidence": {
+        "port": 3019,
+        "n_per_class": 300,
+        "total_calls": 900,
+        "failures": 0,
+        "audit_raw_handle_seen": false
+      },
+      "activation_policy": {
+        "isolated_higher_port_tests": "allowed_with_env_flag_and_cleanup",
+        "oauth21_3008_activation": "requires_separate_explicit_operator_stage",
+        "connector_migration": "requires_separate_route_surface_decision_and_refresh",
+        "stable_mcp_removal": "forbidden_until_client_support_and_migration_evidence"
+      },
+      "standard_contract": {
+        "post_only": true,
+        "protocol_sessions": false,
+        "initialize_required": false,
+        "state_handle_argument": "state_handle",
+        "state_handle_prefix": "esh_",
+        "auth_binding": [
+          "subject",
+          "client_id",
+          "audience",
+          "profile",
+          "scopes"
+        ],
+        "raw_handle_in_audit_forbidden": true
+      }
     }
   }
 }

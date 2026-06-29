@@ -194,5 +194,6 @@
   "_tests/smoke_event_driven_hotplug_lifecycle.js",
   "_tests/smoke_sessionless_target_selection_readiness.js",
   "_tests/smoke_s3_explicit_state_handle_design_rules.js",
-  "_tests/smoke_s4_sessionless_runtime_prototype.js"
+  "_tests/smoke_s4_sessionless_runtime_prototype.js",
+  "_tests/smoke_s5_workbench_sessionless_standardization.js"
 ]
