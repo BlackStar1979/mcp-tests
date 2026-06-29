@@ -1154,6 +1154,35 @@
       "runtime_restart_required_now": false,
       "schema_change_required_now": false,
       "public_3009_start_required_now": false
+    },
+    "s7_sep2575_request_contract": {
+      "status": "runtime_enforced_on_hidden_route_no_connector_change",
+      "source_refresh": "official SEP index still Final=41 on 2026-06-29; core SEPs unchanged",
+      "route": "/mcp/sessionless",
+      "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+      "default_3008_enabled_now": false,
+      "current_mcp_route_changed": false,
+      "connector_visible_surface_changed": false,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "guard": "_tests/smoke_s7_sessionless_sep2575_request_contract.js",
+      "contract": {
+        "required_header": "MCP-Protocol-Version",
+        "required_meta": [
+          "io.modelcontextprotocol/protocolVersion",
+          "io.modelcontextprotocol/clientInfo",
+          "io.modelcontextprotocol/clientCapabilities"
+        ],
+        "supported_versions": [
+          "2025-06-18"
+        ],
+        "header_meta_match_required": true,
+        "unsupported_protocol_version_error": -32004,
+        "http_status_for_contract_errors": 400,
+        "server_discover_supported": true,
+        "initialize_supported": false
+      }
     }
   }
 }

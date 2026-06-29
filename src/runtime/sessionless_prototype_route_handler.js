@@ -8,9 +8,51 @@ const { createStateHandleStore, extractAuthContext, redactStateHandle, summarize
 
 const ROUTE_PATH = "/mcp/sessionless";
 const ENABLE_FLAG = "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE";
+const PROTOCOL_VERSION_HEADER = "mcp-protocol-version";
+const PROTOCOL_VERSION_META_KEY = "io.modelcontextprotocol/protocolVersion";
+const CLIENT_INFO_META_KEY = "io.modelcontextprotocol/clientInfo";
+const CLIENT_CAPABILITIES_META_KEY = "io.modelcontextprotocol/clientCapabilities";
+const SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS = Object.freeze(["2025-06-18"]);
+const UNSUPPORTED_PROTOCOL_VERSION = -32004;
 
 function envEnabled(env = process.env) {
   return ["1", "true", "yes", "on"].includes(String(env[ENABLE_FLAG] || "").trim().toLowerCase());
+}
+
+function getHeader(req, name) {
+  const headers = req && req.headers ? req.headers : {};
+  const value = headers[String(name || "").toLowerCase()];
+  if (Array.isArray(value)) return String(value[0] || "").trim();
+  return String(value || "").trim();
+}
+
+function getRequestMeta(message = {}) {
+  if (message && message._meta && typeof message._meta === "object" && !Array.isArray(message._meta)) return message._meta;
+  const params = message && message.params && typeof message.params === "object" && !Array.isArray(message.params) ? message.params : {};
+  if (params._meta && typeof params._meta === "object" && !Array.isArray(params._meta)) return params._meta;
+  return {};
+}
+
+function invalidParams(id, reason, extra = {}) {
+  return { ok: false, httpStatus: 400, response: rpcError(id, -32602, "Invalid params", { reason, ...extra }), reason };
+}
+
+function validateSessionlessRequestMetadata({ req, message = {} } = {}) {
+  const id = Object.prototype.hasOwnProperty.call(message, "id") ? message.id : null;
+  const headerVersion = getHeader(req, PROTOCOL_VERSION_HEADER);
+  const meta = getRequestMeta(message);
+  const metaVersion = String(meta[PROTOCOL_VERSION_META_KEY] || "").trim();
+  if (!headerVersion) return invalidParams(id, "protocol_version_header_required", { header: "MCP-Protocol-Version" });
+  if (!metaVersion) return invalidParams(id, "protocol_version_meta_required", { meta_key: PROTOCOL_VERSION_META_KEY });
+  if (headerVersion !== metaVersion) return invalidParams(id, "protocol_version_mismatch", { header: headerVersion, meta: metaVersion });
+  if (!SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS.includes(headerVersion)) {
+    return { ok: false, httpStatus: 400, reason: "unsupported_protocol_version", response: rpcError(id, UNSUPPORTED_PROTOCOL_VERSION, "Unsupported Protocol Version", { reason: "unsupported_protocol_version", supported: [...SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS], requested: headerVersion }) };
+  }
+  const clientInfo = meta[CLIENT_INFO_META_KEY];
+  if (!clientInfo || typeof clientInfo !== "object" || !clientInfo.name || !clientInfo.version) return invalidParams(id, "client_info_required", { meta_key: CLIENT_INFO_META_KEY });
+  const clientCapabilities = meta[CLIENT_CAPABILITIES_META_KEY];
+  if (!clientCapabilities || typeof clientCapabilities !== "object" || Array.isArray(clientCapabilities)) return invalidParams(id, "client_capabilities_required", { meta_key: CLIENT_CAPABILITIES_META_KEY });
+  return { ok: true, protocolVersion: headerVersion, clientInfo, clientCapabilities };
 }
 
 function buildContext({ authResult = {}, authPolicy = {}, publicBaseUrl = "", runtimeProfile = "" } = {}) {
@@ -20,7 +62,7 @@ function buildContext({ authResult = {}, authPolicy = {}, publicBaseUrl = "", ru
   });
 }
 
-function dispatchSessionlessPrototypeMessage({ message = {}, authContext = {}, store, serverName, serverVersion, connectorShapeVersion }) {
+function dispatchSessionlessPrototypeMessage({ message = {}, authContext = {}, requestMetadata = {}, store, serverName, serverVersion, connectorShapeVersion }) {
   const id = Object.prototype.hasOwnProperty.call(message, "id") ? message.id : null;
   const method = String(message.method || "");
   const params = message.params && typeof message.params === "object" ? message.params : {};
@@ -37,6 +79,10 @@ function dispatchSessionlessPrototypeMessage({ message = {}, authContext = {}, s
 
   if (method === "server/discover") {
     return rpcResult(id, {
+      supportedVersions: [...SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS],
+      capabilities: { tools: {}, experimental: { sessionless: true, explicitStateHandles: true } },
+      serverInfo: { name: serverName, version: serverVersion, connectorShapeVersion },
+      protocolVersion: requestMetadata.protocolVersion || SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS[0],
       server: { name: serverName, version: serverVersion, connectorShapeVersion },
       transport: { mode: "sessionless_prototype", route: ROUTE_PATH, post_only: true, protocol_sessions: false, initialize_required: false },
       state_handles: { supported: true, argument_name: "state_handle", possession_is_authorization: false },
@@ -130,8 +176,15 @@ function createSessionlessPrototypeRouteHandler({
       return true;
     }
 
+    const metadataValidation = validateSessionlessRequestMetadata({ req, message });
+    if (!metadataValidation.ok) {
+      auditLog("sessionless_prototype_rejected", { request_id: requestId, reason: metadataValidation.reason, method: message && message.method ? String(message.method) : "" });
+      jsonResponse(res, metadataValidation.httpStatus, metadataValidation.response);
+      return true;
+    }
+
     const authContext = buildContext({ authResult, authPolicy, publicBaseUrl, runtimeProfile });
-    const response = dispatchSessionlessPrototypeMessage({ message, authContext, store, serverName, serverVersion, connectorShapeVersion });
+    const response = dispatchSessionlessPrototypeMessage({ message, authContext, requestMetadata: metadataValidation, store, serverName, serverVersion, connectorShapeVersion });
     auditLog("sessionless_prototype_rpc", {
       request_id: requestId,
       method: message && message.method ? String(message.method) : "",
@@ -147,10 +200,18 @@ function createSessionlessPrototypeRouteHandler({
 }
 
 module.exports = {
+  CLIENT_CAPABILITIES_META_KEY,
+  CLIENT_INFO_META_KEY,
   ENABLE_FLAG,
+  PROTOCOL_VERSION_HEADER,
+  PROTOCOL_VERSION_META_KEY,
   ROUTE_PATH,
+  SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS,
+  UNSUPPORTED_PROTOCOL_VERSION,
   buildContext,
   createSessionlessPrototypeRouteHandler,
   dispatchSessionlessPrototypeMessage,
   envEnabled,
+  getRequestMeta,
+  validateSessionlessRequestMetadata,
 };

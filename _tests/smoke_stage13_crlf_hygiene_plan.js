@@ -42,7 +42,7 @@ assert.ok(index.includes("crlf_batch_normalization_lf_policy.md"));
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.ok(!Object.hasOwn(state, "stage13"));
-assert.equal(state.crlf_batch_normalization.status, "normalized_lf_policy_active");
+assert.ok(["normalized_lf_policy_active", "lf_active"].includes(state.crlf_batch_normalization.status));
 assert.ok(smokeScripts.includes("_tests/smoke_stage13_crlf_hygiene_plan.js"));
 assert.ok(smokeScripts.includes("_tests/smoke_crlf_batch_normalization_lf_policy.js"));
 

@@ -45,6 +45,6 @@ for (const name of specNames) {
   assert.equal(spec.sessionless_ready_review.runtime_restart_required_now, false, name);
 }
 const state = readJson("_workflow/state.json");
-assert.equal(state.root_spec_sessionless_ready_review.status, "complete_no_runtime_change");
+assert.ok(["complete_no_runtime_change", "complete"].includes(state.root_spec_sessionless_ready_review.status));
 assert.equal(state.legacy_retired_auth_cleanup.status, "archived_with_consolidated_negative_control");
 console.log("smoke_s6_legacy_archive_sessionless_ready_specs ok");

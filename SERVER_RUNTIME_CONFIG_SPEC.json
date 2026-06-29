@@ -199,7 +199,30 @@
     "default_enabled": false,
     "connector_surface_change": false,
     "current_mcp_route_changed": false,
-    "purpose": "parallel draft/sessionless runtime prototype behind non-default route"
+    "purpose": "parallel draft/sessionless runtime prototype behind non-default route",
+    "sep2575_request_contract": {
+      "status": "runtime_enforced_on_hidden_route",
+      "route": "/mcp/sessionless",
+      "applies_to_current_mcp_route": false,
+      "required_http_header": "MCP-Protocol-Version",
+      "supported_versions": [
+        "2025-06-18"
+      ],
+      "required_meta_keys": [
+        "io.modelcontextprotocol/protocolVersion",
+        "io.modelcontextprotocol/clientInfo",
+        "io.modelcontextprotocol/clientCapabilities"
+      ],
+      "version_header_meta_match_required": true,
+      "unsupported_version_error_code": -32004,
+      "invalid_request_http_status": 400,
+      "initialize_supported": false,
+      "server_discover_supported": true,
+      "connector_surface_change": false,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "guard": "_tests/smoke_s7_sessionless_sep2575_request_contract.js"
+    }
   },
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",
