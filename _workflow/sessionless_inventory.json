@@ -1217,6 +1217,19 @@
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
       "guard": "_tests/smoke_s8_isolated_sessionless_activation_regression.js"
+    },
+    "s9_oauth21_3008_activation": {
+      "status": "live_active_no_connector_change",
+      "port": 3008,
+      "server_start_id": "2026-06-29T09:08:02.097Z",
+      "route": "/mcp/sessionless",
+      "tool_count": 43,
+      "tool_names_hash": "8b62ecaf89227335",
+      "combined_fingerprint": "476c7d832021acb9",
+      "connector_refresh_required_now": false,
+      "public_3009_start_required_now": false,
+      "stable_mcp_changed": false,
+      "guard": "_tests/smoke_s9_oauth21_sessionless_activation_trial.js"
     }
   }
 }

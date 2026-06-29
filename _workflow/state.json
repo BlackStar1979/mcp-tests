@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T10:55:00+02:00",
+  "updated_at": "2026-06-29T11:20:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -221,11 +221,12 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 43,
-      "server_start_id": "2026-06-29T05:38:06.443Z",
+      "server_start_id": "2026-06-29T09:08:02.097Z",
       "runtime_gate_live_loaded_after_stage14_5": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
-      "c3_cooperative_cancellation_live_loaded": true
+      "c3_cooperative_cancellation_live_loaded": true,
+      "sessionless_hidden_route_active": true
     },
     "public_3009": {
       "auth_mode": "none",
@@ -315,6 +316,10 @@
     "s8_isolated_activation": {
       "status": "passed",
       "port": 3020
+    },
+    "s9_live_activation": {
+      "status": "active",
+      "port": 3008
     }
   },
   "legacy_retired_auth_cleanup": {

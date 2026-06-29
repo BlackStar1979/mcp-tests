@@ -1,5 +1,7 @@
 "use strict";
 
+const fs = require("node:fs");
+const path = require("node:path");
 const { readRequestBody } = require("./request_body");
 const { jsonResponse } = require("./http_responses");
 const { rpcResult, rpcError } = require("./rpc_responses");
@@ -8,6 +10,7 @@ const { createStateHandleStore, extractAuthContext, redactStateHandle, summarize
 
 const ROUTE_PATH = "/mcp/sessionless";
 const ENABLE_FLAG = "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE";
+const CONTROL_FILE = path.join("_control", "sessionless-prototype.json");
 const PROTOCOL_VERSION_HEADER = "mcp-protocol-version";
 const PROTOCOL_VERSION_META_KEY = "io.modelcontextprotocol/protocolVersion";
 const CLIENT_INFO_META_KEY = "io.modelcontextprotocol/clientInfo";
@@ -15,8 +18,21 @@ const CLIENT_CAPABILITIES_META_KEY = "io.modelcontextprotocol/clientCapabilities
 const SUPPORTED_SESSIONLESS_PROTOCOL_VERSIONS = Object.freeze(["2025-06-18"]);
 const UNSUPPORTED_PROTOCOL_VERSION = -32004;
 
-function envEnabled(env = process.env) {
-  return ["1", "true", "yes", "on"].includes(String(env[ENABLE_FLAG] || "").trim().toLowerCase());
+function truthy(v) {
+  return ["1", "true", "yes", "on"].includes(String(v || "").trim().toLowerCase());
+}
+function controlFileEnabled({ rootDir = path.resolve(__dirname, "../..") } = {}) {
+  const file = path.join(rootDir, CONTROL_FILE);
+  if (!fs.existsSync(file)) return false;
+  try {
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    return truthy(data && data.enabled);
+  } catch (_) {
+    return false;
+  }
+}
+function envEnabled(env = process.env, opts = {}) {
+  return truthy(env[ENABLE_FLAG]) || controlFileEnabled(opts);
 }
 
 function getHeader(req, name) {
@@ -130,10 +146,11 @@ function createSessionlessPrototypeRouteHandler({
   serverName,
   serverVersion,
   connectorShapeVersion,
+  rootDir = path.resolve(__dirname, "../.."),
   store = createStateHandleStore(),
 } = {}) {
   const nextRequestId = createRequestIdGenerator();
-  const enabled = envEnabled(env);
+  const enabled = envEnabled(env, { rootDir });
 
   async function handleRoute({ req, res, url }) {
     if (!url || url.pathname !== ROUTE_PATH) return false;
@@ -202,6 +219,7 @@ function createSessionlessPrototypeRouteHandler({
 module.exports = {
   CLIENT_CAPABILITIES_META_KEY,
   CLIENT_INFO_META_KEY,
+  CONTROL_FILE,
   ENABLE_FLAG,
   PROTOCOL_VERSION_HEADER,
   PROTOCOL_VERSION_META_KEY,
@@ -211,6 +229,7 @@ module.exports = {
   buildContext,
   createSessionlessPrototypeRouteHandler,
   dispatchSessionlessPrototypeMessage,
+  controlFileEnabled,
   envEnabled,
   getRequestMeta,
   validateSessionlessRequestMetadata,

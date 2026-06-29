@@ -12,6 +12,7 @@ const {
 const { createStateHandleStore, hashValue } = require("../src/runtime/state_handle_prototype");
 
 const ROOT = path.resolve(__dirname, "..");
+const DISABLED_ROOT = path.join(ROOT, "__missing_s4_disabled_root__");
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), "utf8"); }
 
 
@@ -26,7 +27,7 @@ function fakeRes() {
 }
 
 assert.equal(ROUTE_PATH, "/mcp/sessionless");
-assert.equal(envEnabled({}), false);
+assert.equal(envEnabled({}, { rootDir: DISABLED_ROOT }), false);
 assert.equal(envEnabled({ MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE: "1" }), true);
 assert.equal(fs.existsSync(path.join(ROOT, "src/sessionless_target_selection_readiness.js")), false);
 
@@ -115,7 +116,7 @@ for (const event of ["sessionless_prototype_rejected", "sessionless_prototype_au
 
 async function routeHandlerNegativeControls() {
   const url = new URL("http://localhost/mcp/sessionless");
-  const disabled = createSessionlessPrototypeRouteHandler({ env: {}, authPolicy: { requiresAuth: true, authenticate: () => ({ ok: true }) } });
+  const disabled = createSessionlessPrototypeRouteHandler({ env: {}, rootDir: DISABLED_ROOT, authPolicy: { requiresAuth: true, authenticate: () => ({ ok: true }) } });
   assert.equal(await disabled.handleRoute({ req: { method: "GET", headers: {}, on() {} }, res: fakeRes(), url }), false);
 
   const enabled = createSessionlessPrototypeRouteHandler({ env: { MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE: "1" }, authPolicy: { requiresAuth: true, authenticate: () => ({ ok: true }) } });

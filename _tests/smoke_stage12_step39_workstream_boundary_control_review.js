@@ -21,7 +21,7 @@ assert.ok(canon.includes("Restart requires explicit operator intent"));
 assert.ok(canon.includes("Connector refresh requires explicit operator intent"));
 assert.ok(canon.includes("mechanism endurance"));
 assert.ok(canon.includes("Required now: none"));
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_195`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_196`"));
 assert.ok(smokeScripts.includes("_tests/smoke_stage12_step39_decision_runtime_p1_coverage.js"));
 
 console.log("smoke_stage12_step39_workstream_boundary_control_review ok");

@@ -200,6 +200,8 @@
     "connector_surface_change": false,
     "current_mcp_route_changed": false,
     "purpose": "parallel draft/sessionless runtime prototype behind non-default route",
+    "activation_control_file": "_control/sessionless-prototype.json",
+    "activation_control_file_default_enabled": false,
     "sep2575_request_contract": {
       "status": "runtime_enforced_on_hidden_route",
       "route": "/mcp/sessionless",
