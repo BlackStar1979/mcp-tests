@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-28T21:05:00+02:00",
+  "updated_at": "2026-06-28T21:25:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -249,5 +249,16 @@
       "cache_scope": "private",
       "connector_refresh_required_now": false
     }
+  },
+  "hotplug_lifecycle": {
+    "policy_spec": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json#hotplug_lifecycle_readiness",
+    "status": "hpl1_to_hpl4_reconciled_hpl5_gated",
+    "guard": "_tests/smoke_event_driven_hotplug_lifecycle.js",
+    "live_list_changed_emission_enabled_now": false,
+    "runtime_tools_list_mutation_enabled_now": false,
+    "state_store_write_enabled_now": false,
+    "dynamic_import_enabled_now": false,
+    "connector_refresh_required_now": false,
+    "runtime_restart_required_now": false
   }
 }

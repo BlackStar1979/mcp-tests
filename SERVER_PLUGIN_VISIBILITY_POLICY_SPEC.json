@@ -19,7 +19,8 @@
     "state_store_pipeline_module": "src/plugin_visibility_state_store_pipeline.js",
     "apply_readiness_gate_module": "src/plugin_visibility_state_store_apply_gate.js",
     "tools_list_diff_module": "src/tools_list_diff.js",
-    "list_changed_audit_receipt_module": "src/list_changed_audit_receipt.js"
+    "list_changed_audit_receipt_module": "src/list_changed_audit_receipt.js",
+    "hotplug_lifecycle_readiness_module": "src/hotplug_lifecycle_readiness.js"
   },
   "registry_states": [
     "candidate",
@@ -181,5 +182,21 @@
     "allowed_plugin_scopes": "optional string array on each profile surface",
     "denied_plugin_scopes": "optional string array on each profile surface"
   },
-  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json"
+  "policy_runtime_ref": "SERVER_POLICY_RUNTIME_SPEC.json",
+  "hotplug_lifecycle_readiness": {
+    "status": "hpl1_to_hpl4_reconciled_hpl5_gated",
+    "readiness_module": "src/hotplug_lifecycle_readiness.js",
+    "guard": "_tests/smoke_event_driven_hotplug_lifecycle.js",
+    "hpl1_registry_abstraction": "done",
+    "hpl2_diff_model": "done",
+    "hpl3_state_store_apply_gate": "done",
+    "hpl4_local_harness_emission": "done_mock_only",
+    "hpl5_runtime_apply_prototype": "gated_pending_explicit_operator_runtime_step",
+    "real_tools_list_mutation_enabled_now": false,
+    "live_list_changed_emission_enabled_now": false,
+    "runtime_state_store_write_enabled_now": false,
+    "dynamic_import_enabled_now": false,
+    "connector_refresh_required_now": false,
+    "runtime_restart_required_now": false
+  }
 }

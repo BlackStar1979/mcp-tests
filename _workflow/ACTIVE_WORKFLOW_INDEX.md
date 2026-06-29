@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_185`.
+- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_186`.
 - Public section count: `6`.
-- Authenticated smoke count: `185`.
+- Authenticated smoke count: `186`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -87,6 +87,9 @@ Current records:
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
+
+- `event_driven_hotplug_lifecycle.md`
+  - Event-driven Hotplug Lifecycle reconciliation. HPL1-HPL4 are reconciled; HPL5 remains gated behind a separate explicit operator runtime step. No live list_changed emission, tools/list mutation, state-store write, connector refresh, or restart.
 
 - `stage13_live_repo_drift_ledger.md`
   - Stage 13.1 read-only repo/runtime drift ledger. Current public local surface matches frozen baseline; runtime-stage label debt was closed by the Stage 13.2 boundary guard.
@@ -158,10 +161,9 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Event-driven Hotplug Lifecycle.
-2. Sessionless / Explicit State Handles Target Selection.
-3. Legacy Retired Auth Test Archive/Cleanup.
-4. CRLF Batch Normalization.
+1. Sessionless / Explicit State Handles Target Selection.
+2. Legacy Retired Auth Test Archive/Cleanup.
+3. CRLF Batch Normalization.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 
