@@ -173,9 +173,8 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. S4 OAuth21 3008 live-load validation for hidden sessionless prototype.
-2. Legacy Retired Auth Test Archive/Cleanup.
-3. CRLF Batch Normalization.
+1. Legacy Retired Auth Test Archive/Cleanup.
+2. CRLF Batch Normalization.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 

@@ -1060,7 +1060,7 @@
       }
     },
     "s4_sessionless_runtime_prototype": {
-      "status": "repo_applied_pending_live_restart",
+      "status": "live_loaded_default_disabled",
       "route": "/mcp/sessionless",
       "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
       "default_enabled": false,
@@ -1068,8 +1068,10 @@
       "current_oauth21_connector_route_changed": false,
       "session_code_removed": false,
       "connector_refresh_required_now": false,
-      "runtime_restart_required_now": true,
-      "guard": "_tests/smoke_s4_sessionless_runtime_prototype.js"
+      "runtime_restart_required_now": false,
+      "guard": "_tests/smoke_s4_sessionless_runtime_prototype.js",
+      "live_3008_server_start_id": "2026-06-29T05:38:06.443Z",
+      "default_disabled_probe": "GET /mcp/sessionless -> 404 Not found"
     }
   }
 }

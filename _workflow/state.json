@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T02:05:00+02:00",
+  "updated_at": "2026-06-29T07:42:00+02:00",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
   "read_order": [
@@ -221,7 +221,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 43,
-      "server_start_id": "2026-06-28T18:29:15.549Z",
+      "server_start_id": "2026-06-29T05:38:06.443Z",
       "runtime_gate_live_loaded_after_stage14_5": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -282,15 +282,17 @@
       "public_3009_start_required_now": false
     },
     "s4_prototype": {
-      "status": "repo_applied_pending_live_restart",
+      "status": "live_loaded_default_disabled",
       "route": "/mcp/sessionless",
       "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
       "default_enabled": false,
       "current_mcp_route_changed": false,
       "connector_refresh_required_now": false,
-      "runtime_restart_required_now": true,
+      "runtime_restart_required_now": false,
       "schema_change_required_now": false,
-      "public_3009_start_required_now": false
+      "public_3009_start_required_now": false,
+      "live_3008_server_start_id": "2026-06-29T05:38:06.443Z",
+      "default_disabled_probe": "GET /mcp/sessionless -> 404 Not found"
     }
   }
 }

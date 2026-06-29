@@ -1,6 +1,6 @@
 # S4 Parallel Draft/Sessionless Runtime Prototype
 
-Status: GREEN / REPO APPLIED / LIVE LOAD REQUIRED / DEFAULT DISABLED
+Status: GREEN / LIVE-LOADED / DEFAULT DISABLED / CONNECTOR SURFACE UNCHANGED
 Date: 2026-06-29
 
 ## Purpose
@@ -61,8 +61,20 @@ Implement a minimal parallel draft/sessionless runtime prototype behind a non-de
 
 ## Live-load plan
 
-After commit, restart OAuth21 3008 using `scripts/request-restart.js` with reason `s4_sessionless_runtime_prototype_live_load`. Validate that server start id changes, OAuth21 tool surface remains 43 tools, and connector refresh remains unnecessary.
+Live-load completed on OAuth21 3008. The hidden prototype route remains default-disabled because the running supervisor environment does not enable `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE`.
 
 ## Next recommendation
 
-After live-load validation, proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requests S4 route activation testing with the prototype env flag.
+Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requests S4 route activation testing with the prototype env flag.
+
+## Live-load validation
+
+Status: LIVE-LOADED / DEFAULT DISABLED / CONNECTOR SURFACE UNCHANGED
+
+- Controlled restart requested with `scripts/request-restart.js --reason=s4_sessionless_runtime_prototype_live_load`.
+- Previous OAuth21 3008 server_start_id: `2026-06-28T18:29:15.549Z`.
+- New OAuth21 3008 server_start_id: `2026-06-29T05:38:06.443Z`.
+- Health probe after restart: auth `oauth21`, profile `internal`, tools_count `43`.
+- TESTS_MCP runtime status after restart: tool_count `43`, tool_names_hash `8b62ecaf89227335`, combined_fingerprint `476c7d832021acb9`.
+- Default-disabled probe: `GET /mcp/sessionless` returned `404 Not found`, because `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE` is not enabled in the running supervisor environment.
+- Connector refresh remains unnecessary because connector-visible tool surface did not change.

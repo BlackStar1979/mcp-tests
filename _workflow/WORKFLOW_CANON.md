@@ -46,11 +46,10 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. S4 OAuth21 3008 live-load validation for hidden sessionless prototype.
-2. Legacy Retired Auth Test Archive/Cleanup.
-3. CRLF Batch Normalization.
+1. Legacy Retired Auth Test Archive/Cleanup.
+2. CRLF Batch Normalization.
 
-Next recommended action: S4 repo implementation is prepared for commit and then OAuth21 3008 live-load validation. Current assessment: connector refresh is not required; OAuth21 3008 restart is required after commit and should be performed by the assistant via supervisor. Public 3009 start is not required.
+Next recommended action: S4 is live-loaded on OAuth21 3008 with the hidden prototype route default-disabled. Current assessment: connector refresh is not required; OAuth21 3008 restart is not required now; public 3009 start is not required. Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requests S4 prototype route activation testing with the env flag.
 
 ## 4. Runtime architecture
 
@@ -447,7 +446,7 @@ Stage 14.5 runtime enforcement apply correction: commit d299cfa is repo-applied.
 Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_decisions/stage14_8_runtime_enforcement_state_reconciliation.md` records that Stage 14.5 repo-applied runtime gate is now live-loaded on OAuth21 3008 because the active server start `2026-06-28T16:18:17.295Z` is later than commits `d299cfa` and `6df748d`. Public 3009 is not currently live during reconciliation. No runtime change, restart, connector refresh, schema change, or live denial probe was performed.
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
 
-S4 sessionless runtime prototype repo-applied: `_workflow/operator_decisions/s4_sessionless_runtime_prototype.md` records hidden `/mcp/sessionless` route gated by `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE`, default disabled. Added `src/runtime/state_handle_prototype.js` and `src/runtime/sessionless_prototype_route_handler.js`; OAuth21 auth result now includes `clientId` for state-handle binding. Current `/mcp`, stable session code, connector-visible tool surface, and connector refresh remain unchanged. Runtime restart on OAuth21 3008 is required for live-load; public 3009 start is not required.
+S4 sessionless runtime prototype live-loaded: `_workflow/operator_decisions/s4_sessionless_runtime_prototype.md` records hidden `/mcp/sessionless` route gated by `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE`, default disabled. Added `src/runtime/state_handle_prototype.js` and `src/runtime/sessionless_prototype_route_handler.js`; OAuth21 auth result now includes `clientId` for state-handle binding. Current `/mcp`, stable session code, connector-visible tool surface, and connector refresh remain unchanged. OAuth21 3008 was restarted through supervisor; live server_start_id is `2026-06-29T05:38:06.443Z`. The route remains default-disabled without `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE`; connector-visible tool surface remains 43 tools with hash `8b62ecaf89227335`; connector refresh is not required.
 
 S3 explicit state handle design rules green: `_workflow/operator_decisions/s3_explicit_state_handle_design_rules.md` records no-runtime preparation for S4. `_workflow/sessionless_inventory.json#target_selection_readiness.s3_explicit_state_handle_design_rules` is the authoritative rules source; guard `_tests/smoke_s3_explicit_state_handle_design_rules.js` validates opaque handles, authorization binding, lifecycle/TTL, audit redaction, error contract, and S4 readiness gate. No runtime state handle store, handle-bearing tools, session code removal, POST-only draft mode, connector refresh, public 3009 start, or OAuth21 3008 restart was performed.
 
