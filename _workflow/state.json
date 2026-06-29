@@ -3,7 +3,7 @@
   "status": "compact_orientation_map_not_progress_log",
   "updated_at": "2026-06-29T14:05:00+02:00",
   "project": "mcp-tests",
-  "purpose": "Machine-readable startup orientation for the TEST MCP server, mapped to root SERVER_* specs. This file must not be used as a chronological log.",
+  "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
   "read_order": [
     "_workflow/README.md",
     "_workflow/ACTIVE_WORKFLOW_INDEX.md",
@@ -65,7 +65,7 @@
     "allowed_history_locations": [
       "_workflow/operator_decisions/*.md",
       "_workflow/control_plane/snapshots/**",
-      "_workflow/WORKFLOW_CANON.md concise closeout notes",
+      "_workflow/WORKFLOW_CANON.md closeout notes",
       "git history"
     ],
     "forbidden_history_locations": [
@@ -88,23 +88,23 @@
     "SERVER_DATABASE_POLICY_SPEC.json": "database/state-store policy",
     "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json": "plugin visibility and hotplug/list_changed policy",
     "SERVER_SAMPLING_POLICY_SPEC.json": "client sampling approval and budget policy",
-    "SERVER_DECISION_RUNTIME_SPEC.json": "active decision model, fixture, runtime interface and integration contract extracted from historical Stage12 work",
-    "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "active runtime topology, port ownership, restart authority boundary and validation matrix",
-    "SERVER_RUNTIME_CONFIG_SPEC.json": "active CLI/env/HTTP-route runtime configuration surface derived from code",
-    "SERVER_EVENT_CATALOG_SPEC.json": "active runtime audit event catalog derived from code",
-    "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_CONSENT_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_SESSION_SECURITY_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_PROMPT_CONTENT_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_OUTPUT_DLP_POLICY_SPEC.json": "policy coverage / critical policy authority",
-    "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
-    "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
-    "SERVER_ELICITATION_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
-    "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
-    "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending",
-    "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json": "target policy authority / specified-only runtime enforcement pending"
+    "SERVER_DECISION_RUNTIME_SPEC.json": "decision model/runtime contract from historical Stage12 work",
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "runtime topology and restart authority",
+    "SERVER_RUNTIME_CONFIG_SPEC.json": "runtime CLI/env/route config surface",
+    "SERVER_EVENT_CATALOG_SPEC.json": "runtime audit event catalog",
+    "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json": "critical policy authority",
+    "SERVER_CONSENT_POLICY_SPEC.json": "critical policy authority",
+    "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json": "critical policy authority",
+    "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json": "critical policy authority",
+    "SERVER_SESSION_SECURITY_POLICY_SPEC.json": "critical policy authority",
+    "SERVER_PROMPT_CONTENT_POLICY_SPEC.json": "critical policy authority",
+    "SERVER_OUTPUT_DLP_POLICY_SPEC.json": "critical policy authority",
+    "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json": "target policy authority",
+    "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json": "target policy authority",
+    "SERVER_ELICITATION_POLICY_SPEC.json": "target policy authority",
+    "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json": "target policy authority",
+    "SERVER_SUPPLY_CHAIN_POLICY_SPEC.json": "target policy authority",
+    "SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json": "target policy authority"
   },
   "policy_layers": {
     "runtime_policy_gate": {
@@ -156,7 +156,7 @@
       "SEP-2596"
     ],
     "guard": "_tests/smoke_stage14_6_sep_sessionless_inventory.js",
-    "handling_rule": "Update checklist/lifecycle/status/evidence only; do not use as chronological log."
+    "handling_rule": "Update checklist/lifecycle/status/evidence only; not a chronological log."
   },
   "runtime_topology_spec": {
     "path": "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
@@ -210,8 +210,8 @@
     "connector_refresh_assessment_required": true,
     "workbench_3008_restart_assessment_required": true,
     "workbench_3008_restart_operator_dependency": false,
-    "rule": "Every next-step recommendation must state whether blockers remain valid, whether connector refresh is required, and whether TESTS_MCP/OAuth21 3008 restart is required. The assistant can restart 3008 when the active workflow step and operator intent authorize it; do not ask the operator to restart 3008.",
-    "connector_refresh_rule": "Request connector refresh only when materially required by connector/UI truth, surface change, or diagnostic need."
+      "rule": "Every next-step recommendation must state blocker validity, connector refresh need, and TESTS_MCP/OAuth21 3008 restart need. The assistant can restart 3008 when authorized; do not ask the operator to restart 3008.",
+      "connector_refresh_rule": "Request connector refresh only when connector/UI truth, surface change, or diagnostics require it."
   },
   "current_runtime_truth": {
     "oauth21_3008": {
@@ -329,6 +329,14 @@
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
       "stable_mcp_removal_forbidden_now": true
+    },
+    "s12_connector_migration_dry_run_plan": {
+      "status": "prepared_no_refresh",
+      "guard": "_tests/smoke_s12_connector_migration_dry_run_plan.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "connector_migration_performed_now": false
     }
   },
   "legacy_retired_auth_cleanup": {

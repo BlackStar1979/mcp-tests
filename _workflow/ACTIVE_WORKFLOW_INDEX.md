@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after S11 connector-migration-readiness guard: `ok_0_40_0_6_199`.
+- Latest full smoke after S12 connector-migration-dry-run-plan guard: `ok_0_40_0_6_200`.
 - Public section count: `6`.
-- Authenticated smoke count: `199`.
+- Authenticated smoke count: `200`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -117,6 +117,9 @@ Current records:
 
 - `s11_connector_migration_readiness_coexistence_boundary.md`
   - Readiness boundary after S10B. `/mcp/sessionless` is validated as the workbench target, stable `/mcp` remains legacy-compatible, and any connector migration or refresh remains a separate explicit future step.
+
+- `s12_connector_migration_dry_run_plan.md`
+  - Dry-run-only connector migration package after S11. It defines rehearsal/evidence/rollback boundaries without connector refresh, route switch, 3008 restart, or 3009 start.
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
@@ -197,7 +200,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. S12 connector migration dry-run plan / no refresh.
+1. S13 connector migration dry-run execution harness / still no refresh.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 

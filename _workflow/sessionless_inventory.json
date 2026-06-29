@@ -1286,6 +1286,18 @@
       "public_3009_start_required_now": false,
       "stable_mcp_removal_forbidden_now": true,
       "next_recommended_step": "S12 connector migration dry-run plan / no refresh"
+    },
+    "s12_connector_migration_dry_run_plan": {
+      "status": "prepared_no_refresh",
+      "record": "_workflow/operator_decisions/s12_connector_migration_dry_run_plan.md",
+      "guard": "_tests/smoke_s12_connector_migration_dry_run_plan.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "connector_migration_performed_now": false,
+      "stable_mcp_status": "legacy_compatible_preserved",
+      "next_recommended_step": "S13 connector migration dry-run execution harness / still no refresh",
+      "alternative_next_step": "S13 connector refresh approval package / no execution"
     }
   }
 }

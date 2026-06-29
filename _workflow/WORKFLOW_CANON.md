@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_199`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_200`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `199`.
+- Latest validated authenticated smoke count: `200`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,9 +46,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. S12 connector migration dry-run plan / no refresh.
+1. S13 connector migration dry-run execution harness / still no refresh.
 
-Next recommended action: prepare an S12 dry-run migration plan without connector refresh, runtime restart, or stable `/mcp` removal. The current connector-migration blocker is governance/evidence only, not runtime readiness.
+Next recommended action: prepare an S13 dry-run execution harness without connector refresh, runtime restart, public 3009 start, or stable `/mcp` removal. The current connector-migration blocker remains governance/evidence and connector/UI validation readiness, not runtime readiness.
 
 ## 4. Runtime architecture
 
@@ -450,6 +450,8 @@ S9 OAuth21 3008 sessionless activation green: `_workflow/operator_decisions/s9_o
 S10B live authenticated sessionless probe green: `_workflow/operator_decisions/s10b_live_authenticated_sessionless_probe.md` records the repo-native live authenticated `/mcp/sessionless` probe on OAuth21 3008. The new runner `node _workflow/scripts/s10b_live_authenticated_sessionless_probe.js` creates fresh OAuth21 client/token material in-process, does not read durable OAuth state, does not log credential material, and keeps connector/runtime unchanged. Passed live checks: health internal/43, `GET /mcp/sessionless -> 405`, unauthenticated POST `401`, authenticated `server/discover` includes `2025-06-18`, `state/handle/create` returns `esh_` handle, owner read succeeds, second client is denied without raw-handle echo, destroy returns true, revoked read does not echo raw handle, and appended audit lines do not contain the raw handle. Connector/runtime remained `43 / 8b62ecaf89227335 / 476c7d832021acb9`. No restart, connector refresh, public 3009 start, connector route migration, stable `/mcp` removal, or stable session code removal was performed.
 
 S11 connector migration readiness / stable `/mcp` coexistence boundary green: `_workflow/operator_decisions/s11_connector_migration_readiness_coexistence_boundary.md` records the post-S10B no-migration boundary. `/mcp/sessionless` is validated as the new workbench/sessionless target on OAuth21 3008, while stable `/mcp` remains the legacy-compatible route and must not be removed before separate connector/UI migration evidence exists. No connector route migration, connector refresh, public 3009 start, OAuth21 3008 restart, stable `/mcp` removal, or stable session code removal was performed. Future connector migration remains a separate explicit operator decision; future connector refresh is required only when connector-visible route/surface/auth truth changes or explicit UI validation is requested. The active next recommendation becomes S12 connector migration dry-run plan / no refresh.
+
+S12 connector migration dry-run plan / no refresh green: `_workflow/operator_decisions/s12_connector_migration_dry_run_plan.md` records the first explicit dry-run migration package after S11. It defines a future rehearsal sequence, evidence gates, rollback/restore expectations, and sign-off boundaries without performing connector migration, connector refresh, OAuth21 3008 restart, public 3009 start, stable `/mcp` removal, or stable session code removal. Stable `/mcp` remains preserved while `/mcp/sessionless` remains the validated workbench target. The active next recommendation becomes S13 connector migration dry-run execution harness / still no refresh, with S13 connector refresh approval package / no execution as the alternative.
 
 S8 isolated sessionless activation regression green: `_workflow/operator_decisions/s8_isolated_sessionless_activation_regression.md` records real local activation on port 3020 with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1`, auth `oauth`, profile `internal`, 43 tools, protocol version `2025-06-18`, and route `/mcp/sessionless`. Results passed: post-only 405, auth-required 401, missing protocol header 400, header/meta mismatch 400, unsupported version JSON-RPC `-32004`, `server/discover`, initialize rejection, state handle create/read/deny/destroy/revoked, audit raw-handle absence across 15 audit lines, temp cleanup, and port close. No OAuth21 3008 restart, public 3009 start, connector refresh, connector route migration, stable `/mcp` removal, or stable session code removal was performed.
 
