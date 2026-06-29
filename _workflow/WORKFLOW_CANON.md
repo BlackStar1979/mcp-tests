@@ -29,9 +29,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_197`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_6_198`.
 - Latest validated public section count: `6`.
-- Latest validated authenticated smoke count: `197`.
+- Latest validated authenticated smoke count: `198`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow stage boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow-stage truth.
@@ -46,9 +46,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. S10B manual evidence ingestion after operator-run sessionless probe.
+1. No active S10 blocker remains. Further sessionless target-selection or migration work is separate from the passed S10B live probe.
 
-Next recommended action: S10B should ingest sanitized manual output from the operator-run sessionless probe. No restart or refresh is required now.
+Next recommended action: keep sessionless migration work separate from S10B. No restart or refresh is required now.
 
 ## 4. Runtime architecture
 
@@ -446,6 +446,8 @@ Stage 14.8 runtime enforcement state reconciliation green: `_workflow/operator_d
 Stage 14.7 D1 observation is closed. D1-A/D1-B/D1-C repo-applied and live-validated on TESTS_MCP 3008.
 
 S9 OAuth21 3008 sessionless activation green: `_workflow/operator_decisions/s9_oauth21_3008_sessionless_activation_trial.md` records hidden `/mcp/sessionless` live activation on 3008 by ignored `_control/sessionless-prototype.json` and supervisor-controlled restart. Runtime status after restart: server_start_id `2026-06-29T09:08:02.097Z`, auth `oauth21`, profile `internal`, 43 tools, tool hash `8b62ecaf89227335`, combined fingerprint `476c7d832021acb9`; `GET /mcp/sessionless` returns 405 and unauthenticated POST returns 401. No connector refresh, connector migration, public 3009 start, stable `/mcp` removal, or stable session code removal was performed.
+
+S10B live authenticated sessionless probe green: `_workflow/operator_decisions/s10b_live_authenticated_sessionless_probe.md` records the repo-native live authenticated `/mcp/sessionless` probe on OAuth21 3008. The new runner `node _workflow/scripts/s10b_live_authenticated_sessionless_probe.js` creates fresh OAuth21 client/token material in-process, does not read durable OAuth state, does not log credential material, and keeps connector/runtime unchanged. Passed live checks: health internal/43, `GET /mcp/sessionless -> 405`, unauthenticated POST `401`, authenticated `server/discover` includes `2025-06-18`, `state/handle/create` returns `esh_` handle, owner read succeeds, second client is denied without raw-handle echo, destroy returns true, revoked read does not echo raw handle, and appended audit lines do not contain the raw handle. Connector/runtime remained `43 / 8b62ecaf89227335 / 476c7d832021acb9`. No restart, connector refresh, public 3009 start, connector route migration, stable `/mcp` removal, or stable session code removal was performed.
 
 S8 isolated sessionless activation regression green: `_workflow/operator_decisions/s8_isolated_sessionless_activation_regression.md` records real local activation on port 3020 with `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1`, auth `oauth`, profile `internal`, 43 tools, protocol version `2025-06-18`, and route `/mcp/sessionless`. Results passed: post-only 405, auth-required 401, missing protocol header 400, header/meta mismatch 400, unsupported version JSON-RPC `-32004`, `server/discover`, initialize rejection, state handle create/read/deny/destroy/revoked, audit raw-handle absence across 15 audit lines, temp cleanup, and port close. No OAuth21 3008 restart, public 3009 start, connector refresh, connector route migration, stable `/mcp` removal, or stable session code removal was performed.
 

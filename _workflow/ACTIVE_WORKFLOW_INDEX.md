@@ -42,9 +42,9 @@ Post-Stage 13 baseline:
 
 - HEAD after post-Stage 13 hygiene audit: `0932dd0`.
 - Server version: `0.40.0`.
-- Latest full smoke after Stage 14.7 live-validation guard: `ok_0_40_0_6_197`.
+- Latest full smoke after S10B live-probe guard: `ok_0_40_0_6_198`.
 - Public section count: `6`.
-- Authenticated smoke count: `197`.
+- Authenticated smoke count: `198`.
 - Stage 13: closed.
 - Post-Stage 13 repo hygiene audit: green.
 - Stage 14 general implementation approval is not carried forward; explicit Stage 14.5/14.7/14.8/14.9 records govern only their own scoped work.
@@ -111,6 +111,9 @@ Current records:
 
 - `s9_oauth21_3008_sessionless_activation_trial.md`
   - Live hidden `/mcp/sessionless` activation on OAuth21 3008 after controlled supervisor restart. Connector surface, public 3009, and stable `/mcp` unchanged.
+
+- `s10b_live_authenticated_sessionless_probe.md`
+  - Repo-native live authenticated `/mcp/sessionless` probe on OAuth21 3008. Uses fresh in-process OAuth21 client/token flow, does not read durable OAuth state, and keeps connector/runtime unchanged.
 
 - `p6_event_driven_hotplug_lifecycle_design.md`
   - Design-only event-driven Hotplug lifecycle over existing list_changed dry-run stack.
@@ -191,7 +194,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. S10B manual evidence ingestion after operator-run sessionless probe.
+1. No active S10 blocker remains. Further sessionless target-selection or migration work is separate from the passed S10B live probe.
 
 Closed historical stages and historical plans below are retained for traceability, not active next-work lists.
 

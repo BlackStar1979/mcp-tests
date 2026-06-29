@@ -1232,10 +1232,43 @@
       "guard": "_tests/smoke_s9_oauth21_sessionless_activation_trial.js"
     },
     "s10a_manual_probe_contract": {
-      "status": "prepared_manual_evidence_pending",
+      "status": "historical_prepared_only",
       "route": "/mcp/sessionless",
       "port": 3008,
       "guard": "_tests/smoke_s10a_manual_live_probe_contract.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "stable_mcp_changed": false
+    },
+    "s10b_live_authenticated_probe": {
+      "status": "passed_live_no_connector_change",
+      "route": "/mcp/sessionless",
+      "port": 3008,
+      "live_probe_command": "node _workflow/scripts/s10b_live_authenticated_sessionless_probe.js",
+      "guard": "_tests/smoke_s10b_live_authenticated_sessionless_probe.js",
+      "checks": [
+        "healthz_internal_43",
+        "get_405",
+        "unauthenticated_post_401",
+        "discover_supported_2025_06_18",
+        "create_opaque_esh_handle",
+        "owner_read_payload",
+        "second_client_denied_without_raw_echo",
+        "destroy_true",
+        "revoked_without_raw_echo",
+        "audit_no_raw_handle"
+      ],
+      "safety": {
+        "reads_durable_oauth_state": false,
+        "fresh_client_token_per_probe": true,
+        "credential_material_logged": false
+      },
+      "tool_surface": {
+        "tool_count": 43,
+        "tool_names_hash": "8b62ecaf89227335",
+        "combined_fingerprint": "476c7d832021acb9"
+      },
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
