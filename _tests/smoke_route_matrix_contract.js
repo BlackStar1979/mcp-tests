@@ -1,6 +1,6 @@
 "use strict";
 
-// Stage 8 / Step 94 - Route Matrix Contract Tests.
+// Route matrix contract tests.
 //
 // Committed contract test for the current HTTP route table. Starts a local
 // server child on an isolated ephemeral port (never the active port 3009),
@@ -9,7 +9,7 @@
 // --skip-network. Route assertions mirror the source handlers in
 // src/runtime/{create_server_route_dispatcher,health_route_handler,
 // docs_route_handler,not_found_route_handler}.js and the DOCS fixture in
-// server.js. This is a test-only step; it must not change runtime behavior.
+// server.js. This is a test-only contract; it must not change runtime behavior.
 
 const assert = require("node:assert/strict");
 const path = require("node:path");
@@ -43,6 +43,7 @@ async function waitHealth(port) {
       // Force the isolated port even if MCP_TEST_PORT is set in the parent env.
       MCP_TEST_PORT: String(PORT),
       MCP_TEST_AUTH_MODE: "none",
+      MCP_TEST_HEALTH_FULL: "1",
       MCP_TEST_FS_ROOT: path.join(process.cwd(), "_public_sandbox"),
     },
     stdio: ["ignore", "pipe", "pipe"],
@@ -66,7 +67,7 @@ async function waitHealth(port) {
       const body = await response.json();
       assert.equal(body.status, "ok", "root body.status");
       assert.equal(body.mcp, "/mcp", "root body.mcp");
-      assert.equal(body.tools.length, 13, "root body.tools.length");
+      assert.equal(body.tools_count, 13, "root body.tools_count");
     }
 
     // 2. Health route -> health/root JSON with contract fields.
@@ -87,6 +88,7 @@ async function waitHealth(port) {
         "healthz body.connectorShapeVersion"
       );
       assert.equal(body.outputMode, "structured", "healthz body.outputMode");
+      assert.equal(body.tools_count, 13, "healthz body.tools_count");
       assert.equal(body.tools.length, 13, "healthz body.tools.length");
     }
 

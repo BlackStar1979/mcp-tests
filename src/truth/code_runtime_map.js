@@ -30,10 +30,10 @@ function buildCodeRuntimeMap(options = {}) {
     "_workflow/scripts/test_mcp_restart.ps1",
   ];
   const guards = [
-    "_tests/smoke_stage8_39_course_correction_ledger.js",
-    "_tests/smoke_stage8_52c_preflight_control_plane_guard.js",
-    "_tests/smoke_stage8_52e_mechanism_parity_matrix.js",
-    "_tests/smoke_stage8_53a_truth_parity_internal.js",
+    "_tests/smoke_preflight_control_plane_guard.js",
+    "_tests/smoke_workflow_state_orientation_map.js",
+    "_tests/smoke_root_server_specs_consistency.js",
+    "_tests/smoke_runtime_topology_authority.js",
   ];
 
   const missing = [];

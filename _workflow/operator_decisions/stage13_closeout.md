@@ -35,7 +35,7 @@ runtime_restart_required: false
 connector_refresh_required: false
 backup_required: false
 rollback_path: revert workflow-only documentation/state/test-guard changes
-restore_path: this file, _workflow/WORKFLOW_CANON.md, _workflow/ACTIVE_WORKFLOW_INDEX.md, _workflow/state.json, _tests/smoke_stage13_closeout.js, _tests/run_all_smoke_scripts.json, _tests/smoke_stage12_streamable_http_workflow_plan.js
+restore_path: this file, _workflow/WORKFLOW_CANON.md, _workflow/ACTIVE_WORKFLOW_INDEX.md, _workflow/state.json, _tests/smoke_closeout.js, _tests/run_all_smoke_scripts.json, _tests/smoke_streamable_http_workflow_plan.js
 
 ## Non-actions
 

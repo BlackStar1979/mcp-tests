@@ -10,6 +10,7 @@ const { dispatchRpcMessage } = require("./rpc_message_dispatcher");
 const { createSessionReplayTracker } = require("./session_tracker");
 const { createSessionStore } = require("./session_store");
 const { enrichContextWithSampling } = require("./sampling_context");
+const { validatePerRequestMetadata } = require("./request_metadata_policy");
 
 function createMcpRuntimeHandlers({
   serverName,
@@ -25,7 +26,6 @@ function createMcpRuntimeHandlers({
   publicBaseUrl,
   rateLimiter,
   serverStartId,
-  listChangedNotifier,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
@@ -57,6 +57,22 @@ function createMcpRuntimeHandlers({
     }
 
     const enrichedContext = enrichContextWithSampling(context, auditLog);
+    if (prelude.method === "server/discover") {
+      const requestMetadata = validatePerRequestMetadata({
+        protocolVersionHeader: context.protocolVersionHeader,
+        message,
+      });
+      if (!requestMetadata.ok) {
+        auditLog("rpc_protocol_error", {
+          request_id: context.requestId,
+          session_id: context.sessionId || "",
+          reason: requestMetadata.reason,
+          method: prelude.method,
+        });
+        return requestMetadata.response;
+      }
+      enrichedContext.requestMetadata = requestMetadata;
+    }
 
     return dispatchRpcMessage({
       prelude,
@@ -73,7 +89,6 @@ function createMcpRuntimeHandlers({
       getOptionalTool,
       rateLimiter,
       serverStartId,
-      listChangedNotifier,
     });
   }
 
@@ -89,7 +104,6 @@ function createMcpRuntimeHandlers({
       handleRpcMessage,
       publicBaseUrl,
       sessionStore,
-      listChangedNotifier,
     });
   }
 

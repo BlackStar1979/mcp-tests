@@ -67,9 +67,9 @@ restore_path: this file, workflow scripts, workflow canon/index/state, Stage 14.
 
 ## Final validation
 
-- `node _tests/smoke_stage14_2_workbench_debt_cleanup.js`: ok.
-- `node _tests/smoke_stage14_runtime_enforcement_no_apply_package.js`: ok.
-- `node _tests/smoke_stage12_oauth_production_hardening_plan.js`: ok after historical next-work guard update.
-- `node _tests/smoke_stage12_streamable_http_workflow_plan.js`: ok after historical next-work guard update.
+- `node _tests/smoke_workbench_debt_cleanup.js`: ok.
+- `node _tests/smoke_runtime_enforcement_no_apply_package.js`: ok.
+- `node _tests/smoke_oauth_production_hardening_plan.js`: ok after historical next-work guard update.
+- `node _tests/smoke_streamable_http_workflow_plan.js`: ok after historical next-work guard update.
 - `node server.js --self-test`: ok.
 - `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=161.

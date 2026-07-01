@@ -184,10 +184,10 @@ restore_path: this record, guard, state, canon, active index, and manifest
 
 ## Final validation
 
-- `node _tests/smoke_stage14_3_runtime_enforcement_apply_design_review.js`: ok.
-- `node _tests/smoke_stage14_2b_repo_gremlin_double_scan.js`: ok.
-- `node _tests/smoke_stage12_enforcement_wiring_plan_no_apply.js`: ok.
-- `node _tests/smoke_stage12_operator_approval_boundary_guard.js`: ok after one tool-layer retry.
-- `node _tests/smoke_stage12_oauth_production_hardening_plan.js`: ok after historical next-work guard update.
+- `node _tests/smoke_runtime_enforcement_apply_design_review.js`: ok.
+- `node _tests/smoke_repo_gremlin_double_scan.js`: ok.
+- `node _tests/smoke_enforcement_wiring_plan_no_apply.js`: ok.
+- `node _tests/smoke_operator_approval_boundary_guard.js`: ok after one tool-layer retry.
+- `node _tests/smoke_oauth_production_hardening_plan.js`: ok after historical next-work guard update.
 - `node server.js --self-test`: ok.
 - `node _tests/run_all_smokes.js --skip-network`: ok, public=6, tests_authenticated=163.

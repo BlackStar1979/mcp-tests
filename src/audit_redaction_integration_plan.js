@@ -53,17 +53,17 @@ function buildAuditRedactionIntegrationPlan({ samplePayload = {}, target = "obse
       "keep raw audit logs local-only",
       "generate redacted summary with audit_export_redactor",
       "validate after_safety.export_safe before sharing",
-      "avoid changing observability_status outputSchema without explicit stage",
+      "avoid changing observability_status outputSchema without explicit compatibility package",
       "if public export is needed, add separate tool with strict outputSchema and connector refresh plan",
     ],
     blockers: [
       "raw audit export remains forbidden",
-      "observability_status output schema must not be changed in Stage 8 / Step 43",
-      "no connector-visible export tool exists in Stage 8 / Step 43",
+      "observability_status output schema must not be changed in the current planning package",
+      "no connector-visible export tool exists in the current planning package",
     ],
     required_future_approvals: [
-      "explicit stage for observability_status output schema change, if needed",
-      "explicit stage for new connector-visible audit export tool, if needed",
+      "explicit compatibility package for observability_status output schema change, if needed",
+      "explicit compatibility package for new connector-visible audit export tool, if needed",
       "manual connector refresh after any future schema or tool-surface change",
     ],
   };

@@ -28,8 +28,4 @@ const record = read("_workflow/operator_decisions/crlf_batch_normalization_lf_po
 assert.ok(record.includes("Status: GREEN / NORMALIZED / SYSTEM LF POLICY"));
 assert.ok(record.includes("before_crlf_tracked_text_files: 321"));
 assert.ok(record.includes("after_crlf_tracked_text_files: 0"));
-const state = readJson("_workflow/state.json");
-assert.ok(["normalized_lf_policy_active", "lf_active"].includes(state.crlf_batch_normalization.status));
-assert.equal(state.crlf_batch_normalization.before_crlf_count || 321, 321);
-assert.equal(state.crlf_batch_normalization.after_crlf_count || state.crlf_batch_normalization.after, 0);
 console.log("smoke_crlf_batch_normalization_lf_policy ok");

@@ -85,7 +85,7 @@ function validate({ profile = "sanity" } = {}) {
 
   const evidence = [];
   if (profile === "targeted" || profile === "closeout") {
-    evidence.push(runNode(["_tests/smoke_stage12_step40_workplace_contract.js"], "workflow_canon_guard"));
+    evidence.push(runNode(["_tests/smoke_workplace_contract.js"], "workflow_canon_guard"));
     if (evidence[evidence.length - 1].result !== "ok") failures.push("workflow canon guard failed");
   }
   if (profile === "closeout") {

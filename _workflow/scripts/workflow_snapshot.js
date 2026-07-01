@@ -11,9 +11,9 @@ const DEFAULT_FILES = [
   "_workflow/README.md",
   "_workflow/scripts/workflow_snapshot.js",
   "_workflow/scripts/workflow_validate.js",
-  "_workflow/scripts/s35_check.js",
-  "_tests/smoke_stage12_step39_workstream_boundary_control_review.js",
-  "_tests/smoke_stage12_step40_workplace_contract.js",
+  "_workflow/scripts/runtime_apply_package_preparation_check.js",
+  "_tests/smoke_workstream_boundary_control_review.js",
+  "_tests/smoke_workplace_contract.js",
   "_tests/run_all_smokes.js",
   "_tests/run_all_smoke_scripts.json",
 ];
@@ -95,6 +95,12 @@ function assertSafeRelativePath(filePath) {
   if (normalized.includes("../") || normalized === "..") {
     throw new Error(`traversal rejected: ${filePath}`);
   }
+  if (
+    normalized === "_workflow/control_plane/snapshots" ||
+    normalized.startsWith("_workflow/control_plane/snapshots/")
+  ) {
+    throw new Error(`nested control-plane snapshots rejected: ${filePath}`);
+  }
   const segments = normalized.split("/");
   for (const segment of segments) {
     if (FORBIDDEN_PATH_SEGMENTS.has(segment)) {
@@ -171,3 +177,4 @@ if (require.main === module) {
 module.exports = {
   createSnapshot,
 };
+

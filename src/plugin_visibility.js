@@ -25,7 +25,7 @@ function listChangedFeasibility() {
     list_changed_required_for_real_visibility_change: true,
     list_changed_enabled_now: false,
     current_connector_mode: "public-global-tool-surface",
-    reason_disabled_now: "Stage 7.3 is preview-only. Current public connector keeps a static tools/list surface; real list_changed belongs to a future session/gateway stage.",
+    reason_disabled_now: "Preview-only mode. Current public connector keeps a static tools/list surface; real list_changed belongs to a future session/gateway runtime design.",
     future_requirements: [
       "manifest-backed state store",
       "explicit enable/disable operation with audit",
@@ -157,13 +157,13 @@ function makePlan({ candidate, targetState, registry, stateStore = {} }) {
     blockers.push("non-public-safe candidate cannot be planned for public visibility");
   }
   if (targetState === "enabled") {
-    requiredApprovals.push("explicit operator approval before real enable in a future stage");
+    requiredApprovals.push("explicit operator approval before any real enable action");
     requiredApprovals.push("visibility diff review before real tools/list change");
     if (!candidate.public_safe) requiredApprovals.push("internal authenticated profile required");
     if (candidate.risk !== "readonly-local") requiredApprovals.push(`risk-specific policy approval: ${candidate.risk}`);
   }
   if (targetState === "quarantined") {
-    warnings.push("quarantine is safe to plan but Stage 7.3 does not persist state");
+    warnings.push("quarantine is safe to plan but preview-only mode does not persist state");
   }
   if (targetState === currentState) {
     warnings.push("target_state equals current manifest-derived state; real diff would be empty");
@@ -212,7 +212,7 @@ function makePlan({ candidate, targetState, registry, stateStore = {} }) {
       },
     },
     list_changed: listChangedFeasibility(),
-    next_stage_hint: "A future Stage 8 session/gateway prototype is required before server-pushed list_changed is meaningful for per-session toolsets.",
+    next_stage_hint: "A future session/gateway prototype is required before server-pushed list_changed is meaningful for per-session toolsets.",
   };
 }
 

@@ -35,7 +35,7 @@ Non-goals:
 
 Expected guard:
 
-- `_tests/smoke_stage8_static_tool_registry_equivalence.js`
+- `_tests/smoke_static_tool_registry_equivalence.js`
 
 Acceptance:
 

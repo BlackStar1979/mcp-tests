@@ -1,0 +1,23 @@
+"use strict";
+const assert=require("node:assert/strict");
+const spec=require("../SERVER_AUTH_SPEC.json");
+const policy=spec.dynamic_client_registration_policy;
+assert.equal(policy.status,"implemented_h4_policy");
+assert.equal(policy.dcr_mode,"supported");
+assert.equal(policy.runtime_registration_endpoint_implemented_by_mcp_tests,false);
+assert.equal(policy.authorization_server_registration_endpoint_required_when_dcr_enabled,true);
+assert.equal(policy.manual_registration_fallback_allowed,true);
+assert.equal(policy.wildcard_redirect_uris_forbidden,true);
+assert.ok(policy.allowed_redirect_uri_patterns.development.includes("http://127.0.0.1:*/*"));
+assert.ok(policy.allowed_redirect_uri_patterns.development.includes("http://localhost:*/*"));
+assert.ok(policy.allowed_redirect_uri_patterns.production.includes("https://*"));
+assert.ok(policy.forbidden_redirect_uri_patterns.includes("*"));
+assert.ok(policy.forbidden_redirect_uri_patterns.includes("file://*"));
+assert.ok(policy.forbidden_redirect_uri_patterns.includes("javascript:*"));
+assert.ok(policy.allowed_token_endpoint_auth_methods.includes("none"));
+assert.ok(policy.allowed_token_endpoint_auth_methods.includes("client_secret_basic"));
+assert.ok(policy.allowed_token_endpoint_auth_methods.includes("private_key_jwt"));
+assert.equal(policy.operator_approval_required_for_untrusted_public_clients,true);
+for(const required of ["client_name","redirect_uris","grant_types","response_types","token_endpoint_auth_method"]){assert.ok(policy.registration_metadata_requirements.includes(required),`${required} missing`);}
+assert.equal(policy.guard,"_tests/smoke_oauth_dcr_policy.js");
+console.log("smoke_oauth_dcr_policy ok");

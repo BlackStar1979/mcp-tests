@@ -69,10 +69,10 @@ function buildEnforcementWiringPlan({ readinessReport, operatorApproval = false 
       "change_allow_deny_behavior",
     ],
     blockers: operatorApproval === true ? [
-      "Stage 12.2 is plan-only; apply is intentionally disabled in this stage",
+      "Plan-only package; apply is intentionally disabled in the current package",
     ] : [
       "missing explicit operator approval for runtime enforcement",
-      "Stage 12.2 is plan-only; apply is intentionally disabled in this stage",
+      "Plan-only package; apply is intentionally disabled in the current package",
     ],
   });
 }

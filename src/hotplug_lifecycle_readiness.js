@@ -109,7 +109,7 @@ async function buildHotplugLifecycleReadiness() {
     hpl2_diff_model: { status: "done", evidence: "registry diff dry-run detects add/remove/update and requires list_changed without mutation" },
     hpl3_state_store_apply_gate: { status: "done", evidence: "state-store pipeline and apply-readiness gate verify receipts but keep apply disabled" },
     hpl4_local_harness_emission: { status: "done_mock_only", evidence: "local harness can send mock list_changed envelope while live runtime remains disabled" },
-    hpl5_runtime_apply_prototype: { status: "gated_pending_explicit_operator_runtime_step", evidence: "security-first preflight denies apply, mutation, dynamic import, and live list_changed emission" },
+    hpl5_runtime_apply_prototype: { status: "gated_pending_explicit_operator_runtime_action", evidence: "security-first preflight denies apply, mutation, dynamic import, and live list_changed emission" },
   };
 
   return {
@@ -172,7 +172,7 @@ async function buildHotplugLifecycleReadiness() {
         "HPL4 local harness not available",
       ],
       valid_blockers_remaining: [
-        "HPL5 runtime apply prototype requires explicit operator runtime step",
+        "HPL5 runtime apply prototype requires explicit operator runtime action",
         "live list_changed emission remains disabled",
         "real tools/list mutation remains disabled",
         "state-store writes remain disabled",

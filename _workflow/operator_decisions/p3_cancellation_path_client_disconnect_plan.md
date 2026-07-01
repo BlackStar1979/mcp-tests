@@ -72,7 +72,7 @@ Add `abortSignal` to runtime context and prove it reaches a mock long-running ha
 
 Guard:
 
-- `_tests/smoke_stage12_client_disconnect_cancellation_context.js`
+- `_tests/smoke_request_cancellation_context.js`
 
 ### C2 - Client disconnect audit and no-write-after-close guard
 
@@ -80,7 +80,7 @@ Add audit event for client disconnect and ensure dispatcher does not attempt to 
 
 Guard:
 
-- `_tests/smoke_stage12_client_disconnect_audit_guard.js`
+- `_tests/smoke_client_disconnect_write_guard.js`
 
 ### C3 - Cooperative tool cancellation sample
 
@@ -88,7 +88,7 @@ Pick one safe long-running or mocked handler path and demonstrate cooperative ca
 
 Guard:
 
-- `_tests/smoke_stage12_cooperative_tool_cancellation.js`
+- `_tests/smoke_cooperative_tool_cancellation.js`
 
 ### C4 - Timeout fallback preservation
 
@@ -96,7 +96,7 @@ Ensure existing pending request timeout behavior remains intact and is not repla
 
 Guard:
 
-- existing `_tests/smoke_stage12_pending_request_correlation.js`
+- existing `_tests/smoke_pending_request_correlation.js`
 - new focused timeout preservation guard if needed.
 
 ## Acceptance criteria

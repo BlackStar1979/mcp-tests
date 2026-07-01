@@ -12,7 +12,7 @@ C3 implements the narrow cooperative cancellation sample from the P3 cancellatio
 - Added `src/runtime/cooperative_tool_cancellation.js`.
 - Updated `src/runtime/optional_tool_call_handler.js` to return a controlled JSON-RPC error for cooperative cancellation instead of treating it as an unhandled tool exception.
 - Added audit event `tool_call_cancelled_cooperative`.
-- Added `_tests/smoke_c3_cooperative_tool_cancellation.js`.
+- Added `_tests/smoke_cooperative_tool_cancellation.js`.
 
 ## Blocker reassessment
 
@@ -43,10 +43,10 @@ C3 implements the narrow cooperative cancellation sample from the P3 cancellatio
 
 ## Validation
 
-- `node _tests/smoke_c3_cooperative_tool_cancellation.js`
-- `node _tests/smoke_stage7_c1_cancellation_context_plumbing.js`
-- `node _tests/smoke_stage7_c2_client_disconnect_write_guard.js`
-- `node _tests/smoke_stage12_pending_request_correlation.js`
+- `node _tests/smoke_cooperative_tool_cancellation.js`
+- `node _tests/smoke_request_cancellation_context.js`
+- `node _tests/smoke_client_disconnect_write_guard.js`
+- `node _tests/smoke_pending_request_correlation.js`
 - `node _tests/smoke_matrix_check.js`
 - `node _tests/run_all_smokes.js --skip-network`
 - `git diff --check`

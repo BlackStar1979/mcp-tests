@@ -3,7 +3,7 @@
   "plugin_id": "sample.echo_readonly",
   "plugin_version": "0.1.0",
   "name": "Sample Echo Read-only Plugin",
-  "description": "Stage 8 / Step 1 sample read-only plug-in used to validate manifest-backed execution wrapper. It is executed only through an allowlisted built-in readonly handler; no dynamic import is used.",
+  "description": "Sample read-only plug-in used to validate the manifest-backed execution wrapper. It is executed only through an allowlisted built-in readonly handler; no dynamic import is used.",
   "entrypoint": "index.js",
   "status": "candidate",
   "tags": [
@@ -22,7 +22,7 @@
     {
       "name": "plugin_sample_echo_preview",
       "title": "Sample Echo Preview",
-      "description": "Read-only sample echo candidate used by the Stage 8 / Step 1 execution wrapper. Executed only through an allowlisted built-in handler; no dynamic import.",
+      "description": "Read-only sample echo candidate used by the execution wrapper. Executed only through an allowlisted built-in handler; no dynamic import.",
       "annotations": {
         "readOnlyHint": true,
         "destructiveHint": false,

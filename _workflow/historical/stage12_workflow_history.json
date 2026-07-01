@@ -291,7 +291,7 @@
       ],
       "next": "stage12_step19_decision_evaluator_dev_harness_contract",
       "validator": "_workflow/scripts/validate_server_spec_fixtures.js",
-      "smoke": "_tests/smoke_stage12_server_spec_fixture_validator.js",
+      "smoke": "_tests/smoke_server_spec_fixture_validator.js",
       "coverage_tightened": true,
       "negative_controls": "passing"
     },
@@ -748,7 +748,7 @@
     "fixture_negative_controls": {
       "status": "passing",
       "tool": "_workflow/scripts/validate_server_spec_negative_controls.js",
-      "smoke": "_tests/smoke_stage12_server_spec_negative_controls.js",
+      "smoke": "_tests/smoke_server_spec_negative_controls.js",
       "control_count": 7,
       "controls": [
         "bad_decision_value",
@@ -858,7 +858,7 @@
         "next_planned_step": "stage12_step23_decision_runtime_interface_contract"
       },
       "tool": "_workflow/scripts/evaluate_server_spec_decisions.js",
-      "smoke": "_tests/smoke_stage12_decision_evaluator_dev_harness.js",
+      "smoke": "_tests/smoke_decision_evaluator_dev_harness.js",
       "last_result": {
         "ok": true,
         "evaluated_fixture_count": 15,
@@ -872,7 +872,7 @@
     "decision_evaluator_negative_controls": {
       "status": "passing",
       "tool": "_workflow/scripts/evaluate_server_spec_decision_negative_controls.js",
-      "smoke": "_tests/smoke_stage12_decision_evaluator_negative_controls.js",
+      "smoke": "_tests/smoke_decision_evaluator_negative_controls.js",
       "control_count": 8,
       "controls": [
         "fixture_decision_mismatch",
@@ -1025,7 +1025,7 @@
       },
       "smoke": {
         "status": "passing",
-        "path": "_tests/smoke_stage12_decision_runtime_interface_contract_validator.js",
+        "path": "_tests/smoke_decision_runtime_interface_contract_validator.js",
         "registered_in_run_all_smokes": true,
         "expected_full_smoke_results_after_registration": 105
       },
@@ -1057,7 +1057,7 @@
       "negative_controls": {
         "status": "passing",
         "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_negative_controls.js",
-        "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_negative_controls.js",
+        "smoke": "_tests/smoke_decision_runtime_interface_contract_negative_controls.js",
         "control_count": 17,
         "controls": [
           "missing_contract_object",
@@ -1148,7 +1148,7 @@
         "connector_refresh_required": false
       },
       "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_readiness_gate.js",
-      "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_readiness_gate.js",
+      "smoke": "_tests/smoke_decision_runtime_interface_contract_readiness_gate.js",
       "last_result": {
         "ok": true,
         "documentation_state_audit": "complete",
@@ -1286,7 +1286,7 @@
         "connector_refresh_required": false
       },
       "tool": "_workflow/scripts/validate_decision_runtime_integration_plan.js",
-      "smoke": "_tests/smoke_stage12_decision_runtime_integration_plan.js",
+      "smoke": "_tests/smoke_decision_runtime_integration_plan.js",
       "next_gate": {
         "next_planned_step": "stage12_step29_decision_runtime_patch_scope_approval_package",
         "runtime_patch_allowed_next": false,
@@ -1354,7 +1354,7 @@
         "next_planned_step": "stage12_step29_decision_runtime_patch_scope_approval_package"
       },
       "tool": "_workflow/scripts/validate_decision_runtime_operator_gate.js",
-      "smoke": "_tests/smoke_stage12_decision_runtime_operator_gate.js",
+      "smoke": "_tests/smoke_decision_runtime_operator_gate.js",
       "last_result": {
         "ok": true,
         "full_smoke_skip_network": "ok_true_108_results_version_0_29_0"
@@ -1405,7 +1405,7 @@
         "approve_rollback"
       ],
       "tool": "_workflow/scripts/validate_runtime_scope_approval_package.js",
-      "smoke": "_tests/smoke_stage12_runtime_scope_approval_package.js",
+      "smoke": "_tests/smoke_runtime_scope_approval_package.js",
       "next_planned_step": "stage12_step30_runtime_scope_operator_approval_decision",
       "last_result": {
         "ok": true,
@@ -1460,7 +1460,7 @@
         }
       ],
       "tool": "_workflow/scripts/validate_runtime_scope_operator_decision.js",
-      "smoke": "_tests/smoke_stage12_runtime_scope_operator_decision.js",
+      "smoke": "_tests/smoke_runtime_scope_operator_decision.js",
       "next_planned_step": "stage12_step31_runtime_implementation_plan_no_code",
       "last_result": {
         "ok": true,
@@ -1485,7 +1485,7 @@
       "direct_runtime_implementation_allowed": false,
       "artifact": "_workflow/longterm/stage12_step31_runtime_implementation_plan_no_code.md",
       "policy": "_workflow/policies/p31.json",
-      "smoke": "_tests/smoke_stage12_runtime_implementation_plan_no_code.js",
+      "smoke": "_tests/smoke_runtime_implementation_plan_no_code.js",
       "next_planned_step": "stage12_step32_runtime_implementation_plan_operator_approval",
       "last_result": {
         "full_smoke_skip_network": "ok_true_111_results_version_0_29_0"
@@ -1500,7 +1500,7 @@
       "direct_runtime_implementation_allowed": false,
       "artifact": "_workflow/longterm/stage12_step32_runtime_implementation_plan_operator_approval.md",
       "policy": "_workflow/policies/p32.json",
-      "smoke": "_tests/smoke_stage12_runtime_implementation_plan_operator_approval.js",
+      "smoke": "_tests/smoke_runtime_implementation_plan_operator_approval.js",
       "next_planned_step": "stage12_step33_runtime_execution_package_no_apply",
       "last_result": {
         "full_smoke_skip_network": "ok_true_112_results_version_0_29_0"
@@ -1515,7 +1515,7 @@
       "apply_changes_allowed": false,
       "artifact": "_workflow/longterm/stage12_step33_runtime_execution_package_no_apply.md",
       "policy": "_workflow/policies/p33.json",
-      "smoke": "_tests/smoke_stage12_runtime_execution_package_no_apply.js",
+      "smoke": "_tests/smoke_runtime_execution_package_no_apply.js",
       "next_planned_step": "stage12_step34_runtime_execution_package_operator_approval",
       "last_result": {
         "full_smoke_skip_network": "ok_true_113_results_version_0_29_0"
@@ -1528,7 +1528,7 @@
       "runtime_change_allowed_next": false,
       "artifact": "_workflow/longterm/stage12_step33a_project_debt_review_before_step34.md",
       "policy": "_workflow/policies/p33a.json",
-      "smoke": "_tests/smoke_stage12_project_debt_review_before_step34.js",
+      "smoke": "_tests/smoke_project_debt_review_before_step34.js",
       "next_planned_step": "stage12_step33b_pre_step34_debt_reduction_plan_no_runtime_change",
       "last_result": {
         "full_smoke_skip_network": "ok_true_114_results_version_0_29_0"
@@ -1543,7 +1543,7 @@
       "policy": "_workflow/policies/p33b.json",
       "policy_index": "_workflow/policies/policy_index.json",
       "dry_run_manifest": "_workflow/patch_manifests/stage12_step33_runtime_execution_dry_run_manifest.json",
-      "smoke": "_tests/smoke_stage12_pre_step34_debt_reduction.js",
+      "smoke": "_tests/smoke_pre_step34_debt_reduction.js",
       "next_planned_step": "stage12_step34_runtime_execution_package_operator_approval",
       "last_result": {
         "full_smoke_skip_network": "ok_true_115_results_version_0_29_0"
@@ -1561,7 +1561,7 @@
       "direct_runtime_implementation_allowed": false,
       "artifact": "_workflow/longterm/stage12_step34_runtime_execution_package_operator_approval.md",
       "policy": "_workflow/policies/p34.json",
-      "smoke": "_tests/smoke_stage12_runtime_execution_package_operator_approval.js",
+      "smoke": "_tests/smoke_runtime_execution_package_operator_approval.js",
       "next_planned_step": "stage12_step35_runtime_apply_package_preparation_no_apply",
       "last_result": {
         "full_smoke_skip_network": "ok_true_116_results_version_0_29_0",
@@ -1584,7 +1584,7 @@
       "apply_package": "_workflow/patch_manifests/stage12_step35_runtime_apply_package_preparation_no_apply.json",
       "p1_test_package": "_workflow/patch_manifests/stage12_step35_p1_test_package_manifest.json",
       "policy": "_workflow/policies/p35.json",
-      "smoke": "_tests/smoke_stage12_runtime_apply_package_preparation_no_apply.js",
+      "smoke": "_tests/smoke_runtime_apply_package_preparation_no_apply.js",
       "next_planned_step": "stage12_step36_decision_runtime_shim_package_no_apply",
       "last_result": {
         "full_smoke_skip_network": "ok_true_117_results_version_0_29_0",

@@ -110,7 +110,7 @@ Recommended remediation:
 
 `git diff --check` remains OK, but recurring CRLF-to-LF warnings appear for:
 
-- `_tests/smoke_stage12_streamable_http_workflow_plan.js`;
+- `_tests/smoke_streamable_http_workflow_plan.js`;
 - `_workflow/WORKFLOW_CANON.md`.
 
 Recommended remediation:

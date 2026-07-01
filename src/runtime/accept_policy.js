@@ -27,13 +27,10 @@ function evaluatePostAccept(req = {}, { strict = isStrictStreamableHttpAcceptEna
   }
   const acceptsJson = acceptsMediaType(mediaTypes, JSON_MEDIA_TYPE);
   const acceptsSse = acceptsMediaType(mediaTypes, SSE_MEDIA_TYPE);
-  if (strict && !(acceptsJson && acceptsSse)) {
-    return { ok: false, reason: "accept_must_include_json_and_sse", acceptsJson, acceptsSse, mediaTypes };
+  if (!acceptsJson) {
+    return { ok: false, reason: "accept_must_include_json", acceptsJson, acceptsSse, mediaTypes };
   }
-  if (!acceptsJson && !acceptsSse) {
-    return { ok: false, reason: "accept_no_supported_media_type", acceptsJson, acceptsSse, mediaTypes };
-  }
-  return { ok: true, mode: acceptsSse ? "sse_capable" : "json_only", acceptsJson, acceptsSse, mediaTypes };
+  return { ok: true, mode: "json_only", acceptsJson, acceptsSse, mediaTypes };
 }
 
 function evaluateGetAccept(req = {}) {

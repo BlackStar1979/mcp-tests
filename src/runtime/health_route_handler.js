@@ -38,6 +38,7 @@ function handleHealthRoute({
         enabled: true,
         version: auditVersion,
       },
+      compatibility_label: stageStatus,
       stage_status: stageStatus,
       security_boundary: securityBoundary,
       public_base_url: publicBaseUrl,

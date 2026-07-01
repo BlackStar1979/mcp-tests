@@ -10,7 +10,7 @@ function asBool(value) {
   return value === true;
 }
 
-function buildStateStoreTransactionReceipt({ plan = {}, stage = "8.42", operation = "preview", operator = "", reason = "" } = {}) {
+function buildStateStoreTransactionReceipt({ plan = {}, stage = "plugin-visibility-state-store-receipt", operation = "preview", operator = "", reason = "" } = {}) {
   const writePlan = plan.write_plan || {};
   const rollback = plan.rollback || {};
   const receipt = {
@@ -76,9 +76,9 @@ function verifyStateStoreTransactionReceipt(receipt = {}) {
   if (receipt.raw_record_redacted !== true) errors.push("raw record must be redacted");
   if (receipt.raw_store_redacted !== true) errors.push("raw store must be redacted");
   if (receipt.raw_path_redacted !== true) errors.push("raw path must be redacted");
-  if (receipt.transaction_applied === true) errors.push("Stage 8 / Step 42 receipt must not record applied transaction");
-  if (receipt.fs_write_performed === true) errors.push("Stage 8 / Step 42 receipt must not record fs write");
-  if (receipt.list_changed_emitted === true) errors.push("Stage 8 / Step 42 receipt must not record list_changed emission");
+  if (receipt.transaction_applied === true) errors.push("preview receipt must not record applied transaction");
+  if (receipt.fs_write_performed === true) errors.push("preview receipt must not record fs write");
+  if (receipt.list_changed_emitted === true) errors.push("preview receipt must not record list_changed emission");
   if (receipt.real_mutation_enabled === true) errors.push("real mutation must remain disabled");
   if (receipt.execute_allowed_now === true) errors.push("execute must remain disabled");
   if (receipt.fs_write_enabled_now === true) errors.push("fs write must remain disabled");

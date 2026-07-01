@@ -6,7 +6,6 @@ const { handleAuthRejection } = require("./auth_rejection_handler");
 const { parseRpcRequestBodyOrHandleError } = require("./request_body_parse_handler");
 const { handleBatchPayloadIfNeeded } = require("./batch_payload_dispatcher");
 const { handleSinglePayload } = require("./single_payload_dispatcher");
-const { handleMcpGetStream } = require("./mcp_get_stream_handler");
 const { handleRpcHandlerException } = require("./rpc_handler_exception_handler");
 const { getRequestSessionId } = require("./session_tracker");
 const { jsonResponse } = require("./http_responses");
@@ -24,7 +23,6 @@ async function dispatchMcpEntry({
   handleRpcMessage,
   publicBaseUrl,
   sessionStore,
-  listChangedNotifier,
 }) {
   const sessionId = getRequestSessionId(req);
   if (sessionId === null) {
@@ -50,16 +48,7 @@ async function dispatchMcpEntry({
   if (req.method === "GET") {
     const getAccept = evaluateGetAccept(req);
     auditLog("streamable_http_preflight", { request_id: requestId, http_method: req.method, accept_ok: getAccept.ok, reason: getAccept.reason || null });
-    if (!getAccept.ok) {
-      handleMethodNotAllowed({ res, auditLog, requestId, sessionId, httpMethod: req.method });
-      return;
-    }
-    const authResult = authPolicy.authenticate(req);
-    if (!authResult.ok) {
-      handleAuthRejection({ res, auditLog, requestId, sessionId, httpMethod: req.method, authResult, authPolicy });
-      return;
-    }
-    handleMcpGetStream({ req, res, requestId, sessionId, sessionStore, auditLog, listChangedNotifier });
+    handleMethodNotAllowed({ res, auditLog, requestId, sessionId, httpMethod: req.method });
     return;
   }
 
@@ -118,6 +107,7 @@ async function dispatchMcpEntry({
   }
 
   const { payload, raw } = parsedRequest;
+  const protocolVersionHeader = req.headers?.["mcp-protocol-version"];
 
   let activeSession = null;
   if (sessionId !== undefined) {
@@ -148,7 +138,8 @@ async function dispatchMcpEntry({
       sessionId: activeSession?.id || sessionId,
       session: activeSession,
       protocolVersion: activeSession?.protocolVersion || protocolVersion.protocolVersion,
-      responseMode: postAccept.mediaTypes.includes("text/event-stream") ? "sse" : "json",
+      protocolVersionHeader,
+      responseMode: "json",
       httpMethod: req.method,
       abortSignal,
       handleRpcMessage,
@@ -167,7 +158,8 @@ async function dispatchMcpEntry({
       sessionId: activeSession?.id || sessionId,
       session: activeSession,
       protocolVersion: activeSession?.protocolVersion || protocolVersion.protocolVersion,
-      responseMode: postAccept.mediaTypes.includes("text/event-stream") ? "sse" : "json",
+      protocolVersionHeader,
+      responseMode: "json",
       httpMethod: req.method,
       abortSignal,
       handleRpcMessage,

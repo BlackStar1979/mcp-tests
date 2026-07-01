@@ -1,6 +1,8 @@
 const {
   CURRENT_STAGE_STATUS,
   CURRENT_STAGE_STATUS_SEMANTICS,
+  CURRENT_COMPATIBILITY_LABEL,
+  CURRENT_COMPATIBILITY_LABEL_SEMANTICS,
   CURRENT_WORKING_COURSE,
 } = require("../stage_metadata");
 
@@ -19,6 +21,8 @@ function buildRuntimeIdentity() {
     audit_version: AUDIT_VERSION,
     startup_report_version: STARTUP_REPORT_VERSION,
     labels_version: LABELS_VERSION,
+    runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
+    runtime_compatibility_label_semantics: CURRENT_COMPATIBILITY_LABEL_SEMANTICS,
     runtime_stage_status: CURRENT_STAGE_STATUS,
     runtime_stage_status_semantics: CURRENT_STAGE_STATUS_SEMANTICS,
     current_working_course: CURRENT_WORKING_COURSE,

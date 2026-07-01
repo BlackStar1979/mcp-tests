@@ -27,14 +27,9 @@ async function dispatchCreateServerRoute({
   authorizationServerMetadataProvider,
   oauth21AuthorizationServer,
   auditLog,
-  sessionlessPrototypeRouteHandler,
 }) {
   if (oauth21AuthorizationServer) {
     const handled = await oauth21AuthorizationServer.handleRoute({ req, res, url });
-    if (handled !== false) return handled;
-  }
-  if (url.pathname === "/mcp/sessionless" && sessionlessPrototypeRouteHandler) {
-    const handled = await sessionlessPrototypeRouteHandler.handleRoute({ req, res, url });
     if (handled !== false) return handled;
   }
 

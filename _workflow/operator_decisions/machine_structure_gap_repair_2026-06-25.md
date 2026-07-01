@@ -25,6 +25,6 @@ Machine structure is stricter but not operationally complete. Restart authority 
 
 - `smoke_runtime_topology_authority` -> ok
 - `smoke_root_server_specs_consistency` -> ok
-- `smoke_workflow_state_compact_spec_map` -> ok
-- `smoke_stage14_6_sep_sessionless_inventory` -> ok
+- `smoke_workflow_state_orientation_map` -> ok
+- `smoke_sep_sessionless_inventory` -> ok
 - full `run_all_smokes --skip-network` -> ok, public=6, tests_authenticated=168

@@ -33,7 +33,7 @@ const ok=
   spec.runtime_execution_package_operator_approval?.runtime_patch_requires_separate_operator_execution_approval===true&&
   step34RetainedHistorically&&
   state.last_validation?.stage12_step34_runtime_execution_package_operator_approval==='ok'&&
-  (runAll.includes('_tests/smoke_stage12_runtime_execution_package_operator_approval.js')||runAllScripts.includes('_tests/smoke_stage12_runtime_execution_package_operator_approval.js'))&&
+  (runAll.includes('_tests/smoke_runtime_execution_package_operator_approval.js')||runAllScripts.includes('_tests/smoke_runtime_execution_package_operator_approval.js'))&&
   indexShorts.has('p33b.json')&&
   indexShorts.has('p34.json');
 
