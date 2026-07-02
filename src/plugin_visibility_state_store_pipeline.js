@@ -48,7 +48,7 @@ async function runPluginVisibilityStateStorePipeline({
   });
   const listChangedReceipt = buildListChangedAuditReceipt({
     harnessResult: listChangedHarness,
-    stage: "8.44",
+    stage: "plugin-visibility-state-store-pipeline-dry-run",
     operation: "state_store_pipeline_dry_run",
     operator,
     reason,
@@ -57,7 +57,7 @@ async function runPluginVisibilityStateStorePipeline({
 
   const stateReceipt = buildStateStoreTransactionReceipt({
     plan: statePlan,
-    stage: "8.44",
+    stage: "plugin-visibility-state-store-pipeline-dry-run",
     operation: "state_store_pipeline_dry_run",
     operator,
     reason,

@@ -37,8 +37,6 @@ function runConfiguredRuntime({
   auditLogPath,
   rateLimiter,
   serverStartId,
-  listChangedNotifier,
-  sessionlessPrototypeRouteHandler,
 }) {
   const { handleMcp } = createMcpRuntimeHandlers({
     serverName,
@@ -54,7 +52,6 @@ function runConfiguredRuntime({
     publicBaseUrl,
     rateLimiter,
     serverStartId,
-    listChangedNotifier,
   });
 
   return runServerLifecycle({
@@ -71,7 +68,6 @@ function runConfiguredRuntime({
       documentRuntimeContext,
       auditLogPath,
       serverStartId,
-      sessionlessPrototypeRouteHandler,
     },
     startupContext: {
       host,
@@ -105,7 +101,6 @@ function runConfiguredRuntime({
       labelsVersion,
       auditLogPath,
       serverStartId,
-      sessionlessPrototypeRouteHandler,
     },
   });
 }

@@ -31,7 +31,7 @@ async function runListChangedDryRunPipeline({
   });
   const receipt = buildListChangedAuditReceipt({
     harnessResult: harness,
-    stage: "8.38",
+    stage: "list-changed-pipeline-dry-run",
     operation: "dry_run_pipeline",
     operator,
     reason,

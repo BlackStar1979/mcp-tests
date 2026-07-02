@@ -63,7 +63,7 @@ function diffToolLists({ current = [], target = [] } = {}) {
           "notifications/tools/list_changed emission is disabled",
         ]
       : [],
-    warnings: changes > 0 ? ["diff is preview-only and must not be applied by this stage"] : [],
+    warnings: changes > 0 ? ["diff is preview-only and must not be applied in the current mode"] : [],
   };
 }
 

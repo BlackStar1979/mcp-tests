@@ -9,8 +9,9 @@
     "src/runtime/create_server_route_dispatcher.js",
     "src/auth/oauth21_authorization_server.js",
     "src/tool_loader.js",
-    "src/runtime/sessionless_prototype_route_handler.js",
-    "src/runtime/state_handle_prototype.js"
+    "src/runtime/state_handle_prototype.js",
+    "src/runtime/request_metadata_policy.js",
+    "src/runtime/server_discover_message_handler.js"
   ],
   "cli_flags": [
     "--profile",
@@ -33,8 +34,7 @@
     "/authorize",
     "/oauth/operator-login",
     "/token",
-    "/revoke",
-    "/mcp/sessionless"
+    "/revoke"
   ],
   "env_vars": [
     "MCP_TEST_ACCESS_TRUSTED_PROXY",
@@ -97,8 +97,7 @@
     "MCP_TEST_RESTART_TRIGGER_FILE",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "MCP_TEST_TOKEN_FILE",
-    "MCP_TEST_TOOL_SURFACE_STATE_FILE",
-    "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE"
+    "MCP_TEST_TOOL_SURFACE_STATE_FILE"
   ],
   "behavior_refs": {
     "cors": "MCP_TEST_CORS_ALLOW_ORIGIN",
@@ -106,8 +105,44 @@
     "batch_limit": "MCP_TEST_MAX_BATCH_ITEMS",
     "strict_accept": "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "public_bind_guard": "MCP_TEST_ALLOW_PUBLIC_BIND",
-    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED",
-    "sessionless_prototype": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE"
+    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED"
+  },
+  "stable_mcp_post_accept_policy": {
+    "route": "/mcp",
+    "http_method": "POST",
+    "requires_accept_json": true,
+    "stable_response_mode": "json_only",
+    "post_sse_negotiation_supported": false,
+    "cleanup_record": "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md"
+  },
+  "stable_mcp_get_policy": {
+    "route": "/mcp",
+    "http_method": "GET",
+    "supported": false,
+    "returns_method_not_allowed": true,
+    "stable_sse_stream_supported": false,
+    "last_event_id_replay_supported": false,
+    "teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md"
+  },
+  "stable_mcp_request_contract_bridge": {
+    "route": "/mcp",
+    "http_method": "POST",
+    "server_discover_supported": true,
+    "server_discover_requires_per_request_metadata": true,
+    "required_http_header": "MCP-Protocol-Version",
+    "required_meta_keys": [
+      "io.modelcontextprotocol/protocolVersion",
+      "io.modelcontextprotocol/clientInfo",
+      "io.modelcontextprotocol/clientCapabilities"
+    ],
+    "supported_per_request_versions": [
+      "2025-06-18"
+    ],
+    "legacy_initialize_still_supported": true,
+    "tools_list_changed_capability_advertised": false,
+    "tool_surface_freshness_model": "pull_only_tools_list_ttl0_private",
+    "transition_mode": "hybrid_bridge_not_final_sessionless_end_state",
+    "record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md"
   },
   "protocol_versions": [
     "2025-06-18",
@@ -191,56 +226,44 @@
   "tool_surface_state_runtime": {
     "env": "MCP_TEST_TOOL_SURFACE_STATE_FILE",
     "default": "_control/tool-surface-state.json",
-    "purpose": "persist last tool surface fingerprint and support conditional tools/list changed notifications for active sessions"
+    "purpose": "persist last tool surface fingerprint and support pull-only tools/list freshness diagnostics"
   },
-  "sessionless_prototype": {
+  "retired_sessionless_transition": {
     "route": "/mcp/sessionless",
     "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
-    "default_enabled": false,
-    "connector_surface_change": false,
-    "current_mcp_route_changed": false,
-    "purpose": "parallel draft/sessionless runtime prototype behind non-default route",
-    "activation_control_file": "_control/sessionless-prototype.json",
-    "activation_control_file_default_enabled": false,
-    "sep2575_request_contract": {
-      "status": "runtime_enforced_on_hidden_route",
-      "route": "/mcp/sessionless",
-      "applies_to_current_mcp_route": false,
-      "required_http_header": "MCP-Protocol-Version",
-      "supported_versions": [
-        "2025-06-18"
-      ],
-      "required_meta_keys": [
-        "io.modelcontextprotocol/protocolVersion",
-        "io.modelcontextprotocol/clientInfo",
-        "io.modelcontextprotocol/clientCapabilities"
-      ],
-      "version_header_meta_match_required": true,
-      "unsupported_version_error_code": -32004,
-      "invalid_request_http_status": 400,
-      "initialize_supported": false,
-      "server_discover_supported": true,
-      "connector_surface_change": false,
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "guard": "_tests/smoke_s7_sessionless_sep2575_request_contract.js"
-    }
+    "status": "retired_from_active_repo_and_live_3008",
+    "historical_only": true,
+    "retirement_package_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_retirement_package.md",
+    "state_handle_decision_record": "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md",
+    "historical_request_contract_record": "_workflow/operator_decisions/sessionless_sep2575_request_contract.md",
+    "historical_activation_record": "_workflow/operator_decisions/oauth21_sessionless_activation_trial.md",
+    "historical_live_probe_record": "_workflow/operator_decisions/sessionless_live_authenticated_probe.md",
+    "restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false,
+    "live_3008_retirement_verified": true,
+    "live_3008_server_start_id": "2026-07-01T05:24:50.211Z",
+    "live_3008_probe": "GET /mcp/sessionless -> 404 Not found"
   },
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",
     "date": "2026-06-29",
     "source_of_truth": "_workflow/sessionless_inventory.json#target_selection_readiness",
-    "workflow_record": "_workflow/operator_decisions/s6_legacy_auth_cleanup_sessionless_ready_review.md",
-    "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js",
+    "workflow_record": "_workflow/operator_decisions/legacy_auth_cleanup_sessionless_ready_review.md",
+    "guard": "_tests/smoke_legacy_archive_sessionless_ready_specs.js",
     "current_stable_route": "/mcp",
     "current_stable_route_status": "legacy_compatible_do_not_remove",
-    "sessionless_workbench_standard_route": "/mcp/sessionless",
-    "sessionless_workbench_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+    "sessionless_transition_route": "/mcp/sessionless",
+    "sessionless_transition_route_historical_only": true,
+    "sessionless_transition_route_retired_from_active_runtime": true,
+    "single_route_no_sse_target_record": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
+    "sessionless_transition_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+    "sessionless_transition_env_retired_from_active_runtime": true,
     "root_spec_runtime_change": false,
     "connector_visible_surface_changed": false,
     "connector_refresh_required_now": false,
     "runtime_restart_required_now": false,
     "public_3009_start_required_now": false,
-    "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages."
+    "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart."
   }
 }

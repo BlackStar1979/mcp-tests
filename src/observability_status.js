@@ -1,7 +1,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
-const { CURRENT_STAGE_STATUS } = require("./stage_metadata");
+const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("./stage_metadata");
 const { assessAuditExportSafety } = require("./audit_export_safety");
 const { buildToolsListCacheDiagnostics } = require("./tools_list_cache_diagnostics");
 
@@ -511,6 +511,7 @@ function buildObservabilityStatus(options = {}) {
     error: recent.read_error,
     mode: "observability-status",
     observability_version: OBSERVABILITY_VERSION,
+    compatibility_label: CURRENT_COMPATIBILITY_LABEL,
     stage: CURRENT_STAGE_STATUS,
     read_only: true,
     mutates_auth: false,
@@ -536,6 +537,7 @@ function buildObservabilityStatus(options = {}) {
     },
     runtime: {
       server_version: runtimeStatus.server_version || "",
+      compatibility_label: runtimeStatus.compatibility_label || runtimeStatus.stage_status || "",
       stage_status: runtimeStatus.stage_status || "",
       auth_mode: runtimeStatus.auth?.mode || "unknown",
       profile: runtimeStatus.profile?.mode || "unknown",

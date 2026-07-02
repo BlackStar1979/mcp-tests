@@ -5,14 +5,14 @@ function classifyChange(changedPaths, flags = {}) {
   const descriptorChange = Boolean(flags.descriptor_change);
   const schemaChange = Boolean(flags.schema_change);
   const toolSurfaceChange = Boolean(flags.tool_surface_change);
-  const stageMetadataChange = paths.some((item) => item === "src/stage_metadata.js" || item.endsWith("/src/stage_metadata.js"));
+  const compatibilityMetadataChange = paths.some((item) => item === "src/stage_metadata.js" || item.endsWith("/src/stage_metadata.js"));
   const runtimeChange = paths.some((item) => item === "server.js" || item.startsWith("src/runtime/") || item.endsWith("/server.js") || item.includes("/src/runtime/"));
   const docsOnly = paths.length > 0 && paths.every((item) => item.startsWith("_workflow/") || item.startsWith("_docs/") || item.endsWith(".md"));
   const testsOnly = paths.length > 0 && paths.every((item) => item.startsWith("_tests/"));
 
   if (descriptorChange || schemaChange || toolSurfaceChange) return "runtime_with_connector_refresh";
   if (runtimeChange) return "runtime_restart_required";
-  if (stageMetadataChange) return "runtime_status_restart_required";
+  if (compatibilityMetadataChange) return "runtime_status_restart_required";
   if (docsOnly || testsOnly) return "repo_only";
   return "repo_or_internal_source";
 }
@@ -22,7 +22,7 @@ function simulateChangeWorkflow(changedPaths, flags = {}) {
   const workflow = ["read PREFLIGHT", "inspect current repo/runtime truth", "make bounded changes", "run targeted validation", "run full smoke"];
 
   if (classification === "runtime_status_restart_required") {
-    workflow.push("restart TEST MCP for live stage metadata truth");
+    workflow.push("restart TEST MCP for live compatibility-label truth");
     workflow.push("validate current_working_course and fingerprints");
   }
   if (classification === "runtime_restart_required") {

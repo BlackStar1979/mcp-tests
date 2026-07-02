@@ -4,7 +4,7 @@ const {
   READ_ONLY_OBSERVABILITY_ANNOTATIONS,
 } = require("../src/schemas/observability_tools");
 const { buildObservabilityStatus } = require("../src/observability_status");
-const { CURRENT_STAGE_STATUS } = require("../src/stage_metadata");
+const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("../src/stage_metadata");
 
 const TOOL_NAME = "observability_status";
 
@@ -22,6 +22,7 @@ function createObservabilityStatusTool(options = {}) {
         error: error?.message || String(error),
         mode: "observability-status",
         observability_version: "test-mcp-observability-v1",
+        compatibility_label: CURRENT_COMPATIBILITY_LABEL,
         stage: CURRENT_STAGE_STATUS,
         read_only: true,
         mutates_auth: false,

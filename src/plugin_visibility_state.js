@@ -124,7 +124,7 @@ function planVisibilityStateTransition({ toolName, currentState = "candidate", t
   }
   if (to === "quarantined") requiredApprovals.push("rollback/quarantine audit record");
   if (from === to) warnings.push("target state equals current state; no state diff would be produced");
-  if (changesToolsList) warnings.push("transition would affect tools/list in a future stage but execution is disabled now");
+  if (changesToolsList) warnings.push("transition would affect tools/list in a future apply path but execution is disabled now");
 
   return {
     success: errors.length === 0,

@@ -301,7 +301,7 @@
         "runtime_boundary_false"
       ],
       "validator": "_workflow/scripts/validate_server_spec_fixtures.js",
-      "smoke": "_tests/smoke_stage12_server_spec_fixture_validator.js",
+      "smoke": "_tests/smoke_server_spec_fixture_validator.js",
       "coverage_tightened": true,
       "negative_controls": "passing"
     },
@@ -758,7 +758,7 @@
     "fixture_negative_controls": {
       "status": "passing",
       "tool": "_workflow/scripts/validate_server_spec_negative_controls.js",
-      "smoke": "_tests/smoke_stage12_server_spec_negative_controls.js",
+      "smoke": "_tests/smoke_server_spec_negative_controls.js",
       "control_count": 7,
       "controls": [
         "bad_decision_value",
@@ -863,13 +863,13 @@
         "prototype_shadow_mode_allowed_next": false
       },
       "tool": "_workflow/scripts/evaluate_server_spec_decisions.js",
-      "smoke": "_tests/smoke_stage12_decision_evaluator_dev_harness.js",
+      "smoke": "_tests/smoke_decision_evaluator_dev_harness.js",
       "negative_controls": "passing"
     },
     "decision_evaluator_negative_controls": {
       "status": "passing",
       "tool": "_workflow/scripts/evaluate_server_spec_decision_negative_controls.js",
-      "smoke": "_tests/smoke_stage12_decision_evaluator_negative_controls.js",
+      "smoke": "_tests/smoke_decision_evaluator_negative_controls.js",
       "control_count": 8,
       "controls": [
         "fixture_decision_mismatch",
@@ -1017,14 +1017,14 @@
       },
       "smoke": {
         "status": "passing",
-        "path": "_tests/smoke_stage12_decision_runtime_interface_contract_validator.js",
+        "path": "_tests/smoke_decision_runtime_interface_contract_validator.js",
         "registered_in_run_all_smokes": true,
         "expected_full_smoke_results_after_registration": 105
       },
       "negative_controls": {
         "status": "passing",
         "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_negative_controls.js",
-        "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_negative_controls.js",
+        "smoke": "_tests/smoke_decision_runtime_interface_contract_negative_controls.js",
         "control_count": 17,
         "controls": [
           "missing_contract_object",
@@ -1109,7 +1109,7 @@
         "connector_refresh_required": false
       },
       "tool": "_workflow/scripts/validate_decision_runtime_interface_contract_readiness_gate.js",
-      "smoke": "_tests/smoke_stage12_decision_runtime_interface_contract_readiness_gate.js"
+      "smoke": "_tests/smoke_decision_runtime_interface_contract_readiness_gate.js"
     },
     "decision_runtime_integration_plan": {
       "status": "plan_written_not_implemented",
@@ -1242,7 +1242,7 @@
         "connector_refresh_required": false
       },
       "tool": "_workflow/scripts/validate_decision_runtime_integration_plan.js",
-      "smoke": "_tests/smoke_stage12_decision_runtime_integration_plan.js",
+      "smoke": "_tests/smoke_decision_runtime_integration_plan.js",
       "next_gate": {
         "runtime_patch_allowed_next": false,
         "operator_approval_required": true
@@ -1304,7 +1304,7 @@
         "restart_required_now": false
       },
       "tool": "_workflow/scripts/validate_decision_runtime_operator_gate.js",
-      "smoke": "_tests/smoke_stage12_decision_runtime_operator_gate.js"
+      "smoke": "_tests/smoke_decision_runtime_operator_gate.js"
     },
     "decision_runtime_scope_approval_package": {
       "status": "scope_package_written_no_runtime_change",
@@ -1351,7 +1351,7 @@
         "approve_rollback"
       ],
       "tool": "_workflow/scripts/validate_runtime_scope_approval_package.js",
-      "smoke": "_tests/smoke_stage12_runtime_scope_approval_package.js"
+      "smoke": "_tests/smoke_runtime_scope_approval_package.js"
     },
     "decision_runtime_scope_operator_decision": {
       "status": "scope_approved_for_implementation_planning_only",
@@ -1401,7 +1401,7 @@
         }
       ],
       "tool": "_workflow/scripts/validate_runtime_scope_operator_decision.js",
-      "smoke": "_tests/smoke_stage12_runtime_scope_operator_decision.js"
+      "smoke": "_tests/smoke_runtime_scope_operator_decision.js"
     },
     "restriction_justification_analysis": {
       "status": "control_artifact_written_no_runtime_change",
@@ -1420,7 +1420,7 @@
       "direct_runtime_implementation_allowed": false,
       "artifact": "_workflow/longterm/stage12_step31_runtime_implementation_plan_no_code.md",
       "policy": "_workflow/policies/p31.json",
-      "smoke": "_tests/smoke_stage12_runtime_implementation_plan_no_code.js"
+      "smoke": "_tests/smoke_runtime_implementation_plan_no_code.js"
     },
     "runtime_implementation_plan_operator_approval": {
       "status": "plan_approved_for_execution_package_preparation_no_runtime_change",
@@ -1431,7 +1431,7 @@
       "direct_runtime_implementation_allowed": false,
       "artifact": "_workflow/longterm/stage12_step32_runtime_implementation_plan_operator_approval.md",
       "policy": "_workflow/policies/p32.json",
-      "smoke": "_tests/smoke_stage12_runtime_implementation_plan_operator_approval.js"
+      "smoke": "_tests/smoke_runtime_implementation_plan_operator_approval.js"
     },
     "runtime_execution_package_no_apply": {
       "status": "execution_package_written_no_runtime_change",
@@ -1442,7 +1442,7 @@
       "apply_changes_allowed": false,
       "artifact": "_workflow/longterm/stage12_step33_runtime_execution_package_no_apply.md",
       "policy": "_workflow/policies/p33.json",
-      "smoke": "_tests/smoke_stage12_runtime_execution_package_no_apply.js"
+      "smoke": "_tests/smoke_runtime_execution_package_no_apply.js"
     },
     "project_debt_review_before_step34": {
       "status": "project_debt_review_written_no_runtime_change",
@@ -1451,7 +1451,7 @@
       "runtime_change_allowed_next": false,
       "artifact": "_workflow/longterm/stage12_step33a_project_debt_review_before_step34.md",
       "policy": "_workflow/policies/p33a.json",
-      "smoke": "_tests/smoke_stage12_project_debt_review_before_step34.js"
+      "smoke": "_tests/smoke_project_debt_review_guard.js"
     },
     "pre_step34_debt_reduction": {
       "status": "p0_debt_reduced_no_runtime_change",
@@ -1462,7 +1462,7 @@
       "policy": "_workflow/policies/p33b.json",
       "policy_index": "_workflow/policies/policy_index.json",
       "dry_run_manifest": "_workflow/patch_manifests/stage12_step33_runtime_execution_dry_run_manifest.json",
-      "smoke": "_tests/smoke_stage12_pre_step34_debt_reduction.js"
+      "smoke": "_tests/smoke_debt_reduction_guard.js"
     },
     "runtime_execution_package_operator_approval": {
       "status": "execution_package_approved_for_apply_package_preparation_runtime_apply_blocked",
@@ -1476,7 +1476,7 @@
       "direct_runtime_implementation_allowed": false,
       "artifact": "_workflow/longterm/stage12_step34_runtime_execution_package_operator_approval.md",
       "policy": "_workflow/policies/p34.json",
-      "smoke": "_tests/smoke_stage12_runtime_execution_package_operator_approval.js",
+      "smoke": "_tests/smoke_runtime_execution_package_operator_approval.js",
       "blocking_topology_fixture_debt_repaired": true,
       "snapshot_allowlist_excluded_fixture_stage_repair": true
     },
@@ -1494,7 +1494,7 @@
       "apply_package": "_workflow/patch_manifests/stage12_step35_runtime_apply_package_preparation_no_apply.json",
       "p1_test_package": "_workflow/patch_manifests/stage12_step35_p1_test_package_manifest.json",
       "policy": "_workflow/policies/p35.json",
-      "smoke": "_tests/smoke_stage12_runtime_apply_package_preparation_no_apply.js",
+      "smoke": "_tests/smoke_runtime_apply_package_preparation_no_apply.js",
       "historical_s34_validator_repaired": true
     }
   },
@@ -1512,17 +1512,21 @@
     "status": "sessionless_ready_reviewed",
     "date": "2026-06-29",
     "source_of_truth": "_workflow/sessionless_inventory.json#target_selection_readiness",
-    "workflow_record": "_workflow/operator_decisions/s6_legacy_auth_cleanup_sessionless_ready_review.md",
-    "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js",
+    "workflow_record": "_workflow/operator_decisions/legacy_auth_cleanup_sessionless_ready_review.md",
+    "guard": "_tests/smoke_legacy_archive_sessionless_ready_specs.js",
     "current_stable_route": "/mcp",
     "current_stable_route_status": "legacy_compatible_do_not_remove",
-    "sessionless_workbench_standard_route": "/mcp/sessionless",
-    "sessionless_workbench_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+    "sessionless_transition_route": "/mcp/sessionless",
+    "sessionless_transition_route_historical_only": true,
+    "single_route_no_sse_target_record": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
+    "sessionless_transition_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
     "root_spec_runtime_change": false,
     "connector_visible_surface_changed": false,
     "connector_refresh_required_now": false,
     "runtime_restart_required_now": false,
     "public_3009_start_required_now": false,
-    "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages."
+    "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart.",
+    "sessionless_transition_route_retired_from_active_runtime": true,
+    "sessionless_transition_env_retired_from_active_runtime": true
   }
 }

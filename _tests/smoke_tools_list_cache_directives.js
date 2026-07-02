@@ -81,4 +81,5 @@ const status = buildRuntimeStatus({
   serverStartId,
 });
 assert.equal(status.server_start_id, serverStartId);
+assert.equal(status.compatibility_label, "stage");
 console.log("smoke_tools_list_cache_directives ok");

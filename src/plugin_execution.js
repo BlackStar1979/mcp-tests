@@ -12,7 +12,7 @@ const ALLOWED_READONLY_HANDLER_TYPES = new Set(listReadonlyHandlerTypes());
 const MAX_STRING_INPUT_CHARS = 1000;
 
 const AUDIT_ENVELOPE_VERSION = "test-mcp-plugin-execution-audit-envelope-v1";
-const AUDIT_STAGE = "stage8_4-plugin-execution-audit-envelope";
+const AUDIT_STAGE = "plugin-execution-audit-envelope";
 
 function policyFingerprint() {
   return stableHash({
@@ -120,8 +120,8 @@ function assessExecution({ registry, plugin, tool }) {
   if (execution.readonly_wrapper !== true) errors.push("execution.readonly_wrapper must be true");
   if (!hasReadonlyHandler(handlerType)) errors.push(`handler type is not allowlisted: ${handlerType}`);
 
-  warnings.push("Stage 8 / Step 1 wrapper does not activate candidate tool in tools/list.");
-  warnings.push("Stage 8 / Step 1 wrapper does not dynamically import plug-in files.");
+  warnings.push("Readonly wrapper does not activate candidate tool in tools/list.");
+  warnings.push("Readonly wrapper does not dynamically import plug-in files.");
 
   return {
     ok: errors.length === 0,

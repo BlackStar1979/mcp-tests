@@ -7,6 +7,7 @@ const { buildToolsListCacheDiagnostics } = require("../src/tools_list_cache_diag
 function runtimeStatus() {
   return {
     server_version: "0.40.0",
+    compatibility_label: "compat-label",
     stage_status: "stage",
     server_start_id: "start-a",
     auth: { mode: "oauth21" },

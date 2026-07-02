@@ -5,7 +5,7 @@ const { diffToolLists } = require("./tools_list_diff");
 const { buildListChangedNotificationEnvelope } = require("./list_changed_notification_bus");
 const { runListChangedHarness } = require("./list_changed_harness");
 
-const REGISTRY_DIFF_DRY_RUN_VERSION = "stage8-registry-diff-dry-run-v1";
+const REGISTRY_DIFF_DRY_RUN_VERSION = "registry-diff-dry-run-v1";
 
 function stableJson(value) {
   if (Array.isArray(value)) return `[${value.map((item) => stableJson(item)).join(",")}]`;
@@ -48,7 +48,7 @@ function snapshotRegistryForDiff({ registry, label = "" } = {}) {
   }).sort((a, b) => a.name.localeCompare(b.name));
 
   return {
-    schema_version: "stage8-registry-diff-snapshot-v1",
+    schema_version: "registry-diff-snapshot-v1",
     label: String(label || ""),
     registry_version: registry.version || "unknown",
     tool_count: entries.length,
@@ -125,7 +125,7 @@ function diffRegistrySnapshots({ currentSnapshot, targetSnapshot, reason = "", c
       "real tools/list mutation is disabled",
       "notifications/tools/list_changed emission is disabled",
     ] : [],
-    warnings: changeCount > 0 ? ["registry diff is dry-run only and must not be applied by this stage"] : [],
+    warnings: changeCount > 0 ? ["registry diff is dry-run only and must not be applied in the current mode"] : [],
   };
 }
 

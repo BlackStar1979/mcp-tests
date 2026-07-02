@@ -3,6 +3,8 @@ const path = require("node:path");
 const {
   CURRENT_STAGE_STATUS,
   CURRENT_STAGE_STATUS_SEMANTICS,
+  CURRENT_COMPATIBILITY_LABEL,
+  CURRENT_COMPATIBILITY_LABEL_SEMANTICS,
   CURRENT_WORKING_COURSE,
   NEXT_PRIMARY_STAGE,
   NEXT_SECONDARY_STAGE,
@@ -11,6 +13,7 @@ const { buildMechanismParityReport } = require("../mechanism_parity_matrix");
 
 const EXPECTED = Object.freeze({
   server_version: "0.40.0",
+  runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
   current_working_course: "stage8_52e-cross-server-mechanism-parity-matrix-complete",
   next_primary: "stage8_53a-internal-truth-tools-parity-preflight",
@@ -46,6 +49,12 @@ function buildProjectTruthAudit(options = {}) {
     handoff: readText(repoRoot, "_workflow/state.json"),
   };
 
+  if (CURRENT_COMPATIBILITY_LABEL !== EXPECTED.runtime_compatibility_label) {
+    findings.push({ severity: "error", code: "runtime_compatibility_label_drift", actual: CURRENT_COMPATIBILITY_LABEL, expected: EXPECTED.runtime_compatibility_label });
+  }
+  if (CURRENT_COMPATIBILITY_LABEL_SEMANTICS !== "runtime-compatibility-label-not-repo-progress-label") {
+    findings.push({ severity: "error", code: "compatibility_label_semantics_drift", actual: CURRENT_COMPATIBILITY_LABEL_SEMANTICS });
+  }
   if (CURRENT_STAGE_STATUS !== EXPECTED.runtime_stage_status) {
     findings.push({ severity: "error", code: "runtime_stage_status_drift", actual: CURRENT_STAGE_STATUS, expected: EXPECTED.runtime_stage_status });
   }
@@ -94,6 +103,7 @@ function buildProjectTruthAudit(options = {}) {
     read_only: true,
     connector_visible: false,
     current: {
+      runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
       runtime_stage_status: CURRENT_STAGE_STATUS,
       current_working_course: CURRENT_WORKING_COURSE,
       next_primary: NEXT_PRIMARY_STAGE,

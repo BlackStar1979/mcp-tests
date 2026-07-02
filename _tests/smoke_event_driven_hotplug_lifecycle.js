@@ -15,7 +15,7 @@ function read(rel) { return fs.readFileSync(path.join(ROOT, rel), "utf8"); }
   assert.equal(result.hpl.hpl2_diff_model.status, "done");
   assert.equal(result.hpl.hpl3_state_store_apply_gate.status, "done");
   assert.equal(result.hpl.hpl4_local_harness_emission.status, "done_mock_only");
-  assert.equal(result.hpl.hpl5_runtime_apply_prototype.status, "gated_pending_explicit_operator_runtime_step");
+  assert.equal(result.hpl.hpl5_runtime_apply_prototype.status, "gated_pending_explicit_operator_runtime_action");
   assert.equal(result.current_behavior.registry_diff_available, true);
   assert.equal(result.current_behavior.state_store_pipeline_available, true);
   assert.equal(result.current_behavior.local_mock_emission_available, true);
@@ -41,7 +41,7 @@ function read(rel) { return fs.readFileSync(path.join(ROOT, rel), "utf8"); }
   assert.equal(result.summaries.security_first_preflight.dynamic_import_allowed_now, false);
 
   assert.ok(result.blocker_reassessment.stale_blockers_removed.includes("HPL1 registry abstraction not started"));
-  assert.ok(result.blocker_reassessment.valid_blockers_remaining.includes("HPL5 runtime apply prototype requires explicit operator runtime step"));
+  assert.ok(result.blocker_reassessment.valid_blockers_remaining.includes("HPL5 runtime apply prototype requires explicit operator runtime action"));
 
   const serverJs = read("server.js");
   const initializeResponse = read("src/runtime/initialize_response.js");

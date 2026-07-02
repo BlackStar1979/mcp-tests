@@ -72,6 +72,8 @@ function buildRuntimeStatus(context) {
     audit_version: auditVersion,
     startup_report_version: "test-mcp-startup-report-v1",
     labels_version: "test-mcp-labels-v1",
+    runtime_compatibility_label: stageStatus,
+    runtime_compatibility_label_semantics: "runtime-compatibility-label-not-repo-progress-label",
     runtime_stage_status: stageStatus,
     runtime_stage_status_semantics: "runtime-compatibility-label-not-repo-progress-label",
     current_working_course: "unknown",
@@ -130,6 +132,7 @@ function buildRuntimeStatus(context) {
       : compactSchemaCompatibility(typeof schemaCompatibility === "function" ? schemaCompatibility() : null),
     tool_policy_summary: includeVerboseTools ? toolPolicySummary() : [],
     tool_labels: includeVerboseTools ? labels : compactToolLabels(labels),
+    compatibility_label: stageStatus,
     stage_status: stageStatus,
     security_boundary: securityBoundary ? securityBoundary() : null,
   };

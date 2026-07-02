@@ -2,91 +2,100 @@
 
 ## Purpose
 
-Executable smoke tests, topology guards, stress checks, and test-only fixtures.
+Executable smoke tests, stress checks, topology guards, archive fixtures, and helper harnesses for `mcp-tests`.
 
-## Files
+## Current Status
 
-- `descriptor_audit.js` — JavaScript module or executable smoke/helper script in this area.
-- `profile_policy_audit.js` — JavaScript module or executable smoke/helper script in this area.
-- `README.md` — Directory orientation maintained by the semantic README writer.
-- `run_all_smokes.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage1_network.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage2_auth.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage3_fs.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage5_1_fs_streaming.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage6_devtools.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage7_1_plugin_catalog.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage7_2_internal_auth_runtime.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage7_2_security_boundary.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage7_3_plugin_visibility.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage7_plugin_registry.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_1_plugin_execution.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_10a_bearer_query_token.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_10b_access_assertion.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_10c_modular_parity_status.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_10d_readiness_guard_parity.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_10e_modular_parity_tool.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_11_observability_status.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_12_auth_precutover_operator_checklist.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_13_process_runner_observability.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_14_observability_hardening.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_14a_observability_self_observation.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_15a_dev_code_impact_normalization.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_16_audit_arg_summary_semantics.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_17a_network_allowlist_workflow.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_17b_schema_compat.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_18_tool_surface_fingerprints.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_18a_compact_connector_map.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_19_dev_code_locate.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_2_execution_governance.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_20_no_stale_stage_strings.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_20_runtime_status_compact.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_20_stage_status_current.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_21_output_schema_guard.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_22_observability_output_schema.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_24_audit_export_safety.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_25_arg_summary_no_legacy_failures.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_26_auth_precutover_freshness.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_27_plugin_preview_freshness.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_28_plugin_visibility_state_contract.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_29_plugin_visibility_state_overlay.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_3_execution_policy_regression.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_30_plugin_visibility_plan_output_schema.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_31_plugin_visibility_status_output_schema.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_32_plugin_visibility_schema_pair_descriptor_guard.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_33_list_changed_readiness_contract.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_34_tools_list_diff_model.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_35_list_changed_notification_bus_dry_run.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_36_list_changed_local_harness.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_37_list_changed_audit_receipt.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_38_list_changed_dry_run_pipeline.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_39_course_correction_ledger.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_4_execution_audit_envelope.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_40_plugin_visibility_state_store_preview.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_41_audit_export_redaction_hardening.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_42_plugin_visibility_state_store_receipt.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_43_audit_redaction_integration_plan.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_44_plugin_visibility_state_store_pipeline.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_45_observability_redaction_summary.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_46_state_store_apply_readiness_gate.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_47_security_first_preflight.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_48_runtime_log_directory.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_49_structural_topology_guard.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_5_execution_receipt_verifier.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_50_repository_topology_relocation.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_6_readonly_handler_registry.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_7_auth_transition_readiness.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_8_bearer_dry_run_harness.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_9_bearer_cutover_guard.js` — JavaScript module or executable smoke/helper script in this area.
-- `smoke_stage8_session_toolsets.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage5_1_runtime.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage6_1_devtools.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage7_1_plugin_catalog.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage7_3_plugin_visibility.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage7_plugin_registry.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage8_1_plugin_execution.js` — JavaScript module or executable smoke/helper script in this area.
-- `stress_stage8_session_toolsets.js` — JavaScript module or executable smoke/helper script in this area.
+Audit snapshot from `2026-07-01`:
 
-## Subdirectories
+- `278` JavaScript files total in `_tests`
+- `217` active scripts currently listed in `run_all_smoke_scripts.json`
+- `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
+- `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
+- `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
+- `40` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, and review debt
 
-- `fixtures` — Test-only fixture material such as plugin templates.
+Latest full active validation:
+
+- `node _tests/run_all_smokes.js --skip-network`
+- last confirmed result from `2026-07-01`: `ok=true`
+- last confirmed section counts from that full run: `7` public scripts and `209` authenticated scripts
+- current manifest file contains `217` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `216` sectioned scripts, not all `217` manifest entries
+
+## Orientation
+
+- Active smoke entrypoint: `run_all_smokes.js`
+- Active manifest: `run_all_smoke_scripts.json`
+- Active manifest audit: `RUN_ALL_ACTIVE_AUDIT.md`
+- Mixed-review split: `RUN_ALL_MIXED_REVIEW_CLASSIFICATION.md`
+- Rename-normalization migration audit: `RENAME_NORMALIZATION_MIGRATION_AUDIT.md`
+- Helper manifests: `run_all_workflow_control_plane_smoke_scripts.json`, `run_all_readiness_smoke_scripts.json`, `run_all_targeted_debt_smoke_scripts.json`
+- Current workflow/control-plane helper manifest size: `25` scripts
+- Current readiness helper manifest size: `45` scripts
+- Current targeted/debt helper manifest size: `10` scripts
+- Legacy retired auth archive: `archive/legacy_retired_auth/`
+- Archived stale non-`run_all` scripts: `archive/non_run_all_stale/`
+- Historical names with `stage` / `step` prefixes are not authoritative for current navigation.
+- A large rename-normalization migration is still open across `_tests` and `_workflow`; treat `RENAME_NORMALIZATION_MIGRATION_AUDIT.md` as the current package map instead of inferring from raw `git status`.
+- Non-`run_all` audit inventory: `NON_RUN_ALL_AUDIT.md`
+
+## Active Groups
+
+- Public profile surface: descriptor audit, profile audit, public FS surface, and profile schema checks
+- Core authenticated surface: policy, routing, schema, MCP dispatch, repo/runtime topology, and enforcement guards
+- OAuth and OAuth21: AS metadata, JWKS/introspection, DCR, PKCE, rotation, state, and route contract checks
+- Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
+- Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks
+- Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, and snapshot/state consistency
+
+## Naming Notes
+
+- `smoke_request_cancellation_context.js`: active cancellation-context plumbing guard
+- `smoke_client_disconnect_write_guard.js`: active client-disconnect write-boundary guard
+- `smoke_cooperative_tool_cancellation.js`: active cooperative tool-cancellation guard
+- Historical shorthand `c1` / `c2` / `c3` referred to these three cancellation-related guards. Current active names are the descriptive filenames above; do not recreate the shorthand in new files.
+- `stress_*.js`: not part of default `run_all`; each script posts directly to `process.env.MCP_TEST_SMOKE_URL || http://127.0.0.1:3009/mcp` and requires a running MCP server
+- `archive/legacy_retired_auth/*.js`: historical files retained outside the active surface
+- `archive/non_run_all_stale/*.js`: removed from the current top-level review surface because they are stale or broken
+- Historical names preserved inside archived files are evidence labels only. Do not copy them into new active filenames.
+
+## Non-Run-All Files
+
+These are not all equivalent and should not be assumed current just because they exist.
+
+- Harness helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
+- Explicit stress scripts: `stress_*.js`
+  These are manual external-client stress harnesses, not self-contained smoke tests. Direct execution without a running target server produces transport failure such as `fetch failed`.
+- Archived legacy scripts: `archive/legacy_retired_auth/*.js`
+- Archived stale scripts: `archive/non_run_all_stale/*.js`
+- Targeted/manual guards outside default `run_all`: for example `smoke_harness_no_pollution_guard.js`, `smoke_canary_naming_guard.js`, `smoke_list_changed_readiness_contract.js`
+- Previously identified stale or broken guards were moved out of the top-level `_tests` surface into `archive/non_run_all_stale/`
+
+Current top-level non-`run_all` inventory:
+
+- Historical audit from `2026-06-29` classified `32` files.
+- Current mechanical count is `40`, so the older classification is still useful but not complete for every newly renamed or added file.
+
+- Helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
+- Current targeted guards include: `smoke_audit_redaction_integration_plan.js`, `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
+- Meta guard: `smoke_harness_no_pollution_guard.js`
+- Historical workflow wrappers: `smoke_decision_runtime_integration_plan.js`, `smoke_decision_runtime_interface_contract_readiness_gate.js`, `smoke_decision_runtime_operator_gate.js`, `smoke_logs_migration.js`, `smoke_debt_reduction_guard.js`, `smoke_project_debt_review_guard.js`, `smoke_repo_layout_contract.js`, `smoke_runtime_apply_package_preparation_no_apply.js`, `smoke_runtime_execution_package_no_apply.js`, `smoke_runtime_execution_package_operator_approval.js`, `smoke_runtime_implementation_plan_no_code.js`, `smoke_runtime_implementation_plan_operator_approval.js`, `smoke_runtime_scope_approval_package.js`, `smoke_runtime_scope_operator_decision.js`
+- Transitional SSE/list-changed debt guards are now grouped under `_tests/targeted_debt/` and exercised through `run_all_targeted_debt_smoke_scripts.json`.
+
+Stress inventory:
+
+- `stress_devtools.js`: manual HTTP stress run for devtools surface
+- `stress_plugin_catalog.js`: manual HTTP stress run for plugin catalog read path
+- `stress_plugin_execution.js`: manual HTTP stress run for plugin execution path
+- `stress_plugin_registry.js`: manual HTTP stress run for plugin registry surface
+- `stress_plugin_visibility.js`: manual HTTP stress run for plugin visibility surface
+- `stress_runtime.js`: manual HTTP stress run for runtime/control-plane path
+- `stress_session_toolsets.js`: manual HTTP stress run for session toolset surface
+
+## Maintenance Rules
+
+Use the current filename and the active manifest as the source of truth. Do not rebuild directory orientation from historical stage numbering.
+
+Do not assume every `smoke_*.js` file is active. Check `run_all_smoke_scripts.json` first.
+
+If a file is outside `run_all`, it requires explicit classification before being treated as current coverage.

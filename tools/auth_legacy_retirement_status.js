@@ -26,7 +26,7 @@ async function execute() {
       "auth_bearer_cutover_guard",
       "auth_modular_parity_status",
     ],
-    stage: "stage4_auth_legacy_retirement_status",
+    stage: "auth-legacy-retirement-status",
     connector_refresh_required: true,
     message: "access:3005 and bearer:3006 are retired from TEST MCP target runtime topology; use public auth none on 3009 and authorized oauth21 on 3008.",
   };

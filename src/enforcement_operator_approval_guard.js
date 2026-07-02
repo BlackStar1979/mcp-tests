@@ -14,7 +14,7 @@ function normalizeApprovalMarker(marker) {
   return { present: true, valid: reasons.length === 0, reasons };
 }
 
-function evaluateEnforcementOperatorApprovalBoundary({ readinessReport, wiringPlan, approvalMarker = null, stage = "stage12" } = {}) {
+function evaluateEnforcementOperatorApprovalBoundary({ readinessReport, wiringPlan, approvalMarker = null, stage = "plan_only_runtime_enforcement_boundary" } = {}) {
   if (!readinessReport || !wiringPlan) throw new Error("evaluateEnforcementOperatorApprovalBoundary requires readinessReport and wiringPlan.");
   const approval = normalizeApprovalMarker(approvalMarker);
   const violations = [];
@@ -28,9 +28,9 @@ function evaluateEnforcementOperatorApprovalBoundary({ readinessReport, wiringPl
   if (wiringPlan.allow_deny_behavior_changed === true) violations.push("wiring_plan_allow_deny_behavior_changed");
   if (wiringPlan.dispatch_behavior_changed === true) violations.push("wiring_plan_dispatch_behavior_changed");
   const blockers = [...approval.reasons, ...violations];
-  if (stage === "stage12") blockers.push("stage12_boundary_guard_is_no_apply_even_with_valid_marker");
+  if (stage === "plan_only_runtime_enforcement_boundary") blockers.push("plan_only_boundary_guard_is_no_apply_even_with_valid_marker");
   return Object.freeze({
-    schema_version: "stage12-operator-approval-boundary-guard-v1",
+    schema_version: "runtime-enforcement-operator-approval-boundary-guard-v1",
     mode: "boundary_guard_no_apply",
     approval_marker_required: true,
     required_marker_id: REQUIRED_APPROVAL_MARKER,

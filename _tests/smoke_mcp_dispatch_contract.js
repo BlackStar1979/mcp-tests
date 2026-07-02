@@ -1,6 +1,6 @@
 "use strict";
 
-// Stage 8 / Step 95 - MCP Dispatch Contract Tests.
+// MCP dispatch contract tests.
 //
 // Committed contract test for HTTP /mcp JSON-RPC dispatch behavior. Starts a
 // local server child on an isolated ephemeral port (never the active port
@@ -11,12 +11,12 @@
 // batch_payload_dispatcher,single_payload_dispatcher,request_body_parse_handler,
 // method_not_allowed_handler,rpc_message_dispatcher,rpc_no_response,
 // method_not_found_response}.js and src/runtime/http_responses.js. This is a
-// test-only step; it must not change runtime behavior.
+// test-only contract; it must not change runtime behavior.
 //
 // Auth rejection is intentionally NOT exercised here: bearer-mode rejection is
-// already covered by _tests/smoke_stage2_auth.js at the auth-policy level
+// already covered by _tests/smoke_legacy_retired_auth_negative_controls.js at the auth-policy level
 // (missing -> 401 missing_bearer_token, invalid -> 401 invalid_bearer_token).
-// Step 95 keeps the default authMode=none server and adds no ad hoc auth harness.
+// This test keeps the default authMode=none server and adds no ad hoc auth harness.
 
 const assert = require("node:assert/strict");
 const path = require("node:path");
@@ -45,6 +45,14 @@ function postRaw(rawBody) {
   return fetch(MCP_URL, {
     method: "POST",
     headers: { "content-type": "application/json" },
+    body: rawBody,
+  });
+}
+
+function postRawWithHeaders(rawBody, headers = {}) {
+  return fetch(MCP_URL, {
+    method: "POST",
+    headers: { "content-type": "application/json", ...headers },
     body: rawBody,
   });
 }
@@ -181,7 +189,7 @@ function postJson(value) {
       const result = body.result;
       assert.ok(result, "initialize result exists");
       assert.equal(result.protocolVersion, "2025-06-18", "initialize protocolVersion");
-      assert.equal(result.capabilities.tools.listChanged, true, "initialize listChanged real emitter advertised");
+      assert.equal(result.capabilities.tools.listChanged, false, "initialize remains pull-only and does not advertise listChanged");
       assert.equal(result.serverInfo.name, "mcp-tests-response-shape", "initialize serverInfo.name");
       assert.equal(result.serverInfo.version, "0.40.0", "initialize serverInfo.version");
       assert.equal(
@@ -197,6 +205,30 @@ function postJson(value) {
         13,
         "initialize serverInfo.toolSurface.tool_count"
       );
+    }
+
+    // 9. Additive request-contract bridge: server/discover on /mcp.
+    {
+      const response = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 2,
+        method: "server/discover",
+        params: {
+          _meta: {
+            "io.modelcontextprotocol/protocolVersion": "2025-06-18",
+            "io.modelcontextprotocol/clientInfo": { name: "step95-discover-smoke", version: "1" },
+            "io.modelcontextprotocol/clientCapabilities": {},
+          },
+        },
+      }), {
+        "mcp-protocol-version": "2025-06-18",
+      });
+      assert.equal(response.status, 200, "server/discover status");
+      const body = await response.json();
+      assert.deepEqual(body.result.supportedVersions, ["2025-06-18"]);
+      assert.equal(body.result.protocolVersion, "2025-06-18");
+      assert.equal(body.result.transport.route, "/mcp");
+      assert.equal(body.result.transport.legacy_initialize_supported, true);
     }
 
     console.log("smoke_mcp_dispatch_contract ok");

@@ -32,7 +32,6 @@ function createServer({
   authorizationServerMetadataProvider,
   oauth21AuthorizationServer,
   auditLog,
-  sessionlessPrototypeRouteHandler,
 }) {
   return http.createServer(async (req, res) => {
     try {
@@ -72,7 +71,6 @@ function createServer({
       authorizationServerMetadataProvider,
       oauth21AuthorizationServer,
       auditLog,
-      sessionlessPrototypeRouteHandler,
       });
     } catch (error) {
       if (!res.headersSent) {

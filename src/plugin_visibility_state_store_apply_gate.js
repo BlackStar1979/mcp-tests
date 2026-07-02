@@ -59,12 +59,12 @@ function evaluateStateStoreApplyReadiness({
     auth_profile_allowed: authProfileAllowed === true,
     missing_requirements: missing,
     denied_reasons: [
-      "Stage 8 / Step 46 is readiness-only; apply remains disabled",
+      "readiness-only gate; apply remains disabled",
       ...(forceApplyRequested === true ? ["force apply request ignored by readiness gate"] : []),
       ...missing.map((name) => `missing requirement: ${name}`),
     ],
     next_required_before_apply: [
-      "explicit operator approval stage",
+      "explicit operator approval package",
       "durable state-store persistence configuration",
       "rollback/quarantine recovery test",
       "audit redaction summary/export decision",
@@ -87,7 +87,7 @@ function evaluateStateStoreApplyReadiness({
 function verifyStateStoreApplyReadinessGate(gate = {}) {
   const errors = [];
   if (gate.gate_version !== STATE_STORE_APPLY_GATE_VERSION) errors.push("unsupported gate version");
-  if (gate.apply_allowed_now !== false) errors.push("apply_allowed_now must be false in Stage 8 / Step 46");
+  if (gate.apply_allowed_now !== false) errors.push("apply_allowed_now must remain false in readiness-only mode");
   if (gate.force_apply_honored !== false) errors.push("force_apply_honored must be false");
   if (gate.runtime_state_store_written !== false) errors.push("runtime_state_store_written must be false");
   if (gate.runtime_tools_list_mutated !== false) errors.push("runtime_tools_list_mutated must be false");
@@ -96,7 +96,7 @@ function verifyStateStoreApplyReadinessGate(gate = {}) {
   if (gate.raw_payloads_included !== false) errors.push("raw_payloads_included must be false");
   if (!Array.isArray(gate.missing_requirements)) errors.push("missing_requirements must be an array");
   if (!Array.isArray(gate.denied_reasons)) errors.push("denied_reasons must be an array");
-  if (!gate.denied_reasons?.includes("Stage 8 / Step 46 is readiness-only; apply remains disabled")) errors.push("readiness-only denial is required");
+  if (!gate.denied_reasons?.includes("readiness-only gate; apply remains disabled")) errors.push("readiness-only denial is required");
   if (!gate.gate_hash || typeof gate.gate_hash !== "string") errors.push("gate_hash is required");
 
   const copy = { ...gate };

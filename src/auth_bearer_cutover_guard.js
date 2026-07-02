@@ -26,7 +26,7 @@ function buildCutoverPlan() {
     "Verify valid Authorization header token returns 200.",
     "Refresh TEST MCP connector and verify tools/list succeeds.",
     "Run test_mcp_runtime_status and verify auth.mode=bearer, requires_auth=true, token_loaded=true.",
-    "Run descriptor/profile policy audits and Stage auth smoke tests.",
+    "Run descriptor/profile policy audits and the current auth smoke suite.",
   ];
 }
 
@@ -79,7 +79,7 @@ function getBearerCutoverGuard() {
     token_path_disclosed: false,
     token_disclosed: false,
     connector_bearer_credential_verified: false,
-    connector_bearer_credential_verification_scope: "external-client-ui-step",
+    connector_bearer_credential_verification_scope: "external-client-ui-action",
     recommended_chatgpt_direct_delivery: "authorization_bearer_header",
     recommended_header_capable_client_delivery: "authorization_bearer_header",
     blockers,
