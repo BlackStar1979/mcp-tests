@@ -410,8 +410,8 @@
         "SEP-2567"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "tools/list explicitly returns ttlMs=0 and cacheScope=private; no active top-level resources/prompts handlers exist; tools/call list/read-like payloads do not yet share a generic freshness layer",
-      "implementation_status": "partial",
+      "repo_current_model": "tools/list explicitly returns ttlMs=0 and cacheScope=private; no active top-level resources/prompts handlers exist; active tools/call results now share ttlMs=0 and cacheScope=private when SERVER_TOOLS_SPEC operation_class is bounded as read/list-like",
+      "implementation_status": "done",
       "migration_path": "add ttlMs and cacheScope; list_changed remains immediate invalidation",
       "checklist": [
         {
@@ -422,6 +422,11 @@
           "item": "inventory all list/read result builders",
           "status": "done",
           "evidence": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md"
+        },
+        {
+          "item": "apply shared freshness directives to active tools/call list/read-like outputs",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md"
         }
       ]
     },
@@ -599,7 +604,7 @@
   ],
   "recommended_next": [
     "Current SSE-based and dual-route behavior must be treated as migration debt, not as the target architecture.",
-    "SEP-2549 inventory is complete: tools/list already exposes ttlMs=0 and cacheScope=private, while broader tool-level freshness remains undecided.",
+    "SEP-2549 bounded runtime package is complete: tools/list still exposes ttlMs=0 and cacheScope=private, and active tools/call results now share the same directives when their operation_class is bounded as read/list-like.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
     "Inactive sampling-context runtime injection is detached from active /mcp: remaining sampling/session outbound code is now local helper debt rather than active request wiring.",
@@ -634,6 +639,7 @@
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
+    "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",
     "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
     "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
     "sessionless_replacement_coverage_scoping_record": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md",

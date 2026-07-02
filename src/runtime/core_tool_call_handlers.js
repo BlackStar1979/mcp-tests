@@ -4,6 +4,7 @@ const { rpcResult, toolError } = require("./rpc_responses");
 const { fetchDoc, searchDocs } = require("./search_fetch_docs");
 const { getToolResultStats } = require("./tool_audit_helpers");
 const { toolResult } = require("./tool_result");
+const { resolveToolResultFreshness } = require("./tool_result_freshness");
 
 function handleCoreSearchToolCall({
   id,
@@ -19,7 +20,7 @@ function handleCoreSearchToolCall({
     results: searchDocs(documentRuntimeContext(), args.query),
   };
 
-  const result = toolResult(outputMode, output);
+  const result = toolResult(outputMode, output, resolveToolResultFreshness("search"));
 
   auditLog("tool_call_end", {
     request_id: context.requestId,
@@ -61,7 +62,7 @@ function handleCoreFetchToolCall({
     return rpcResult(id, result);
   }
 
-  const result = toolResult(outputMode, doc);
+  const result = toolResult(outputMode, doc, resolveToolResultFreshness("fetch"));
 
   auditLog("tool_call_end", {
     request_id: context.requestId,

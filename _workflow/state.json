@@ -217,6 +217,7 @@
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
+    "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",
     "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
     "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
     "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md",

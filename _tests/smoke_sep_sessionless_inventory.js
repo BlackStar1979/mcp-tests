@@ -84,7 +84,7 @@ assert.equal(inventory.recommended_next.some((item) => item.includes("Operator s
 assert.equal(inventory.recommended_next.some((item) => item.includes("If operator does not approve runtime prototype yet, next safe non-runtime step is S3 explicit state handle design rules.")), false);
 assert.equal(inventory.recommended_next.some((item) => item.includes("Do not remove current stable-compatible session code before S2 target selection.")), false);
 assert.ok(inventory.recommended_next.some((item) => item.includes("migration debt")));
-assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 inventory is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 bounded runtime package is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Residual GET-SSE/SessionStore/list-changed repo cleanup is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Local helper classification is complete")));
@@ -101,11 +101,12 @@ assert.equal(inventory.active_target_contract.post_accept_cleanup_record, "_work
 assert.equal(inventory.active_target_contract.get_sse_teardown_record, "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md");
 assert.equal(inventory.active_target_contract.stable_post_mcp_response_mode, "json_only");
 assert.equal(inventory.active_target_contract.stable_get_mcp_supported, false);
+assert.equal(inventory.active_target_contract.list_results_ttl_cache_scope_runtime_package_record, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 assert.equal(inventory.target_selection_readiness.status, "selected_parallel_track_stable_mcp_preserved");
 assert.equal(inventory.target_selection_readiness.record, "_workflow/operator_decisions/sessionless_target_selection_decision.md");
 assert.equal(inventory.target_selection_readiness.connector_refresh_required_now, false);
 assert.equal(inventory.target_selection_readiness.runtime_restart_required_now, false);
-assert.ok(inventory.recommended_next.some((item) => item.includes("tools/list already exposes ttlMs=0 and cacheScope=private")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("active tools/call results now share the same directives")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("stricter project target")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Adjacent runtime-contract SEP triage is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Auth/security adjacent SEP triage is complete")));

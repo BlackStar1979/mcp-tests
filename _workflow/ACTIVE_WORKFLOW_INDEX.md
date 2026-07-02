@@ -127,7 +127,10 @@ Current records:
   - Source-bound clarification that official MCP still allows request-scoped SSE here, but TEST MCP deliberately chooses a stricter no-SSE destination. The current `/mcp/sessionless` listener remains transition-only evidence, not the target design.
 
 - `sep2549_list_read_cache_inventory.md`
-  - Mechanical inventory of current SEP-2549-style `ttlMs` / `cacheScope` coverage. Confirms active directives only on `tools/list`, no active top-level `resources/*` or `prompts/*` handlers, and no shared freshness layer yet for `tools/call` list/read-like payloads.
+  - Mechanical baseline inventory for SEP-2549-style `ttlMs` / `cacheScope` coverage before the bounded `tools/call` runtime package. Confirms no active top-level `resources/*` or `prompts/*` handlers in the stable dispatcher.
+
+- `list_results_ttl_cache_scope_runtime_package.md`
+  - Repo-applied bounded runtime package for active `tools/call` results. Shared `ttlMs: 0` / `cacheScope: "private"` now apply only to `SERVER_TOOLS_SPEC.json` operation classes that are genuinely list/read-like; analytical, planning, and mutating outputs remain unchanged.
 
 - `sessionless_prototype_route_retirement_scoping.md`
   - Bounded retirement scoping for hidden `/mcp/sessionless`. Confirms exact runtime/spec/test touchpoints and records blockers that still prevent real removal.

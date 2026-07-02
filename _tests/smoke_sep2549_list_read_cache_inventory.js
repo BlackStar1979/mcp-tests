@@ -16,24 +16,37 @@ const index = read("_workflow/ACTIVE_WORKFLOW_INDEX.md");
 const dispatcher = read("src/runtime/rpc_message_dispatcher.js");
 const toolsListResponse = read("src/runtime/tools_list_response.js");
 const toolsListHandler = read("src/runtime/tools_list_message_handler.js");
+const toolResult = read("src/runtime/tool_result.js");
+const toolResultFreshness = read("src/runtime/tool_result_freshness.js");
+const coreToolCallHandlers = read("src/runtime/core_tool_call_handlers.js");
+const optionalToolCallHandler = read("src/runtime/optional_tool_call_handler.js");
 const toolsSpec = readJson("SERVER_TOOLS_SPEC.json");
+const runtimePackage = read("_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 
 assert.ok(record.includes("Status: GREEN / INVENTORY RECORDED / WORKFLOW-ONLY"));
 assert.ok(record.includes("`ttlMs: 0`"));
 assert.ok(record.includes('`cacheScope: "private"`'));
 assert.ok(record.includes("there are no active `resources/list`, `resources/read`, `prompts/list`, or `prompts/get` handlers"));
 assert.ok(record.includes("payloads behind `tools/call`, not shared MCP top-level result builders"));
+assert.ok(runtimePackage.includes("Status: GREEN / REPO-APPLIED"));
+assert.ok(runtimePackage.includes("active `tools/call` results whose `SERVER_TOOLS_SPEC.json` `operation_class` is list/read-like"));
 
 assert.equal(state.active_target_direction.sep2549_list_read_cache_inventory_record, "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md");
+assert.equal(state.active_target_direction.list_results_ttl_cache_scope_runtime_package_record, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 assert.equal(inventory.active_target_contract.sep2549_list_read_cache_inventory_record, "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md");
+assert.equal(inventory.active_target_contract.list_results_ttl_cache_scope_runtime_package_record, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 
 const ttlLedger = inventory.deprecation_ledger.find((item) => item.feature_id === "list_results_ttl_cache_scope");
-assert.equal(ttlLedger.implementation_status, "partial");
+assert.equal(ttlLedger.implementation_status, "done");
 assert.equal(ttlLedger.checklist.find((item) => item.item === "inventory all list/read result builders").status, "done");
 assert.equal(ttlLedger.checklist.find((item) => item.item === "inventory all list/read result builders").evidence, "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md");
+assert.equal(ttlLedger.checklist.find((item) => item.item === "apply shared freshness directives to active tools/call list/read-like outputs").status, "done");
+assert.equal(ttlLedger.checklist.find((item) => item.item === "apply shared freshness directives to active tools/call list/read-like outputs").evidence, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 
 assert.ok(canon.includes("SEP-2549 cache-inventory clarification"));
+assert.ok(canon.includes("SEP-2549 runtime-package clarification"));
 assert.ok(index.includes("sep2549_list_read_cache_inventory.md"));
+assert.ok(index.includes("list_results_ttl_cache_scope_runtime_package.md"));
 assert.ok(index.includes("Controlled OAuth21 `3008` restart and bounded live verification for the hidden-route retirement package."));
 
 assert.ok(dispatcher.includes('case "tools/list"'));
@@ -45,6 +58,11 @@ assert.equal(dispatcher.includes('case "prompts/get"'), false);
 assert.ok(toolsListResponse.includes("ttlMs: 0"));
 assert.ok(toolsListResponse.includes('cacheScope: "private"'));
 assert.ok(toolsListHandler.includes("tools_list_cache_directive"));
+assert.ok(toolResult.includes("function toolResult(outputMode, payload, freshness = null)"));
+assert.ok(toolResultFreshness.includes('"task_list"'));
+assert.ok(coreToolCallHandlers.includes('resolveToolResultFreshness("search")'));
+assert.ok(coreToolCallHandlers.includes('resolveToolResultFreshness("fetch")'));
+assert.ok(optionalToolCallHandler.includes("resolveToolResultFreshness(name)"));
 
 assert.ok(Object.hasOwn(toolsSpec.tool_catalog, "fs_list_public"));
 assert.ok(Object.hasOwn(toolsSpec.tool_catalog, "plugin_registry_list"));

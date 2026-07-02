@@ -3,6 +3,7 @@
 const { rpcResult, rpcError } = require("./rpc_responses");
 const { getToolResultStats } = require("./tool_audit_helpers");
 const { toolResult } = require("./tool_result");
+const { resolveToolResultFreshness } = require("./tool_result_freshness");
 const {
   TOOL_CANCELLED_ERROR_CODE,
   buildToolCancellationData,
@@ -55,7 +56,7 @@ async function tryHandleOptionalToolCall({
     return buildCancellationResponse({ id, name, context, startedAt, auditLog, phase: "after_execute" });
   }
 
-  const result = toolResult(outputMode, output);
+  const result = toolResult(outputMode, output, resolveToolResultFreshness(name));
 
   auditLog("tool_call_end", {
     request_id: context.requestId,

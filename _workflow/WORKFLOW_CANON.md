@@ -73,7 +73,9 @@ Spec-boundary clarification: current official MCP Streamable HTTP direction stil
 
 No-SSE subscriptions/listen clarification: `_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md` records that the current `/mcp/sessionless` request-scoped SSE listener is transition-only evidence, not the final TEST MCP design. The exact no-SSE replacement transport remains unresolved and must not be guessed.
 
-SEP-2549 cache-inventory clarification: `_workflow/operator_decisions/sep2549_list_read_cache_inventory.md` records that explicit `ttlMs` / `cacheScope` currently exist on `tools/list` only (`0` / `private`). There are no active top-level MCP `resources/*` or `prompts/*` handlers in the current dispatcher, and `tools/call` list/read-like payloads do not yet share a generic SEP-2549 response layer.
+SEP-2549 cache-inventory clarification: `_workflow/operator_decisions/sep2549_list_read_cache_inventory.md` remains the mechanical baseline inventory. It confirms that there are no active top-level MCP `resources/*` or `prompts/*` handlers in the current dispatcher and records the pre-package boundary before generic `tools/call` freshness was added.
+
+SEP-2549 runtime-package clarification: `_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md` records the repo-applied bounded extension of `ttlMs` / `cacheScope` to active `tools/call` outputs whose `SERVER_TOOLS_SPEC.json` `operation_class` is genuinely list/read-like (`read`, `list`, `search`, `metadata`, `stat`, `head`, `task_list`). Non-read/list-like outputs remain unchanged by design.
 
 Prototype-route retirement clarification: `_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md` records the exact removal scope for hidden `/mcp/sessionless` and the blockers that still prevent real retirement. In particular, the final no-SSE replacement for `subscriptions/listen`, prototype-only state-handle relocation/retirement, and the final `initialize` boundary remain unresolved.
 
