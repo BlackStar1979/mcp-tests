@@ -172,11 +172,79 @@ function postJson(value) {
       assert.equal(body.error.code, -32601, "unknown method error code");
     }
 
-    // 8. Initialize over HTTP -> 200 with stable serverInfo contract.
+    const discoverMeta = {
+      _meta: {
+        "io.modelcontextprotocol/protocolVersion": "2025-06-18",
+        "io.modelcontextprotocol/clientInfo": { name: "step95-discover-smoke", version: "1" },
+        "io.modelcontextprotocol/clientCapabilities": {},
+      },
+    };
+
+    // 8. Additive request-contract bridge: server/discover on /mcp without prior initialize.
+    {
+      const response = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 2,
+        method: "server/discover",
+        params: discoverMeta,
+      }), {
+        "mcp-protocol-version": "2025-06-18",
+      });
+      assert.equal(response.status, 200, "server/discover status");
+      const body = await response.json();
+      assert.deepEqual(body.result.supportedVersions, ["2025-06-18"]);
+      assert.equal(body.result.protocolVersion, "2025-06-18");
+      assert.equal(body.result.transport.route, "/mcp");
+      assert.equal(body.result.transport.initialize_required, false);
+      assert.equal(body.result.transport.protocol_sessions, false);
+      assert.equal(body.result.transport.legacy_initialize_supported, true);
+    }
+
+    // 9. tools/list works on stable /mcp without prior initialize.
+    {
+      const response = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 3,
+        method: "tools/list",
+        params: discoverMeta,
+      }), {
+        "mcp-protocol-version": "2025-06-18",
+      });
+      assert.equal(response.status, 200, "tools/list without initialize status");
+      const body = await response.json();
+      assert.ok(Array.isArray(body.result.tools), "tools/list result.tools is array");
+      assert.equal(body.result.tools.length, 13, "tools/list public tool count");
+      assert.equal(body.result.ttlMs, 0, "tools/list ttlMs");
+      assert.equal(body.result.cacheScope, "private", "tools/list cacheScope");
+    }
+
+    // 10. tools/call works on stable /mcp without prior initialize.
+    {
+      const response = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 4,
+        method: "tools/call",
+        params: {
+          name: "fs_get_public_info",
+          arguments: { path: "docs/hello.txt" },
+          ...discoverMeta,
+        },
+      }), {
+        "mcp-protocol-version": "2025-06-18",
+      });
+      assert.equal(response.status, 200, "tools/call without initialize status");
+      const body = await response.json();
+      const text = body.result?.content?.[0]?.text || "";
+      const parsed = JSON.parse(text);
+      assert.equal(parsed.success, true, "tools/call parsed success");
+      assert.equal(parsed.kind, "file", "tools/call parsed kind");
+    }
+
+    // 11. Initialize over HTTP remains available as legacy compatibility.
     {
       const response = await postJson({
         jsonrpc: "2.0",
-        id: 1,
+        id: 5,
         method: "initialize",
         params: {
           protocolVersion: "2025-06-18",
@@ -208,36 +276,11 @@ function postJson(value) {
       );
     }
 
-    // 9. Additive request-contract bridge: server/discover on /mcp.
+    // 12. Session headers are ignored on stable /mcp POST.
     {
       const response = await postRawWithHeaders(JSON.stringify({
         jsonrpc: "2.0",
-        id: 2,
-        method: "server/discover",
-        params: {
-          _meta: {
-            "io.modelcontextprotocol/protocolVersion": "2025-06-18",
-            "io.modelcontextprotocol/clientInfo": { name: "step95-discover-smoke", version: "1" },
-            "io.modelcontextprotocol/clientCapabilities": {},
-          },
-        },
-      }), {
-        "mcp-protocol-version": "2025-06-18",
-      });
-      assert.equal(response.status, 200, "server/discover status");
-      const body = await response.json();
-      assert.deepEqual(body.result.supportedVersions, ["2025-06-18"]);
-      assert.equal(body.result.protocolVersion, "2025-06-18");
-      assert.equal(body.result.transport.route, "/mcp");
-      assert.equal(body.result.transport.protocol_sessions, false);
-      assert.equal(body.result.transport.legacy_initialize_supported, true);
-    }
-
-    // 10. Session headers are ignored on stable /mcp POST.
-    {
-      const response = await postRawWithHeaders(JSON.stringify({
-        jsonrpc: "2.0",
-        id: 3,
+        id: 6,
         method: "ping",
         params: {},
       }), {
@@ -245,7 +288,7 @@ function postJson(value) {
       });
       assert.equal(response.status, 200, "ignored session header status");
       const body = await response.json();
-      assert.equal(body.id, 3, "ignored session header id");
+      assert.equal(body.id, 6, "ignored session header id");
       assert.ok(body.result !== undefined, "ignored session header result exists");
     }
 

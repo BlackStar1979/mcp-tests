@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-02T11:00Z",
+  "updated_at": "2026-07-02T11:35Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
   "read_order": [
@@ -59,6 +59,7 @@
     "no_connector_refresh_without_explicit_operator_intent": true,
     "do_not_use_generic_restart_for_oauth21_3008": true,
     "do_not_remove_stable_session_code_before_active_route_migration_completion": true,
+    "do_not_remove_legacy_initialize_without_client_connector_compat_evidence": true,
     "do_not_use_state_json_as_log": true,
     "active_target_is_single_route_no_sse_streamable_http": true
   },
@@ -227,6 +228,7 @@
     "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",
     "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
     "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
+    "initialize_no_handshake_repo_evidence_record": "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md",
     "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md",
     "residual_session_sse_cleanup_package_record": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md",
     "sampling_runtime_detachment_package_record": "_workflow/operator_decisions/keep_mcp_sampling_runtime_detachment_package.md",

@@ -9,6 +9,7 @@ const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const readJson = (rel) => JSON.parse(read(rel));
 
 const record = read("_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
+const noHandshakeEvidence = read("_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md");
 const state = readJson("_workflow/state.json");
 const inventory = readJson("_workflow/sessionless_inventory.json");
 const canon = read("_workflow/WORKFLOW_CANON.md");
@@ -20,25 +21,35 @@ const discoverHandler = read("src/runtime/server_discover_message_handler.js");
 const runtimeSpec = readJson("SERVER_RUNTIME_CONFIG_SPEC.json");
 
 assert.ok(record.includes("Status: GREEN / FINAL LEGACY BOUNDARY RECORDED / WORKFLOW-ONLY"));
+assert.ok(noHandshakeEvidence.includes("Status: GREEN / REPO EVIDENCE RECORDED / NO RUNTIME CHANGE"));
+assert.ok(noHandshakeEvidence.includes("useful request flow without a preceding legacy `initialize` handshake"));
+assert.ok(noHandshakeEvidence.includes("external compatibility evidence for clients/connectors"));
 assert.ok(record.includes("`initialize` is legacy compatibility only."));
 assert.ok(record.includes("`server/discover` is the canonical target-facing request-contract surface."));
 assert.ok(record.includes("Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract."));
 
 assert.equal(state.active_target_direction.initialize_retirement_boundary_record, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
+assert.equal(state.active_target_direction.initialize_no_handshake_repo_evidence_record, "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md");
 assert.equal(inventory.active_target_contract.initialize_retirement_boundary_record, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
+assert.equal(inventory.active_target_contract.initialize_no_handshake_repo_evidence_record, "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md");
 assert.ok(inventory.recommended_next.some((item) => item.includes("Initialize-retirement boundary is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Initialize retirement remains blocked only by stable client/connector compatibility evidence")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("State-handle fate decision is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Hidden-route retirement is now live-verified on OAuth21 3008")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /mcp/sessionless live-operation artifacts are quarantined")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 
 const initLedger = inventory.deprecation_ledger.find((item) => item.feature_id === "initialize_handshake");
+assert.equal(initLedger.checklist.find((item) => item.item === "record repo-side no-handshake evidence on surviving /mcp").status, "done");
+assert.equal(initLedger.checklist.find((item) => item.item === "record repo-side no-handshake evidence on surviving /mcp").evidence, "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md");
 assert.equal(initLedger.checklist.find((item) => item.item === "record final legacy boundary for initialize on surviving /mcp").status, "done");
 assert.equal(initLedger.checklist.find((item) => item.item === "record final legacy boundary for initialize on surviving /mcp").evidence, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
 assert.equal(initLedger.checklist.find((item) => item.item === "retire initialize-created transport sessions on surviving /mcp while keeping legacy initialize as stateless compatibility").status, "done");
 
 assert.ok(canon.includes("Initialize-retirement boundary clarification"));
+assert.ok(canon.includes("Initialize-retirement evidence clarification"));
 assert.ok(index.includes("keep_mcp_initialize_retirement_boundary.md"));
+assert.ok(index.includes("initialize_no_handshake_repo_evidence.md"));
 assert.ok(index.includes("Applied the bounded surviving-route transport-session retirement package"));
 assert.ok(canon.includes("Transport-session retirement package clarification"));
 

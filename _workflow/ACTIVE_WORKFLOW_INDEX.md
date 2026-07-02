@@ -138,6 +138,9 @@ Current records:
 - `keep_mcp_request_contract_bridge.md`
   - Additive request-contract bridge on the surviving `/mcp` route. Stable `/mcp` now supports `server/discover` with per-request metadata validation while legacy `initialize` remains supported.
 
+- `initialize_no_handshake_repo_evidence.md`
+  - Repo-side evidence record for `initialize` retirement scoping. Confirms the surviving `/mcp` route already supports `server/discover` and useful `tools/list` / `tools/call` flow without a preceding `initialize`; the remaining blocker is external client/connector compatibility evidence.
+
 - `subscriptions_listen_compatibility_matrix.md`
   - Design-only compatibility matrix between stable `GET /mcp` SSE, future sessionless `subscriptions/listen`, and existing `tools/list_changed` dry-run work. No runtime change, restart, or connector refresh.
 
@@ -328,12 +331,12 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Review the remaining unrealized server-development paths recorded across workflow/spec truth and choose the next bounded implementation package from that list.
+1. Obtain bounded client/connector compatibility evidence that the surviving `/mcp` route can be used via `server/discover` and direct request flow without relying on legacy `initialize`, then only after explicit authorization retire `initialize`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use the now-complete helper classification and roots/sampling/logging inventory (`_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md`, `_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md`) together with `_workflow/state.json`, `_workflow/sessionless_inventory.json`, and root specs to choose the next bounded package from the remaining partial ledger items without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
+Next recommended action: use `_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md`, `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md`, `_workflow/state.json`, and `_workflow/sessionless_inventory.json` to run the remaining connector/client compatibility check for legacy-`initialize` retirement. Do not reopen historical `/mcp/sessionless` planning or treat missing repo-side request flow as the blocker; the blocker is now external compatibility evidence plus explicit removal authorization.
 
 Recently completed:
 
@@ -342,6 +345,8 @@ Recently completed:
 - Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `210` authenticated scripts.
 
 - Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
+
+- Recorded repo-side no-handshake evidence for the surviving `/mcp` route: `server/discover` plus useful `tools/list` / `tools/call` behavior no longer depend on a preceding `initialize`.
 
 - Closed the stale `session_store` and `roots_sampling_logging_deprecation` ledger items using the already-recorded local-helper classification and sampling-detachment truth.
 
