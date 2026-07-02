@@ -18,7 +18,7 @@ assert.ok(index.includes("Do not infer active work from historical plan files"))
 assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Historical records remain traceability evidence, not the active queue."));
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
-assert.ok(index.includes("Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract."));
+assert.ok(index.includes("Classify the remaining local session-bound helper modules (`session.js`, `outbound_request_manager.js`, `sampling_context.js`) as either retained compatibility fixtures or a later retirement/redesign package."));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
 assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));

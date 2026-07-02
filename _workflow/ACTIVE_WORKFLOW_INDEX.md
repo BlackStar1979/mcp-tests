@@ -159,6 +159,9 @@ Current records:
 - `keep_mcp_residual_session_sse_cleanup_package.md`
   - Removes residual unreachable GET-SSE, SessionStore, replay-helper, and push-emitter files from the active repo without changing the surviving `/mcp` contract.
 
+- `keep_mcp_sampling_runtime_detachment_package.md`
+  - Removes inactive sampling-context injection from active `/mcp` request handling after confirming there is no active request-session wiring left on the surviving route.
+
 - `sessionless_inventory_truth_consolidation.md`
   - Corrects target-selection preparation by removing duplicate source projection and making `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative SEP/sessionless target source.
 
@@ -295,7 +298,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract.
+1. Classify the remaining local session-bound helper modules (`session.js`, `outbound_request_manager.js`, `sampling_context.js`) as either retained compatibility fixtures or a later retirement/redesign package.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.

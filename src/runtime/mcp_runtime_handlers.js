@@ -8,7 +8,6 @@ const { validateRpcMessage } = require("./rpc_protocol_validator");
 const { shouldReturnNoRpcResponse } = require("./rpc_no_response");
 const { dispatchRpcMessage } = require("./rpc_message_dispatcher");
 const { createSessionReplayTracker } = require("./session_tracker");
-const { enrichContextWithSampling } = require("./sampling_context");
 const { validatePerRequestMetadata } = require("./request_metadata_policy");
 
 function createMcpRuntimeHandlers({
@@ -54,7 +53,7 @@ function createMcpRuntimeHandlers({
       return undefined;
     }
 
-    const enrichedContext = enrichContextWithSampling(context, auditLog);
+    const enrichedContext = { ...context };
     if (prelude.method === "server/discover") {
       const requestMetadata = validatePerRequestMetadata({
         protocolVersionHeader: context.protocolVersionHeader,
