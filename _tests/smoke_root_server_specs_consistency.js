@@ -80,6 +80,12 @@ assert.equal(topology.runtime_instances.public_3009.port, 3009);
 assert.equal(topology.runtime_instances.oauth21_3008.port, 3008);
 assert.ok(topology.restart_authority.supervisor_model.scripts.includes("scripts/server.sh"));
 assert.ok(topology.restart_authority.supervisor_model.scripts.includes("scripts/server.ps1"));
+assert.deepEqual(rootSpec.restart_supervisor.controlled_exit_codes, [42, 43, 44]);
+assert.ok(rootSpec.restart_supervisor.scripts.includes("scripts/server.sh"));
+assert.ok(rootSpec.restart_supervisor.scripts.includes("scripts/server.ps1"));
+assert.equal(rootSpec.restart_supervisor.request_helper, "scripts/request-restart.js");
+assert.ok(rootSpec.restart_supervisor.argument_priority.includes("CLI arguments override"));
+assert.ok(rootSpec.restart_supervisor.details_ref.includes("SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_DECISION_RUNTIME_SPEC.json"));
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_RUNTIME_TOPOLOGY_SPEC.json"));

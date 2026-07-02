@@ -423,6 +423,21 @@
     "oauth21_3008_live_load_blocked_until_restart_authority_restored": false,
     "oauth21_3008_supervisor_managed": true
   },
+  "restart_supervisor": {
+    "summary": "Canonical repo-level pointer for starting and controlled-restarting supervisor-managed runtimes. Detailed authority remains in SERVER_RUNTIME_TOPOLOGY_SPEC.json and SERVER_RUNTIME_CONFIG_SPEC.json; local how-to notes outside root specs are non-authoritative.",
+    "scripts": [
+      "scripts/server.sh",
+      "scripts/server.ps1"
+    ],
+    "request_helper": "scripts/request-restart.js",
+    "controlled_exit_codes": [
+      42,
+      43,
+      44
+    ],
+    "argument_priority": "CLI arguments override MCP_SUPERVISOR_* and MCP_TEST_RESTART_* environment variables; unknown CLI arguments are forwarded to node server.js.",
+    "details_ref": "SERVER_RUNTIME_TOPOLOGY_SPEC.json#restart_authority.supervisor_model and SERVER_RUNTIME_CONFIG_SPEC.json#restart_supervisor"
+  },
   "runtime_config_spec": {
     "summary": "Active CLI/env/HTTP-route configuration surface derived from code.",
     "spec_ref": "SERVER_RUNTIME_CONFIG_SPEC.json",
