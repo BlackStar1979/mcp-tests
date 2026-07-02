@@ -55,6 +55,8 @@ Next recommended action: use the now-complete helper classification and roots/sa
 
 Restart-boundary clarification: the recovered supervisor-managed OAuth21 `3008` authority is no longer an open blocker. Future `restart_required_now` flags after later runtime code changes are ordinary per-change operational truth, not evidence that the restart-resilience ledger item is still incomplete.
 
+Helper-debt clarification: `SessionStore`, roots/sampling/logging inventory, and the remaining local helper modules are no longer one unresolved active migration track. The surviving `/mcp` route is already detached from active transport-session lifecycle and active sampling injection; retained helper modules are bounded local compatibility debt until a future explicit redesign or retirement package reopens them.
+
 Snapshot clarification: `_workflow/control_plane/snapshots/**` is archival evidence only. It may preserve superseded `/mcp/sessionless` files, old guard names, and stage-era labels exactly as captured; those copies must not be treated as current route or workflow authority.
 
 Target contract clarification: `_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md` is now the active interpretation layer for the destination architecture. Historical sessionless prototype, coexistence, and connector-migration records remain evidence of past implementation and validation, not authority for the intended end state.

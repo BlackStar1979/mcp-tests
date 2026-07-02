@@ -74,11 +74,14 @@ assert.ok(ledger.get("list_results_ttl_cache_scope").sep_sources.includes("SEP-2
 assert.equal(ledger.get("request_cancellation").implementation_status, "done");
 assert.match(ledger.get("request_cancellation").repo_current_model, /timeout fallback/);
 assert.equal(ledger.get("request_cancellation").checklist.find((item) => item.item === "preserve timeout fallback while adding active cancellation").status, "done");
+assert.equal(ledger.get("session_store").implementation_status, "done");
+assert.equal(ledger.get("session_store").checklist.find((item) => item.item === "record bounded SessionStore closeout").status, "done");
 assert.ok(ledger.get("roots_sampling_logging_deprecation").sep_sources.includes("SEP-2577"));
-assert.equal(ledger.get("roots_sampling_logging_deprecation").implementation_status, "partial");
+assert.equal(ledger.get("roots_sampling_logging_deprecation").implementation_status, "done");
 assert.match(ledger.get("roots_sampling_logging_deprecation").repo_current_model, /no active surviving-route roots surface/);
 assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "inventory sampling usage").status, "done");
 assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "inventory roots and protocol logging usage").status, "done");
+assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "record bounded roots/sampling/logging closeout").status, "done");
 assert.equal(ledger.get("restart_resilience").implementation_status, "done");
 assert.ok(JSON.stringify(ledger.get("restart_resilience")).includes("SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 assert.match(ledger.get("restart_resilience").repo_current_model, /3008 OAuth21/);
@@ -100,6 +103,8 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("migration deb
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 bounded runtime package is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Request cancellation is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("MCP-Session-Id header retirement is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("SessionStore migration debt is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Deprecated roots/sampling/logging cleanup is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Restart resilience is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Runtime policy scope matrix is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Feature lifecycle governance is complete")));
@@ -119,6 +124,8 @@ assert.equal(inventory.active_target_contract.post_accept_cleanup_record, "_work
 assert.equal(inventory.active_target_contract.get_sse_teardown_record, "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md");
 assert.equal(inventory.active_target_contract.request_cancellation_closeout_record, "_workflow/operator_decisions/request_cancellation_closeout.md");
 assert.equal(inventory.active_target_contract.mcp_session_id_header_closeout_record, "_workflow/operator_decisions/mcp_session_id_header_closeout.md");
+assert.equal(inventory.active_target_contract.session_store_closeout_record, "_workflow/operator_decisions/session_store_closeout.md");
+assert.equal(inventory.active_target_contract.roots_sampling_logging_deprecation_closeout_record, "_workflow/operator_decisions/roots_sampling_logging_deprecation_closeout.md");
 assert.equal(inventory.active_target_contract.restart_resilience_closeout_record, "_workflow/operator_decisions/restart_resilience_closeout.md");
 assert.equal(inventory.active_target_contract.runtime_policy_scope_matrix_closeout_record, "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md");
 assert.equal(inventory.active_target_contract.feature_lifecycle_deprecation_policy_closeout_record, "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md");

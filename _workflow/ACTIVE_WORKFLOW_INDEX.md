@@ -87,6 +87,12 @@ Current records:
 - `mcp_session_id_header_closeout.md`
   - Workflow closeout for the active stable-route `MCP-Session-Id` header dependency. Confirms initialize no longer emits the header, POST ignores supplied session headers, and `server/discover` reports `protocol_sessions: false`.
 
+- `session_store_closeout.md`
+  - Workflow closeout for the `SessionStore` migration boundary. Confirms active `/mcp` no longer depends on transport-session lifecycle, `session_store.js` is gone from the active repo, and the remaining helper modules are bounded local compatibility debt.
+
+- `roots_sampling_logging_deprecation_closeout.md`
+  - Workflow closeout for the deprecated roots/sampling/logging bucket. Confirms active `/mcp` no longer injects sampling, no active roots surface is pending, and remaining sampling/audit code is no longer an open migration blocker.
+
 - `restart_resilience_closeout.md`
   - Workflow closeout for the runtime topology / restart boundary. Confirms OAuth21 `3008` restart authority is recovered, machine-readable, supervisor-managed, and no longer an open blocker in workflow truth.
 
@@ -336,6 +342,8 @@ Recently completed:
 - Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `210` authenticated scripts.
 
 - Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
+
+- Closed the stale `session_store` and `roots_sampling_logging_deprecation` ledger items using the already-recorded local-helper classification and sampling-detachment truth.
 
 - Closed the stale `restart_resilience` ledger item using the already-recovered supervisor-managed OAuth21 `3008` restart authority and runtime topology spec truth.
 

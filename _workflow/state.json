@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-02T10:30Z",
+  "updated_at": "2026-07-02T11:00Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
   "read_order": [
@@ -217,6 +217,8 @@
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "mcp_session_id_header_closeout_record": "_workflow/operator_decisions/mcp_session_id_header_closeout.md",
+    "session_store_closeout_record": "_workflow/operator_decisions/session_store_closeout.md",
+    "roots_sampling_logging_deprecation_closeout_record": "_workflow/operator_decisions/roots_sampling_logging_deprecation_closeout.md",
     "restart_resilience_closeout_record": "_workflow/operator_decisions/restart_resilience_closeout.md",
     "runtime_policy_scope_matrix_closeout_record": "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md",
     "feature_lifecycle_deprecation_policy_closeout_record": "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md",

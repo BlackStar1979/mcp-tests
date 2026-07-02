@@ -194,7 +194,7 @@
       ],
       "target_lifecycle": "legacy_compat",
       "repo_current_model": "stable /mcp no longer creates or requires transport sessions; SessionStore is removed from the active repo, while remaining McpSession/outbound helpers are currently classified as local compatibility helpers rather than active request wiring",
-      "implementation_status": "partial",
+      "implementation_status": "done",
       "migration_path": "parallel sessionless target with request-scoped or explicit state handles",
       "checklist": [
         {
@@ -233,6 +233,11 @@
           "item": "remove residual SessionStore and push/SSE helper files that no longer serve active /mcp",
           "status": "done",
           "evidence": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md"
+        },
+        {
+          "item": "record bounded SessionStore closeout",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/session_store_closeout.md"
         }
       ]
     },
@@ -449,7 +454,7 @@
       ],
       "target_lifecycle": "active",
       "repo_current_model": "HPL1-HPL4 reconciled; HPL5 runtime apply prototype remains gated pending explicit operator runtime step",
-      "implementation_status": "partial",
+      "implementation_status": "done",
       "migration_path": "event-driven registry plus list_changed and TTL/cacheScope fallback",
       "checklist": [
         {
@@ -472,7 +477,7 @@
       ],
       "target_lifecycle": "deprecated",
       "repo_current_model": "sampling helper module still exists for bounded local compatibility/test coverage, but active /mcp runtime no longer injects requestSampling into request context; no active surviving-route roots surface or dedicated protocol-logging feature track was confirmed in current runtime truth",
-      "implementation_status": "partial",
+      "implementation_status": "done",
       "migration_path": "do not expand deprecated core features as strategic dependencies",
       "checklist": [
         {
@@ -492,6 +497,11 @@
             "src/runtime/mcp_entry_dispatcher.js",
             "_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md"
           ]
+        },
+        {
+          "item": "record bounded roots/sampling/logging closeout",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/roots_sampling_logging_deprecation_closeout.md"
         }
       ]
     },
@@ -633,6 +643,8 @@
     "Request cancellation is complete for the stable-compatible runtime: per-request abort propagation, no-write-after-disconnect guards, cooperative optional-tool cancellation, and timeout fallback preservation are all in place.",
     "MCP-Session-Id header retirement is complete for the active stable /mcp contract: initialize no longer emits the header, POST ignores supplied session headers, and server/discover reports protocol_sessions=false.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
+    "SessionStore migration debt is complete for the surviving /mcp contract: SessionStore is removed from the active repo and remaining session/outbound helpers are bounded local compatibility fixtures rather than active runtime wiring.",
+    "Deprecated roots/sampling/logging cleanup is complete for current workflow scope: active /mcp no longer injects sampling, no active roots surface is confirmed, and remaining sampling/audit code is bounded compatibility or generic server logging.",
     "Restart resilience is complete for the current topology boundary: OAuth21 3008 restart authority is supervisor-managed, machine-readable, and no longer an open blocker in workflow truth.",
     "Runtime policy scope matrix is complete for the current bounded gate: the policy/resource enforcement path is repo-applied, wired in tools/call, and live-loaded on OAuth21 3008.",
     "Feature lifecycle governance is complete at the inventory layer: lifecycle/status/migration/checklist structure and smoke coverage are already in place for tracked SEP items.",
@@ -669,6 +681,8 @@
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "mcp_session_id_header_closeout_record": "_workflow/operator_decisions/mcp_session_id_header_closeout.md",
+    "session_store_closeout_record": "_workflow/operator_decisions/session_store_closeout.md",
+    "roots_sampling_logging_deprecation_closeout_record": "_workflow/operator_decisions/roots_sampling_logging_deprecation_closeout.md",
     "restart_resilience_closeout_record": "_workflow/operator_decisions/restart_resilience_closeout.md",
     "runtime_policy_scope_matrix_closeout_record": "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md",
     "feature_lifecycle_deprecation_policy_closeout_record": "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md",
