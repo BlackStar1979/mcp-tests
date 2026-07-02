@@ -306,7 +306,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` to isolate the now-unreachable session/SSE helpers that can be removed or downgraded without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
+Next recommended action: use the now-complete helper classification (`_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md`) together with `_workflow/state.json`, `_workflow/sessionless_inventory.json`, and root specs to review the remaining unrealized development paths and choose the next bounded implementation package without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
 
 Recently completed:
 
