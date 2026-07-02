@@ -66,6 +66,7 @@ No connector refresh, no connector route migration, no public 3009 start, no OAu
 
 ## Next recommendation
 
-Preferred S14: connector refresh approval package / no execution.
-
-Alternative S14: historical transition-route regression evidence hardening (non-target architecture).
+Historical next step at that time:
+- Preferred S14: connector refresh approval package / no execution.
+- Alternative S14: historical transition-route regression evidence hardening (non-target architecture).
+This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.

@@ -49,4 +49,4 @@ S11 introduces a guard that prevents accidental connector migration framing in w
 
 ## Next recommendation
 
-S12 should be a connector migration dry-run plan with no refresh and no live route switch. It should define future validation/rollback evidence before any connector-visible change is attempted.
+Historical next step at that time: S12 should be a connector migration dry-run plan with no refresh and no live route switch. This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.

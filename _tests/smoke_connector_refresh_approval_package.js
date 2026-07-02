@@ -28,7 +28,9 @@ assert.ok(record.includes("Connector target: `https://mcp-tests-oauth21.romionol
 assert.ok(record.includes("Sessionless route must not be used as the connector target in this package."));
 assert.ok(record.includes("No connector removal was performed by repo code."));
 assert.ok(record.includes("No connector add was performed by repo code."));
+assert.ok(record.includes("Historical next step at that time:"));
 assert.ok(record.includes("Preferred S15: connector reconnect execution evidence on stable `/mcp` using operator-driven remove + add in the Codex UI."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 
 assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oauth21.romionologic.dev/mcp");
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
@@ -63,4 +65,3 @@ assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, 
 assert.ok(manifest.includes("_tests/smoke_connector_refresh_approval_package.js"));
 
 console.log("smoke_connector_refresh_approval_package ok");
-

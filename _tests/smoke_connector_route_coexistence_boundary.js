@@ -25,7 +25,8 @@ assert.ok(record.includes("No connector refresh was performed"));
 assert.ok(record.includes("stable `/mcp` removal is forbidden"));
 assert.ok(record.includes("Future connector migration requires a separate explicit operator decision"));
 assert.ok(record.includes("Connector refresh remains required only when connector-visible route"));
-assert.ok(record.includes("S12 should be a connector migration dry-run plan with no refresh"));
+assert.ok(record.includes("Historical next step at that time: S12 should be a connector migration dry-run plan with no refresh and no live route switch."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 
 assert.equal(inventory.target_selection_readiness.s11_connector_migration_readiness.status, "prepared_no_migration");
 assert.equal(inventory.target_selection_readiness.s11_connector_migration_readiness.connector_refresh_required_now, false);
@@ -45,4 +46,3 @@ assert.equal(canon.includes("validated as the new workbench/sessionless target")
 assert.ok(manifest.includes("_tests/smoke_connector_route_coexistence_boundary.js"));
 
 console.log("smoke_connector_route_coexistence_boundary ok");
-

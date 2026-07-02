@@ -53,6 +53,6 @@ Historical status note: this record is transition-route evidence only. It is sup
 
 ## Next recommendation
 
-S15 is closed as connector reconnect evidence on stable `/mcp`.
-
-Alternative next step after S15 closeout: historical transition-route regression evidence hardening (non-target architecture).
+Historical closeout at that time: S15 was closed as connector reconnect evidence on stable `/mcp`.
+Historical alternative next step after S15 closeout: transition-route regression evidence hardening (non-target architecture).
+This record is no longer an active instruction source; current target authority is the single-route no-SSE plan on surviving `/mcp`.

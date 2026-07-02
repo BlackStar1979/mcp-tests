@@ -25,8 +25,10 @@ assert.ok(record.includes("S12 does not remove stable `/mcp`"));
 assert.ok(record.includes("Stable `/mcp` remains the legacy-compatible route"));
 assert.ok(record.includes("Connector migration remains a separate explicit future action"));
 assert.ok(record.includes("The dry-run package must not be misreported as a live migration"));
+assert.ok(record.includes("Historical next step at that time:"));
 assert.ok(record.includes("Preferred S13: connector migration dry-run execution harness / still no refresh."));
 assert.ok(record.includes("Alternative S13: connector refresh approval package / no execution."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 
 assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_run_plan.status, "prepared_no_refresh");
 assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_run_plan.connector_refresh_required_now, false);
@@ -49,4 +51,3 @@ assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, 
 assert.ok(manifest.includes("_tests/smoke_connector_migration_dry_run_plan.js"));
 
 console.log("smoke_connector_migration_dry_run_plan ok");
-

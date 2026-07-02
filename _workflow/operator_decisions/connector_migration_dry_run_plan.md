@@ -56,6 +56,7 @@ S12 introduces a guard that prevents accidental promotion of the dry-run plan in
 
 ## Next recommendation
 
-Preferred S13: connector migration dry-run execution harness / still no refresh.
-
-Alternative S13: connector refresh approval package / no execution.
+Historical next step at that time:
+- Preferred S13: connector migration dry-run execution harness / still no refresh.
+- Alternative S13: connector refresh approval package / no execution.
+This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.

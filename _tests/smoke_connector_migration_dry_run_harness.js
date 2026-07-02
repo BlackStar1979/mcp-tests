@@ -34,6 +34,9 @@ assert.ok(record.includes("no stable session code removal was performed"));
 assert.ok(record.includes("future connector migration requires a separate explicit operator decision"));
 assert.ok(record.includes("future connector refresh requires a separate explicit operator action"));
 assert.ok(record.includes("dry-run harness output was sanitized"));
+assert.ok(record.includes("Historical next step at that time:"));
+assert.ok(record.includes("Preferred S14: connector refresh approval package / no execution."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 
 assert.ok(fs.existsSync(scriptPath));
 const script = read("_workflow/scripts/connector_migration_dry_run_harness.js");
@@ -82,4 +85,3 @@ assert.equal(canon.includes("stable `/mcp` and `/mcp/sessionless` coexistence re
 assert.ok(manifest.includes("_tests/smoke_connector_migration_dry_run_harness.js"));
 
 console.log("smoke_connector_migration_dry_run_harness ok");
-

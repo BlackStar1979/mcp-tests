@@ -26,7 +26,8 @@ assert.ok(record.includes("The operator entered the OAuth password in the new wi
 assert.ok(record.includes("The connector accepted the password."));
 assert.ok(record.includes("Claude Code connector UI confirmed `43` visible tools."));
 assert.ok(record.includes("Final visible tool count is confirmed at `43`."));
-assert.ok(record.includes("S15 is closed as connector reconnect evidence on stable `/mcp`."));
+assert.ok(record.includes("Historical closeout at that time: S15 was closed as connector reconnect evidence on stable `/mcp`."));
+assert.ok(record.includes("This record is no longer an active instruction source; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 
 assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oauth21.romionologic.dev/mcp");
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
@@ -54,4 +55,3 @@ assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, 
 assert.ok(manifest.includes("_tests/smoke_connector_reconnect_execution_evidence.js"));
 
 console.log("smoke_connector_reconnect_execution_evidence ok");
-

@@ -66,6 +66,7 @@ No connector removal was performed by repo code. No connector add was performed 
 
 ## Next recommendation
 
-Preferred S15: connector reconnect execution evidence on stable `/mcp` using operator-driven remove + add in the Codex UI.
-
-Alternative S15: historical transition-route regression evidence hardening (non-target architecture).
+Historical next step at that time:
+- Preferred S15: connector reconnect execution evidence on stable `/mcp` using operator-driven remove + add in the Codex UI.
+- Alternative S15: historical transition-route regression evidence hardening (non-target architecture).
+This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.
