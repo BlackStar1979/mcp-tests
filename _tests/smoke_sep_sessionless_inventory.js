@@ -86,6 +86,9 @@ assert.match(ledger.get("restart_resilience").repo_current_model, /3009 false cl
 assert.equal(ledger.get("runtime_policy_scope_matrix").implementation_status, "done");
 assert.match(ledger.get("runtime_policy_scope_matrix").repo_current_model, /wired in tools_call_handler/);
 assert.equal(ledger.get("runtime_policy_scope_matrix").checklist.find((item) => item.item === "record bounded runtime policy closeout").status, "done");
+assert.equal(ledger.get("feature_lifecycle_deprecation_policy").implementation_status, "done");
+assert.match(ledger.get("feature_lifecycle_deprecation_policy").repo_current_model, /lifecycle\/status\/migration\/checklist/);
+assert.equal(ledger.get("feature_lifecycle_deprecation_policy").checklist.find((item) => item.item === "record lifecycle-governance closeout").status, "done");
 
 assert.equal(inventory.recommended_next.some((item) => item.includes("restart authority before touching")), false);
 assert.ok(inventory.recommended_next.some((item) => item.includes("reassess blockers")));
@@ -97,6 +100,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 boun
 assert.ok(inventory.recommended_next.some((item) => item.includes("Request cancellation is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("MCP-Session-Id header retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Runtime policy scope matrix is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Feature lifecycle governance is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Residual GET-SSE/SessionStore/list-changed repo cleanup is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Local helper classification is complete")));
@@ -114,6 +118,7 @@ assert.equal(inventory.active_target_contract.get_sse_teardown_record, "_workflo
 assert.equal(inventory.active_target_contract.request_cancellation_closeout_record, "_workflow/operator_decisions/request_cancellation_closeout.md");
 assert.equal(inventory.active_target_contract.mcp_session_id_header_closeout_record, "_workflow/operator_decisions/mcp_session_id_header_closeout.md");
 assert.equal(inventory.active_target_contract.runtime_policy_scope_matrix_closeout_record, "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md");
+assert.equal(inventory.active_target_contract.feature_lifecycle_deprecation_policy_closeout_record, "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md");
 assert.equal(inventory.active_target_contract.stable_post_mcp_response_mode, "json_only");
 assert.equal(inventory.active_target_contract.stable_get_mcp_supported, false);
 assert.equal(inventory.active_target_contract.list_results_ttl_cache_scope_runtime_package_record, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");

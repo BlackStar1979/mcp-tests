@@ -218,6 +218,7 @@
     "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "mcp_session_id_header_closeout_record": "_workflow/operator_decisions/mcp_session_id_header_closeout.md",
     "runtime_policy_scope_matrix_closeout_record": "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md",
+    "feature_lifecycle_deprecation_policy_closeout_record": "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
     "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",

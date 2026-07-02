@@ -93,6 +93,9 @@ Current records:
 - `runtime_policy_scope_matrix_closeout.md`
   - Workflow closeout for the bounded runtime policy gate already active in repo/live truth. Confirms Stage 14.5 gate is wired in `tools/call`, Stage 14.8 reconciles OAuth21 3008 live-load, and no connector refresh is required.
 
+- `feature_lifecycle_deprecation_policy_closeout.md`
+  - Workflow closeout for SEP lifecycle governance at the inventory layer. Confirms lifecycle/status/migration/checklist structure and smoke coverage are already active in `_workflow/sessionless_inventory.json`.
+
 - `p5_sessionless_explicit_state_handles_spec_review.md`
   - Official-source review of stable 2025-11-25 vs Final SEP-2567/2575 and draft sessionless direction.
 

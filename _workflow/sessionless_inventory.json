@@ -503,7 +503,7 @@
       ],
       "target_lifecycle": "active",
       "repo_current_model": "this inventory now tracks lifecycle/status/migration/checklist",
-      "implementation_status": "partial",
+      "implementation_status": "done",
       "migration_path": "each protocol-direction item tracks SEP source, lifecycle state, migration path, status, and evidence",
       "checklist": [
         {
@@ -513,6 +513,11 @@
         {
           "item": "add smoke guard",
           "status": "done"
+        },
+        {
+          "item": "record lifecycle-governance closeout",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md"
         }
       ]
     },
@@ -624,6 +629,7 @@
     "MCP-Session-Id header retirement is complete for the active stable /mcp contract: initialize no longer emits the header, POST ignores supplied session headers, and server/discover reports protocol_sessions=false.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
     "Runtime policy scope matrix is complete for the current bounded gate: the policy/resource enforcement path is repo-applied, wired in tools/call, and live-loaded on OAuth21 3008.",
+    "Feature lifecycle governance is complete at the inventory layer: lifecycle/status/migration/checklist structure and smoke coverage are already in place for tracked SEP items.",
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
     "Inactive sampling-context runtime injection is detached from active /mcp: remaining sampling/session outbound code is now local helper debt rather than active request wiring.",
     "Local helper classification is complete: session.js, sampling_context.js, and helper-only sendSessionRequest usage are retained as bounded compatibility fixtures until a dedicated redesign or retirement package exists.",
@@ -658,6 +664,7 @@
     "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "mcp_session_id_header_closeout_record": "_workflow/operator_decisions/mcp_session_id_header_closeout.md",
     "runtime_policy_scope_matrix_closeout_record": "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md",
+    "feature_lifecycle_deprecation_policy_closeout_record": "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
     "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",
