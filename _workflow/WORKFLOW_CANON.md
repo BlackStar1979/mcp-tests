@@ -83,6 +83,8 @@ Initialize-retirement boundary clarification: `_workflow/operator_decisions/keep
 
 Transport-session retirement package clarification: `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` records the repo-applied runtime step that removes active transport-session dependence from surviving `/mcp`. Stable `initialize` no longer creates `Mcp-Session-Id`, stable POST `/mcp` ignores session headers instead of treating them as active protocol state, and `server/discover` now reports `protocol_sessions: false`. Residual session/SSE helper code that is no longer reachable from active `/mcp` remains a separate bounded cleanup task.
 
+MCP-Session-Id header closeout clarification: `_workflow/operator_decisions/mcp_session_id_header_closeout.md` closes the transport-header ledger item for the active stable `/mcp` contract. Remaining helper debt in `session.js` or outbound compatibility code must not be used to reopen the header dependency itself.
+
 Replacement-coverage clarification: `_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md` records the exact surviving-route replacement scope that must exist before hidden `/mcp/sessionless` can be retired. In particular, the final no-SSE `subscriptions/listen` contract, the `state/handle/*` fate, and bounded `/mcp` replacement coverage remain open.
 
 Pull-only subscriptions clarification: `_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md` records the final TEST MCP decision for tool-surface freshness on surviving `/mcp`: no end-state `subscriptions/listen`, no end-state tool-list push promise, and pull-only refresh via `tools/list` with `ttlMs: 0`, `cacheScope: "private"`, and current fingerprint metadata.

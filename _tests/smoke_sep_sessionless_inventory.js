@@ -67,6 +67,9 @@ for (const item of inventory.deprecation_ledger) {
 
 assert.deepEqual(ledger.get("initialize_handshake").sep_sources, ["SEP-2575", "SEP-2596"]);
 assert.ok(ledger.get("mcp_session_id_header").sep_sources.includes("SEP-2567"));
+assert.equal(ledger.get("mcp_session_id_header").implementation_status, "done");
+assert.match(ledger.get("mcp_session_id_header").repo_current_model, /POST ignores supplied session headers/);
+assert.equal(ledger.get("mcp_session_id_header").checklist.find((item) => item.item === "record active surviving-route header closeout").status, "done");
 assert.ok(ledger.get("list_results_ttl_cache_scope").sep_sources.includes("SEP-2549"));
 assert.equal(ledger.get("request_cancellation").implementation_status, "done");
 assert.match(ledger.get("request_cancellation").repo_current_model, /timeout fallback/);
@@ -89,6 +92,7 @@ assert.equal(inventory.recommended_next.some((item) => item.includes("Do not rem
 assert.ok(inventory.recommended_next.some((item) => item.includes("migration debt")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 bounded runtime package is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Request cancellation is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("MCP-Session-Id header retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Residual GET-SSE/SessionStore/list-changed repo cleanup is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Local helper classification is complete")));
@@ -104,6 +108,7 @@ assert.equal(inventory.active_target_contract.stable_protocol_sessions, false);
 assert.equal(inventory.active_target_contract.post_accept_cleanup_record, "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md");
 assert.equal(inventory.active_target_contract.get_sse_teardown_record, "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md");
 assert.equal(inventory.active_target_contract.request_cancellation_closeout_record, "_workflow/operator_decisions/request_cancellation_closeout.md");
+assert.equal(inventory.active_target_contract.mcp_session_id_header_closeout_record, "_workflow/operator_decisions/mcp_session_id_header_closeout.md");
 assert.equal(inventory.active_target_contract.stable_post_mcp_response_mode, "json_only");
 assert.equal(inventory.active_target_contract.stable_get_mcp_supported, false);
 assert.equal(inventory.active_target_contract.list_results_ttl_cache_scope_runtime_package_record, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
@@ -129,8 +134,6 @@ assert.match(ledger.get("get_mcp_sse_stream").repo_current_model, /returns 405/)
 assert.equal(ledger.get("get_mcp_sse_stream").implementation_status, "done");
 assert.equal(ledger.get("get_mcp_sse_stream").checklist.find((item) => item.item === "apply bounded GET teardown on surviving /mcp route").status, "done");
 assert.equal(ledger.get("get_mcp_sse_stream").checklist.find((item) => item.item === "remove residual unreachable GET-SSE helper files from the active repo").status, "done");
-assert.match(ledger.get("mcp_session_id_header").repo_current_model, /no longer depends on MCP-Session-Id/);
-assert.equal(ledger.get("mcp_session_id_header").implementation_status, "partial");
 assert.equal(ledger.get("mcp_session_id_header").checklist.find((item) => item.item === "retire stable /mcp transport-session header dependence").status, "done");
 assert.match(ledger.get("session_store").repo_current_model, /classified as local compatibility helpers/);
 assert.equal(ledger.get("session_store").checklist.find((item) => item.item === "retire active surviving-route transport-session lifecycle").status, "done");

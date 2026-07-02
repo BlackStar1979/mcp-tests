@@ -84,6 +84,9 @@ Current records:
 - `request_cancellation_closeout.md`
   - Workflow closeout for the bounded stable-compatible cancellation package. Confirms C1-C4 are already satisfied in repo truth: abort-signal plumbing, no-write-after-disconnect guard, cooperative optional-tool cancellation, and preserved timeout fallback.
 
+- `mcp_session_id_header_closeout.md`
+  - Workflow closeout for the active stable-route `MCP-Session-Id` header dependency. Confirms initialize no longer emits the header, POST ignores supplied session headers, and `server/discover` reports `protocol_sessions: false`.
+
 - `p4_runtime_policy_expansion_scope_plan.md`
   - Plan-only Resource/Scope Matrix Enforcement expansion.
 
