@@ -75,4 +75,4 @@ Targeted guards plus full `node _tests/run_all_smokes.js --skip-network` and `gi
 
 ## Next recommendation
 
-Operator should approve or reject the prepared target selection. Recommendation: approve S4 parallel draft/sessionless prototype behind a non-default route or mode while keeping current OAuth21 stable-compatible connector unchanged. If no runtime prototype is approved yet, proceed to S3 explicit state handle design rules.
+Historical next step at that time: operator approval or rejection of the prepared target selection was required. This is no longer the active queue; the historical parallel prototype decision remains evidence only, and the current target authority is the single-route no-SSE plan on surviving `/mcp`.

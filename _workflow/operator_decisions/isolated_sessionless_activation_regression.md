@@ -61,4 +61,4 @@ Historical status note: this record is hidden-route transition evidence only. It
 
 ## Next recommendation
 
-Proceed to S9 OAuth21 3008 sessionless activation trial only if the operator wants live-load of the hidden route on the workbench server. S9 should still avoid connector migration and should keep `/mcp` stable-compatible.
+Historical next step at that time: proceed to S9 OAuth21 3008 sessionless activation trial only if the operator wanted live-load of the hidden route on the workbench server. This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.

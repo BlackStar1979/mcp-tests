@@ -33,4 +33,14 @@ for (const file of activeFiles) {
     assert.equal(text.includes(key), false, `${rel} contains retired active token ${key}`);
   }
 }
+for (const [rel, forbidden] of [
+  ["_workflow/operator_decisions/sessionless_sep2575_request_contract.md", "Proceed to an isolated S8 sessionless activation/regression run on a higher local port using the stricter SEP-2575 request contract."],
+  ["_workflow/operator_decisions/isolated_sessionless_activation_regression.md", "Proceed to S9 OAuth21 3008 sessionless activation trial only if the operator wants live-load of the hidden route on the workbench server."],
+  ["_workflow/operator_decisions/sessionless_runtime_prototype.md", "Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requests S4 route activation testing with the prototype env flag."],
+  ["_workflow/operator_decisions/sessionless_target_selection_preparation.md", "Operator should approve or reject the prepared target selection."],
+  ["_workflow/operator_decisions/sessionless_inventory_truth_consolidation.md", "Proceed to S3 explicit state handle design rules unless the operator explicitly approves S4 parallel draft/sessionless runtime prototype."]
+]) {
+  const text = fs.readFileSync(path.join(ROOT, rel), "utf8");
+  assert.equal(text.includes(forbidden), false, `${rel} still contains an unqualified historical next-step imperative`);
+}
 console.log("smoke_no_progress_state_active_artifacts ok");

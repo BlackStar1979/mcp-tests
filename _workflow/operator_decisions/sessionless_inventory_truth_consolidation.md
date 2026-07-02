@@ -35,4 +35,4 @@ Repair the target-selection preparation by making `_workflow/sessionless_invento
 
 ## Next recommendation
 
-Proceed to S3 explicit state handle design rules unless the operator explicitly approves S4 parallel draft/sessionless runtime prototype.
+Historical next step at that time: proceed to S3 explicit state handle design rules unless the operator explicitly approved the S4 parallel draft/sessionless runtime prototype. This is no longer the active queue; the current target authority is the single-route no-SSE plan on surviving `/mcp`.

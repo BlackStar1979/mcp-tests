@@ -67,7 +67,7 @@ Live-load completed on OAuth21 3008. The hidden prototype route remains default-
 
 ## Next recommendation
 
-Proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requests S4 route activation testing with the prototype env flag.
+Historical next step at that time: proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requested S4 route activation testing with the prototype env flag. This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.
 
 ## Live-load validation
 

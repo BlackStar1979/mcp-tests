@@ -53,4 +53,4 @@ On `/mcp/sessionless` when `MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE=1`:
 
 ## Next recommendation
 
-Proceed to an isolated S8 sessionless activation/regression run on a higher local port using the stricter SEP-2575 request contract. Do not activate `/mcp/sessionless` on OAuth21 3008 or migrate the connector until that passes.
+Historical next step at that time: proceed to an isolated S8 sessionless activation/regression run on a higher local port using the stricter SEP-2575 request contract. This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.

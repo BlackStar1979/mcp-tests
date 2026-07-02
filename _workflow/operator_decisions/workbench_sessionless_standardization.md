@@ -51,4 +51,4 @@ S5 is preparation and standardization policy only. It does not enable the hidden
 
 ## Next recommendation
 
-Historical next step at that time: proceed to Legacy Retired Auth Test Archive/Cleanup. Do not activate `/mcp/sessionless` on OAuth21 3008 or migrate the connector without a separate explicit operator stage.
+Historical next step at that time: proceed to Legacy Retired Auth Test Archive/Cleanup. This is no longer the active queue; do not reactivate `/mcp/sessionless` on OAuth21 3008 or revive connector-migration guidance from this record.

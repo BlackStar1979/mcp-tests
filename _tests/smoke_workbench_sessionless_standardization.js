@@ -11,6 +11,8 @@ const s5 = inventory.target_selection_readiness.s5_workbench_deprecation_standar
 assert.ok(record.includes("Historical status note: this record is hidden-route transition evidence only."));
 assert.ok(record.includes("It is superseded as active target guidance by `_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md`"));
 assert.ok(record.includes("Do not use it as the current next-step plan."));
+assert.ok(record.includes("Historical next step at that time: proceed to Legacy Retired Auth Test Archive/Cleanup."));
+assert.ok(record.includes("This is no longer the active queue; do not reactivate `/mcp/sessionless` on OAuth21 3008 or revive connector-migration guidance from this record."));
 assert.ok(s5);
 assert.equal(s5.status, "prepared_no_runtime_change");
 assert.equal(s5.source_of_truth, "_workflow/sessionless_inventory.json");

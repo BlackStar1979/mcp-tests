@@ -39,12 +39,13 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 
 ## Current validated baseline
 
-- Current validated `main` HEAD: `aecec58`.
+- Validated cleanup-closeout anchor on `main`: `aecec58`.
+- Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
 - Latest full smoke after state-and-snapshot hygiene guard: `ok_0_40_0_7_209`.
 - Public section count: `7`.
 - Authenticated smoke count: `209`.
-- Current local `git status --short` is expected to show only `?? .codebase-memory/` and `?? experiments/`.
+- Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
 - Earlier checkpoint-specific implementation approvals do not roll forward automatically; only explicitly named records govern their own scope.
@@ -295,9 +296,9 @@ Historical records remain traceability evidence, not the active queue.
 
 Recently completed:
 
-- Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `209` authenticated scripts.
+- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `209` authenticated scripts.
 
-- Confirmed the previous dirty-worktree push blocker is closed on `main`; only local-only untracked directories `.codebase-memory/` and `experiments/` remain outside the committed repo surface.
+- Confirmed the previous dirty-worktree push blocker is closed on `main`; the cleanup-closeout checkpoint preserved only local-only untracked directories `.codebase-memory/` and `_workflow/experiments/` outside the committed repo surface.
 
 - Added explicit archive-boundary README files for `_workflow/historical/`, `_tests/archive/`, and `_tests/archive/legacy_retired_auth/`, then extended `smoke_state_and_snapshot_hygiene.js` so archived evidence is less likely to be mistaken for active workflow truth.
 

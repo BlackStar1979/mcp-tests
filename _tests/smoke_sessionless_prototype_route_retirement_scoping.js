@@ -32,7 +32,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /m
 
 assert.ok(canon.includes("Prototype-route retirement clarification"));
 assert.ok(index.includes("sessionless_prototype_route_retirement_scoping.md"));
-assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 
 assert.equal(dispatcher.includes('url.pathname === "/mcp/sessionless"'), false);
 assert.equal(runtimeSpec.http_routes.includes("/mcp/sessionless"), false);

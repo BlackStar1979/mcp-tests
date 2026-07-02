@@ -11,11 +11,11 @@ function bucket(e){
   if (p.startsWith('src/')) return 'SRC_RUNTIME';
   if (p.startsWith('_tests/')) return del ? 'LEGACY_DELETION' : 'TEST_GUARD_OR_MANIFEST';
   if (p === '_workflow/ACTIVE_WORKFLOW_INDEX.md' || p === '_workflow/WORKFLOW_CANON.md' || p === '_workflow/state.json') return 'WORKFLOW_TRUTH_SYNC';
+  if (p.startsWith('_workflow/experiments/') || p.startsWith('experiments/')) return 'EXPERIMENTAL_ARTIFACT';
   if (p.startsWith('_workflow/')) return del ? 'LEGACY_DELETION' : 'WORKFLOW_SUPPORT';
   if (p.startsWith('plugins/')) return 'PLUGIN_DEV_SURFACE';
   if (p.startsWith('tools/')) return 'DEV_TOOLING';
   if (p.startsWith('_public_sandbox/')) return del ? 'LEGACY_DELETION' : 'PUBLIC_SANDBOX';
-  if (p.startsWith('experiments/')) return 'EXPERIMENTAL_ARTIFACT';
   if (p.startsWith('.codebase-memory')) return 'LOCAL_MEMORY_ARTIFACT';
   return 'UNKNOWN_DO_NOT_STAGE';
 }

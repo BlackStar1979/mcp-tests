@@ -44,7 +44,7 @@ assert.equal(subscriptionsListen.checklist.find((item) => item.item === "record 
 
 assert.ok(canon.includes("Pull-only subscriptions clarification"));
 assert.ok(index.includes("keep_mcp_subscriptions_listen_pull_only_contract.md"));
-assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 
 assert.equal(routeDispatcher.includes("/mcp/sessionless"), false);
 assert.ok(discoverSource.includes("listChanged: false"));

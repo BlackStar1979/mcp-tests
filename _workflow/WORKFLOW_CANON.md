@@ -29,11 +29,12 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
-- Current validated `main` HEAD: `aecec58`.
+- Validated cleanup-closeout anchor on `main`: `aecec58`.
+- Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`.
 - Latest validated public section count: `7`.
 - Latest validated authenticated smoke count: `209`.
-- Current local-only untracked directories expected outside committed scope: `.codebase-memory/`, `experiments/`.
+- Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow truth.
@@ -539,4 +540,4 @@ Auth/security adjacent SEP triage green: `_workflow/operator_decisions/auth_secu
 
 Adjacent/auth watchlist review green: `_workflow/operator_decisions/adjacent_sep_watchlist_review.md` reviews the remaining watchlist after the two SEP triage records. No new dedicated ledger is opened now. `SEP-1613`, `SEP-1319`, and `SEP-991` are sufficient for current scope without new workflow expansion; `SEP-2164` and `SEP-973` are deferred until their target surfaces exist; `SEP-1303` remains the first semantics-sensitive item to reopen if tool-validation-error behavior becomes an active migration topic. No runtime change, restart, connector refresh, or public 3009 start was performed.
 
-Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The validated closeout head is `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green there with `7` public and `209` authenticated scripts. The previous dirty-worktree push blocker is closed for `main`; only local-only untracked `.codebase-memory/` and `experiments/` remain outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.
+Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The cleanup-closeout anchor remains `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green for the closeout package with `7` public and `209` authenticated scripts. Later workflow-only truth-sync commits on `main` do not reopen this debt. The previous dirty-worktree push blocker is closed for `main`; the cleanup-closeout checkpoint preserved only local-only untracked `.codebase-memory/` and `_workflow/experiments/` outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.

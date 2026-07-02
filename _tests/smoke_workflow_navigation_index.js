@@ -21,10 +21,12 @@ assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evi
 assert.ok(index.includes("Quarantine or rewrite remaining historical `/mcp/sessionless` live-operation artifacts"));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
 assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
-assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 assert.ok(index.includes("previous dirty-worktree push blocker is closed on `main`"));
 assert.ok(index.includes("Recently completed:"));
-assert.ok(index.includes("Current validated `main` HEAD: `aecec58`."));
+assert.ok(index.includes("Validated cleanup-closeout anchor on `main`: `aecec58`."));
+assert.ok(index.includes("Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt."));
+assert.ok(index.includes("?? _workflow/experiments/"));
 assert.ok(index.includes("adjacent_runtime_contract_sep_triage.md"));
 assert.ok(index.includes("auth_security_adjacent_sep_triage.md"));
 assert.ok(index.includes("Reviewed the adjacent/auth watchlist and intentionally avoided opening speculative new ledgers"));
@@ -39,7 +41,9 @@ assert.ok(index.includes("single_route_no_sse_streamable_http_target_plan.md"));
 
 assert.ok(canon.includes("Latest validated public section count: `7`"));
 assert.ok(canon.includes("Latest validated authenticated smoke count: `209`"));
-assert.ok(canon.includes("Current validated `main` HEAD: `aecec58`."));
+assert.ok(canon.includes("Validated cleanup-closeout anchor on `main`: `aecec58`."));
+assert.ok(canon.includes("Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt."));
+assert.ok(canon.includes("`.codebase-memory/`, `_workflow/experiments/`."));
 assert.ok(canon.includes("## 3A. Current active work queue"));
 assert.ok(canon.includes("Snapshot clarification: `_workflow/control_plane/snapshots/**` is archival evidence only."));
 assert.ok(canon.includes("Workflow file count is not a project-progress metric."));

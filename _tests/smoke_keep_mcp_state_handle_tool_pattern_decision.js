@@ -36,7 +36,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /m
 assert.ok(canon.includes("State-handle fate clarification"));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Repo cleanup/normalization debt is closed on main")));
 assert.ok(index.includes("keep_mcp_state_handle_tool_pattern_decision.md"));
-assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 
 assert.equal(runtimeSpec.retired_sessionless_transition.state_handle_decision_record, "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md");
 

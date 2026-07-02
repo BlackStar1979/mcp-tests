@@ -146,7 +146,7 @@ assert.equal(inventory.repo_hygiene_commit_scope_triage.git_diff_stat_changed_fi
 assert.equal(inventory.repo_hygiene_commit_scope_triage.closeout_head, "aecec58");
 assert.equal(inventory.repo_hygiene_commit_scope_triage.closeout_branch, "main");
 assert.equal(inventory.repo_hygiene_commit_scope_triage.origin_main_includes_closeout_head, true);
-assert.deepEqual(inventory.repo_hygiene_commit_scope_triage.local_only_untracked_paths, [".codebase-memory/", "experiments/"]);
+assert.deepEqual(inventory.repo_hygiene_commit_scope_triage.local_only_untracked_paths, [".codebase-memory/", "_workflow/experiments/"]);
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.record, "_workflow/operator_decisions/repo_hygiene_commit_scope_isolation.md");
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.validated_run_all_ok, true);
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.validated_run_all_public_count, 7);
@@ -172,7 +172,7 @@ assert.equal(inventory.tests_workflow_rename_normalization_package.likely_direct
 assert.equal(inventory.tests_workflow_rename_normalization_package.unmatched_deletions, 77);
 assert.equal(inventory.tests_workflow_rename_normalization_package.unmatched_additions, 118);
 assert.equal(inventory.tests_workflow_rename_normalization_package.push_safe_now, true);
-assert.equal(inventory.tests_workflow_rename_normalization_package.next_step, "closed_on_main_aecec58");
+assert.equal(inventory.tests_workflow_rename_normalization_package.next_step, "closed_on_main_cleanup_anchor_recorded");
 assert.equal(inventory.tests_workflow_rename_normalization_package.validated_closeout_head, "aecec58");
 assert.equal(inventory.tests_workflow_rename_normalization_package.merged_to_main, true);
 assert.ok(Array.isArray(inventory.all_seps_index));

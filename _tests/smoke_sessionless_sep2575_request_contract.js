@@ -16,6 +16,8 @@ assert.ok(record.includes("Status: GREEN / RUNTIME PATCH ON HIDDEN ROUTE / CONNE
 assert.ok(record.includes("Historical status note: this record is hidden-route transition evidence only."));
 assert.ok(record.includes("It is superseded as active target guidance by `_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md`"));
 assert.ok(record.includes("Do not use it as the current next-step plan."));
+assert.ok(record.includes("Historical next step at that time: proceed to an isolated S8 sessionless activation/regression run on a higher local port"));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 assert.ok(record.includes("`/mcp/sessionless`"));
 assert.ok(record.includes("MCP-Protocol-Version"));
 assert.ok(record.includes("server/discover"));

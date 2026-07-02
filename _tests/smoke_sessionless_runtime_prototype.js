@@ -18,6 +18,8 @@ const record = read("_workflow/operator_decisions/sessionless_runtime_prototype.
 assert.ok(record.includes("Historical status note: this record is hidden-route transition evidence only."));
 assert.ok(record.includes("It is superseded as active target guidance by `_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md`"));
 assert.ok(record.includes("Do not use it as the current next-step plan."));
+assert.ok(record.includes("Historical next step at that time: proceed to Legacy Retired Auth Test Archive/Cleanup unless the operator explicitly requested S4 route activation testing with the prototype env flag."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 
 assert.equal(fs.existsSync(path.join(ROOT, "src", "runtime", "sessionless_prototype_route_handler.js")), false);
 assert.equal(runtimeSpec.http_routes.includes("/mcp/sessionless"), false);

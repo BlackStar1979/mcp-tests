@@ -10,6 +10,8 @@ assert.ok(record.includes("Status: GREEN / ISOLATED HIGHER-PORT ACTIVATION PASSE
 assert.ok(record.includes("Historical status note: this record is hidden-route transition evidence only."));
 assert.ok(record.includes("It is superseded as active target guidance by `_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md`"));
 assert.ok(record.includes("Do not use it as the current next-step plan."));
+assert.ok(record.includes("Historical next step at that time: proceed to S9 OAuth21 3008 sessionless activation trial only if the operator wanted live-load of the hidden route on the workbench server."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 assert.ok(record.includes("port: 3020"));
 assert.ok(record.includes("tools_count: 43"));
 assert.ok(record.includes("protocol version: `2025-06-18`"));

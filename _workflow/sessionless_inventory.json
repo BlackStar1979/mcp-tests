@@ -580,8 +580,8 @@
     "Auth/security adjacent SEP triage is complete: existing auth coverage, explicit non-targets, and the remaining watchlist are now recorded.",
     "Adjacent/auth watchlist review is complete: no new dedicated ledger is opened now; reopen only when a tracked trigger surface becomes active target work.",
     "The first semantics-sensitive watch item is SEP-1303 if tool-validation-error behavior becomes an active migration topic.",
-    "Repo cleanup/normalization debt is closed on main: cleanup-normalization-20260701 was validated at aecec58 and fast-forward merged to origin/main.",
-    "Current local-only untracked directories `.codebase-memory/` and `experiments/` remain intentionally outside committed scope and do not reopen the cleanup blocker.",
+    "Repo cleanup/normalization debt is closed on main: cleanup anchor aecec58 remains merged in main history, and later workflow-only commits do not reopen this debt.",
+    "Current local-only untracked directories `.codebase-memory/` and `_workflow/experiments/` remain intentionally outside committed scope and do not reopen the cleanup blocker.",
     "Treat this file as a living SEP-driven checklist."
   ],
   "active_target_contract": {
@@ -715,7 +715,7 @@
     "origin_main_includes_closeout_head": true,
     "local_only_untracked_paths": [
       ".codebase-memory/",
-      "experiments/"
+      "_workflow/experiments/"
     ],
     "runtime_restart_required_now": false,
     "connector_refresh_required_now": false,
@@ -756,7 +756,7 @@
     "unmatched_deletions": 77,
     "unmatched_additions": 118,
     "push_safe_now": true,
-    "next_step": "closed_on_main_aecec58",
+    "next_step": "closed_on_main_cleanup_anchor_recorded",
     "validated_closeout_head": "aecec58",
     "merged_to_main": true,
     "runtime_restart_required_now": false,
