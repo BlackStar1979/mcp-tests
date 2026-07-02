@@ -76,10 +76,13 @@ Current records:
   - Binding D1-D12 operator direction after Stage 6.
 
 - `p3_cancellation_path_client_disconnect_plan.md`
-  - Plan-only cancellation path based on client disconnect / AbortSignal, with timeout fallback.
+  - Historical baseline plan for the cancellation path based on client disconnect / AbortSignal, with timeout fallback.
 
 - `c3_cooperative_tool_cancellation.md`
   - Cooperative tool cancellation implementation. Removes stale earlier cancellation blockers, adds cooperative optional-tool cancellation, records no connector refresh, and is live-loaded on OAuth21 3008 with server_start_id 2026-06-28T18:29:15.549Z.
+
+- `request_cancellation_closeout.md`
+  - Workflow closeout for the bounded stable-compatible cancellation package. Confirms C1-C4 are already satisfied in repo truth: abort-signal plumbing, no-write-after-disconnect guard, cooperative optional-tool cancellation, and preserved timeout fallback.
 
 - `p4_runtime_policy_expansion_scope_plan.md`
   - Plan-only Resource/Scope Matrix Enforcement expansion.

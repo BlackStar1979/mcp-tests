@@ -347,8 +347,8 @@
         "SEP-2575"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "Request abort propagation, client-disconnect write guards, and cooperative tool cancellation are implemented for the stable-compatible runtime; JSON-RPC notifications/cancelled and draft transport semantics remain target-selection dependent",
-      "implementation_status": "partial",
+      "repo_current_model": "Request abort propagation, client-disconnect write guards, cooperative optional-tool cancellation, and timeout fallback are implemented for the stable-compatible runtime; JSON-RPC notifications/cancelled and draft transport semantics remain separate non-scope items",
+      "implementation_status": "done",
       "migration_path": "HTTP stream close cancels that request; timeout remains fallback",
       "checklist": [
         {
@@ -364,6 +364,11 @@
           "item": "implement disconnect and cooperative cancellation guards",
           "status": "done",
           "evidence": "_tests/smoke_client_disconnect_write_guard.js and _tests/smoke_cooperative_tool_cancellation.js"
+        },
+        {
+          "item": "preserve timeout fallback while adding active cancellation",
+          "status": "done",
+          "evidence": "_tests/smoke_pending_request_correlation.js and _workflow/operator_decisions/request_cancellation_closeout.md"
         }
       ]
     },
@@ -605,6 +610,7 @@
   "recommended_next": [
     "Current SSE-based and dual-route behavior must be treated as migration debt, not as the target architecture.",
     "SEP-2549 bounded runtime package is complete: tools/list still exposes ttlMs=0 and cacheScope=private, and active tools/call results now share the same directives when their operation_class is bounded as read/list-like.",
+    "Request cancellation is complete for the stable-compatible runtime: per-request abort propagation, no-write-after-disconnect guards, cooperative optional-tool cancellation, and timeout fallback preservation are all in place.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
     "Inactive sampling-context runtime injection is detached from active /mcp: remaining sampling/session outbound code is now local helper debt rather than active request wiring.",
@@ -637,6 +643,7 @@
     "post_accept_cleanup_record": "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md",
     "get_sse_teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md",
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
+    "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
     "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",

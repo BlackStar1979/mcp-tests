@@ -215,6 +215,7 @@
     "post_accept_cleanup_record": "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md",
     "get_sse_teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md",
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
+    "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
     "list_results_ttl_cache_scope_runtime_package_record": "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md",
