@@ -35,7 +35,16 @@ assert.deepEqual(AUTH_DEFAULT_PORTS, { none: 3009, oauth: 3007, oauth21: 3008 })
   assert.equal(config.hostSource, "hard_fallback");
   assert.equal(config.tokenFile, "");
   assert.equal(config.tokenFileSource, "unset");
+  assert.equal(config.disableLegacyInitialize, false);
   assert.equal(config.selfTest, false);
+}
+
+{
+  const config = resolveAuthBootstrapConfig({
+    argv: [],
+    env: env({ MCP_TEST_DISABLE_LEGACY_INITIALIZE: "1" }),
+  });
+  assert.equal(config.disableLegacyInitialize, true);
 }
 
 mustThrow(

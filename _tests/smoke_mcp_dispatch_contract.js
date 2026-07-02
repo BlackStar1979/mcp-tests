@@ -40,6 +40,33 @@ async function waitHealth(port) {
   throw new Error("mcp-dispatch health timeout");
 }
 
+async function withServer(envOverrides, fn) {
+  const child = spawn(process.execPath, ["server.js"], {
+    cwd: process.cwd(),
+    env: {
+      ...process.env,
+      MCP_TEST_AUTH_MODE: "none",
+      MCP_TEST_FS_ROOT: path.join(process.cwd(), "_public_sandbox"),
+      ...envOverrides,
+    },
+    stdio: ["ignore", "pipe", "pipe"],
+  });
+
+  let serverOutput = "";
+  child.stdout.on("data", (data) => { serverOutput += String(data); });
+  child.stderr.on("data", (data) => { serverOutput += String(data); });
+
+  try {
+    await waitHealth(Number(envOverrides.MCP_TEST_PORT));
+    return await fn();
+  } catch (error) {
+    if (serverOutput) console.error(serverOutput);
+    throw error;
+  } finally {
+    child.kill();
+  }
+}
+
 // POST a raw JSON-RPC body (string) to /mcp.
 function postRaw(rawBody) {
   return fetch(MCP_URL, {
@@ -63,22 +90,15 @@ function postJson(value) {
 }
 
 (async () => {
-  const child = spawn(process.execPath, ["server.js"], {
-    cwd: process.cwd(),
-    env: {
-      ...process.env,
-      MCP_TEST_PORT: String(PORT),
-      MCP_TEST_AUTH_MODE: "none",
-      MCP_TEST_FS_ROOT: path.join(process.cwd(), "_public_sandbox"),
+  const discoverMeta = {
+    _meta: {
+      "io.modelcontextprotocol/protocolVersion": "2025-06-18",
+      "io.modelcontextprotocol/clientInfo": { name: "step95-discover-smoke", version: "1" },
+      "io.modelcontextprotocol/clientCapabilities": {},
     },
-    stdio: ["ignore", "pipe", "pipe"],
-  });
+  };
 
-  let serverOutput = "";
-  child.stdout.on("data", (data) => { serverOutput += String(data); });
-  child.stderr.on("data", (data) => { serverOutput += String(data); });
-
-  try {
+  await withServer({ MCP_TEST_PORT: String(PORT) }, async () => {
     await waitHealth(PORT);
 
     // 1. Single ping -> 200 with result.
@@ -171,14 +191,6 @@ function postJson(value) {
       assert.equal(body.id, 99, "unknown method id");
       assert.equal(body.error.code, -32601, "unknown method error code");
     }
-
-    const discoverMeta = {
-      _meta: {
-        "io.modelcontextprotocol/protocolVersion": "2025-06-18",
-        "io.modelcontextprotocol/clientInfo": { name: "step95-discover-smoke", version: "1" },
-        "io.modelcontextprotocol/clientCapabilities": {},
-      },
-    };
 
     // 8. Additive request-contract bridge: server/discover on /mcp without prior initialize.
     {
@@ -292,13 +304,56 @@ function postJson(value) {
       assert.ok(body.result !== undefined, "ignored session header result exists");
     }
 
-    console.log("smoke_mcp_dispatch_contract ok");
-  } catch (error) {
-    if (serverOutput) console.error(serverOutput);
-    throw error;
-  } finally {
-    child.kill();
-  }
+  });
+
+  const forkPort = PORT + 1;
+  const forkUrl = `http://127.0.0.1:${forkPort}/mcp`;
+  await withServer({
+    MCP_TEST_PORT: String(forkPort),
+    MCP_TEST_DISABLE_LEGACY_INITIALIZE: "1",
+  }, async () => {
+    const discoverResponse = await fetch(forkUrl, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        "mcp-protocol-version": "2025-06-18",
+      },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 21,
+        method: "server/discover",
+        params: discoverMeta,
+      }),
+    });
+    assert.equal(discoverResponse.status, 200, "fork server/discover status");
+    const discoverBody = await discoverResponse.json();
+    assert.equal(discoverBody.result.transport.route, "/mcp");
+    assert.equal(discoverBody.result.transport.initialize_required, false);
+    assert.equal(discoverBody.result.transport.protocol_sessions, false);
+    assert.equal(discoverBody.result.transport.legacy_initialize_supported, false);
+    assert.equal(discoverBody.result.transport.mode, "streamable_http_stateless_no_initialize");
+    assert.equal(discoverBody.result.capabilities.experimental.legacyInitializeAlsoSupported, false);
+
+    const initializeResponse = await fetch(forkUrl, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        jsonrpc: "2.0",
+        id: 22,
+        method: "initialize",
+        params: {
+          protocolVersion: "2025-06-18",
+          capabilities: {},
+          clientInfo: { name: "no-init-fork-smoke", version: "1" },
+        },
+      }),
+    });
+    assert.equal(initializeResponse.status, 200, "fork initialize rejected via rpc");
+    const initializeBody = await initializeResponse.json();
+    assert.equal(initializeBody.error.code, -32601, "fork initialize method-not-found");
+  });
+
+  console.log("smoke_mcp_dispatch_contract ok");
 })().catch((error) => {
   console.error(error?.stack || error?.message || String(error));
   process.exit(1);

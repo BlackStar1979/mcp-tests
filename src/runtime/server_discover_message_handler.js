@@ -15,12 +15,15 @@ function handleServerDiscoverMessage({
   profile,
   tools,
   serverStartId,
+  disableLegacyInitialize,
 } = {}) {
   const sourceTools = Array.isArray(tools) ? tools : [];
   const toolSurface = buildToolSurfaceFingerprint(sourceTools);
   const resolvedProtocolVersion = typeof protocolVersion === "string" && protocolVersion
     ? protocolVersion
     : SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS[0];
+
+  const legacyInitializeSupported = disableLegacyInitialize !== true;
 
   return rpcResult(id, {
     supportedVersions: [...SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS],
@@ -30,7 +33,7 @@ function handleServerDiscoverMessage({
       },
       experimental: {
         singleRouteNoSseTarget: true,
-        legacyInitializeAlsoSupported: true,
+        legacyInitializeAlsoSupported: legacyInitializeSupported,
       },
     },
     serverInfo: {
@@ -52,12 +55,14 @@ function handleServerDiscoverMessage({
     },
     protocolVersion: resolvedProtocolVersion,
     transport: {
-      mode: "streamable_http_stateless_legacy_initialize_compat",
+      mode: legacyInitializeSupported
+        ? "streamable_http_stateless_legacy_initialize_compat"
+        : "streamable_http_stateless_no_initialize",
       route: "/mcp",
       post_only: true,
       protocol_sessions: false,
       initialize_required: false,
-      legacy_initialize_supported: true,
+      legacy_initialize_supported: legacyInitializeSupported,
     },
   });
 }

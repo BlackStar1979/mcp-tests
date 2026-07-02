@@ -24,6 +24,7 @@ function createMcpRuntimeHandlers({
   publicBaseUrl,
   rateLimiter,
   serverStartId,
+  disableLegacyInitialize,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
@@ -86,6 +87,7 @@ function createMcpRuntimeHandlers({
       getOptionalTool,
       rateLimiter,
       serverStartId,
+      disableLegacyInitialize,
     });
   }
 

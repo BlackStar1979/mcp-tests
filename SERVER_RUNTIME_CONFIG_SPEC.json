@@ -49,6 +49,7 @@
     "MCP_TEST_CODE_SAMPLE_MAX_FILE_BYTES",
     "MCP_TEST_CODE_SAMPLE_ROOT",
     "MCP_TEST_CORS_ALLOW_ORIGIN",
+    "MCP_TEST_DISABLE_LEGACY_INITIALIZE",
     "MCP_TEST_ENABLE_CODE_SAMPLE_JS",
     "MCP_TEST_ENABLE_DEV_TOOLS",
     "MCP_TEST_ENABLE_FS_TOOLS",
@@ -149,6 +150,14 @@
     "transition_mode": "stateless_legacy_initialize_compat",
     "record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
+  },
+  "isolated_no_initialize_fork": {
+    "route": "/mcp",
+    "activation_env": "MCP_TEST_DISABLE_LEGACY_INITIALIZE",
+    "intended_use": "isolated higher-port connector compatibility tests without legacy initialize",
+    "changes_stable_3008_default": false,
+    "transport_mode_when_enabled": "streamable_http_stateless_no_initialize",
+    "initialize_method_supported_when_enabled": false
   },
   "protocol_versions": [
     "2025-06-18",

@@ -198,6 +198,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     auditLogPath,
     rateLimiter,
     serverStartId,
+    disableLegacyInitialize: bootstrapConfig.disableLegacyInitialize === true,
   });
 }
 

@@ -22,11 +22,15 @@ async function dispatchRpcMessage({
   getOptionalTool,
   rateLimiter,
   serverStartId,
+  disableLegacyInitialize,
 }) {
   const { id, method, params } = prelude;
 
   switch (method) {
     case "initialize": {
+      if (disableLegacyInitialize === true) {
+        return buildMethodNotFoundResponse(id, method);
+      }
       return handleInitializeMessage({
         id,
         params,
@@ -60,6 +64,7 @@ async function dispatchRpcMessage({
         profile,
         tools,
         serverStartId,
+        disableLegacyInitialize,
       });
     }
 

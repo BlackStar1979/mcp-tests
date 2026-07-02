@@ -150,6 +150,9 @@ function parseBootstrapArgs(argv = []) {
 function resolveAuthBootstrapConfig({ argv = [], env = process.env } = {}) {
   const parsed = parseBootstrapArgs(argv);
   const envMap = env || {};
+  const disableLegacyInitialize = ["1", "true", "yes", "on"].includes(
+    String(envMap.MCP_TEST_DISABLE_LEGACY_INITIALIZE || "").trim().toLowerCase()
+  );
 
   const authModeSource = parsed.authMode !== undefined
     ? "cli"
@@ -234,6 +237,7 @@ function resolveAuthBootstrapConfig({ argv = [], env = process.env } = {}) {
     trustedProxySource,
     publicBaseUrl,
     publicBaseUrlSource,
+    disableLegacyInitialize,
     selfTest: parsed.selfTest === true,
     authDefaultPort,
   };

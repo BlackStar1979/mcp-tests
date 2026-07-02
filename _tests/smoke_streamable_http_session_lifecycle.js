@@ -35,7 +35,9 @@ async function call({headers={},body,handler}){const r=res();const audits=[];awa
  assert.equal(dispatcherSource.includes("Unknown session"),false);
  assert.equal(dispatcherSource.includes("Mcp-Session-Id"),false);
  assert.equal(runtimeHandlersSource.includes("createSessionStore"),false);
- assert.ok(discoverSource.includes('mode: "streamable_http_stateless_legacy_initialize_compat"'));
+ assert.ok(discoverSource.includes('streamable_http_stateless_legacy_initialize_compat'));
+ assert.ok(discoverSource.includes('streamable_http_stateless_no_initialize'));
+ assert.ok(discoverSource.includes("legacyInitializeSupported"));
  assert.ok(discoverSource.includes("protocol_sessions: false"));
 
  const initBody=JSON.stringify({jsonrpc:"2.0",id:1,method:"initialize",params:{protocolVersion:"2025-06-18",capabilities:{sampling:{}}}});
