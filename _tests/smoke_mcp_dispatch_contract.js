@@ -188,6 +188,7 @@ function postJson(value) {
       const body = await response.json();
       const result = body.result;
       assert.ok(result, "initialize result exists");
+      assert.equal(response.headers.get("mcp-session-id"), null, "initialize does not create transport session header");
       assert.equal(result.protocolVersion, "2025-06-18", "initialize protocolVersion");
       assert.equal(result.capabilities.tools.listChanged, false, "initialize remains pull-only and does not advertise listChanged");
       assert.equal(result.serverInfo.name, "mcp-tests-response-shape", "initialize serverInfo.name");
@@ -228,7 +229,24 @@ function postJson(value) {
       assert.deepEqual(body.result.supportedVersions, ["2025-06-18"]);
       assert.equal(body.result.protocolVersion, "2025-06-18");
       assert.equal(body.result.transport.route, "/mcp");
+      assert.equal(body.result.transport.protocol_sessions, false);
       assert.equal(body.result.transport.legacy_initialize_supported, true);
+    }
+
+    // 10. Session headers are ignored on stable /mcp POST.
+    {
+      const response = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 3,
+        method: "ping",
+        params: {},
+      }), {
+        "mcp-session-id": "bad session header",
+      });
+      assert.equal(response.status, 200, "ignored session header status");
+      const body = await response.json();
+      assert.equal(body.id, 3, "ignored session header id");
+      assert.ok(body.result !== undefined, "ignored session header result exists");
     }
 
     console.log("smoke_mcp_dispatch_contract ok");

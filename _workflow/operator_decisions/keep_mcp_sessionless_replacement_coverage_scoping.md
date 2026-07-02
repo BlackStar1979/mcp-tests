@@ -23,7 +23,7 @@ Current repo truth is still split across two routes:
   - stable GET returns `405`
   - additive `server/discover` exists
   - legacy `initialize` still exists as compatibility
-  - transport still reports protocol-session debt
+  - transport now reports `protocol_sessions: false`
 
 - hidden `/mcp/sessionless`
   - rejects `initialize`
@@ -61,8 +61,8 @@ The required scope is:
    - do not remove the prototype route before that fate is decided
 
 3. Surviving-route transport truth
-   - once replacement behavior exists, surviving `/mcp` transport declarations must stop implying protocol-session dependence as the target model
-   - current `server/discover` transition fields are still debt evidence, not the finished end-state
+   - transport-session dependence on surviving `/mcp` is now retired in active repo code
+   - residual session/SSE helper code that is no longer reachable from active `/mcp` still needs bounded cleanup
 
 4. Replacement smoke coverage on surviving `/mcp`
    - add bounded guards that validate the chosen no-SSE replacement on `/mcp`

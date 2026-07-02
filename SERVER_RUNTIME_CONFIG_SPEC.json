@@ -7,6 +7,7 @@
     "src/runtime/auth_bootstrap_config_resolver.js",
     "src/runtime/server_cli_args.js",
     "src/runtime/create_server_route_dispatcher.js",
+    "src/runtime/mcp_entry_dispatcher.js",
     "src/auth/oauth21_authorization_server.js",
     "src/tool_loader.js",
     "src/runtime/state_handle_prototype.js",
@@ -139,10 +140,14 @@
       "2025-06-18"
     ],
     "legacy_initialize_still_supported": true,
+    "stable_protocol_sessions": false,
+    "initialize_creates_transport_session": false,
+    "mcp_session_header_ignored_on_stable_post": true,
     "tools_list_changed_capability_advertised": false,
     "tool_surface_freshness_model": "pull_only_tools_list_ttl0_private",
-    "transition_mode": "hybrid_bridge_not_final_sessionless_end_state",
-    "record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md"
+    "transition_mode": "stateless_legacy_initialize_compat",
+    "record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
+    "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
   },
   "protocol_versions": [
     "2025-06-18",

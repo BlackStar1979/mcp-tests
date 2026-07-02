@@ -18,15 +18,16 @@ assert.ok(index.includes("Do not infer active work from historical plan files"))
 assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Historical records remain traceability evidence, not the active queue."));
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
-assert.ok(index.includes("Scope the next bounded surviving-route `/mcp` runtime package from the confirmed single-route no-SSE debt inventory."));
+assert.ok(index.includes("Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`."));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
 assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
-assert.ok(index.includes("previous dirty-worktree push blocker is closed on `main`"));
+assert.ok(index.includes("Confirmed the previous dirty-worktree push blocker is closed on `main`"));
 assert.ok(index.includes("Recently completed:"));
 assert.ok(index.includes("Validated cleanup-closeout anchor on `main`: `aecec58`."));
 assert.ok(index.includes("Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt."));
 assert.ok(index.includes("?? _workflow/experiments/"));
+assert.ok(index.includes("Applied the bounded surviving-route transport-session retirement package"));
 assert.ok(index.includes("adjacent_runtime_contract_sep_triage.md"));
 assert.ok(index.includes("auth_security_adjacent_sep_triage.md"));
 assert.ok(index.includes("Reviewed the adjacent/auth watchlist and intentionally avoided opening speculative new ledgers"));

@@ -75,9 +75,14 @@ assert.equal(spec.stable_mcp_request_contract_bridge.server_discover_supported, 
 assert.equal(spec.stable_mcp_request_contract_bridge.server_discover_requires_per_request_metadata, true);
 assert.deepEqual(spec.stable_mcp_request_contract_bridge.supported_per_request_versions, ["2025-06-18"]);
 assert.equal(spec.stable_mcp_request_contract_bridge.legacy_initialize_still_supported, true);
+assert.equal(spec.stable_mcp_request_contract_bridge.stable_protocol_sessions, false);
+assert.equal(spec.stable_mcp_request_contract_bridge.initialize_creates_transport_session, false);
+assert.equal(spec.stable_mcp_request_contract_bridge.mcp_session_header_ignored_on_stable_post, true);
 assert.equal(spec.stable_mcp_request_contract_bridge.tools_list_changed_capability_advertised, false);
 assert.equal(spec.stable_mcp_request_contract_bridge.tool_surface_freshness_model, "pull_only_tools_list_ttl0_private");
+assert.equal(spec.stable_mcp_request_contract_bridge.transition_mode, "stateless_legacy_initialize_compat");
 assert.equal(spec.stable_mcp_request_contract_bridge.record, "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md");
+assert.equal(spec.stable_mcp_request_contract_bridge.transport_session_retirement_package_record, "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md");
 assert.match(spec.tool_surface_state_runtime.purpose, /pull-only tools\/list freshness diagnostics/);
 assert.equal(Object.hasOwn(spec, "sessionless_prototype"), false);
 assert.equal(spec.retired_sessionless_transition.status, "retired_from_active_repo_and_live_3008");

@@ -45,7 +45,7 @@ for (const removed of [
 }
 
 assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 43);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 43);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "8b62ecaf89227335");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "in_sync_43_of_43");

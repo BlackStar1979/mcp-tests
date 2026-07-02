@@ -131,6 +131,11 @@
           "item": "record final legacy boundary for initialize on surviving /mcp",
           "status": "done",
           "evidence": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md"
+        },
+        {
+          "item": "retire initialize-created transport sessions on surviving /mcp while keeping legacy initialize as stateless compatibility",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
         }
       ]
     },
@@ -142,8 +147,8 @@
         "SEP-2596"
       ],
       "target_lifecycle": "removed",
-      "repo_current_model": "stable Streamable HTTP session header present",
-      "implementation_status": "blocked_stable_compat",
+      "repo_current_model": "stable /mcp no longer depends on MCP-Session-Id; session header handling survives only as residual historical debt outside the active surviving-route contract",
+      "implementation_status": "partial",
       "migration_path": "explicit state handles returned by tools and passed as ordinary arguments",
       "checklist": [
         {
@@ -168,6 +173,11 @@
           "item": "prepare historical workbench deprecation/standardization boundary for the hidden prototype route",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
+        },
+        {
+          "item": "retire stable /mcp transport-session header dependence",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
         }
       ]
     },
@@ -179,7 +189,7 @@
         "SEP-2575"
       ],
       "target_lifecycle": "legacy_compat",
-      "repo_current_model": "in-memory session store",
+      "repo_current_model": "stable /mcp no longer creates or requires transport sessions; in-memory session/SSE helpers remain in repo only as residual cleanup debt",
       "implementation_status": "partial",
       "migration_path": "parallel sessionless target with request-scoped or explicit state handles",
       "checklist": [
@@ -209,6 +219,11 @@
           "item": "prepare historical workbench deprecation/standardization boundary for the hidden prototype route",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
+        },
+        {
+          "item": "retire active surviving-route transport-session lifecycle",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
         }
       ]
     },
@@ -564,10 +579,10 @@
   "recommended_next": [
     "Current SSE-based and dual-route behavior must be treated as migration debt, not as the target architecture.",
     "SEP-2549 inventory is complete: tools/list already exposes ttlMs=0 and cacheScope=private, while broader tool-level freshness remains undecided.",
-    "Do not remove current stable-compatible session code before prototype/client support evidence.",
-    "Prototype-route retirement scoping is complete: actual /mcp/sessionless removal remains gated until replacement behavior and coverage exist on the surviving /mcp route.",
+    "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
+    "Prototype-route retirement scoping is complete and now remains historical evidence only because hidden /mcp/sessionless is already retired from active repo/runtime truth.",
     "Initialize-retirement boundary is complete: legacy initialize on surviving /mcp is compatibility-only and must not grow as target-facing protocol surface.",
-    "Replacement-coverage scoping is complete: hidden /mcp/sessionless still cannot be retired until surviving /mcp has a decided state-handle fate and bounded replacement coverage.",
+    "Replacement-coverage scoping is complete and now remains historical evidence; the remaining bounded cleanup is residual unreachable session/SSE debt on surviving /mcp rather than hidden-route retirement authorization.",
     "Final subscriptions/listen decision is complete: TEST MCP will not preserve tool-surface freshness push on surviving /mcp and will use pull-only tools/list freshness with ttlMs=0 and cacheScope=private.",
     "Pull-only runtime package is complete: stable /mcp no longer advertises listChanged, and hidden /mcp/sessionless no longer implements subscriptions/listen.",
     "State-handle fate decision is complete: explicit state handles remain a tool-design pattern, but route-level state/handle methods do not survive on the final /mcp surface.",
@@ -601,12 +616,14 @@
     "pull_only_tool_surface_freshness_runtime_package_record": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md",
     "state_handle_tool_pattern_decision_record": "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md",
     "hidden_sessionless_route_retirement_package_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_retirement_package.md",
+    "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md",
     "status": "active_workflow_target",
     "single_route_only": true,
     "selected_surviving_route": "/mcp",
     "stable_post_mcp_response_mode": "json_only",
     "stable_get_mcp_supported": false,
     "stable_server_discover_supported": true,
+    "stable_protocol_sessions": false,
     "sse_allowed_in_end_state": false,
     "subscriptions_listen_supported_in_end_state": false,
     "tools_list_changed_push_supported_in_end_state": false,

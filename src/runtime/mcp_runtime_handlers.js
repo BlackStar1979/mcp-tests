@@ -8,7 +8,6 @@ const { validateRpcMessage } = require("./rpc_protocol_validator");
 const { shouldReturnNoRpcResponse } = require("./rpc_no_response");
 const { dispatchRpcMessage } = require("./rpc_message_dispatcher");
 const { createSessionReplayTracker } = require("./session_tracker");
-const { createSessionStore } = require("./session_store");
 const { enrichContextWithSampling } = require("./sampling_context");
 const { validatePerRequestMetadata } = require("./request_metadata_policy");
 
@@ -29,7 +28,6 @@ function createMcpRuntimeHandlers({
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
-  const sessionStore = createSessionStore();
 
   async function handleRpcMessage(message, context = {}) {
     const validation = validateRpcMessage(message);
@@ -103,7 +101,6 @@ function createMcpRuntimeHandlers({
       auditLog,
       handleRpcMessage,
       publicBaseUrl,
-      sessionStore,
     });
   }
 

@@ -32,7 +32,7 @@ Current code-backed behavior:
   - already requires `MCP-Protocol-Version`
   - already requires `_meta` protocol/client metadata
   - already reports `legacy_initialize_supported: true`
-  - still reports `protocol_sessions: true`
+  - now reports `protocol_sessions: false`
 
 Evidence:
 
@@ -69,8 +69,6 @@ For the surviving `/mcp` route:
 This record does not authorize:
 
 - immediate removal of `initialize`
-- removal of `MCP-Session-Id`
-- removal of transport-session behavior
 - guessing a final no-SSE `subscriptions/listen` replacement
 - removal of hidden `/mcp/sessionless`
 
@@ -79,13 +77,12 @@ This record does not authorize:
 Actual `initialize` removal on `/mcp` remains blocked by at least:
 
 1. surviving-route compatibility evidence that required clients/connectors can operate from `server/discover` and per-request metadata without relying on `initialize` as the active handshake
-2. final decision on transport-session retirement, including `MCP-Session-Id` and related state assumptions
-3. final no-SSE replacement behavior for `subscriptions/listen`
-4. replacement scoping and coverage required before hidden `/mcp/sessionless` retirement
+2. final no-SSE replacement behavior for `subscriptions/listen`
+3. explicit authorization and coverage for removing legacy `initialize` entirely after compatibility evidence exists
 
 ## Next safe workflow step
 
-Prepare the implementation scoping for replacement behavior and coverage required before `/mcp/sessionless` removal.
+Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`.
 
 ## Declarations
 

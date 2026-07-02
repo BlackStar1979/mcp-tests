@@ -105,7 +105,7 @@ function discoverBody(version = "2025-06-18") {
   assert.ok(audits.some((item) => item.event === "rpc_protocol_error" && item.data.reason === "protocol_version_header_required"));
   assert.ok(canon.includes("Request-contract bridge clarification"));
   assert.equal(canon.includes("Next recommended action: prepare the bounded request-contract migration package"), false);
-  assert.ok(canon.includes("Next recommended action: prepare the bounded hidden-route retirement package now that the `state/handle/*` fate is fixed."));
+  assert.ok(canon.includes("Next recommended action: use `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md`"));
 
   console.log("smoke_keep_mcp_request_contract_bridge ok");
 })().catch((error) => {

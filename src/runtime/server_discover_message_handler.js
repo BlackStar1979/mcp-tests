@@ -52,10 +52,10 @@ function handleServerDiscoverMessage({
     },
     protocolVersion: resolvedProtocolVersion,
     transport: {
-      mode: "streamable_http_hybrid_transition",
+      mode: "streamable_http_stateless_legacy_initialize_compat",
       route: "/mcp",
       post_only: true,
-      protocol_sessions: true,
+      protocol_sessions: false,
       initialize_required: false,
       legacy_initialize_supported: true,
     },

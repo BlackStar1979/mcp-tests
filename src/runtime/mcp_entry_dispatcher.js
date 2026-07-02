@@ -7,7 +7,6 @@ const { parseRpcRequestBodyOrHandleError } = require("./request_body_parse_handl
 const { handleBatchPayloadIfNeeded } = require("./batch_payload_dispatcher");
 const { handleSinglePayload } = require("./single_payload_dispatcher");
 const { handleRpcHandlerException } = require("./rpc_handler_exception_handler");
-const { getRequestSessionId } = require("./session_tracker");
 const { jsonResponse } = require("./http_responses");
 const { rpcError } = require("./rpc_responses");
 const { evaluateGetAccept, evaluatePostAccept } = require("./accept_policy");
@@ -22,22 +21,14 @@ async function dispatchMcpEntry({
   auditLog,
   handleRpcMessage,
   publicBaseUrl,
-  sessionStore,
 }) {
-  const sessionId = getRequestSessionId(req);
-  if (sessionId === null) {
-    auditLog("rpc_protocol_error", { request_id: requestId, reason: "invalid_session_id" });
-    jsonResponse(res, 400, rpcError(null, -32600, "Invalid Request", { reason: "invalid_session_id" }));
-    return;
-  }
-
   if (req.method === "OPTIONS") {
     handleCorsPreflight({
       req,
       res,
       auditLog,
       requestId,
-      sessionId,
+      sessionId: undefined,
       httpMethod: req.method,
       authPolicy,
       publicBaseUrl,
@@ -48,7 +39,7 @@ async function dispatchMcpEntry({
   if (req.method === "GET") {
     const getAccept = evaluateGetAccept(req);
     auditLog("streamable_http_preflight", { request_id: requestId, http_method: req.method, accept_ok: getAccept.ok, reason: getAccept.reason || null });
-    handleMethodNotAllowed({ res, auditLog, requestId, sessionId, httpMethod: req.method });
+    handleMethodNotAllowed({ res, auditLog, requestId, sessionId: undefined, httpMethod: req.method });
     return;
   }
 
@@ -57,7 +48,7 @@ async function dispatchMcpEntry({
       res,
       auditLog,
       requestId,
-      sessionId,
+      sessionId: undefined,
       httpMethod: req.method,
     });
     return;
@@ -86,7 +77,7 @@ async function dispatchMcpEntry({
       res,
       auditLog,
       requestId,
-      sessionId,
+      sessionId: undefined,
       httpMethod: req.method,
       authResult,
       authPolicy,
@@ -108,25 +99,10 @@ async function dispatchMcpEntry({
 
   const { payload, raw } = parsedRequest;
   const protocolVersionHeader = req.headers?.["mcp-protocol-version"];
-
-  let activeSession = null;
-  if (sessionId !== undefined) {
-    activeSession = sessionStore ? sessionStore.get(sessionId) : null;
-    if (!activeSession) {
-      jsonResponse(res, 404, rpcError(null, -32000, "Unknown session", { reason: "unknown_session" }));
-      return;
-    }
-  }
-
-  if (!Array.isArray(payload) && payload && payload.method === "initialize" && sessionStore && sessionId === undefined) {
-    const negotiated = negotiateInitializeProtocolVersion(payload.params?.protocolVersion);
-    activeSession = sessionStore.create({
-      protocolVersion: negotiated.protocolVersion,
-      clientCapabilities: payload.params?.capabilities || {},
-    });
-    res.setHeader("Mcp-Session-Id", activeSession.id);
-    auditLog("session_created", { request_id: requestId, session: activeSession.toAuditSummary() });
-  }
+  const isInitialize = !Array.isArray(payload) && payload && payload.method === "initialize";
+  const effectiveProtocolVersion = isInitialize
+    ? negotiateInitializeProtocolVersion(payload.params?.protocolVersion).protocolVersion
+    : protocolVersion.protocolVersion;
 
   try {
     const batchHandled = await handleBatchPayloadIfNeeded({
@@ -135,9 +111,9 @@ async function dispatchMcpEntry({
       res,
       auditLog,
       requestId,
-      sessionId: activeSession?.id || sessionId,
-      session: activeSession,
-      protocolVersion: activeSession?.protocolVersion || protocolVersion.protocolVersion,
+      sessionId: undefined,
+      session: null,
+      protocolVersion: effectiveProtocolVersion,
       protocolVersionHeader,
       responseMode: "json",
       httpMethod: req.method,
@@ -155,9 +131,9 @@ async function dispatchMcpEntry({
       res,
       auditLog,
       requestId,
-      sessionId: activeSession?.id || sessionId,
-      session: activeSession,
-      protocolVersion: activeSession?.protocolVersion || protocolVersion.protocolVersion,
+      sessionId: undefined,
+      session: null,
+      protocolVersion: effectiveProtocolVersion,
       protocolVersionHeader,
       responseMode: "json",
       httpMethod: req.method,

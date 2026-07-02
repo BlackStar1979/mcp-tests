@@ -44,10 +44,6 @@
       "status": "active_code_event"
     },
     {
-      "name": "session_created",
-      "status": "active_code_event"
-    },
-    {
       "name": "sse_replay_rejected",
       "status": "active_code_event"
     },

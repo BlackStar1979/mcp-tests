@@ -16,9 +16,10 @@ const eventSpec = readJson("SERVER_EVENT_CATALOG_SPEC.json");
 
 for (const item of [
   "src/runtime/accept_policy.js",
-  "src/runtime/mcp_entry_dispatcher.js",
   "src/runtime/mcp_get_stream_handler.js",
-  "src/runtime/create_server_route_dispatcher.js",
+  "src/runtime/session.js",
+  "src/runtime/session_store.js",
+  "src/runtime/outbound_request_manager.js",
   "src/runtime/sessionless_prototype_route_handler.js",
   "src/runtime/sse_response.js",
 ]) {
@@ -26,10 +27,13 @@ for (const item of [
 }
 assert.ok(record.includes("stricter project target"));
 assert.ok(record.includes("still allows request-scoped SSE"));
+assert.ok(record.includes("residual unreachable `GET /mcp` SSE helpers"));
+assert.ok(record.includes("remove residual SessionStore/session helper code"));
 
 assert.equal(runtimeSpec.retired_sessionless_transition.status, "retired_from_active_repo_and_live_3008");
 assert.equal(runtimeSpec.retired_sessionless_transition.historical_only, true);
 assert.equal(runtimeSpec.retired_sessionless_transition.restart_required_now, false);
+assert.equal(runtimeSpec.stable_mcp_request_contract_bridge.stable_protocol_sessions, false);
 
 for (const spec of [serverSpec, connectorSpec, eventSpec, runtimeSpec]) {
   assert.equal(spec.sessionless_ready_review.sessionless_transition_route, "/mcp/sessionless");

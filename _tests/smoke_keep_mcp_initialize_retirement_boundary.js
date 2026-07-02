@@ -22,7 +22,7 @@ const runtimeSpec = readJson("SERVER_RUNTIME_CONFIG_SPEC.json");
 assert.ok(record.includes("Status: GREEN / FINAL LEGACY BOUNDARY RECORDED / WORKFLOW-ONLY"));
 assert.ok(record.includes("`initialize` is legacy compatibility only."));
 assert.ok(record.includes("`server/discover` is the canonical target-facing request-contract surface."));
-assert.ok(record.includes("Prepare the implementation scoping for replacement behavior and coverage required before `/mcp/sessionless` removal."));
+assert.ok(record.includes("Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`."));
 
 assert.equal(state.active_target_direction.initialize_retirement_boundary_record, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
 assert.equal(inventory.active_target_contract.initialize_retirement_boundary_record, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
@@ -30,21 +30,25 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("Initialize-re
 assert.ok(inventory.recommended_next.some((item) => item.includes("State-handle fate decision is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Hidden-route retirement is now live-verified on OAuth21 3008")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /mcp/sessionless live-operation artifacts are quarantined")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 
 const initLedger = inventory.deprecation_ledger.find((item) => item.feature_id === "initialize_handshake");
 assert.equal(initLedger.checklist.find((item) => item.item === "record final legacy boundary for initialize on surviving /mcp").status, "done");
 assert.equal(initLedger.checklist.find((item) => item.item === "record final legacy boundary for initialize on surviving /mcp").evidence, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
+assert.equal(initLedger.checklist.find((item) => item.item === "retire initialize-created transport sessions on surviving /mcp while keeping legacy initialize as stateless compatibility").status, "done");
 
 assert.ok(canon.includes("Initialize-retirement boundary clarification"));
 assert.ok(index.includes("keep_mcp_initialize_retirement_boundary.md"));
-assert.ok(index.includes("Controlled OAuth21 `3008` restart and bounded live verification for the hidden-route retirement package."));
+assert.ok(index.includes("Applied the bounded surviving-route transport-session retirement package"));
+assert.ok(canon.includes("Transport-session retirement package clarification"));
 
 assert.ok(dispatcher.includes('case "initialize"'));
 assert.ok(dispatcher.includes('case "server/discover"'));
 assert.ok(initHandler.includes("initialize_received"));
 assert.ok(initResponse.includes("instructions:"));
 assert.ok(discoverHandler.includes("legacy_initialize_supported: true"));
-assert.ok(discoverHandler.includes("protocol_sessions: true"));
+assert.ok(discoverHandler.includes("protocol_sessions: false"));
 assert.equal(runtimeSpec.stable_mcp_request_contract_bridge.legacy_initialize_still_supported, true);
+assert.equal(runtimeSpec.stable_mcp_request_contract_bridge.stable_protocol_sessions, false);
 
 console.log("smoke_keep_mcp_initialize_retirement_boundary ok");

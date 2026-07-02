@@ -135,6 +135,9 @@ Current records:
 - `keep_mcp_initialize_retirement_boundary.md`
   - Final legacy boundary for `initialize` on surviving `/mcp`. It remains temporary compatibility only; new target-facing migration must attach to `server/discover` and per-request metadata instead.
 
+- `keep_mcp_transport_session_retirement_package.md`
+  - Repo-applied runtime package for surviving `/mcp`. Legacy `initialize` remains, but it no longer creates transport sessions, `Mcp-Session-Id` is no longer part of active stable-route behavior, and `server/discover` now reports `protocol_sessions: false`.
+
 - `keep_mcp_sessionless_replacement_coverage_scoping.md`
   - Exact surviving-route replacement scope before hidden `/mcp/sessionless` removal. Records that no-SSE `subscriptions/listen`, `state/handle/*` fate, and bounded `/mcp` coverage must be settled first.
 
@@ -289,14 +292,16 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Scope the next bounded surviving-route `/mcp` runtime package from the confirmed single-route no-SSE debt inventory.
+1. Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` together with `_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md` to define the next narrow runtime patch on surviving `/mcp`, without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
+Next recommended action: use `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` to isolate the now-unreachable session/SSE helpers that can be removed or downgraded without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
 
 Recently completed:
+
+- Applied the bounded surviving-route transport-session retirement package: stable `/mcp` no longer creates transport sessions, no longer emits `Mcp-Session-Id`, ignores session headers on POST, and now reports `protocol_sessions: false` from `server/discover`.
 
 - Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `210` authenticated scripts.
 

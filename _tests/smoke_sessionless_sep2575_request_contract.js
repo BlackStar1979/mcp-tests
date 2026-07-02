@@ -25,7 +25,7 @@ assert.ok(record.includes("server/discover"));
 assert.equal(Object.hasOwn(runtimeSpec, "sessionless_prototype"), false);
 assert.equal(runtimeSpec.retired_sessionless_transition.historical_request_contract_record, "_workflow/operator_decisions/sessionless_sep2575_request_contract.md");
 assert.equal(dispatcherSource.includes("/mcp/sessionless"), false);
-assert.ok(discoverSource.includes("protocol_sessions: true"));
+assert.ok(discoverSource.includes("protocol_sessions: false"));
 
 const s7 = inventory.target_selection_readiness.s7_sep2575_request_contract;
 assert.equal(s7.status, "runtime_enforced_on_hidden_route_no_connector_change");

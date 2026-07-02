@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-01T05:26Z",
+  "updated_at": "2026-07-02T08:20Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
   "read_order": [
@@ -173,7 +173,7 @@
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 47
+    "event_count": 46
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
@@ -218,6 +218,7 @@
     "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
     "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
     "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
+    "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md",
     "sessionless_replacement_coverage_scoping_record": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md",
     "subscriptions_listen_pull_only_contract_record": "_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md",
     "pull_only_tool_surface_freshness_runtime_package_record": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md",
@@ -228,6 +229,7 @@
     "stable_post_mcp_response_mode": "json_only",
     "stable_get_mcp_supported": false,
     "stable_server_discover_supported": true,
+    "stable_protocol_sessions": false,
     "subscriptions_listen_supported_in_end_state": false,
     "tools_list_changed_push_supported_in_end_state": false,
     "stable_list_changed_capability_advertised_now": false,
@@ -239,7 +241,7 @@
     "sse_allowed_in_end_state": false,
     "session_transport_dependency_allowed_in_end_state": false,
     "dual_route_coexistence_is_target": false,
-    "notes": "Current runtime may still contain transitional SSE and dual-route debt. This field records the intended destination, not completion. The no-SSE target is a stricter project policy than the current generic MCP Streamable HTTP draft, which still allows request-scoped SSE in some flows. Historical /mcp/sessionless subscriptions/listen SSE validation remains evidence only. The hidden /mcp/sessionless route is now retired from active repo runtime and has been verified absent on live OAuth21 3008 after the controlled restart. SEP-2549 cache directives are currently explicit for tools/list only. The final state-handle decision is now fixed: explicit state handles remain allowed only as a tool-design pattern carried in ordinary tool results/arguments, and route-level state/handle methods are not part of the surviving /mcp end state. Legacy initialize on surviving /mcp is now bounded as temporary compatibility only; new target-facing migration must not expand it. Final tool-surface freshness on surviving /mcp is pull-only via tools/list with ttlMs=0 and cacheScope=private; end-state subscriptions/listen is not part of the TEST MCP contract.",
+    "notes": "Current runtime may still contain transitional SSE and dual-route debt. This field records the intended destination, not completion. The no-SSE target is a stricter project policy than the current generic MCP Streamable HTTP draft, which still allows request-scoped SSE in some flows. Historical /mcp/sessionless subscriptions/listen SSE validation remains evidence only. The hidden /mcp/sessionless route is now retired from active repo runtime and has been verified absent on live OAuth21 3008 after the controlled restart. SEP-2549 cache directives are currently explicit for tools/list only. The final state-handle decision is now fixed: explicit state handles remain allowed only as a tool-design pattern carried in ordinary tool results/arguments, and route-level state/handle methods are not part of the surviving /mcp end state. Legacy initialize on surviving /mcp is now bounded as temporary compatibility only; new target-facing migration must not expand it. Stable /mcp transport-session retirement is now repo-applied: initialize no longer creates transport state, server/discover reports protocol_sessions=false, and MCP-Session-Id is ignored on stable POST /mcp. Final tool-surface freshness on surviving /mcp is pull-only via tools/list with ttlMs=0 and cacheScope=private; end-state subscriptions/listen is not part of the TEST MCP contract.",
     "hidden_sessionless_route_live_verification_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md"
   },
   "current_runtime_truth": {
@@ -250,11 +252,12 @@
       "server_start_id": "2026-07-01T05:24:50.211Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,
-      "sessionless_hidden_route_repo_retired_now": true
+      "sessionless_hidden_route_repo_retired_now": true,
+      "transport_session_retirement_repo_applied_not_live_loaded_yet": true
     },
     "public_3009": {
       "auth_mode": "none",

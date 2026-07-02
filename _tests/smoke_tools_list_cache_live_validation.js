@@ -22,7 +22,7 @@ assert.equal(c.tool_names_hash, expectedHash);
 assert.equal(c.tool_count, 43);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.last_tools_list_request_id, "mqy1eq6w-10");
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);

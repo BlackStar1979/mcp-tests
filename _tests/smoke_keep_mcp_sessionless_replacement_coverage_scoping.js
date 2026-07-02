@@ -29,6 +29,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("Pull-only run
 assert.ok(inventory.recommended_next.some((item) => item.includes("State-handle fate decision is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Hidden-route retirement is now live-verified on OAuth21 3008")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /mcp/sessionless live-operation artifacts are quarantined")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("residual unreachable session/SSE debt on surviving /mcp")));
 
 const listenLedger = inventory.deprecation_ledger.find((item) => item.feature_id === "subscriptions_listen");
 assert.equal(listenLedger.checklist.find((item) => item.item === "record surviving-route replacement scope before prototype-route retirement").status, "done");
@@ -39,7 +40,7 @@ assert.ok(index.includes("keep_mcp_sessionless_replacement_coverage_scoping.md")
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 
 assert.ok(dispatcher.includes('case "server/discover"'));
-assert.ok(discoverHandler.includes("protocol_sessions: true"));
+assert.ok(discoverHandler.includes("protocol_sessions: false"));
 assert.equal(runtimeSpec.retired_sessionless_transition.status, "retired_from_active_repo_and_live_3008");
 
 console.log("smoke_keep_mcp_sessionless_replacement_coverage_scoping ok");

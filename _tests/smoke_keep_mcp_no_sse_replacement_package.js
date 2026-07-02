@@ -19,11 +19,12 @@ assert.ok(record.includes("- `/mcp` survives"));
 assert.ok(record.includes("- `/mcp/sessionless` is transition-only debt"));
 assert.ok(record.includes("per-request `MCP-Protocol-Version` validation"));
 assert.ok(record.includes("required `_meta.io.modelcontextprotocol/clientInfo`"));
-assert.ok(record.includes("`GET /mcp` SSE stream"));
-assert.ok(record.includes("`MCP-Session-Id` transport dependence"));
+assert.ok(record.includes("residual unreachable `GET /mcp` SSE helper paths"));
+assert.ok(record.includes("residual historical session/SSE helper code"));
 assert.ok(record.includes("must not be guessed"));
 assert.ok(record.includes("Current official MCP Streamable HTTP direction still allows request-scoped SSE"));
 assert.ok(record.includes("project policy"));
+assert.ok(record.includes("bounded cleanup of residual session/SSE helpers that are no longer reachable from active `/mcp`"));
 
 assert.equal(state.active_target_direction.replacement_package_record, "_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md");
 assert.equal(inventory.active_target_contract.replacement_package_record, "_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md");

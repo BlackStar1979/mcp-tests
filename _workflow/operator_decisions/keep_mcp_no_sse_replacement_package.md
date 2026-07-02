@@ -33,28 +33,30 @@ Evidence sources:
 
 ## Confirmed behavior that must be removed from `/mcp`
 
-- `GET /mcp` SSE stream
-- POST SSE response negotiation
-- `text/event-stream` as a required or supported steady-state transport target
-- `Last-Event-ID` replay semantics
-- `MCP-Session-Id` transport dependence
-- stable/session prototype route split as permanent architecture
+- residual unreachable `GET /mcp` SSE helper paths
+- residual unreachable POST SSE response helper paths
+- residual `text/event-stream` helper logic that no longer defines active surviving-route behavior
+- residual `Last-Event-ID` replay helper paths
+- residual historical session/SSE helper code that no longer serves active `/mcp`
+- historical hidden-route file split retained only as traceability debt
 
 Evidence sources:
 
 - `src/runtime/accept_policy.js`
 - `src/runtime/mcp_entry_dispatcher.js`
 - `src/runtime/mcp_get_stream_handler.js`
+- `src/runtime/session.js`
+- `src/runtime/session_store.js`
+- `src/runtime/outbound_request_manager.js`
 - `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md`
 
 ## Confirmed unresolved items that must not be guessed
 
 The repo does not yet provide a confirmed final no-SSE runtime contract for these points:
 
-- final response shape for `subscriptions/listen` after removing request-scoped SSE
-- whether notification delivery remains immediate per request or changes to another no-SSE pattern
-- exact POST accept contract after SSE removal
-- exact retirement boundary for old `initialize` handling on the surviving `/mcp` path
+- exact deletion/quarantine boundary for residual unreachable session/SSE helpers
+- exact cleanup sequence for historical helper files versus historical smoke guards
+- whether any residual session-bound pending-response utility remains needed outside the active surviving-route surface
 
 These items require separate source-backed confirmation before runtime edits.
 
@@ -69,10 +71,10 @@ This repo's destination is intentionally stricter:
 
 ## Recommended next implementation-scoping order
 
-1. final no-SSE `subscriptions/listen` contract decision after current official-source confirmation
-2. prototype-route retirement package for `/mcp/sessionless`
-3. final initialize-retirement boundary decision for the surviving `/mcp` route
-4. SEP-2549 `ttlMs` / `cacheScope` inventory for list/read builders aligned to the same target
+1. bounded cleanup of residual session/SSE helpers that are no longer reachable from active `/mcp`
+2. bounded cleanup or quarantine of historical hidden-route runtime files that no longer serve active `/mcp`
+3. reclassification or retirement of SSE/session smoke guards that remain only as transitional-debt coverage
+4. later SEP-2549 `ttlMs` / `cacheScope` expansion only if a narrower active target requires it
 
 ## Non-actions
 
