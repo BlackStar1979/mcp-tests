@@ -31,9 +31,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_210`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `209`.
+- Latest validated authenticated smoke count: `210`.
 - Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
@@ -49,9 +49,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. Quarantine or rewrite remaining historical `/mcp/sessionless` live-operation artifacts so they cannot be mistaken for active target architecture.
+1. Scope the next bounded surviving-route `/mcp` runtime package from the confirmed single-route no-SSE debt inventory.
 
-Next recommended action: quarantine or rewrite the remaining historical `/mcp/sessionless` live-operation artifacts and guards that still read as active-route guidance. The hidden-route retirement package is now both repo-applied and live-verified: after the controlled OAuth21 `3008` restart, `GET /mcp/sessionless` returns `404`, `healthz` still reports `internal` and `43` tools, and authenticated `tools/list` on stable `/mcp` still returns `43` tools with hash `8b62ecaf89227335`. Connector refresh remains unnecessary because surviving `/mcp` is unchanged. Public 3009 start remains unnecessary unless a narrower record says otherwise.
+Next recommended action: use `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` together with `_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md` to define the next narrow runtime patch on surviving `/mcp`, without reopening historical `/mcp/sessionless` planning as if it were current target architecture. The hidden-route retirement package is already repo-applied and live-verified: after the controlled OAuth21 `3008` restart, `GET /mcp/sessionless` returns `404`, `healthz` still reports `internal` and `43` tools, and authenticated `tools/list` on stable `/mcp` still returns `43` tools with hash `8b62ecaf89227335`. Connector refresh remains unnecessary because surviving `/mcp` is unchanged. Public 3009 start remains unnecessary unless a narrower record says otherwise.
 
 Snapshot clarification: `_workflow/control_plane/snapshots/**` is archival evidence only. It may preserve superseded `/mcp/sessionless` files, old guard names, and stage-era labels exactly as captured; those copies must not be treated as current route or workflow authority.
 
@@ -540,4 +540,6 @@ Auth/security adjacent SEP triage green: `_workflow/operator_decisions/auth_secu
 
 Adjacent/auth watchlist review green: `_workflow/operator_decisions/adjacent_sep_watchlist_review.md` reviews the remaining watchlist after the two SEP triage records. No new dedicated ledger is opened now. `SEP-1613`, `SEP-1319`, and `SEP-991` are sufficient for current scope without new workflow expansion; `SEP-2164` and `SEP-973` are deferred until their target surfaces exist; `SEP-1303` remains the first semantics-sensitive item to reopen if tool-validation-error behavior becomes an active migration topic. No runtime change, restart, connector refresh, or public 3009 start was performed.
 
-Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The cleanup-closeout anchor remains `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green for the closeout package with `7` public and `209` authenticated scripts. Later workflow-only truth-sync commits on `main` do not reopen this debt. The previous dirty-worktree push blocker is closed for `main`; the cleanup-closeout checkpoint preserved only local-only untracked `.codebase-memory/` and `_workflow/experiments/` outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.
+Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The cleanup-closeout anchor remains `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green for the closeout package with `7` public and `210` authenticated scripts. Later workflow-only truth-sync commits on `main` do not reopen this debt. The previous dirty-worktree push blocker is closed for `main`; the cleanup-closeout checkpoint preserved only local-only untracked `.codebase-memory/` and `_workflow/experiments/` outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.
+
+Historical next-step quarantine green: completed side records with `Historical status note:` and a `Next recommendation` section are now guarded by `_tests/smoke_historical_next_recommendation_quarantine.js` so they cannot silently grow back into parallel active queues.

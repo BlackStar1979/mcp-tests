@@ -35,10 +35,10 @@ assert.equal(inventory.target_selection_readiness.s11_connector_migration_readin
 assert.equal(inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_removal_forbidden_now, true);
 
 assert.ok(canon.includes("S11 connector migration readiness / stable `/mcp` coexistence boundary green"));
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `209`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_210`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `210`"));
 assert.ok(canon.includes("S12 connector migration dry-run plan / no refresh"));
-assert.ok(index.includes("Authenticated smoke count: `209`."));
+assert.ok(index.includes("Authenticated smoke count: `210`."));
 assert.ok(index.includes("connector_route_coexistence_boundary.md"));
 assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, and stable stream-path replay semantics."));
 assert.equal(canon.includes("validated as the new workbench/sessionless target"), false);

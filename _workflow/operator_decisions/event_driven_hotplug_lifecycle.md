@@ -7,6 +7,8 @@ Date: 2026-06-28
 
 This stage reconciles the event-driven Hotplug lifecycle after P6. It does not enable live hotplug. It records that the repository already contains the necessary non-live foundations and adds one consolidated readiness read-model plus guard.
 
+Historical status note: this record is completed readiness evidence only. It does not define the active queue. Current workflow navigation lives in `_workflow/ACTIVE_WORKFLOW_INDEX.md` and `_workflow/WORKFLOW_CANON.md`.
+
 ## Findings
 
 - HPL1 registry abstraction: done by static/runtime registry context.
@@ -76,4 +78,5 @@ Still valid:
 
 ## Next recommendation
 
-After this stage, reassess blockers, connector refresh, and OAuth21 `3008` restart before acting. Current next substantive queue item is Sessionless / Explicit State Handles Target Selection.
+Historical next step at that time: after this stage, reassess blockers, connector refresh, and OAuth21 `3008` restart before acting, then continue to Sessionless / Explicit State Handles Target Selection.
+This is no longer the active queue; current workflow navigation lives in `_workflow/ACTIVE_WORKFLOW_INDEX.md` and `_workflow/WORKFLOW_CANON.md`.

@@ -150,7 +150,7 @@ assert.deepEqual(inventory.repo_hygiene_commit_scope_triage.local_only_untracked
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.record, "_workflow/operator_decisions/repo_hygiene_commit_scope_isolation.md");
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.validated_run_all_ok, true);
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.validated_run_all_public_count, 7);
-assert.equal(inventory.repo_hygiene_commit_scope_isolation.validated_run_all_tests_authenticated_count, 209);
+assert.equal(inventory.repo_hygiene_commit_scope_isolation.validated_run_all_tests_authenticated_count, 210);
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.git_status_entry_count, 2);
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.git_diff_stat_changed_files, 0);
 assert.equal(inventory.repo_hygiene_commit_scope_isolation.safe_narrow_commit_available_now, true);

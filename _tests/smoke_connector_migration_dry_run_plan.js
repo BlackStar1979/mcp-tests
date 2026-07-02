@@ -39,12 +39,12 @@ assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_ru
 assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_run_plan.next_recommended_step, "single-route no-SSE streamable-HTTP target contract and migration plan");
 assert.equal(inventory.target_selection_readiness.s12_connector_migration_dry_run_plan.superseded_by_current_active_queue, true);
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `209`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_210`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `210`"));
 assert.ok(canon.includes("S12 connector migration dry-run plan / no refresh green"));
 assert.ok(canon.includes("S13 connector migration dry-run execution harness / still no refresh"));
-assert.ok(index.includes("Latest full smoke after state-and-snapshot hygiene guard: `ok_0_40_0_7_209`."));
-assert.ok(index.includes("Authenticated smoke count: `209`."));
+assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_210`."));
+assert.ok(index.includes("Authenticated smoke count: `210`."));
 assert.ok(index.includes("connector_migration_dry_run_plan.md"));
 assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, and stable stream-path replay semantics."));
 

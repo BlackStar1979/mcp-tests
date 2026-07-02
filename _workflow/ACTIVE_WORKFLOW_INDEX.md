@@ -1,7 +1,7 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-01
+Date: 2026-07-02
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
 ## Current source of truth
@@ -42,9 +42,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after state-and-snapshot hygiene guard: `ok_0_40_0_7_209`.
+- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_210`.
 - Public section count: `7`.
-- Authenticated smoke count: `209`.
+- Authenticated smoke count: `210`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -289,14 +289,18 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Quarantine or rewrite remaining historical `/mcp/sessionless` live-operation artifacts so they cannot be mistaken for active target architecture.
+1. Scope the next bounded surviving-route `/mcp` runtime package from the confirmed single-route no-SSE debt inventory.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
+Next recommended action: use `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` together with `_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md` to define the next narrow runtime patch on surviving `/mcp`, without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
+
 Recently completed:
 
-- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `209` authenticated scripts.
+- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `210` authenticated scripts.
+
+- Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
 
 - Confirmed the previous dirty-worktree push blocker is closed on `main`; the cleanup-closeout checkpoint preserved only local-only untracked directories `.codebase-memory/` and `_workflow/experiments/` outside the committed repo surface.
 

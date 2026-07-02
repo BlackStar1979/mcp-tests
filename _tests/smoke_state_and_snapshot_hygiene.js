@@ -86,13 +86,12 @@ function walk(dir) {
 walk(snapshotRoot);
 assert.deepEqual(nested, []);
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `209`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_210`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `210`"));
 assert.ok(canon.includes("S16 state and snapshot hygiene repair green"));
-assert.ok(index.includes("Latest full smoke after state-and-snapshot hygiene guard: `ok_0_40_0_7_209`."));
-assert.ok(index.includes("Authenticated smoke count: `209`."));
+assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_210`."));
+assert.ok(index.includes("Authenticated smoke count: `210`."));
 assert.ok(index.includes("state_and_snapshot_hygiene.md"));
 assert.ok(manifest.includes("_tests/smoke_state_and_snapshot_hygiene.js"));
 
 console.log("smoke_state_and_snapshot_hygiene ok");
-

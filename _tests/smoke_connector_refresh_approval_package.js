@@ -53,12 +53,12 @@ assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.next_recommended_step, "single-route no-SSE streamable-HTTP target contract and migration plan");
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.superseded_by_current_active_queue, true);
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `209`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_210`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `210`"));
 assert.ok(canon.includes("S14 connector refresh approval package / no execution green"));
 assert.ok(canon.includes("S15 connector reconnect execution evidence on stable `/mcp`"));
-assert.ok(index.includes("Latest full smoke after state-and-snapshot hygiene guard: `ok_0_40_0_7_209`."));
-assert.ok(index.includes("Authenticated smoke count: `209`."));
+assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_210`."));
+assert.ok(index.includes("Authenticated smoke count: `210`."));
 assert.ok(index.includes("connector_refresh_approval_package.md"));
 assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, and stable stream-path replay semantics."));
 

@@ -216,4 +216,6 @@
   "_tests/smoke_keep_mcp_state_handle_tool_pattern_decision.js",
   "_tests/smoke_keep_mcp_hidden_sessionless_route_retirement_package.js",
   "_tests/smoke_state_and_snapshot_hygiene.js"
+  ,
+  "_tests/smoke_historical_next_recommendation_quarantine.js"
 ]

@@ -7,6 +7,8 @@ Date: 2026-06-28
 
 C3 implements the narrow cooperative cancellation sample from the P3 cancellation plan. C1 and C2 were already present: POST request abort signals are created and propagated, and response writes are skipped after disconnect. C3 adds a cooperative optional-tool execution path that can stop cleanly when `AbortSignal` is already aborted, aborts during `execute`, or is observed immediately after `execute`.
 
+Historical status note: this record is completed implementation evidence only. It does not define the active queue. Current workflow navigation lives in `_workflow/ACTIVE_WORKFLOW_INDEX.md` and `_workflow/WORKFLOW_CANON.md`.
+
 ## Changes
 
 - Added `src/runtime/cooperative_tool_cancellation.js`.
@@ -59,4 +61,5 @@ Live validation:
 
 ## Next recommendation after C3
 
-After C3, reassess blockers before continuing. Current expected next substantive queue item is Event-driven Hotplug Lifecycle, unless live restart validation of C3 fails.
+Historical next step at that time: after C3, reassess blockers before continuing and move to Event-driven Hotplug Lifecycle unless live restart validation of C3 failed.
+This is no longer the active queue; current workflow navigation lives in `_workflow/ACTIVE_WORKFLOW_INDEX.md` and `_workflow/WORKFLOW_CANON.md`.

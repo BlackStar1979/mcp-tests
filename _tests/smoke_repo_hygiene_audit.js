@@ -43,14 +43,14 @@ const activeManifest = new Set(smokeScripts.map((name) => path.normalize(name)))
 const nonRunAll = topLevelTests.filter((name) => !activeManifest.has(name));
 const undocumentedNonRunAll = nonRunAll.filter((name) => !nonRunAllAudit.includes(`\`${path.basename(name)}\``));
 
-assert.equal(smokeScripts.length, 217);
+assert.equal(smokeScripts.length, 218);
 assert.equal(nonRunAll.length, 40);
 assert.equal(workflowHelperManifest.length, 25);
 assert.equal(readinessHelperManifest.length, 45);
 assert.equal(targetedDebtHelperManifest.length, 10);
 assert.deepEqual(undocumentedNonRunAll, []);
 
-assert.ok(testsReadme.includes("`217` active scripts currently listed in `run_all_smoke_scripts.json`"));
+assert.ok(testsReadme.includes("`218` active scripts currently listed in `run_all_smoke_scripts.json`"));
 assert.ok(testsReadme.includes("`40` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `25` scripts"));
 assert.ok(testsReadme.includes("Current readiness helper manifest size: `45` scripts"));

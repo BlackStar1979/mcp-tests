@@ -727,7 +727,7 @@
     "guard": "_tests/smoke_sep_sessionless_inventory.js",
     "validated_run_all_ok": true,
     "validated_run_all_public_count": 7,
-    "validated_run_all_tests_authenticated_count": 209,
+    "validated_run_all_tests_authenticated_count": 210,
     "git_status_entry_count": 2,
     "git_diff_stat_changed_files": 0,
     "safe_narrow_commit_available_now": true,
