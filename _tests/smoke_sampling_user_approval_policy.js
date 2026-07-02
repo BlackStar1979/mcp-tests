@@ -7,6 +7,8 @@ const {resolvePendingResponse}=require("../src/runtime/outbound_request_manager"
 function stream(){return{chunks:[],write(x){this.chunks.push(String(x));},body(){return this.chunks.join("");}}}
 (async()=>{
  assert.equal(spec.status,"implemented_h7_policy");
+ assert.equal(spec.active_surviving_route_binding,false);
+ assert.match(spec.runtime_scope_note,/no longer injects requestSampling/i);
  assert.equal(spec.approval_policy.approval_required_by_default,true);
  assert.equal(spec.budget_policy.default_per_session_request_limit,3);
  assert.equal(spec.prompt_injection_policy.tool_hidden_instructions_must_not_bypass_approval,true);

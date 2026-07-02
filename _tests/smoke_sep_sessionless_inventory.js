@@ -69,6 +69,10 @@ assert.deepEqual(ledger.get("initialize_handshake").sep_sources, ["SEP-2575", "S
 assert.ok(ledger.get("mcp_session_id_header").sep_sources.includes("SEP-2567"));
 assert.ok(ledger.get("list_results_ttl_cache_scope").sep_sources.includes("SEP-2549"));
 assert.ok(ledger.get("roots_sampling_logging_deprecation").sep_sources.includes("SEP-2577"));
+assert.equal(ledger.get("roots_sampling_logging_deprecation").implementation_status, "partial");
+assert.match(ledger.get("roots_sampling_logging_deprecation").repo_current_model, /no active surviving-route roots surface/);
+assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "inventory sampling usage").status, "done");
+assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "inventory roots and protocol logging usage").status, "done");
 assert.equal(ledger.get("restart_resilience").implementation_status, "partial");
 assert.ok(JSON.stringify(ledger.get("restart_resilience")).includes("SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 assert.match(ledger.get("restart_resilience").repo_current_model, /3008 OAuth21/);
@@ -84,6 +88,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 inve
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Residual GET-SSE/SessionStore/list-changed repo cleanup is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Local helper classification is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Deprecated roots/sampling/logging inventory is complete enough")));
 assert.equal(inventory.active_target_contract.record, "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md");
 assert.equal(inventory.active_target_contract.single_route_only, true);
 assert.equal(inventory.active_target_contract.sse_allowed_in_end_state, false);

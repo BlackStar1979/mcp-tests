@@ -165,6 +165,9 @@ Current records:
 - `keep_mcp_local_session_helper_classification.md`
   - Classifies the remaining `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` path as bounded local compatibility fixtures rather than active surviving-route runtime wiring.
 
+- `roots_sampling_logging_deprecation_inventory.md`
+  - Finishes the missing roots/sampling/protocol-logging inventory so this deprecated bucket no longer stays in `unknown_needs_inventory` after sampling was detached from active `/mcp`.
+
 - `sessionless_inventory_truth_consolidation.md`
   - Corrects target-selection preparation by removing duplicate source projection and making `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative SEP/sessionless target source.
 
@@ -306,7 +309,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use the now-complete helper classification (`_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md`) together with `_workflow/state.json`, `_workflow/sessionless_inventory.json`, and root specs to review the remaining unrealized development paths and choose the next bounded implementation package without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
+Next recommended action: use the now-complete helper classification and roots/sampling/logging inventory (`_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md`, `_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md`) together with `_workflow/state.json`, `_workflow/sessionless_inventory.json`, and root specs to choose the next bounded package from the remaining partial ledger items without reopening historical `/mcp/sessionless` planning as if it were current target architecture.
 
 Recently completed:
 

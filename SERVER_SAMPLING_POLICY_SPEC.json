@@ -51,6 +51,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "scope": "Client sampling policy: capability requirement, approval policy, low-risk classification, budget policy, prompt-injection guard and audit events.",
   "runtime_enforced": "implemented_guarded_policy",
+  "active_surviving_route_binding": false,
+  "runtime_scope_note": "The policy remains implemented in src/runtime/sampling_context.js for bounded helper/test coverage, but active surviving-route /mcp request handling no longer injects requestSampling into runtime context.",
   "connector_visible": false,
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

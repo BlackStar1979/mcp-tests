@@ -456,20 +456,27 @@
         "SEP-2596"
       ],
       "target_lifecycle": "deprecated",
-      "repo_current_model": "sampling helper module exists, but active /mcp runtime no longer injects requestSampling into request context; the helper is classified as local compatibility coverage only and roots/logging still need inventory",
-      "implementation_status": "unknown_needs_inventory",
+      "repo_current_model": "sampling helper module still exists for bounded local compatibility/test coverage, but active /mcp runtime no longer injects requestSampling into request context; no active surviving-route roots surface or dedicated protocol-logging feature track was confirmed in current runtime truth",
+      "implementation_status": "partial",
       "migration_path": "do not expand deprecated core features as strategic dependencies",
       "checklist": [
         {
           "item": "inventory sampling usage",
-          "status": "partial",
+          "status": "done",
           "evidence": [
-            "src/runtime/sampling_context.js"
+            "src/runtime/sampling_context.js",
+            "_workflow/operator_decisions/keep_mcp_sampling_runtime_detachment_package.md",
+            "_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md"
           ]
         },
         {
           "item": "inventory roots and protocol logging usage",
-          "status": "pending"
+          "status": "done",
+          "evidence": [
+            "src/runtime/audit_log.js",
+            "src/runtime/mcp_entry_dispatcher.js",
+            "_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md"
+          ]
         }
       ]
     },
@@ -597,6 +604,7 @@
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
     "Inactive sampling-context runtime injection is detached from active /mcp: remaining sampling/session outbound code is now local helper debt rather than active request wiring.",
     "Local helper classification is complete: session.js, sampling_context.js, and helper-only sendSessionRequest usage are retained as bounded compatibility fixtures until a dedicated redesign or retirement package exists.",
+    "Deprecated roots/sampling/logging inventory is complete enough to remove unknown status: no active surviving-route roots surface or dedicated protocol-logging track was confirmed, and sampling remains helper-only compatibility coverage.",
     "Prototype-route retirement scoping is complete and now remains historical evidence only because hidden /mcp/sessionless is already retired from active repo/runtime truth.",
     "Initialize-retirement boundary is complete: legacy initialize on surviving /mcp is compatibility-only and must not grow as target-facing protocol surface.",
     "Replacement-coverage scoping is complete and now remains historical evidence; the remaining bounded cleanup is residual unreachable session/SSE debt on surviving /mcp rather than hidden-route retirement authorization.",
