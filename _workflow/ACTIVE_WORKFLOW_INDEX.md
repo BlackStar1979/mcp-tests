@@ -88,7 +88,10 @@ Current records:
   - Workflow closeout for the active stable-route `MCP-Session-Id` header dependency. Confirms initialize no longer emits the header, POST ignores supplied session headers, and `server/discover` reports `protocol_sessions: false`.
 
 - `p4_runtime_policy_expansion_scope_plan.md`
-  - Plan-only Resource/Scope Matrix Enforcement expansion.
+  - Historical planning baseline for Resource/Scope Matrix Enforcement expansion.
+
+- `runtime_policy_scope_matrix_closeout.md`
+  - Workflow closeout for the bounded runtime policy gate already active in repo/live truth. Confirms Stage 14.5 gate is wired in `tools/call`, Stage 14.8 reconciles OAuth21 3008 live-load, and no connector refresh is required.
 
 - `p5_sessionless_explicit_state_handles_spec_review.md`
   - Official-source review of stable 2025-11-25 vs Final SEP-2567/2575 and draft sessionless direction.
