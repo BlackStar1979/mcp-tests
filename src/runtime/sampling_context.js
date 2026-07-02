@@ -1,5 +1,6 @@
 "use strict";
 
+// Retained for helper-level sampling policy coverage; active /mcp no longer injects this into request context.
 const { sendSessionRequest } = require("./outbound_request_manager");
 
 const DEFAULT_SAMPLING_REQUEST_LIMIT = 3;

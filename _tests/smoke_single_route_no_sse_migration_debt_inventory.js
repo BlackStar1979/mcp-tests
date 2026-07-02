@@ -27,6 +27,7 @@ assert.ok(record.includes("stricter project target"));
 assert.ok(record.includes("still allows request-scoped SSE"));
 assert.ok(record.includes("First bounded residual cleanup already completed"));
 assert.ok(record.includes("scope the remaining session-bound outbound/sampling internals"));
+assert.ok(record.includes("local compatibility/helper modules"));
 
 assert.equal(runtimeSpec.retired_sessionless_transition.status, "retired_from_active_repo_and_live_3008");
 assert.equal(runtimeSpec.retired_sessionless_transition.historical_only, true);

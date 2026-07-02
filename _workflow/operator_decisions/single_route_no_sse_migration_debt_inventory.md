@@ -13,6 +13,7 @@ The no-SSE destination recorded here is a stricter project target. Current offic
 
 ### Runtime code still requiring later action
 
+- The remaining `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` path are now treated as local compatibility/helper modules, not as active surviving-route runtime wiring.
 - `src/runtime/accept_policy.js`
   - Historical SSE-oriented accept branches still exist as residual debt even though stable POST `/mcp` is JSON-only and stable GET `/mcp` returns `405`.
 - `src/runtime/session.js`

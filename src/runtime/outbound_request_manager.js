@@ -1,5 +1,6 @@
 "use strict";
 
+// Active runtime still reuses response-envelope guards here; sendSessionRequest is helper-only debt now.
 const { encodeSseEvent } = require("./sse_response");
 
 const DEFAULT_PENDING_TIMEOUT_MS = 30 * 1000;

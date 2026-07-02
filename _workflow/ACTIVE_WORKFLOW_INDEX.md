@@ -162,6 +162,9 @@ Current records:
 - `keep_mcp_sampling_runtime_detachment_package.md`
   - Removes inactive sampling-context injection from active `/mcp` request handling after confirming there is no active request-session wiring left on the surviving route.
 
+- `keep_mcp_local_session_helper_classification.md`
+  - Classifies the remaining `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` path as bounded local compatibility fixtures rather than active surviving-route runtime wiring.
+
 - `sessionless_inventory_truth_consolidation.md`
   - Corrects target-selection preparation by removing duplicate source projection and making `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative SEP/sessionless target source.
 
@@ -298,7 +301,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Classify the remaining local session-bound helper modules (`session.js`, `outbound_request_manager.js`, `sampling_context.js`) as either retained compatibility fixtures or a later retirement/redesign package.
+1. Review the remaining unrealized server-development paths recorded across workflow/spec truth and choose the next bounded implementation package from that list.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.

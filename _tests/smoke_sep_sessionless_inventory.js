@@ -83,12 +83,14 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("migration deb
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 inventory is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Residual GET-SSE/SessionStore/list-changed repo cleanup is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Local helper classification is complete")));
 assert.equal(inventory.active_target_contract.record, "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md");
 assert.equal(inventory.active_target_contract.single_route_only, true);
 assert.equal(inventory.active_target_contract.sse_allowed_in_end_state, false);
 assert.equal(inventory.active_target_contract.dual_route_coexistence_is_target, false);
 assert.equal(inventory.active_target_contract.transport_session_retirement_package_record, "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md");
 assert.equal(inventory.active_target_contract.residual_session_sse_cleanup_package_record, "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md");
+assert.equal(inventory.active_target_contract.local_session_helper_classification_record, "_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md");
 assert.equal(inventory.active_target_contract.stable_protocol_sessions, false);
 assert.equal(inventory.active_target_contract.post_accept_cleanup_record, "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md");
 assert.equal(inventory.active_target_contract.get_sse_teardown_record, "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md");
@@ -119,7 +121,7 @@ assert.equal(ledger.get("get_mcp_sse_stream").checklist.find((item) => item.item
 assert.match(ledger.get("mcp_session_id_header").repo_current_model, /no longer depends on MCP-Session-Id/);
 assert.equal(ledger.get("mcp_session_id_header").implementation_status, "partial");
 assert.equal(ledger.get("mcp_session_id_header").checklist.find((item) => item.item === "retire stable /mcp transport-session header dependence").status, "done");
-assert.match(ledger.get("session_store").repo_current_model, /no longer creates or requires transport sessions/);
+assert.match(ledger.get("session_store").repo_current_model, /classified as local compatibility helpers/);
 assert.equal(ledger.get("session_store").checklist.find((item) => item.item === "retire active surviving-route transport-session lifecycle").status, "done");
 assert.equal(ledger.get("session_store").checklist.find((item) => item.item === "remove residual SessionStore and push/SSE helper files that no longer serve active /mcp").status, "done");
 assert.match(ledger.get("resumable_sse_last_event_id").repo_current_model, /helper files are removed/);

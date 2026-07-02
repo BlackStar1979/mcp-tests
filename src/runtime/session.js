@@ -1,5 +1,6 @@
 "use strict";
 
+// Retained as a local compatibility helper; active /mcp no longer constructs transport sessions.
 const DEFAULT_MAX_REPLAY_EVENTS = 100;
 
 function parseSseId(event) {
