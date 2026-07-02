@@ -529,8 +529,8 @@
         "SEP-2575"
       ],
       "target_lifecycle": "operational_implication",
-      "repo_current_model": "SERVER_RUNTIME_TOPOLOGY_SPEC.json defines active topology; 3008 OAuth21 is supervisor-managed and live-loaded after Stage 14.5; public 3009 is not currently live locally; 3009 false closeout corrected and must not recur.",
-      "implementation_status": "partial",
+      "repo_current_model": "SERVER_RUNTIME_TOPOLOGY_SPEC.json defines active topology and recovered restart authority; 3008 OAuth21 is supervisor-managed and live-loaded after Stage 14.5; public 3009 remains a separate runtime and the earlier false closeout correction must not recur.",
+      "implementation_status": "done",
       "migration_path": "use supervisor-controlled 3008 restart only when a workflow step and operator intent authorize it; stateless direction reduces dependence on session/process lifetime",
       "checklist": [
         {
@@ -552,6 +552,11 @@
           "item": "create machine-readable runtime topology/restart authority boundary",
           "status": "done",
           "evidence": "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
+        },
+        {
+          "item": "record bounded restart-resilience closeout",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/restart_resilience_closeout.md"
         }
       ]
     },
@@ -628,6 +633,7 @@
     "Request cancellation is complete for the stable-compatible runtime: per-request abort propagation, no-write-after-disconnect guards, cooperative optional-tool cancellation, and timeout fallback preservation are all in place.",
     "MCP-Session-Id header retirement is complete for the active stable /mcp contract: initialize no longer emits the header, POST ignores supplied session headers, and server/discover reports protocol_sessions=false.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
+    "Restart resilience is complete for the current topology boundary: OAuth21 3008 restart authority is supervisor-managed, machine-readable, and no longer an open blocker in workflow truth.",
     "Runtime policy scope matrix is complete for the current bounded gate: the policy/resource enforcement path is repo-applied, wired in tools/call, and live-loaded on OAuth21 3008.",
     "Feature lifecycle governance is complete at the inventory layer: lifecycle/status/migration/checklist structure and smoke coverage are already in place for tracked SEP items.",
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
@@ -663,6 +669,7 @@
     "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "request_cancellation_closeout_record": "_workflow/operator_decisions/request_cancellation_closeout.md",
     "mcp_session_id_header_closeout_record": "_workflow/operator_decisions/mcp_session_id_header_closeout.md",
+    "restart_resilience_closeout_record": "_workflow/operator_decisions/restart_resilience_closeout.md",
     "runtime_policy_scope_matrix_closeout_record": "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md",
     "feature_lifecycle_deprecation_policy_closeout_record": "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md",
     "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",

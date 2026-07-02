@@ -79,10 +79,11 @@ assert.equal(ledger.get("roots_sampling_logging_deprecation").implementation_sta
 assert.match(ledger.get("roots_sampling_logging_deprecation").repo_current_model, /no active surviving-route roots surface/);
 assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "inventory sampling usage").status, "done");
 assert.equal(ledger.get("roots_sampling_logging_deprecation").checklist.find((item) => item.item === "inventory roots and protocol logging usage").status, "done");
-assert.equal(ledger.get("restart_resilience").implementation_status, "partial");
+assert.equal(ledger.get("restart_resilience").implementation_status, "done");
 assert.ok(JSON.stringify(ledger.get("restart_resilience")).includes("SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 assert.match(ledger.get("restart_resilience").repo_current_model, /3008 OAuth21/);
-assert.match(ledger.get("restart_resilience").repo_current_model, /3009 false closeout corrected/);
+assert.match(ledger.get("restart_resilience").repo_current_model, /false closeout correction/);
+assert.equal(ledger.get("restart_resilience").checklist.find((item) => item.item === "record bounded restart-resilience closeout").status, "done");
 assert.equal(ledger.get("runtime_policy_scope_matrix").implementation_status, "done");
 assert.match(ledger.get("runtime_policy_scope_matrix").repo_current_model, /wired in tools_call_handler/);
 assert.equal(ledger.get("runtime_policy_scope_matrix").checklist.find((item) => item.item === "record bounded runtime policy closeout").status, "done");
@@ -99,6 +100,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("migration deb
 assert.ok(inventory.recommended_next.some((item) => item.includes("SEP-2549 bounded runtime package is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Request cancellation is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("MCP-Session-Id header retirement is complete")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Restart resilience is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Runtime policy scope matrix is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Feature lifecycle governance is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
@@ -117,6 +119,7 @@ assert.equal(inventory.active_target_contract.post_accept_cleanup_record, "_work
 assert.equal(inventory.active_target_contract.get_sse_teardown_record, "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md");
 assert.equal(inventory.active_target_contract.request_cancellation_closeout_record, "_workflow/operator_decisions/request_cancellation_closeout.md");
 assert.equal(inventory.active_target_contract.mcp_session_id_header_closeout_record, "_workflow/operator_decisions/mcp_session_id_header_closeout.md");
+assert.equal(inventory.active_target_contract.restart_resilience_closeout_record, "_workflow/operator_decisions/restart_resilience_closeout.md");
 assert.equal(inventory.active_target_contract.runtime_policy_scope_matrix_closeout_record, "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md");
 assert.equal(inventory.active_target_contract.feature_lifecycle_deprecation_policy_closeout_record, "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md");
 assert.equal(inventory.active_target_contract.stable_post_mcp_response_mode, "json_only");

@@ -39,8 +39,9 @@ assert.equal(state.runtime_topology_spec.oauth21_3008_pending_supervisor_migrati
 assert.equal(state.runtime_topology_spec.oauth21_3008_supervisor_managed, true);
 
 const restart = sessionless.deprecation_ledger.find((x) => x.feature_id === "restart_resilience");
-assert.equal(restart.implementation_status, "partial");
+assert.equal(restart.implementation_status, "done");
 assert.ok(JSON.stringify(restart).includes("SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
+assert.equal(sessionless.active_target_contract.restart_resilience_closeout_record, "_workflow/operator_decisions/restart_resilience_closeout.md");
 assert.equal(sessionless.recommended_next.some((x) => x.startsWith("Audit all 41 Final SEPs")), false);
 
 console.log("smoke_runtime_topology_authority ok");

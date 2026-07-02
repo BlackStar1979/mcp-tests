@@ -87,6 +87,9 @@ Current records:
 - `mcp_session_id_header_closeout.md`
   - Workflow closeout for the active stable-route `MCP-Session-Id` header dependency. Confirms initialize no longer emits the header, POST ignores supplied session headers, and `server/discover` reports `protocol_sessions: false`.
 
+- `restart_resilience_closeout.md`
+  - Workflow closeout for the runtime topology / restart boundary. Confirms OAuth21 `3008` restart authority is recovered, machine-readable, supervisor-managed, and no longer an open blocker in workflow truth.
+
 - `p4_runtime_policy_expansion_scope_plan.md`
   - Historical planning baseline for Resource/Scope Matrix Enforcement expansion.
 
@@ -333,6 +336,8 @@ Recently completed:
 - Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `210` authenticated scripts.
 
 - Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
+
+- Closed the stale `restart_resilience` ledger item using the already-recovered supervisor-managed OAuth21 `3008` restart authority and runtime topology spec truth.
 
 - Confirmed the previous dirty-worktree push blocker is closed on `main`; the cleanup-closeout checkpoint preserved only local-only untracked directories `.codebase-memory/` and `_workflow/experiments/` outside the committed repo surface.
 

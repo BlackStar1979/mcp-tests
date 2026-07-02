@@ -35,6 +35,7 @@ assert.ok(index.includes("stage14_9_workflow_truth_repair.md"));
 assert.ok(index.includes("state.json` is only the compact machine-readable orientation map"));
 const restart = inventory.deprecation_ledger.find((item) => item.feature_id === "restart_resilience");
 const runtimePolicy = inventory.deprecation_ledger.find((item) => item.feature_id === "runtime_policy_scope_matrix");
+assert.equal(restart.implementation_status, "done");
 assert.ok(restart.repo_current_model.includes("3008 OAuth21 is supervisor-managed"));
 assert.equal(JSON.stringify(restart).includes("missing_not_recovered"), false);
 assert.equal(JSON.stringify(restart).includes("live-load remains blocked"), false);
