@@ -49,7 +49,7 @@ assert.equal(subscriptionsListen.checklist.find((item) => item.item === "retire 
 
 assert.ok(canon.includes("Pull-only runtime-package clarification"));
 assert.ok(index.includes("keep_mcp_pull_only_tool_surface_freshness_runtime_package.md"));
-assert.ok(index.includes("Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
 
 assert.equal(bootstrap.includes("createToolsListChangedNotifier"), false);
 assert.equal(dispatcher.includes("listChangedNotifier"), false);

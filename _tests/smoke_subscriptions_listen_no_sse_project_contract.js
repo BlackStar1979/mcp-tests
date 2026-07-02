@@ -38,7 +38,7 @@ assert.equal(subscriptionsListen.checklist.find((item) => item.item === "record 
 assert.ok(canon.includes("No-SSE subscriptions/listen clarification"));
 assert.ok(canon.includes("current official MCP Streamable HTTP direction still allows request-scoped SSE"));
 assert.ok(index.includes("subscriptions_listen_no_sse_project_contract.md"));
-assert.ok(index.includes("Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
 
 assert.equal(routeDispatcher.includes("/mcp/sessionless"), false);
 assert.ok(notifierSource.includes("LIST_CHANGED_METHOD"));

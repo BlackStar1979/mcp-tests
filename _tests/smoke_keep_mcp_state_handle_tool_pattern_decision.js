@@ -34,9 +34,9 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("Hidden-route 
 assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /mcp/sessionless live-operation artifacts are quarantined")));
 
 assert.ok(canon.includes("State-handle fate clarification"));
-assert.ok(inventory.recommended_next.some((item) => item.includes("Next bounded workflow step is to execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("Repo cleanup/normalization debt is closed on main")));
 assert.ok(index.includes("keep_mcp_state_handle_tool_pattern_decision.md"));
-assert.ok(index.includes("Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
 
 assert.equal(runtimeSpec.retired_sessionless_transition.state_handle_decision_record, "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md");
 

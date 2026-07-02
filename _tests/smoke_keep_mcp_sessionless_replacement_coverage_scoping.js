@@ -36,7 +36,7 @@ assert.equal(listenLedger.checklist.find((item) => item.item === "record survivi
 
 assert.ok(canon.includes("Replacement-coverage clarification"));
 assert.ok(index.includes("keep_mcp_sessionless_replacement_coverage_scoping.md"));
-assert.ok(index.includes("Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
 
 assert.ok(dispatcher.includes('case "server/discover"'));
 assert.ok(discoverHandler.includes("protocol_sessions: true"));

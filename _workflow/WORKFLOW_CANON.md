@@ -29,9 +29,11 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.
+- Current validated `main` HEAD: `aecec58`.
 - Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_209`.
 - Latest validated public section count: `7`.
 - Latest validated authenticated smoke count: `209`.
+- Current local-only untracked directories expected outside committed scope: `.codebase-memory/`, `experiments/`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.
 - Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow truth.
@@ -537,8 +539,4 @@ Auth/security adjacent SEP triage green: `_workflow/operator_decisions/auth_secu
 
 Adjacent/auth watchlist review green: `_workflow/operator_decisions/adjacent_sep_watchlist_review.md` reviews the remaining watchlist after the two SEP triage records. No new dedicated ledger is opened now. `SEP-1613`, `SEP-1319`, and `SEP-991` are sufficient for current scope without new workflow expansion; `SEP-2164` and `SEP-973` are deferred until their target surfaces exist; `SEP-1303` remains the first semantics-sensitive item to reopen if tool-validation-error behavior becomes an active migration topic. No runtime change, restart, connector refresh, or public 3009 start was performed.
 
-Repo hygiene commit-scope triage green: `_workflow/operator_decisions/repo_hygiene_commit_scope_triage.md` records that the worktree is still too mixed for a conservative push. At review time, `git status --short` reported 710 entries and `git diff --stat` reported 395 changed files. The validated package remains mixed with broad historical rename/archive normalization and older worktree drift, so push is not safe yet. The next bounded step is commit-scope isolation before any push attempt.
-
-Repo hygiene commit-scope isolation green: `_workflow/operator_decisions/repo_hygiene_commit_scope_isolation.md` records that the latest SEP/workflow package is validated, but no safe narrow standalone push exists because the green run_all already depends on a broader `_tests`/`_workflow` rename-normalization package. The next bounded step is to prepare one coherent rename-normalization migration package before any push attempt.
-
-Tests/workflow rename-normalization package scoping green: `_workflow/operator_decisions/tests_workflow_rename_normalization_package.md` records the current mechanical package shape. `_tests/RENAME_NORMALIZATION_MIGRATION_AUDIT.md` separates `193` likely direct rename-normalization pairs from `77` unmatched deletions and `118` unmatched additions, so the next bounded step is to execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt.
+Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The validated closeout head is `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green there with `7` public and `209` authenticated scripts. The previous dirty-worktree push blocker is closed for `main`; only local-only untracked `.codebase-memory/` and `experiments/` remain outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.

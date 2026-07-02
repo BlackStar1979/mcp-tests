@@ -39,11 +39,12 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 
 ## Current validated baseline
 
-- HEAD after the repo hygiene audit checkpoint: `0932dd0`.
+- Current validated `main` HEAD: `aecec58`.
 - Server version: `0.40.0`.
 - Latest full smoke after state-and-snapshot hygiene guard: `ok_0_40_0_7_209`.
 - Public section count: `7`.
 - Authenticated smoke count: `209`.
+- Current local `git status --short` is expected to show only `?? .codebase-memory/` and `?? experiments/`.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
 - Earlier checkpoint-specific implementation approvals do not roll forward automatically; only explicitly named records govern their own scope.
@@ -60,8 +61,9 @@ Checkpoint topology:
 
 Recent committed checkpoints:
 
-- Closeout checkpoint: `c368433`.
-- Hygiene audit checkpoint: `0932dd0`.
+- Cleanup closeout head on `main`: `aecec58`.
+- Cleanup truth/archive normalization record: `1b5ab42`.
+- Cleanup runtime route/policy package: `44957ab`.
 
 ## Active operator decision records
 
@@ -286,18 +288,16 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt.
+1. Quarantine or rewrite remaining historical `/mcp/sessionless` live-operation artifacts so they cannot be mistaken for active target architecture.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
 Recently completed:
 
-- Completed repo hygiene triage and confirmed that push is not safe yet while the validated package remains mixed with broad historical rename/archive normalization and older worktree drift.
+- Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `209` authenticated scripts.
 
-- Completed commit-scope isolation review and confirmed that no safe narrow standalone push exists yet because the green run_all already depends on a wider `_tests`/`_workflow` rename-normalization package.
-
-- Completed rename-normalization package scoping and separated direct rename-equivalent pairs from unmatched historical wrapper deletions and genuinely new helper/audit additions.
+- Confirmed the previous dirty-worktree push blocker is closed on `main`; only local-only untracked directories `.codebase-memory/` and `experiments/` remain outside the committed repo surface.
 
 - Added explicit archive-boundary README files for `_workflow/historical/`, `_tests/archive/`, and `_tests/archive/legacy_retired_auth/`, then extended `smoke_state_and_snapshot_hygiene.js` so archived evidence is less likely to be mistaken for active workflow truth.
 

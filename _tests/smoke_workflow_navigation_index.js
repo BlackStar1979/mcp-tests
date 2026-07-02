@@ -18,13 +18,13 @@ assert.ok(index.includes("Do not infer active work from historical plan files"))
 assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Historical records remain traceability evidence, not the active queue."));
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
-assert.ok(index.includes("Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt"));
+assert.ok(index.includes("Quarantine or rewrite remaining historical `/mcp/sessionless` live-operation artifacts"));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
 assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
-assert.ok(index.includes("Completed commit-scope isolation review and confirmed that no safe narrow standalone push exists yet"));
-assert.ok(index.includes("Completed rename-normalization package scoping and separated direct rename-equivalent pairs"));
+assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: `origin/main` and local `main` are at `aecec58`"));
+assert.ok(index.includes("previous dirty-worktree push blocker is closed on `main`"));
 assert.ok(index.includes("Recently completed:"));
-assert.ok(index.includes("Completed repo hygiene triage and confirmed that push is not safe yet"));
+assert.ok(index.includes("Current validated `main` HEAD: `aecec58`."));
 assert.ok(index.includes("adjacent_runtime_contract_sep_triage.md"));
 assert.ok(index.includes("auth_security_adjacent_sep_triage.md"));
 assert.ok(index.includes("Reviewed the adjacent/auth watchlist and intentionally avoided opening speculative new ledgers"));
@@ -39,6 +39,7 @@ assert.ok(index.includes("single_route_no_sse_streamable_http_target_plan.md"));
 
 assert.ok(canon.includes("Latest validated public section count: `7`"));
 assert.ok(canon.includes("Latest validated authenticated smoke count: `209`"));
+assert.ok(canon.includes("Current validated `main` HEAD: `aecec58`."));
 assert.ok(canon.includes("## 3A. Current active work queue"));
 assert.ok(canon.includes("Snapshot clarification: `_workflow/control_plane/snapshots/**` is archival evidence only."));
 assert.ok(canon.includes("Workflow file count is not a project-progress metric."));
@@ -54,9 +55,7 @@ assert.ok(canon.includes("State-handle fate clarification"));
 assert.ok(canon.includes("Adjacent runtime-contract SEP triage green"));
 assert.ok(canon.includes("Auth/security adjacent SEP triage green"));
 assert.ok(canon.includes("Adjacent/auth watchlist review green"));
-assert.ok(canon.includes("Repo hygiene commit-scope triage green"));
-assert.ok(canon.includes("Repo hygiene commit-scope isolation green"));
-assert.ok(canon.includes("Tests/workflow rename-normalization package scoping green"));
+assert.ok(canon.includes("Repo cleanup/normalization closeout green"));
 
 for (const stale of [
   "Latest validated public section count: `8`",
@@ -66,6 +65,8 @@ for (const stale of [
   "Active roadmap: `_workflow/STREAMABLE_HTTP_SAMPLING_OAUTH_WORKFLOW.md`",
   "Current workflow preparation status: `ready_streamable_http_workflow_plan`",
   "Stable `/mcp` and `/mcp/sessionless` coexistence regression hardening.",
+  "Execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt",
+  "Completed repo hygiene triage and confirmed that push is not safe yet",
 ]) {
   assert.equal(canon.includes(stale), false, stale);
 }
