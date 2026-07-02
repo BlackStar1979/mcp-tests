@@ -39,4 +39,5 @@ No connector refresh, connector route migration, public 3009 start, stable `/mcp
 
 ## Next recommendation
 
-Run the manual probe from the PC shell outside the ChatGPT tool layer and paste sanitized JSON output only.
+Historical next step at that time: run the manual probe from the PC shell outside the ChatGPT tool layer and paste sanitized JSON output only.
+This record is no longer an active instruction source; current target authority is the single-route no-SSE plan on surviving `/mcp`.

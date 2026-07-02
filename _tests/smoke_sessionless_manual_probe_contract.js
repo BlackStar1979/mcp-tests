@@ -16,6 +16,8 @@ assert.ok(record.includes("No connector refresh"));
 assert.ok(record.includes("connector route migration"));
 assert.ok(record.includes("public 3009 start"));
 assert.ok(record.includes("OAuth21 3008 restart"));
+assert.ok(record.includes("Historical next step at that time: run the manual probe from the PC shell outside the ChatGPT tool layer and paste sanitized JSON output only."));
+assert.ok(record.includes("This record is no longer an active instruction source; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 const stubPath = path.join(ROOT, "_workflow/scripts/sessionless_manual_probe_stub.js");
 assert.ok(fs.existsSync(stubPath));
 const stub = read("_workflow/scripts/sessionless_manual_probe_stub.js");
@@ -29,4 +31,3 @@ assert.equal(selfJson.network, false);
 const manifest = JSON.parse(read("_tests/run_all_smoke_scripts.json"));
 assert.ok(manifest.includes("_tests/smoke_sessionless_manual_probe_contract.js"));
 console.log("smoke_sessionless_manual_probe_contract ok");
-
