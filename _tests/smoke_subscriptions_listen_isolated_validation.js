@@ -27,6 +27,8 @@ assert.ok(record.includes("This record is historical transition-debt evidence on
 assert.ok(record.includes("Historical status note: this record is hidden-route transition evidence only."));
 assert.ok(record.includes("It is superseded as active target guidance by `_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md`"));
 assert.ok(record.includes("Do not use it as the current next-step plan."));
+assert.ok(record.includes("Historical next step at that time: treat the SSE-based implementation as transitional migration debt and define the single-route, no-SSE, streamable-HTTP target contract and migration plan."));
+assert.ok(record.includes("This record is no longer an active instruction source; the current target authority remains the single-route no-SSE plan on surviving `/mcp`."));
 assert.ok(record.includes("route: `/mcp/sessionless`"));
 assert.ok(record.includes("transport: POST request-scoped SSE stream"));
 assert.ok(record.includes("notifications/tools/list_changed"));

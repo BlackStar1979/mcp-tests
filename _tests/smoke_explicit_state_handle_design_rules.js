@@ -5,8 +5,11 @@ const path = require("node:path");
 const ROOT = path.resolve(__dirname, "..");
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), "utf8"); }
 const inventory = JSON.parse(read("_workflow/sessionless_inventory.json"));
+const record = read("_workflow/operator_decisions/explicit_state_handle_design_rules.md");
 const target = inventory.target_selection_readiness;
 const rules = target.s3_explicit_state_handle_design_rules;
+assert.ok(record.includes("Historical next step at that time: proceed to the S4 parallel draft/sessionless runtime prototype behind a non-default route or mode"));
+assert.ok(record.includes("This is no longer the active queue; the current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 assert.ok(rules);
 assert.equal(rules.status, "prepared_no_runtime_change");
 assert.equal(rules.source_of_truth, "_workflow/sessionless_inventory.json");

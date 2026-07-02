@@ -32,6 +32,8 @@ assert.ok(runAll.includes("_tests/smoke_legacy_archive_sessionless_ready_specs.j
 assert.ok(record.includes("Historical status note: this record is archive/spec-posture evidence only."));
 assert.ok(record.includes("`/mcp/sessionless` is historical transition-route evidence only."));
 assert.ok(record.includes("the hidden route and env are retired from active runtime truth."));
+assert.ok(record.includes("Historical next step at that time: proceed to CRLF Batch Normalization if still desired."));
+assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 const specNames = fs.readdirSync(ROOT).filter((name) => name.startsWith("SERVER_") && name.endsWith("_SPEC.json")).sort();
 assert.equal(specNames.length, 30);
 for (const name of specNames) {

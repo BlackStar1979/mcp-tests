@@ -59,4 +59,4 @@ This step is intentionally limited to an isolated local server instance on an ep
 
 ## Next recommendation
 
-Treat the current SSE-based implementation as transitional migration debt. The next bounded workflow step is to define the single-route, no-SSE, streamable-HTTP target contract and migration plan.
+Historical next step at that time: treat the SSE-based implementation as transitional migration debt and define the single-route, no-SSE, streamable-HTTP target contract and migration plan. This record is no longer an active instruction source; the current target authority remains the single-route no-SSE plan on surviving `/mcp`.

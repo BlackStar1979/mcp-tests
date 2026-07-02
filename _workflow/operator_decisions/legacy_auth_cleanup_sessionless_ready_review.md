@@ -54,4 +54,4 @@ Historical status note: this record is archive/spec-posture evidence only. It is
 
 ## Next recommendation
 
-Proceed to CRLF Batch Normalization if still desired. Current assessment: connector refresh is not required, OAuth21 3008 restart is not required, and public 3009 start is not required.
+Historical next step at that time: proceed to CRLF Batch Normalization if still desired. This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`. The historical assessment remains that connector refresh was not required, OAuth21 3008 restart was not required, and public 3009 start was not required for this record.

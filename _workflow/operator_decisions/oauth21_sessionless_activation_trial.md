@@ -42,4 +42,4 @@ _tests/smoke_oauth21_sessionless_activation_trial.js
 
 ## Next recommendation
 
-Historical next step at that time: proceed to S10 live authenticated SEP-2575 probes on OAuth21 3008, still without connector migration and without removing stable /mcp.
+Historical next step at that time: proceed to S10 live authenticated SEP-2575 probes on OAuth21 3008, still without connector migration and without removing stable `/mcp`. This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`.

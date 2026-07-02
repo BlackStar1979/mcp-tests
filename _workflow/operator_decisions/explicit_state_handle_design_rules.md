@@ -51,4 +51,4 @@ S3 defines policy and guardrails only. It does not implement state handles, does
 
 ## Next recommendation
 
-Proceed to S4 parallel draft/sessionless runtime prototype behind a non-default route or mode, while keeping the current OAuth21 3008 stable-compatible connector route unchanged.
+Historical next step at that time: proceed to the S4 parallel draft/sessionless runtime prototype behind a non-default route or mode, while keeping the current OAuth21 3008 stable-compatible connector route unchanged. This is no longer the active queue; the current target authority is the single-route no-SSE plan on surviving `/mcp`.
