@@ -65,7 +65,7 @@ src/runtime/accept_policy.js
 src/runtime/protocol_version_policy.js
 src/runtime/mcp_entry_dispatcher.js
 src/runtime/initialize_response.js
-_tests/smoke_stage12_streamable_http_preflight_guards.js
+_tests/smoke_streamable_http_preflight_guards.js
 ```
 
 Checklist:
@@ -82,7 +82,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_streamable_http_preflight_guards.js = ok
+node _tests/smoke_streamable_http_preflight_guards.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -96,7 +96,7 @@ Touchpoints:
 src/runtime/sse_response.js
 src/runtime/single_payload_dispatcher.js
 src/runtime/batch_payload_dispatcher.js
-_tests/smoke_stage12_post_sse_response.js
+_tests/smoke_post_sse_response.js
 ```
 
 Checklist:
@@ -106,12 +106,12 @@ Checklist:
 - [x] SSE emits `event: message` with final JSON-RPC response.
 - [x] Stream closes after final response.
 - [x] JSON response path remains default-compatible.
-- [x] Batch SSE classified as explicitly unsupported/deprecated for current target; do not implement in this checkpoint. Guard: `_tests/smoke_stage12_batch_sse_unsupported_guard.js`.
+- [x] Batch SSE classified as explicitly unsupported/deprecated for current target; do not implement in this checkpoint. Guard: `_tests/smoke_batch_sse_unsupported_guard.js`.
 
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_post_sse_response.js = ok
+node _tests/smoke_post_sse_response.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -127,7 +127,7 @@ src/runtime/session_store.js
 src/runtime/initialize_message_handler.js
 src/runtime/initialize_response.js
 src/runtime/mcp_entry_dispatcher.js
-_tests/smoke_stage12_streamable_http_session_lifecycle.js
+_tests/smoke_streamable_http_session_lifecycle.js
 ```
 
 Checklist:
@@ -144,7 +144,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_streamable_http_session_lifecycle.js = ok
+node _tests/smoke_streamable_http_session_lifecycle.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -160,8 +160,8 @@ src/runtime/sse_response.js
 src/runtime/session.js
 src/runtime/session_store.js
 src/list_changed_notification_bus.js
-_tests/smoke_stage12_get_sse_stream.js
-_tests/smoke_stage12_outbound_queue.js
+_tests/smoke_get_sse_stream.js
+_tests/smoke_outbound_queue.js
 ```
 
 Checklist:
@@ -178,8 +178,8 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_get_sse_stream.js = ok
-node _tests/smoke_stage12_outbound_queue.js = ok
+node _tests/smoke_get_sse_stream.js = ok
+node _tests/smoke_outbound_queue.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -195,7 +195,7 @@ src/runtime/outbound_request_manager.js
 src/runtime/rpc_message_dispatcher.js
 src/runtime/single_payload_dispatcher.js
 src/runtime/batch_payload_dispatcher.js
-_tests/smoke_stage12_pending_request_correlation.js
+_tests/smoke_pending_request_correlation.js
 ```
 
 Checklist:
@@ -212,7 +212,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_pending_request_correlation.js = ok
+node _tests/smoke_pending_request_correlation.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -227,8 +227,8 @@ src/runtime/sampling_context.js
 src/runtime/tools_call_handler.js
 src/runtime/initialize_message_handler.js
 src/runtime/session.js
-_tests/smoke_stage12_sampling_capability_gate.js
-_tests/smoke_stage12_sampling_roundtrip.js
+_tests/smoke_sampling_capability_gate.js
+_tests/smoke_sampling_roundtrip.js
 ```
 
 Checklist:
@@ -245,8 +245,8 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_sampling_capability_gate.js = ok
-node _tests/smoke_stage12_sampling_roundtrip.js = ok
+node _tests/smoke_sampling_capability_gate.js = ok
+node _tests/smoke_sampling_roundtrip.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -262,7 +262,7 @@ SERVER_CONNECTOR_SURFACE_SPEC.json
 src/auth/**
 src/runtime/auth_bootstrap_config_resolver.js
 src/runtime/mcp_entry_dispatcher.js
-_tests/smoke_stage12_oauth_preflight_contract.js
+_tests/smoke_oauth_preflight_contract.js
 ```
 
 Checklist:
@@ -279,7 +279,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_oauth_preflight_contract.js = ok
+node _tests/smoke_oauth_preflight_contract.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -301,15 +301,15 @@ Work one phase at a time. Do not mix OAuth implementation into phases A-F. Do no
 
 ## Phase A completion note
 
-Phase A is green as `ok_0_40_0_8_120`. Implemented: `src/runtime/accept_policy.js`, `src/runtime/protocol_version_policy.js`, dispatcher preflight validation, protocol version propagation, initialize protocol negotiation, and `_tests/smoke_stage12_streamable_http_preflight_guards.js`. Next phase: Phase B - POST SSE response path.
+Phase A is green as `ok_0_40_0_8_120`. Implemented: `src/runtime/accept_policy.js`, `src/runtime/protocol_version_policy.js`, dispatcher preflight validation, protocol version propagation, initialize protocol negotiation, and `_tests/smoke_streamable_http_preflight_guards.js`. Next phase: Phase B - POST SSE response path.
 
 ## Phase C completion note
 
-Phase C is green as `ok_0_40_0_8_122`. Implemented: `src/runtime/session.js`, `src/runtime/session_store.js`, initialize-created `Mcp-Session-Id`, known-session acceptance, unknown-session 404, protocol version/client capabilities storage, and `_tests/smoke_stage12_streamable_http_session_lifecycle.js`. Legacy no-session requests remain compatible until strict stateful mode. Next phase: Phase D - GET SSE stream and outbound queue.
+Phase C is green as `ok_0_40_0_8_122`. Implemented: `src/runtime/session.js`, `src/runtime/session_store.js`, initialize-created `Mcp-Session-Id`, known-session acceptance, unknown-session 404, protocol version/client capabilities storage, and `_tests/smoke_streamable_http_session_lifecycle.js`. Legacy no-session requests remain compatible until strict stateful mode. Next phase: Phase D - GET SSE stream and outbound queue.
 
 ## Phase D completion note
 
-Phase D is green as `ok_0_40_0_8_124`. Implemented: `src/runtime/mcp_get_stream_handler.js`, GET SSE for known sessions with explicit stream Accept, session stream attach/detach, outbound queue buffering/flushing, `_tests/smoke_stage12_get_sse_stream.js`, and `_tests/smoke_stage12_outbound_queue.js`. Multiple concurrent streams remain deferred; keepalive was implemented in H8. Next phase: Phase E - Pending request correlation.
+Phase D is green as `ok_0_40_0_8_124`. Implemented: `src/runtime/mcp_get_stream_handler.js`, GET SSE for known sessions with explicit stream Accept, session stream attach/detach, outbound queue buffering/flushing, `_tests/smoke_get_sse_stream.js`, and `_tests/smoke_outbound_queue.js`. Multiple concurrent streams remain deferred; keepalive was implemented in H8. Next phase: Phase E - Pending request correlation.
 
 ## Phase E completion note
 
@@ -321,4 +321,4 @@ Phase F is green as `ok_0_40_0_8_127`. Implemented sampling context, capability 
 
 ## Phase G completion note
 
-Phase G is green as `ok_0_40_0_8_128`. Implemented OAuth resource-server preflight and validation: `SERVER_AUTH_SPEC.json`, `src/auth/auth_oauth.js`, `src/runtime/oauth_metadata.js`, protected resource metadata route, OAuth auth mode, Authorization header-only token use, query-token rejection, issuer/audience/scope checks, and `_tests/smoke_stage12_oauth_preflight_contract.js`. Resource-server validation is implemented and local OAuth21 AS was added later in H10; production hardening H1-H9 is green for TEST MCP.
+Phase G is green as `ok_0_40_0_8_128`. Implemented OAuth resource-server preflight and validation: `SERVER_AUTH_SPEC.json`, `src/auth/auth_oauth.js`, `src/runtime/oauth_metadata.js`, protected resource metadata route, OAuth auth mode, Authorization header-only token use, query-token rejection, issuer/audience/scope checks, and `_tests/smoke_oauth_preflight_contract.js`. Resource-server validation is implemented and local OAuth21 AS was added later in H10; production hardening H1-H9 is green for TEST MCP.

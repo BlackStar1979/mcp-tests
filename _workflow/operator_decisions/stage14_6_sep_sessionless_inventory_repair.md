@@ -29,7 +29,7 @@ Verified against the official MCP SEP index on 2026-06-25:
 - Added source verification metadata and tracked final SEP list.
 - Added lifecycle / migration / checklist ledger.
 - Added `restart_resilience` as an operational implication entry.
-- Added guard `_tests/smoke_stage14_6_sep_sessionless_inventory.js`.
+- Added guard `_tests/smoke_sep_sessionless_inventory.js`.
 
 ## Non-actions
 

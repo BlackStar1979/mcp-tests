@@ -51,7 +51,7 @@ Expected result:
 
 Expected guard:
 
-- `_tests/smoke_stage11_policy_gap_remediation.js`
+- `_tests/smoke_policy_gap_remediation.js`
 
 ### 11.2 Update Stage 10 expectation guards
 

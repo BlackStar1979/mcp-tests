@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-06-29T14:27:56.2988028+02:00",
+  "updated_at": "2026-07-01T05:26Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
   "read_order": [
@@ -25,7 +25,7 @@
       "profile": "public",
       "expected_tool_count": 13,
       "public_base_url": "https://mcp-tests.romionologic.dev",
-      "current_local_status": "not_listening_during_stage14_8_reconciliation",
+      "current_local_status": "not_listening_during_runtime_gate_reconciliation",
       "last_probe": "2026-06-28 local 127.0.0.1:3009 connection refused"
     },
     "authorized": {
@@ -58,8 +58,9 @@
     "no_runtime_restart_without_explicit_operator_intent": true,
     "no_connector_refresh_without_explicit_operator_intent": true,
     "do_not_use_generic_restart_for_oauth21_3008": true,
-    "do_not_remove_stable_session_code_before_S2_target_selection": true,
-    "do_not_use_state_json_as_log": true
+    "do_not_remove_stable_session_code_before_active_route_migration_completion": true,
+    "do_not_use_state_json_as_log": true,
+    "active_target_is_single_route_no_sse_streamable_http": true
   },
   "history_policy": {
     "allowed_history_locations": [
@@ -111,7 +112,7 @@
       "source_spec": "SERVER_POLICY_RUNTIME_SPEC.json",
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
-      "live_3008_status": "live_loaded_after_stage14_5",
+      "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
       "live_3008_server_start_id": "2026-06-28T18:29:15.549Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
@@ -155,7 +156,7 @@
       "SEP-2577",
       "SEP-2596"
     ],
-    "guard": "_tests/smoke_stage14_6_sep_sessionless_inventory.js",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
     "handling_rule": "Update checklist/lifecycle/status/evidence only; not a chronological log."
   },
   "runtime_topology_spec": {
@@ -167,12 +168,12 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 62,
-    "http_route_count": 12
+    "env_var_count": 61,
+    "http_route_count": 11
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 52
+    "event_count": 47
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
@@ -205,25 +206,55 @@
     "default": "~/.romion/tests_oauth_state.json"
   },
   "source_of_operational_truth": "_workflow/WORKFLOW_CANON.md",
-  "next_step_recommendation_policy": {
-    "blocker_reassessment_required": true,
-    "connector_refresh_assessment_required": true,
-    "workbench_3008_restart_assessment_required": true,
-    "workbench_3008_restart_operator_dependency": false,
-      "rule": "Every next-step recommendation must state blocker validity, connector refresh need, and TESTS_MCP/OAuth21 3008 restart need. The assistant can restart 3008 when authorized; do not ask the operator to restart 3008.",
-      "connector_refresh_rule": "Request connector refresh only when connector/UI truth, surface change, or diagnostics require it."
+  "active_target_direction": {
+    "decision_record": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
+    "route_selection_record": "_workflow/operator_decisions/single_route_selection_keep_mcp.md",
+    "migration_debt_inventory_record": "_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md",
+    "replacement_package_record": "_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md",
+    "post_accept_cleanup_record": "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md",
+    "get_sse_teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md",
+    "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
+    "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
+    "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
+    "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
+    "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
+    "sessionless_replacement_coverage_scoping_record": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md",
+    "subscriptions_listen_pull_only_contract_record": "_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md",
+    "pull_only_tool_surface_freshness_runtime_package_record": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md",
+    "state_handle_tool_pattern_decision_record": "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md",
+    "hidden_sessionless_route_retirement_package_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_retirement_package.md",
+    "single_route_only": true,
+    "selected_surviving_route": "/mcp",
+    "stable_post_mcp_response_mode": "json_only",
+    "stable_get_mcp_supported": false,
+    "stable_server_discover_supported": true,
+    "subscriptions_listen_supported_in_end_state": false,
+    "tools_list_changed_push_supported_in_end_state": false,
+    "stable_list_changed_capability_advertised_now": false,
+    "sessionless_prototype_subscriptions_listen_active_now": false,
+    "state_handle_route_methods_supported_in_end_state": false,
+    "explicit_state_handles_are_tool_pattern_only": true,
+    "hidden_sessionless_route_repo_retired_now": true,
+    "tool_surface_freshness_model_in_end_state": "pull_only_tools_list_ttl0_private",
+    "sse_allowed_in_end_state": false,
+    "session_transport_dependency_allowed_in_end_state": false,
+    "dual_route_coexistence_is_target": false,
+    "notes": "Current runtime may still contain transitional SSE and dual-route debt. This field records the intended destination, not completion. The no-SSE target is a stricter project policy than the current generic MCP Streamable HTTP draft, which still allows request-scoped SSE in some flows. Historical /mcp/sessionless subscriptions/listen SSE validation remains evidence only. The hidden /mcp/sessionless route is now retired from active repo runtime and has been verified absent on live OAuth21 3008 after the controlled restart. SEP-2549 cache directives are currently explicit for tools/list only. The final state-handle decision is now fixed: explicit state handles remain allowed only as a tool-design pattern carried in ordinary tool results/arguments, and route-level state/handle methods are not part of the surviving /mcp end state. Legacy initialize on surviving /mcp is now bounded as temporary compatibility only; new target-facing migration must not expand it. Final tool-surface freshness on surviving /mcp is pull-only via tools/list with ttlMs=0 and cacheScope=private; end-state subscriptions/listen is not part of the TEST MCP contract.",
+    "hidden_sessionless_route_live_verification_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md"
   },
   "current_runtime_truth": {
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 43,
-      "server_start_id": "2026-06-29T09:08:02.097Z",
-      "runtime_gate_live_loaded_after_stage14_5": true,
+      "server_start_id": "2026-07-01T05:24:50.211Z",
+      "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
       "c3_cooperative_cancellation_live_loaded": true,
-      "sessionless_hidden_route_active": true
+      "sessionless_hidden_route_active": false,
+      "sessionless_hidden_route_subscriptions_listen_active": false,
+      "sessionless_hidden_route_repo_retired_now": true
     },
     "public_3009": {
       "auth_mode": "none",
@@ -238,128 +269,12 @@
     "oauth21_3008_tools": {
       "tool_count": 43,
       "tool_names_hash": "8b62ecaf89227335",
-      "combined_fingerprint": "476c7d832021acb9",
+      "combined_fingerprint": "f43a3eed6fb79bb6",
       "connector_map_status": "in_sync_43_of_43",
       "last_tools_list_request_id": "mqy1eq6w-10",
-      "last_tools_list_served_at": "2026-06-28T17:02:47.583Z",
-      "last_tools_list_cache_directive_at": "2026-06-28T17:02:47.584Z",
       "ttl_ms": 0,
       "cache_scope": "private",
       "connector_refresh_required_now": false
     }
-  },
-  "hotplug_lifecycle": {
-    "policy_spec": "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json#hotplug_lifecycle_readiness",
-    "status": "hpl1_to_hpl4_reconciled_hpl5_gated",
-    "guard": "_tests/smoke_event_driven_hotplug_lifecycle.js",
-    "live_list_changed_emission_enabled_now": false,
-    "runtime_tools_list_mutation_enabled_now": false,
-    "state_store_write_enabled_now": false,
-    "dynamic_import_enabled_now": false,
-    "connector_refresh_required_now": false,
-    "runtime_restart_required_now": false
-  },
-  "sessionless_target_selection": {
-    "status": "prepared_pending_operator_selection",
-    "guard": "_tests/smoke_sessionless_target_selection_readiness.js",
-    "recommended_target": "dual_track_stable_current_plus_parallel_draft_prototype",
-    "do_not_remove_current_session_code": true,
-    "connector_refresh_required_now": false,
-    "runtime_restart_required_now": false,
-    "schema_change_required_now": false,
-    "public_3009_start_required_now": false,
-    "source_of_truth": "_workflow/sessionless_inventory.json",
-    "truth_consolidation": "inventory_authoritative_no_src_projection",
-    "s3_rules": {
-      "status": "prepared_no_runtime_change",
-      "source_of_truth": "_workflow/sessionless_inventory.json",
-      "guard": "_tests/smoke_s3_explicit_state_handle_design_rules.js",
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "schema_change_required_now": false,
-      "public_3009_start_required_now": false
-    },
-    "s4_prototype": {
-      "status": "live_loaded_default_disabled",
-      "route": "/mcp/sessionless",
-      "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
-      "default_enabled": false,
-      "current_mcp_route_changed": false,
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "schema_change_required_now": false,
-      "public_3009_start_required_now": false,
-      "live_3008_server_start_id": "2026-06-29T05:38:06.443Z",
-      "default_disabled_probe": "GET /mcp/sessionless -> 404 Not found"
-    },
-    "s5_workbench_standardization": {
-      "status": "prepared_no_runtime_change",
-      "source_of_truth": "_workflow/sessionless_inventory.json",
-      "guard": "_tests/smoke_s5_workbench_sessionless_standardization.js",
-      "previous_method_deprecation": "soft_deprecated_for_new_workbench_development_only",
-      "new_standard_route": "/mcp/sessionless",
-      "new_standard_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
-      "oauth21_3008_activation_requires_separate_stage": true,
-      "connector_migration_requires_separate_decision_and_refresh": true,
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "schema_change_required_now": false,
-      "public_3009_start_required_now": false
-    },
-    "s7_sep2575_request_contract": {
-      "status": "hidden_route_enforced",
-      "guard": "_tests/smoke_s7_sessionless_sep2575_request_contract.js"
-    },
-    "s8_isolated_activation": {
-      "status": "passed",
-      "port": 3020
-    },
-    "s9_live_activation": {
-      "status": "active",
-      "port": 3008
-    },
-    "s10b_live_authenticated_probe": {
-      "status": "passed",
-      "guard": "_tests/smoke_s10b_live_authenticated_sessionless_probe.js"
-    },
-    "s11_connector_migration_readiness": {
-      "status": "prepared_no_migration",
-      "guard": "_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js",
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "public_3009_start_required_now": false,
-      "stable_mcp_removal_forbidden_now": true
-    },
-    "s12_connector_migration_dry_run_plan": {
-      "status": "prepared_no_refresh",
-      "guard": "_tests/smoke_s12_connector_migration_dry_run_plan.js",
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "public_3009_start_required_now": false,
-      "connector_migration_performed_now": false
-    },
-    "s13_connector_migration_dry_run_execution_harness": {
-      "status": "executed_no_refresh",
-      "guard": "_tests/smoke_s13_connector_migration_dry_run_execution_harness.js",
-      "connector_refresh_required_now": false,
-      "runtime_restart_required_now": false,
-      "public_3009_start_required_now": false,
-      "connector_migration_performed_now": false
-    }
-  },
-  "legacy_retired_auth_cleanup": {
-    "status": "archived_with_consolidated_negative_control",
-    "manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
-    "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js"
-  },
-  "root_spec_sessionless_ready_review": {
-    "status": "complete",
-    "count": 30,
-    "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js"
-  },
-  "crlf_batch_normalization": {
-    "status": "lf_active",
-    "after": 0,
-    "guard": "_tests/smoke_crlf_batch_normalization_lf_policy.js"
   }
 }

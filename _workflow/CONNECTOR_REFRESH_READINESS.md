@@ -81,4 +81,4 @@ tool_count
 forbidden_tool_absence
 ```
 
-H9 acceptance guard: `_tests/smoke_stage12_connector_refresh_readiness.js`.
+H9 acceptance guard: `_tests/smoke_connector_refresh_readiness.js`.

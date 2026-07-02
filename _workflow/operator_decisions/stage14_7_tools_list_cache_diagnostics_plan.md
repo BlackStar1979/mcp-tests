@@ -130,7 +130,7 @@ Implemented after external server audit review:
 - listChanged remains false; no fake list_changed notification was added;
 - notifications/stream/ready was not implemented because it is not part of the approved D1-A scope.
 
-Live status: D1-A behavior is live on TESTS_MCP 3008. Current validation observed runtime fingerprint `476c7d832021acb9`, tool names hash `8b62ecaf89227335`, tool count `43`, and prior tools/list cache directive `ttlMs=0`, `cacheScope=private`. Connector refresh is not required for the current unchanged tool surface.
+Live status: D1-A behavior is live on TESTS_MCP 3008. Current validation observed runtime fingerprint `f43a3eed6fb79bb6`, tool names hash `8b62ecaf89227335`, tool count `43`, and prior tools/list cache directive `ttlMs=0`, `cacheScope=private`. Connector refresh is not required for the current unchanged tool surface.
 
 ## D1-C observability closeout
 
@@ -166,10 +166,10 @@ Implemented:
 Validation:
 
 - `smoke_tools_list_changed_runtime`;
-- `smoke_stage8_33_list_changed_readiness_contract`;
-- `smoke_stage8_35_list_changed_notification_bus_dry_run`;
-- `smoke_stage8_36_list_changed_local_harness`;
+- `smoke_list_changed_readiness_contract`;
+- `smoke_list_changed_notification_bus_dry_run`;
+- `smoke_list_changed_local_harness`;
 - `matrix_check`;
-- `node _tests/run_all_smokes.js --skip-network` with public=6 and tests_authenticated=182 after adding `smoke_stage14_7_tools_list_cache_live_validation`.
+- `node _tests/run_all_smokes.js --skip-network` with public=6 and tests_authenticated=182 after adding `smoke_tools_list_cache_live_validation`.
 
-Live status: D1-B is active on TESTS_MCP 3008. Audit evidence observed `tool_surface_state_missing`, `tool_surface_state_loaded`, and `tool_surface_state_saved`. Current `_control/tool-surface-state.json` records matching previous/current fingerprint `476c7d832021acb9`, so no `tool_surface_changed` and no `tools_list_changed_emitted` are expected. Connector-visible map comparison is `in_sync` at `43/43`; manual connector refresh is not required for the current unchanged surface, but remains a diagnostic action if future host tools/list observation is needed.
+Live status: D1-B is active on TESTS_MCP 3008. Audit evidence observed `tool_surface_state_missing`, `tool_surface_state_loaded`, and `tool_surface_state_saved`. Current `_control/tool-surface-state.json` records matching previous/current fingerprint `f43a3eed6fb79bb6`, so no `tool_surface_changed` and no `tools_list_changed_emitted` are expected. Connector-visible map comparison is `in_sync` at `43/43`; manual connector refresh is not required for the current unchanged surface, but remains a diagnostic action if future host tools/list observation is needed.

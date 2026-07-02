@@ -23,7 +23,7 @@ assert.equal(policyRuntime.connector_visible, false, "policy runtime spec must r
 assert.equal(policyRuntime.no_cli_extension, true, "policy runtime spec must not introduce CLI extension");
 
 const manifest = readJson("_tests/run_all_smoke_scripts.json");
-assert.ok(manifest.includes("_tests/smoke_stage12_policy_runtime_spec.js"), "manifest must include policy runtime spec smoke");
+assert.ok(manifest.includes("_tests/smoke_policy_runtime_spec.js"), "manifest must include policy runtime spec smoke");
 assert.ok(manifest.includes("_tests/smoke_stage12_step36_policy_runtime_closeout.js"), "manifest must include Step 36 closeout smoke");
 
 const state = readJson("_workflow/state.json");

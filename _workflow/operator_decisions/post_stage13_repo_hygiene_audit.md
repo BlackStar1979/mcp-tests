@@ -1,11 +1,11 @@
-# Post-Stage 13 Repo Hygiene and Debt Audit
+# Repo Hygiene and Debt Audit
 
 Status: GREEN / AUDIT ONLY
 Date: 2026-06-24
 
 ## Purpose
 
-This audit prepares the repository for a Stage 14 proposal. It checks whether Stage 13 left workflow debt, whether code health is green, and which open work items should remain in the active queue.
+This audit prepares the repository for a later implementation proposal. It checks whether the earlier closeout left workflow debt, whether code health is green, and which open work items should remain in the active queue.
 
 ## Code health
 
@@ -21,7 +21,7 @@ This audit prepares the repository for a Stage 14 proposal. It checks whether St
 - State current work package is Stage 13 closeout and Stage 13 status is green_closed.
 - Stage 13 closeout explicitly records no Stage 14 implementation approval.
 - Active next_allowed_work contains proposal/recommendation work only plus explicit approval boundaries.
-- Historical `pending_commit` strings are confined to legacy whitelist compatibility in `_tests/smoke_stage12_streamable_http_workflow_plan.js`; no active pending commit was found.
+- Historical `pending_commit` strings are confined to legacy whitelist compatibility in `_tests/smoke_streamable_http_workflow_plan.js`; no active pending commit was found.
 - Historical stage3 legacy pending counters still exist as historical snapshots, while current counters are zero. Leave as history; do not treat as active debt.
 ## Active remaining work queue
 
@@ -30,8 +30,8 @@ This audit prepares the repository for a Stage 14 proposal. It checks whether St
    - Why first: clearest continuation of Stage 10-12 policy work with existing guards/readiness artifacts.
    - Boundary: proposal/no-apply first; no runtime enforcement, deny behavior, deploy, restart or connector refresh without later approval.
 
-2. Cooperative Tool Cancellation C3.
-   - Basis: Stage 7 completed C1 AbortSignal plumbing and C2 no-write-after-close guard; C3 cooperative tool cancellation sample remains deferred.
+2. Cooperative Tool Cancellation.
+   - Basis: Stage 7 completed request AbortSignal plumbing and the no-write-after-close guard; cooperative tool cancellation remained deferred at audit time.
    - Why second: contained runtime-quality improvement with existing cancellation context.
    - Boundary: preserve timeout fallback and avoid sessionless migration.
 
@@ -55,13 +55,13 @@ This audit prepares the repository for a Stage 14 proposal. It checks whether St
    - Why lower priority: pure hygiene; risk is diff churn.
    - Boundary: only separate small-batch migration, not incidental cleanup.
 
-## Recommendation for Stage 14 proposal
+## Recommendation for the next proposal
 
-Prepare Stage 14 as `Runtime Enforcement Apply Package - No Apply`. It should be a proposal/verification package, not runtime enforcement. The proposal must show hook points, exact files, rollback/restart/deploy implications, connector-visible impact, validation plan, and explicit non-actions. Implementation still requires separate operator approval.
+Prepare `Runtime Enforcement Apply Package - No Apply`. It should be a proposal/verification package, not runtime enforcement. The proposal must show hook points, exact files, rollback/restart/deploy implications, connector-visible impact, validation plan, and explicit non-actions. Implementation still requires separate operator approval.
 
 ## Non-actions
 
-- no Stage 14 implementation approval
+- no implementation approval
 - no runtime code patch
 - no deploy
 - no runtime restart

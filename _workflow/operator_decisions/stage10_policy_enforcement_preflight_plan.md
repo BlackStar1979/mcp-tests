@@ -51,7 +51,7 @@ Result should be a deterministic report with no runtime behavior change.
 
 Expected guard:
 
-- `_tests/smoke_stage10_policy_enforcement_coverage_matrix.js`
+- `_tests/smoke_policy_enforcement_coverage_matrix.js`
 
 ### 10.2 Deny reason-code design and dry-run evaluator
 
@@ -68,7 +68,7 @@ Define stable dry-run reason codes, for example:
 
 Expected guard:
 
-- `_tests/smoke_stage10_policy_preflight_reason_codes.js`
+- `_tests/smoke_policy_preflight_reason_codes.js`
 
 ### 10.3 Audit receipt shape for future enforcement
 
@@ -85,7 +85,7 @@ Design a redacted audit receipt for future enforcement decisions. It should incl
 
 Expected guard:
 
-- `_tests/smoke_stage10_policy_preflight_receipt_shape.js`
+- `_tests/smoke_policy_preflight_receipt_shape.js`
 
 ### 10.4 No-behavior-change guard
 

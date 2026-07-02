@@ -29,12 +29,12 @@ Reviewed runtime paths:
 
 Reviewed tests:
 
-- `_tests/smoke_stage12_streamable_http_session_lifecycle.js`
-- `_tests/smoke_stage12_get_sse_stream.js`
-- `_tests/smoke_stage12_pending_request_correlation.js`
-- `_tests/smoke_stage12_sampling_roundtrip.js`
-- `_tests/smoke_stage12_sampling_user_approval_policy.js`
-- `_tests/smoke_stage12_session_replay_guards.js`
+- `_tests/smoke_streamable_http_session_lifecycle.js`
+- `_tests/smoke_get_sse_stream.js`
+- `_tests/smoke_pending_request_correlation.js`
+- `_tests/smoke_sampling_roundtrip.js`
+- `_tests/smoke_sampling_user_approval_policy.js`
+- `_tests/smoke_session_replay_guards.js`
 
 ## Inventory summary
 

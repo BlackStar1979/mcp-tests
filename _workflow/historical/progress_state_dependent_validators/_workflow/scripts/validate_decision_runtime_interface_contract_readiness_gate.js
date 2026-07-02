@@ -137,7 +137,7 @@ requireFile(validator.script, 'contract validator script');
 const negativeControls = requireObject(contract.negative_controls, 'decision_runtime_interface_contract.negative_controls');
 requireEqual(negativeControls, 'status', 'passing', 'decision_runtime_interface_contract.negative_controls');
 requireEqual(negativeControls, 'tool', '_workflow/scripts/validate_decision_runtime_interface_contract_negative_controls.js', 'decision_runtime_interface_contract.negative_controls');
-requireEqual(negativeControls, 'smoke', '_tests/smoke_stage12_decision_runtime_interface_contract_negative_controls.js', 'decision_runtime_interface_contract.negative_controls');
+requireEqual(negativeControls, 'smoke', '_tests/smoke_decision_runtime_interface_contract_negative_controls.js', 'decision_runtime_interface_contract.negative_controls');
 requireEqual(negativeControls, 'control_count', 17, 'decision_runtime_interface_contract.negative_controls');
 requireBool(negativeControls, 'runtime_integrated', false, 'decision_runtime_interface_contract.negative_controls');
 requireBool(negativeControls, 'mcp_tool_exposed', false, 'decision_runtime_interface_contract.negative_controls');

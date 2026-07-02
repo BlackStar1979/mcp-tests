@@ -22,7 +22,7 @@ src/runtime/oauth_metadata.js
 src/auth/oauth_authorization_server_metadata.js
 src/auth/auth_oauth.js
 SERVER_AUTH_SPEC.json
-_tests/smoke_stage12_oauth_as_metadata_integration.js
+_tests/smoke_oauth_as_metadata_integration.js
 ```
 
 Checklist:
@@ -38,7 +38,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_oauth_as_metadata_integration.js = ok
+node _tests/smoke_oauth_as_metadata_integration.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -54,8 +54,8 @@ src/auth/oauth_jwt_verify.js
 src/auth/oauth_introspection.js
 src/auth/auth_oauth.js
 SERVER_AUTH_SPEC.json
-_tests/smoke_stage12_oauth_jwks_rs256_validation.js
-_tests/smoke_stage12_oauth_introspection_validation.js
+_tests/smoke_oauth_jwks_rs256_validation.js
+_tests/smoke_oauth_introspection_validation.js
 ```
 
 Checklist JWKS/RS256:
@@ -78,8 +78,8 @@ Checklist introspection:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_oauth_jwks_rs256_validation.js = ok
-node _tests/smoke_stage12_oauth_introspection_validation.js = ok
+node _tests/smoke_oauth_jwks_rs256_validation.js = ok
+node _tests/smoke_oauth_introspection_validation.js = ok
 node _tests/run_all_smokes.js --skip-network = ok
 ```
 
@@ -92,7 +92,7 @@ Touchpoints:
 ```text
 SERVER_AUTH_SPEC.json
 _workflow/OAUTH_PRODUCTION_HARDENING_PLAN.md
-_tests/smoke_stage12_oauth_dcr_policy.js
+_tests/smoke_oauth_dcr_policy.js
 ```
 
 Checklist:
@@ -107,7 +107,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_oauth_dcr_policy.js = ok
+node _tests/smoke_oauth_dcr_policy.js = ok
 ```
 
 ## 5. PKCE / client-facing authorization flow at AS boundary
@@ -118,7 +118,7 @@ Touchpoints:
 
 ```text
 SERVER_AUTH_SPEC.json
-_tests/smoke_stage12_oauth_pkce_policy.js
+_tests/smoke_oauth_pkce_policy.js
 ```
 
 Checklist:
@@ -133,7 +133,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_oauth_pkce_policy.js = ok
+node _tests/smoke_oauth_pkce_policy.js = ok
 ```
 
 ## 6. Key rotation
@@ -146,7 +146,7 @@ Touchpoints:
 src/auth/oauth_jwks_cache.js
 src/auth/oauth_jwt_verify.js
 SERVER_AUTH_SPEC.json
-_tests/smoke_stage12_oauth_key_rotation.js
+_tests/smoke_oauth_key_rotation.js
 ```
 
 Checklist:
@@ -162,7 +162,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_oauth_key_rotation.js = ok
+node _tests/smoke_oauth_key_rotation.js = ok
 ```
 
 ## 7. Sampling user-approval policy
@@ -175,7 +175,7 @@ Touchpoints:
 src/runtime/sampling_context.js
 SERVER_AUTH_SPEC.json
 SERVER_SAMPLING_POLICY_SPEC.json
-_tests/smoke_stage12_sampling_user_approval_policy.js
+_tests/smoke_sampling_user_approval_policy.js
 ```
 
 Checklist:
@@ -191,7 +191,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_sampling_user_approval_policy.js = ok
+node _tests/smoke_sampling_user_approval_policy.js = ok
 ```
 
 ## 8. SSE keepalive and resumability
@@ -204,8 +204,8 @@ Touchpoints:
 src/runtime/sse_response.js
 src/runtime/mcp_get_stream_handler.js
 src/runtime/session.js
-_tests/smoke_stage12_sse_keepalive.js
-_tests/smoke_stage12_sse_resumability.js
+_tests/smoke_sse_keepalive.js
+_tests/smoke_sse_resumability.js
 ```
 
 Checklist:
@@ -222,8 +222,8 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_sse_keepalive.js = ok
-node _tests/smoke_stage12_sse_resumability.js = ok
+node _tests/smoke_sse_keepalive.js = ok
+node _tests/smoke_sse_resumability.js = ok
 ```
 
 ## 9. Live connector refresh after explicit operator approval
@@ -235,7 +235,7 @@ Touchpoints:
 ```text
 SERVER_CONNECTOR_SURFACE_SPEC.json
 _workflow/CONNECTOR_REFRESH_READINESS.md
-_tests/smoke_stage12_connector_refresh_readiness.js
+_tests/smoke_connector_refresh_readiness.js
 ```
 
 Checklist:
@@ -251,7 +251,7 @@ Checklist:
 Acceptance:
 
 ```text
-node _tests/smoke_stage12_connector_refresh_readiness.js = ok
+node _tests/smoke_connector_refresh_readiness.js = ok
 ```
 
 ## 10. Recommended execution order
@@ -272,39 +272,39 @@ Do not refresh the live connector before H9. Do not claim production OAuth until
 
 ## H1 completion note
 
-H1 is green. Implemented: `src/auth/oauth_authorization_server_metadata.js`, validated AS metadata loading from `MCP_TEST_OAUTH_AS_METADATA_FILE`, exact issuer validation, required endpoint validation, JWKS-or-introspection requirement, metadata cache, runtime provider wiring, and Protected Resource Metadata publishing from validated AS metadata. Guard: `_tests/smoke_stage12_oauth_as_metadata_integration.js`. Next step: H2 - JWKS/RS256 validation path.
+H1 is green. Implemented: `src/auth/oauth_authorization_server_metadata.js`, validated AS metadata loading from `MCP_TEST_OAUTH_AS_METADATA_FILE`, exact issuer validation, required endpoint validation, JWKS-or-introspection requirement, metadata cache, runtime provider wiring, and Protected Resource Metadata publishing from validated AS metadata. Guard: `_tests/smoke_oauth_as_metadata_integration.js`. Next step: H2 - JWKS/RS256 validation path.
 
 ## H2 completion note
 
-H2 is green. Implemented: `src/auth/oauth_jwks_cache.js`, `src/auth/oauth_jwt_verify.js`, JWKS/RS256 branch in `src/auth/auth_oauth.js`, `MCP_TEST_OAUTH_JWKS_FILE` runtime wiring, and `_tests/smoke_stage12_oauth_jwks_rs256_validation.js`. HS256 remains available only as compatibility/test fallback when JWKS is not configured. Next step: H3 - Introspection path or explicit decision to defer introspection.
+H2 is green. Implemented: `src/auth/oauth_jwks_cache.js`, `src/auth/oauth_jwt_verify.js`, JWKS/RS256 branch in `src/auth/auth_oauth.js`, `MCP_TEST_OAUTH_JWKS_FILE` runtime wiring, and `_tests/smoke_oauth_jwks_rs256_validation.js`. HS256 remains available only as compatibility/test fallback when JWKS is not configured. Next step: H3 - Introspection path or explicit decision to defer introspection.
 
 ## H3 completion note
 
-H3 is green. Implemented optional introspection validation for opaque-token style inputs: `src/auth/oauth_introspection.js`, introspection branch in `src/auth/auth_oauth.js`, env-driven `MCP_TEST_OAUTH_INTROSPECTION_FILE`, active=true requirement, issuer/audience/time/scope validation, positive-only cache, and `_tests/smoke_stage12_oauth_introspection_validation.js`. JWKS/RS256 remains the preferred production path. Next step: H4 - DCR policy.
+H3 is green. Implemented optional introspection validation for opaque-token style inputs: `src/auth/oauth_introspection.js`, introspection branch in `src/auth/auth_oauth.js`, env-driven `MCP_TEST_OAUTH_INTROSPECTION_FILE`, active=true requirement, issuer/audience/time/scope validation, positive-only cache, and `_tests/smoke_oauth_introspection_validation.js`. JWKS/RS256 remains the preferred production path. Next step: H4 - DCR policy.
 
 ## H4 completion note
 
-H4 is green. Implemented DCR policy/spec only: `dynamic_client_registration_policy` in `SERVER_AUTH_SPEC.json` and `_tests/smoke_stage12_oauth_dcr_policy.js`. Decision: `dcr_mode=supported`, manual registration fallback is allowed, wildcard redirect URIs are forbidden, localhost/127.0.0.1 redirects are allowed for development, HTTPS redirects are required otherwise, and untrusted public clients require operator approval. MCP server does not implement its own runtime client registration endpoint. Next step: H5 - PKCE/client-flow policy at AS boundary.
+H4 is green. Implemented DCR policy/spec only: `dynamic_client_registration_policy` in `SERVER_AUTH_SPEC.json` and `_tests/smoke_oauth_dcr_policy.js`. Decision: `dcr_mode=supported`, manual registration fallback is allowed, wildcard redirect URIs are forbidden, localhost/127.0.0.1 redirects are allowed for development, HTTPS redirects are required otherwise, and untrusted public clients require operator approval. MCP server does not implement its own runtime client registration endpoint. Next step: H5 - PKCE/client-flow policy at AS boundary.
 
 ## H5 completion note
 
-H5 is green. Implemented PKCE/client-flow policy at AS boundary: `pkce_client_flow_policy` in `SERVER_AUTH_SPEC.json` and `_tests/smoke_stage12_oauth_pkce_policy.js`. Policy requires authorization code flow, PKCE for public clients, S256 only, state verification, exact redirect URI validation by AS, and resource parameter in both authorization and token requests. `mcp-tests` remains a resource server and does not issue authorization codes. Next step: H6 - Key rotation.
+H5 is green. Implemented PKCE/client-flow policy at AS boundary: `pkce_client_flow_policy` in `SERVER_AUTH_SPEC.json` and `_tests/smoke_oauth_pkce_policy.js`. Policy requires authorization code flow, PKCE for public clients, S256 only, state verification, exact redirect URI validation by AS, and resource parameter in both authorization and token requests. `mcp-tests` remains a resource server and does not issue authorization codes. Next step: H6 - Key rotation.
 
 ## H6 completion note
 
-H6 is green. Implemented JWKS key-rotation behavior in `src/auth/oauth_jwks_cache.js`: issuer/jwks_uri status fields, multiple active keys, bounded refresh-on-unknown-kid, unknown-kid refresh suppression reason, optional previous-key overlap window, and `_tests/smoke_stage12_oauth_key_rotation.js`. HTTP cache-control/max-age parsing was later closed by jwks_ttl_guard; local TTL remains bounded. Next step: H7 - Sampling user-approval policy.
+H6 is green. Implemented JWKS key-rotation behavior in `src/auth/oauth_jwks_cache.js`: issuer/jwks_uri status fields, multiple active keys, bounded refresh-on-unknown-kid, unknown-kid refresh suppression reason, optional previous-key overlap window, and `_tests/smoke_oauth_key_rotation.js`. HTTP cache-control/max-age parsing was later closed by jwks_ttl_guard; local TTL remains bounded. Next step: H7 - Sampling user-approval policy.
 
 ## H7 completion note
 
-H7 is green. Implemented sampling user-approval policy: `SERVER_SAMPLING_POLICY_SPEC.json`, runtime approval/budget enforcement in `src/runtime/sampling_context.js`, and `_tests/smoke_stage12_sampling_user_approval_policy.js`. Low-risk text-only single-message sampling can proceed automatically within per-session budget. Non-low-risk sampling requires an approved receipt; hidden instruction keys cannot bypass approval. Next step: H8 - SSE keepalive/resumability.
+H7 is green. Implemented sampling user-approval policy: `SERVER_SAMPLING_POLICY_SPEC.json`, runtime approval/budget enforcement in `src/runtime/sampling_context.js`, and `_tests/smoke_sampling_user_approval_policy.js`. Low-risk text-only single-message sampling can proceed automatically within per-session budget. Non-low-risk sampling requires an approved receipt; hidden instruction keys cannot bypass approval. Next step: H8 - SSE keepalive/resumability.
 
 ## H8 completion note
 
-H8 is green. Implemented SSE keepalive/resumability: `encodeSseComment`, `writeSseComment`, keepalive timer in GET stream handler, `Last-Event-ID` parsing, monotonic SSE IDs, bounded replay buffer in `McpSession`, replay of buffered sent events, and `_tests/smoke_stage12_sse_keepalive.js` / `_tests/smoke_stage12_sse_resumability.js`. Fail-closed on too-old Last-Event-ID was later closed by replay_gap_guard. Next step: H9 - Live connector refresh readiness after explicit operator approval.
+H8 is green. Implemented SSE keepalive/resumability: `encodeSseComment`, `writeSseComment`, keepalive timer in GET stream handler, `Last-Event-ID` parsing, monotonic SSE IDs, bounded replay buffer in `McpSession`, replay of buffered sent events, and `_tests/smoke_sse_keepalive.js` / `_tests/smoke_sse_resumability.js`. Fail-closed on too-old Last-Event-ID was later closed by replay_gap_guard. Next step: H9 - Live connector refresh readiness after explicit operator approval.
 
 ## H9 completion note
 
-H9 is green. Implemented live connector refresh readiness contract only: `SERVER_CONNECTOR_SURFACE_SPEC.json`, `_workflow/CONNECTOR_REFRESH_READINESS.md`, and `_tests/smoke_stage12_connector_refresh_readiness.js`. Public connector remains `auth:none` with 13 allowed public tools. OAuth/resource-server connector must remain separate. Query-token URLs are not OAuth-ready. Stage 6 later performed OAuth21 connector refresh externally by operator approval and recorded post-refresh evidence. Public connector remained disconnected; public runtime was validated locally.
+H9 is green. Implemented live connector refresh readiness contract only: `SERVER_CONNECTOR_SURFACE_SPEC.json`, `_workflow/CONNECTOR_REFRESH_READINESS.md`, and `_tests/smoke_connector_refresh_readiness.js`. Public connector remains `auth:none` with 13 allowed public tools. OAuth/resource-server connector must remain separate. Query-token URLs are not OAuth-ready. Stage 6 later performed OAuth21 connector refresh externally by operator approval and recorded post-refresh evidence. Public connector remained disconnected; public runtime was validated locally.
 
 ## Post-H9 debt closure note
 
@@ -312,4 +312,4 @@ Closed the two remaining debts required before any live connector refresh author
 
 ## H10 OAuth21 local authorization server note
 
-H10 is green. `mcp-tests` now has a separate `oauth21` mode on port 3008 with public base URL `https://mcp-tests-oauth21.romionologic.dev`, path `/mcp`, app-layer OAuth 2.1 authorization server endpoints, public DCR, PKCE S256, operator login gate, no Cloudflare Access requirement, and Authorization header Bearer validation for MCP. Guards: `_tests/smoke_stage12_oauth21_bootstrap_config.js`, `_tests/smoke_stage12_oauth21_host_header.js`, `_tests/smoke_stage12_oauth21_local_as_flow.js`.
+H10 is green. `mcp-tests` now has a separate `oauth21` mode on port 3008 with public base URL `https://mcp-tests-oauth21.romionologic.dev`, path `/mcp`, app-layer OAuth 2.1 authorization server endpoints, public DCR, PKCE S256, operator login gate, no Cloudflare Access requirement, and Authorization header Bearer validation for MCP. Guards: `_tests/smoke_oauth21_bootstrap_config.js`, `_tests/smoke_oauth21_host_header.js`, `_tests/smoke_oauth21_local_as_flow.js`.

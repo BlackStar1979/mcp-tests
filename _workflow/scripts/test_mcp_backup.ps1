@@ -30,6 +30,27 @@ function Get-Sha256OrNull($Path) {
   return (Get-FileHash -Algorithm SHA256 -Path $Path).Hash.ToLowerInvariant()
 }
 
+function Copy-ItemWithoutNestedSnapshots($Source, $Target) {
+  $sourcePath = [System.IO.Path]::GetFullPath($Source)
+  $targetPath = [System.IO.Path]::GetFullPath($Target)
+  $snapshotRootPrefix = [System.IO.Path]::GetFullPath($SnapshotRoot).TrimEnd('\') + '\'
+
+  New-Item -ItemType Directory -Force -Path $targetPath | Out-Null
+  foreach ($child in Get-ChildItem -LiteralPath $sourcePath -Force) {
+    $childSource = $child.FullName
+    if ($child.PSIsContainer) {
+      $childSourceFull = [System.IO.Path]::GetFullPath($childSource)
+      if ($childSourceFull.StartsWith($snapshotRootPrefix, [System.StringComparison]::OrdinalIgnoreCase)) {
+        continue
+      }
+      Copy-ItemWithoutNestedSnapshots -Source $childSource -Target (Join-Path $targetPath $child.Name)
+    } else {
+      New-Item -ItemType Directory -Force -Path $targetPath | Out-Null
+      Copy-Item -LiteralPath $childSource -Destination (Join-Path $targetPath $child.Name) -Force
+    }
+  }
+}
+
 function Write-BackupAudit($Event, $Level, $Data) {
   $entry = [ordered]@{
     ts = (Get-Date).ToUniversalTime().ToString("o")
@@ -57,7 +78,12 @@ try {
 
     if ($exists -and -not $WhatIfOnly) {
       New-Item -ItemType Directory -Force -Path (Split-Path $target) | Out-Null
-      Copy-Item -Path $source -Destination $target -Recurse -Force
+      if ($rel -eq "_workflow" -and (Test-Path $source -PathType Container)) {
+        # Remove nested snapshot copies when broad workflow backups include _workflow.
+        Copy-ItemWithoutNestedSnapshots -Source $source -Target $target
+      } else {
+        Copy-Item -Path $source -Destination $target -Recurse -Force
+      }
     }
 
     $items += [ordered]@{

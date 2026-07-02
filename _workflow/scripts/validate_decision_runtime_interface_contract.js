@@ -187,7 +187,7 @@ for (const key of [
 if (contract?.validator && contract.validator.script !== '_workflow/scripts/validate_decision_runtime_interface_contract.js') {
   warn('decision_runtime_interface_contract.validator.script points to a different script');
 }
-if (contract?.smoke && contract.smoke.path !== '_tests/smoke_stage12_decision_runtime_interface_contract_validator.js') {
+if (contract?.smoke && contract.smoke.path !== '_tests/smoke_decision_runtime_interface_contract_validator.js') {
   warn('decision_runtime_interface_contract.smoke.path points to a different smoke');
 }
 

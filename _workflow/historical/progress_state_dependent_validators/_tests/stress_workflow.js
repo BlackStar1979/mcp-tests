@@ -156,7 +156,7 @@ function main() {
   }));
 
   cases.push(runCase("topology_cleanup_guard_child_process", () => {
-    const result = runNodeScript("_tests/smoke_stage8_51_topology_cleanup_guard.js");
+    const result = runNodeScript("_tests/archive/non_run_all_stale/smoke_topology_cleanup_guard.js");
     assert.ok(result.stdout.includes("smoke_stage8_51_topology_cleanup_guard ok"));
     return result;
   }));
@@ -171,9 +171,9 @@ function main() {
 
   cases.push(runCase("audit_export_redaction_safeguard_child_process", () => {
     const scripts = [
-      "_tests/smoke_stage8_24_audit_export_safety.js",
-      "_tests/smoke_stage8_41_audit_export_redaction_hardening.js",
-      "_tests/smoke_stage8_45_observability_redaction_summary.js",
+      "_tests/smoke_audit_export_safety.js",
+      "_tests/smoke_audit_export_redaction_hardening.js",
+      "_tests/smoke_observability_redaction_summary.js",
     ];
     const results = scripts.map((script) => ({ script, ...runNodeScript(script) }));
     assert.ok(results.every((result) => result.stdout.includes(" ok")));
@@ -181,19 +181,19 @@ function main() {
   }));
 
   cases.push(runCase("io_safety_policy_expansion_trigger_guard", () => {
-    const result = runNodeScript("_tests/smoke_stage8_54_io_safety_policy.js");
+    const result = runNodeScript("_tests/smoke_io_safety_policy.js");
     assert.ok(result.stdout.includes("smoke_stage8_54_io_safety_policy ok"));
     return result;
   }));
 
   cases.push(runCase("io_safety_active_controls_guard", () => {
-    const result = runNodeScript("_tests/smoke_stage8_55_io_safety_active_controls.js");
+    const result = runNodeScript("_tests/smoke_io_safety_active_controls.js");
     assert.ok(result.stdout.includes("smoke_stage8_55_io_safety_active_controls ok"));
     return result;
   }));
 
   cases.push(runCase("mcp_apps_risk_policy_guard", () => {
-    const result = runNodeScript("_tests/smoke_stage8_56_mcp_apps_risk_policy.js");
+    const result = runNodeScript("_tests/smoke_mcp_apps_risk_policy.js");
     assert.ok(result.stdout.includes("smoke_stage8_56_mcp_apps_risk_policy ok"));
     return result;
   }));

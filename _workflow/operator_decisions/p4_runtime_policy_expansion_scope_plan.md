@@ -77,7 +77,7 @@ Non-goal: no CLI flag and no connector-visible tool.
 
 Guard:
 
-- `_tests/smoke_stage12_runtime_policy_spec_loader.js`
+- dedicated runtime-policy spec-loader guard (active descriptive filename not yet fixed in repo)
 
 ### R2 - Tool catalog runtime resolution
 
@@ -93,7 +93,7 @@ Extend decision context to include:
 
 Guard:
 
-- `_tests/smoke_stage12_runtime_policy_tool_catalog_resolution.js`
+- `_tests/smoke_tool_catalog_semantics.js`
 
 ### R3 - Resource/operation class fail-closed checks
 
@@ -106,7 +106,7 @@ Evaluate existence and consistency of:
 
 Guard:
 
-- `_tests/smoke_stage12_runtime_policy_resource_class_negative_controls.js`
+- dedicated resource/operation-class negative-control guard (active descriptive filename not yet fixed in repo)
 
 ### R4 - Profile resource/scope matrix enforcement
 
@@ -120,7 +120,7 @@ Enforce profile surface fields already validated by `profile_schema_validator.js
 
 Guard:
 
-- `_tests/smoke_stage12_runtime_policy_profile_scope_matrix.js`
+- `profile_schema_validator.js` plus a dedicated profile resource/scope matrix guard (active descriptive filename not yet fixed in repo)
 
 ### R5 - Argument resource-claim extraction
 
@@ -136,7 +136,7 @@ The extractor must be redaction-safe and must not dump raw secrets or large valu
 
 Guard:
 
-- `_tests/smoke_stage12_runtime_policy_resource_claim_extractor.js`
+- dedicated resource-claim extraction guard (active descriptive filename not yet fixed in repo)
 
 ### R6 - Audit receipt v2
 
@@ -151,7 +151,7 @@ Extend decision receipts with resource/scope fields while preserving redaction:
 
 Guard:
 
-- `_tests/smoke_stage12_runtime_policy_receipt_v2.js`
+- `_tests/smoke_decision_runtime_audit_receipt.js` plus any future receipt-v2-specific guard if the receipt shape expands further
 
 ### R7 - Controlled enablement
 

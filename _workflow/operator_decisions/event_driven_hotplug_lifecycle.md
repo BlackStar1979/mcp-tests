@@ -63,13 +63,13 @@ Still valid:
 ## Validation
 
 - `node _tests/smoke_event_driven_hotplug_lifecycle.js`
-- `node _tests/smoke_stage8_33_list_changed_readiness_contract.js`
-- `node _tests/smoke_stage8_36_list_changed_local_harness.js`
-- `node _tests/smoke_stage8_38_list_changed_dry_run_pipeline.js`
-- `node _tests/smoke_stage8_46_state_store_apply_readiness_gate.js`
-- `node _tests/smoke_stage8_47_security_first_preflight.js`
-- `node _tests/smoke_stage8_registry_diff_dry_run.js`
-- `node _tests/smoke_stage9_runtime_registry_context_assembly.js`
+- `node _tests/smoke_list_changed_readiness_contract.js`
+- `node _tests/smoke_list_changed_local_harness.js`
+- `node _tests/smoke_list_changed_dry_run_pipeline.js`
+- `node _tests/smoke_state_store_apply_readiness_gate.js`
+- `node _tests/smoke_security_first_preflight.js`
+- `node _tests/smoke_registry_diff_dry_run.js`
+- `node _tests/smoke_runtime_registry_context_assembly.js`
 - `node _tests/smoke_matrix_check.js`
 - `node _tests/run_all_smokes.js --skip-network`
 - `git diff --check`

@@ -25,7 +25,7 @@ No runtime restart and no connector refresh were performed.
 ## Validation
 
 - `node _tests/smoke_root_server_specs_consistency.js` -> ok
-- `node _tests/smoke_workflow_state_compact_spec_map.js` -> ok
+- `node _tests/smoke_workflow_state_orientation_map.js` -> ok
 - `node _tests/run_all_smokes.js --skip-network` via wrapper -> ok, public=6, tests_authenticated=167
 
 ## Current active root specs

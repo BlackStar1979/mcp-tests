@@ -83,8 +83,8 @@ Stage 14.8 reconciles the runtime-enforcement truth layers after Stage 14.5, Sta
 
 Required validation for this reconciliation:
 
-- `node _tests/smoke_stage14_8_runtime_enforcement_state_reconciliation.js`
-- `node _tests/smoke_stage14_5_runtime_policy_gate_apply.js`
+- `node _tests/smoke_runtime_enforcement_state_reconciliation.js`
+- `node _tests/smoke_runtime_policy_gate_apply.js`
 - `node _tests/run_all_smokes.js --skip-network`
 
 ## Next recommended step

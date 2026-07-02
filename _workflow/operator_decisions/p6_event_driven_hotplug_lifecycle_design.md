@@ -27,16 +27,16 @@ Reviewed source/spec/test paths:
 - `src/plugin_visibility_state_store_apply_gate.js`
 - `src/session_toolset.js`
 - `src/security_first_preflight.js`
-- `_tests/smoke_stage8_33_list_changed_readiness_contract.js`
-- `_tests/smoke_stage8_35_list_changed_notification_bus_dry_run.js`
-- `_tests/smoke_stage8_36_list_changed_local_harness.js`
-- `_tests/smoke_stage8_37_list_changed_audit_receipt.js`
-- `_tests/smoke_stage8_38_list_changed_dry_run_pipeline.js`
-- `_tests/smoke_stage8_40_plugin_visibility_state_store_preview.js`
-- `_tests/smoke_stage8_42_plugin_visibility_state_store_receipt.js`
-- `_tests/smoke_stage8_44_plugin_visibility_state_store_pipeline.js`
-- `_tests/smoke_stage8_46_state_store_apply_readiness_gate.js`
-- `_tests/smoke_stage8_47_security_first_preflight.js`
+- `_tests/smoke_list_changed_readiness_contract.js`
+- `_tests/smoke_list_changed_notification_bus_dry_run.js`
+- `_tests/smoke_list_changed_local_harness.js`
+- `_tests/smoke_list_changed_audit_receipt.js`
+- `_tests/smoke_list_changed_dry_run_pipeline.js`
+- `_tests/smoke_plugin_visibility_state_store_preview.js`
+- `_tests/smoke_plugin_visibility_state_store_receipt.js`
+- `_tests/smoke_plugin_visibility_state_store_pipeline.js`
+- `_tests/smoke_state_store_apply_readiness_gate.js`
+- `_tests/smoke_security_first_preflight.js`
 
 Observed state:
 
@@ -93,7 +93,7 @@ Acceptance:
 
 Likely guards:
 
-- `_tests/smoke_stage12_hotplug_registry_static_equivalence.js`
+- dedicated registry/static-equivalence guard (active descriptive filename not yet fixed in repo)
 - existing descriptor/profile audits.
 
 ### HPL2 - Diff model integration
@@ -108,7 +108,7 @@ Acceptance:
 
 Likely guard:
 
-- `_tests/smoke_stage12_hotplug_diff_model.js`
+- `_tests/smoke_tools_list_diff_model.js`
 
 ### HPL3 - State store apply gate
 
@@ -122,7 +122,7 @@ Acceptance:
 
 Likely guard:
 
-- `_tests/smoke_stage12_hotplug_apply_gate.js`
+- `_tests/smoke_state_store_apply_readiness_gate.js`
 
 ### HPL4 - Local harness emission only
 
@@ -137,8 +137,8 @@ Acceptance:
 
 Likely guard:
 
-- existing `_tests/smoke_stage8_36_list_changed_local_harness.js`
-- new `_tests/smoke_stage12_hotplug_mock_emission_receipt.js`
+- existing `_tests/smoke_list_changed_local_harness.js`
+- `_tests/smoke_list_changed_audit_receipt.js`
 
 ### HPL5 - Runtime apply prototype behind feature flag
 

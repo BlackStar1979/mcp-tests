@@ -15,7 +15,7 @@
   "operator_binding": {
     "decision_record": "_workflow/operator_decisions/post_stage6_operator_decisions_2026-06-21.md",
     "source_context": "operator D1-D12 answers based on official MCP SEP index; chat attachment Wklejony tekst.txt 2026-06-25",
-    "summary": "D3-D6/D9 direct the workbench toward Sessionless MCP, explicit state handles, no DELETE /mcp teardown, per-request streams/cancellation, and event-driven list lifecycle. D7 directs Resource/Scope Matrix Enforcement as separate approved work."
+    "summary": "D3-D6/D9 direct the workbench toward Sessionless MCP, explicit state handles, no DELETE /mcp teardown, per-request streams/cancellation, and event-driven list lifecycle. Operator correction 2026-06-30 further clarifies that SSE and permanent dual-route coexistence are migration debt, not the target architecture. D7 directs Resource/Scope Matrix Enforcement as separate approved work."
   },
   "source_verification": {
     "last_verified_date": "2026-06-29",
@@ -79,14 +79,16 @@
     "src/runtime/session.js",
     "src/runtime/mcp_get_stream_handler.js",
     "src/runtime/outbound_request_manager.js",
+    "src/runtime/sessionless_prototype_route_handler.js",
+    "src/runtime/tools_list_changed_emitter.js",
     "src/runtime/sampling_context.js",
     "src/runtime/initialize_message_handler.js",
     "src/runtime/initialize_response.js",
     "src/runtime/rpc_message_dispatcher.js",
-    "_tests/smoke_stage12_streamable_http_session_lifecycle.js",
-    "_tests/smoke_stage12_get_sse_stream.js",
-    "_tests/smoke_stage12_pending_request_correlation.js",
-    "_tests/smoke_stage12_sampling_roundtrip.js",
+    "_tests/smoke_streamable_http_session_lifecycle.js",
+    "_tests/smoke_get_sse_stream.js",
+    "_tests/smoke_pending_request_correlation.js",
+    "_tests/smoke_sampling_roundtrip.js",
     "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
   ],
   "deprecation_ledger": [
@@ -112,12 +114,23 @@
         },
         {
           "item": "design parallel stateless mode before removal",
-          "status": "blocked_pending_target_selection"
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/sessionless_target_selection_decision.md"
         },
         {
-          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "item": "prepare historical workbench deprecation/standardization boundary for the hidden prototype route",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
+        },
+        {
+          "item": "bridge server/discover and per-request metadata onto stable /mcp without removing legacy initialize",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md"
+        },
+        {
+          "item": "record final legacy boundary for initialize on surviving /mcp",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md"
         }
       ]
     },
@@ -147,12 +160,12 @@
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness and _tests/smoke_sessionless_target_selection_readiness.js"
         },
         {
-          "item": "keep current stable session route separate from S4 prototype",
+          "item": "keep the current stable session route separate from the historical hidden prototype route",
           "status": "done",
-          "evidence": "_tests/smoke_s4_sessionless_runtime_prototype.js"
+          "evidence": "_tests/smoke_sessionless_runtime_prototype.js"
         },
         {
-          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "item": "prepare historical workbench deprecation/standardization boundary for the hidden prototype route",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
         }
@@ -178,21 +191,22 @@
           ]
         },
         {
-          "item": "create S2 target-selection decision",
-          "status": "pending"
+          "item": "record the historical target-selection decision for the parallel prototype track",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/sessionless_target_selection_decision.md"
         },
         {
-          "item": "prepare S2 target-selection readiness packet",
+          "item": "prepare the historical target-selection readiness packet for the parallel prototype track",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness"
         },
         {
-          "item": "implement S4 hidden sessionless prototype",
+          "item": "implement the historical hidden sessionless prototype",
           "status": "done",
-          "evidence": "_tests/smoke_s4_sessionless_runtime_prototype.js"
+          "evidence": "_tests/smoke_sessionless_runtime_prototype.js"
         },
         {
-          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "item": "prepare historical workbench deprecation/standardization boundary for the hidden prototype route",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
         }
@@ -206,8 +220,8 @@
         "SEP-2596"
       ],
       "target_lifecycle": "removed",
-      "repo_current_model": "stable GET /mcp SSE present",
-      "implementation_status": "blocked_stable_compat",
+      "repo_current_model": "stable GET /mcp now returns 405; legacy SSE helper file remains in repo as transitional debt",
+      "implementation_status": "partial",
       "migration_path": "subscriptions/listen RPC over POST in stateless target",
       "checklist": [
         {
@@ -215,17 +229,23 @@
           "status": "done",
           "evidence": [
             "src/runtime/mcp_get_stream_handler.js",
-            "_tests/smoke_stage12_get_sse_stream.js"
+            "_tests/smoke_get_sse_stream.js"
           ]
         },
         {
           "item": "design subscriptions/listen compatibility matrix",
-          "status": "pending"
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/subscriptions_listen_compatibility_matrix.md"
         },
         {
-          "item": "prepare S5 workbench deprecation/standardization boundary",
+          "item": "prepare historical workbench deprecation/standardization boundary for the hidden prototype route",
           "status": "done",
           "evidence": "_workflow/sessionless_inventory.json#target_selection_readiness.s5_workbench_deprecation_standardization"
+        },
+        {
+          "item": "apply bounded GET teardown on surviving /mcp route",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md"
         }
       ]
     },
@@ -236,18 +256,44 @@
         "SEP-2575",
         "SEP-2549"
       ],
-      "target_lifecycle": "active",
-      "repo_current_model": "not implemented in stable runtime",
-      "implementation_status": "pending",
-      "migration_path": "POST-based opt-in notification stream for list/resource updates",
+      "target_lifecycle": "operator_non_target",
+      "repo_current_model": "removed from active runtime; historical isolated validation previously exercised request-scoped SSE on the hidden sessionless prototype route, but current stable runtime still does not implement it",
+      "implementation_status": "done",
+      "migration_path": "for current TEST MCP tool-surface freshness, do not preserve subscriptions/listen on surviving /mcp; use pull-only tools/list freshness with ttlMs=0, cacheScope=private, and current tool-surface metadata",
       "checklist": [
         {
           "item": "record current official name subscriptions/listen",
           "status": "done"
         },
         {
+          "item": "record compatibility matrix against stable GET /mcp SSE and list_changed dry-run",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/subscriptions_listen_compatibility_matrix.md"
+        },
+        {
           "item": "test first on isolated port",
-          "status": "pending"
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/subscriptions_listen_isolated_validation.md"
+        },
+        {
+          "item": "record stricter no-SSE project contract boundary",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md"
+        },
+        {
+          "item": "record surviving-route replacement scope before prototype-route retirement",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md"
+        },
+        {
+          "item": "record final pull-only no-SSE contract for tool-surface freshness on surviving /mcp",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md"
+        },
+        {
+          "item": "retire prototype-only subscriptions/listen runtime path and stop advertising tool-list push on active /mcp",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md"
         }
       ]
     },
@@ -277,7 +323,7 @@
         "SEP-2575"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "C1/C2/C3 cancellation path implemented for stable-compatible runtime; JSON-RPC notifications/cancelled and draft transport semantics remain target-selection dependent",
+      "repo_current_model": "Request abort propagation, client-disconnect write guards, and cooperative tool cancellation are implemented for the stable-compatible runtime; JSON-RPC notifications/cancelled and draft transport semantics remain target-selection dependent",
       "implementation_status": "partial",
       "migration_path": "HTTP stream close cancels that request; timeout remains fallback",
       "checklist": [
@@ -286,14 +332,14 @@
           "status": "done"
         },
         {
-          "item": "implement C1 cancellation context plumbing",
+          "item": "implement request cancellation context plumbing",
           "status": "done",
-          "evidence": "_tests/smoke_stage7_c1_cancellation_context_plumbing.js"
+          "evidence": "_tests/smoke_request_cancellation_context.js"
         },
         {
-          "item": "implement C2/C3 cancellation guards",
+          "item": "implement disconnect and cooperative cancellation guards",
           "status": "done",
-          "evidence": "_tests/smoke_stage7_c2_client_disconnect_write_guard.js and _tests/smoke_c3_cooperative_tool_cancellation.js"
+          "evidence": "_tests/smoke_client_disconnect_write_guard.js and _tests/smoke_cooperative_tool_cancellation.js"
         }
       ]
     },
@@ -304,20 +350,26 @@
         "SEP-2575"
       ],
       "target_lifecycle": "removed",
-      "repo_current_model": "stable replay behavior present",
-      "implementation_status": "blocked_stable_compat",
+      "repo_current_model": "stable /mcp replay behavior no longer reachable; legacy SSE helper/tests remain as transitional debt",
+      "implementation_status": "partial",
       "migration_path": "connection drop cancels request; durable work uses tasks primitive",
       "checklist": [
         {
           "item": "map replay tests",
           "status": "done",
           "evidence": [
-            "_tests/smoke_stage12_get_sse_stream.js"
+            "_tests/smoke_get_sse_stream.js"
           ]
         },
         {
           "item": "avoid new dependency on resumable SSE",
-          "status": "pending"
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/subscriptions_listen_compatibility_matrix.md"
+        },
+        {
+          "item": "remove stable-route replay reachability",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md"
         }
       ]
     },
@@ -329,8 +381,8 @@
         "SEP-2567"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "ttlMs/cacheScope not enforced on list results",
-      "implementation_status": "pending",
+      "repo_current_model": "tools/list explicitly returns ttlMs=0 and cacheScope=private; no active top-level resources/prompts handlers exist; tools/call list/read-like payloads do not yet share a generic freshness layer",
+      "implementation_status": "partial",
       "migration_path": "add ttlMs and cacheScope; list_changed remains immediate invalidation",
       "checklist": [
         {
@@ -339,7 +391,8 @@
         },
         {
           "item": "inventory all list/read result builders",
-          "status": "pending"
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md"
         }
       ]
     },
@@ -509,15 +562,198 @@
     }
   ],
   "recommended_next": [
-    "Operator should select whether to approve S4 parallel draft/sessionless prototype behind a non-default route or mode; recommendation is yes, while keeping current OAuth21 stable-compatible connector unchanged.",
-    "If operator does not approve runtime prototype yet, next safe non-runtime step is S3 explicit state handle design rules.",
+    "Current SSE-based and dual-route behavior must be treated as migration debt, not as the target architecture.",
+    "SEP-2549 inventory is complete: tools/list already exposes ttlMs=0 and cacheScope=private, while broader tool-level freshness remains undecided.",
     "Do not remove current stable-compatible session code before prototype/client support evidence.",
-    "Keep SEP-2549 TTL/cacheScope list freshness in the next sessionless target stage.",
+    "Prototype-route retirement scoping is complete: actual /mcp/sessionless removal remains gated until replacement behavior and coverage exist on the surviving /mcp route.",
+    "Initialize-retirement boundary is complete: legacy initialize on surviving /mcp is compatibility-only and must not grow as target-facing protocol surface.",
+    "Replacement-coverage scoping is complete: hidden /mcp/sessionless still cannot be retired until surviving /mcp has a decided state-handle fate and bounded replacement coverage.",
+    "Final subscriptions/listen decision is complete: TEST MCP will not preserve tool-surface freshness push on surviving /mcp and will use pull-only tools/list freshness with ttlMs=0 and cacheScope=private.",
+    "Pull-only runtime package is complete: stable /mcp no longer advertises listChanged, and hidden /mcp/sessionless no longer implements subscriptions/listen.",
+    "State-handle fate decision is complete: explicit state handles remain a tool-design pattern, but route-level state/handle methods do not survive on the final /mcp surface.",
+    "Hidden-route retirement package is complete in repo: active runtime code no longer wires /mcp/sessionless and no longer exposes MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE as active runtime config.",
+    "Hidden-route retirement is now live-verified on OAuth21 3008: hidden /mcp/sessionless returns 404 after the controlled restart while stable /mcp still reports 43 tools.",
+    "Historical /mcp/sessionless live-operation artifacts are quarantined: they now remain traceability evidence only and must not be treated as the active target architecture.",
+    "Treat the no-SSE destination as a stricter project target than the current generic MCP Streamable HTTP draft; do not misstate request-scoped SSE as forbidden by MCP itself.",
     "For every next-step recommendation, reassess blockers, connector refresh, and whether OAuth21 3008 restart is required; assistant may restart 3008 when workflow and operator intent authorize it.",
-    "Triage 19 adjacent runtime-contract SEPs and 7 auth/security SEPs into dedicated ledgers or explicit non-target decisions.",
-    "Do not remove current stable-compatible session code before S2 target selection.",
+    "Adjacent runtime-contract SEP triage is complete: existing runtime/spec/test coverage, explicit non-targets, and a bounded partial-coverage watchlist are now recorded.",
+    "Auth/security adjacent SEP triage is complete: existing auth coverage, explicit non-targets, and the remaining watchlist are now recorded.",
+    "Adjacent/auth watchlist review is complete: no new dedicated ledger is opened now; reopen only when a tracked trigger surface becomes active target work.",
+    "The first semantics-sensitive watch item is SEP-1303 if tool-validation-error behavior becomes an active migration topic.",
+    "Repo hygiene triage is complete: push is not safe yet because the validated package is still mixed with broad historical rename/archive normalization and other older worktree drift.",
+    "Repo hygiene commit-scope isolation is complete: no safe narrow standalone push exists yet because the green run_all already depends on a broader _tests/_workflow rename-normalization package.",
+    "Rename-normalization package scoping is complete: direct rename-equivalent pairs, unmatched historical wrapper deletions, and genuinely new helper/audit additions are now separated at audit level.",
+    "Next bounded workflow step is to execute one coherent `_tests`/`_workflow` rename-normalization migration package before any push attempt.",
     "Treat this file as a living SEP-driven checklist."
   ],
+  "active_target_contract": {
+    "record": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
+    "route_selection_record": "_workflow/operator_decisions/single_route_selection_keep_mcp.md",
+    "migration_debt_inventory_record": "_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md",
+    "replacement_package_record": "_workflow/operator_decisions/keep_mcp_no_sse_replacement_package.md",
+    "post_accept_cleanup_record": "_workflow/operator_decisions/keep_mcp_post_accept_json_only_cleanup.md",
+    "get_sse_teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md",
+    "request_contract_bridge_record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
+    "subscriptions_listen_no_sse_project_contract_record": "_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md",
+    "sep2549_list_read_cache_inventory_record": "_workflow/operator_decisions/sep2549_list_read_cache_inventory.md",
+    "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
+    "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
+    "sessionless_replacement_coverage_scoping_record": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md",
+    "subscriptions_listen_pull_only_contract_record": "_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md",
+    "pull_only_tool_surface_freshness_runtime_package_record": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md",
+    "state_handle_tool_pattern_decision_record": "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md",
+    "hidden_sessionless_route_retirement_package_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_retirement_package.md",
+    "status": "active_workflow_target",
+    "single_route_only": true,
+    "selected_surviving_route": "/mcp",
+    "stable_post_mcp_response_mode": "json_only",
+    "stable_get_mcp_supported": false,
+    "stable_server_discover_supported": true,
+    "sse_allowed_in_end_state": false,
+    "subscriptions_listen_supported_in_end_state": false,
+    "tools_list_changed_push_supported_in_end_state": false,
+    "stable_list_changed_capability_advertised_now": false,
+    "sessionless_prototype_subscriptions_listen_active_now": false,
+    "state_handle_route_methods_supported_in_end_state": false,
+    "explicit_state_handles_are_tool_pattern_only": true,
+    "hidden_sessionless_route_repo_retired_now": true,
+    "tool_surface_freshness_model_in_end_state": "pull_only_tools_list_ttl0_private",
+    "get_mcp_sse_allowed_in_end_state": false,
+    "last_event_id_replay_allowed_in_end_state": false,
+    "mcp_session_id_allowed_in_end_state": false,
+    "initialize_dependency_allowed_in_end_state": false,
+    "dual_route_coexistence_is_target": false,
+    "final_route_name_selected_now": true,
+    "current_repo_may_still_contain_transitional_debt": true,
+    "hidden_sessionless_route_live_verification_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md"
+  },
+  "adjacent_runtime_contract_triage": {
+    "status": "triaged_workflow_only_no_runtime_change",
+    "record": "_workflow/operator_decisions/adjacent_runtime_contract_sep_triage.md",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
+    "total_final_seps": 19,
+    "covered_by_existing_runtime_or_specs": [
+      "SEP-2322",
+      "SEP-2260",
+      "SEP-2243",
+      "SEP-2106",
+      "SEP-1577",
+      "SEP-986"
+    ],
+    "explicit_non_target_or_disabled_now": [
+      "SEP-2663",
+      "SEP-1686",
+      "SEP-1865",
+      "SEP-1699",
+      "SEP-1330",
+      "SEP-1036",
+      "SEP-1034",
+      "SEP-414"
+    ],
+    "partial_coverage_watchlist": [
+      "SEP-2164",
+      "SEP-1613",
+      "SEP-1319",
+      "SEP-1303",
+      "SEP-973"
+    ],
+    "runtime_restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false
+  },
+  "auth_security_adjacent_triage": {
+    "status": "triaged_workflow_only_no_runtime_change",
+    "record": "_workflow/operator_decisions/auth_security_adjacent_sep_triage.md",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
+    "total_final_seps": 7,
+    "covered_by_existing_runtime_or_specs": [
+      "SEP-2468",
+      "SEP-2207",
+      "SEP-985"
+    ],
+    "explicit_non_target_or_no_current_dependency": [
+      "SEP-1046",
+      "SEP-1024",
+      "SEP-990"
+    ],
+    "partial_coverage_watchlist": [
+      "SEP-991"
+    ],
+    "runtime_restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false
+  },
+  "adjacent_watchlist_review": {
+    "status": "reviewed_no_new_dedicated_ledger",
+    "record": "_workflow/operator_decisions/adjacent_sep_watchlist_review.md",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
+    "no_new_ledger_opened_now": true,
+    "reopen_first_if_needed": [
+      "SEP-1303"
+    ],
+    "defer_until_target_surface_exists": [
+      "SEP-2164",
+      "SEP-973"
+    ],
+    "sufficient_for_current_scope_without_new_ledger": [
+      "SEP-1613",
+      "SEP-1319",
+      "SEP-991"
+    ],
+    "runtime_restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false
+  },
+  "repo_hygiene_commit_scope_triage": {
+    "status": "reviewed_push_not_safe_yet",
+    "record": "_workflow/operator_decisions/repo_hygiene_commit_scope_triage.md",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
+    "git_status_entry_count": 710,
+    "git_diff_stat_changed_files": 395,
+    "push_safe_now": false,
+    "next_step": "commit_scope_isolation_before_any_push_attempt",
+    "runtime_restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false
+  },
+  "repo_hygiene_commit_scope_isolation": {
+    "status": "reviewed_no_safe_narrow_push",
+    "record": "_workflow/operator_decisions/repo_hygiene_commit_scope_isolation.md",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
+    "validated_run_all_ok": true,
+    "validated_run_all_public_count": 7,
+    "validated_run_all_tests_authenticated_count": 209,
+    "git_status_entry_count": 710,
+    "git_diff_stat_changed_files": 395,
+    "safe_narrow_commit_available_now": false,
+    "push_safe_now": false,
+    "next_step": "prepare_coherent_tests_workflow_rename_normalization_migration_package",
+    "runtime_restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false
+  },
+  "tests_workflow_rename_normalization_package": {
+    "status": "scoped_no_push",
+    "record": "_workflow/operator_decisions/tests_workflow_rename_normalization_package.md",
+    "guard": "_tests/smoke_sep_sessionless_inventory.js",
+    "tests_readme_audit": "_tests/RENAME_NORMALIZATION_MIGRATION_AUDIT.md",
+    "tests_untracked_additions": 256,
+    "tests_tracked_deletions": 248,
+    "tests_tracked_modifications": 12,
+    "workflow_untracked_additions": 57,
+    "workflow_tracked_deletions": 22,
+    "workflow_tracked_modifications": 40,
+    "combined_untracked_additions": 313,
+    "combined_tracked_deletions": 270,
+    "likely_direct_rename_pairs": 193,
+    "unmatched_deletions": 77,
+    "unmatched_additions": 118,
+    "push_safe_now": false,
+    "next_step": "execute_coherent_tests_workflow_rename_normalization_migration_package",
+    "runtime_restart_required_now": false,
+    "connector_refresh_required_now": false,
+    "public_3009_start_required_now": false
+  },
   "all_seps_index": [
     {
       "sep": "SEP-2663",
@@ -939,9 +1175,13 @@
     "unclassified": 0
   },
   "target_selection_readiness": {
-    "status": "prepared_pending_operator_selection",
+    "status": "selected_parallel_track_stable_mcp_preserved",
+    "record": "_workflow/operator_decisions/sessionless_target_selection_decision.md",
     "guard": "_tests/smoke_sessionless_target_selection_readiness.js",
     "recommended_target": "parallel_draft_sessionless_prototype_while_keeping_stable_connector_current",
+    "selected_target": "parallel_draft_sessionless_prototype_while_keeping_stable_connector_current",
+    "historical_transition_decision_only": true,
+    "superseded_as_end_state_by": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
     "stable_connector_current_target": "keep_current_oauth21_3008_stable_compatible_route",
     "draft_sessionless_target": "parallel_non_default_route_or_mode_before_connector_migration",
     "full_switch_now": "not_recommended",
@@ -950,7 +1190,7 @@
     "runtime_restart_required_now": false,
     "schema_change_required_now": false,
     "public_3009_start_required_now": false,
-    "operator_selection_required_before_runtime_prototype": true,
+    "operator_selection_required_before_runtime_prototype": false,
     "source_of_truth": "_workflow/sessionless_inventory.json",
     "truth_consolidation": "inventory_authoritative_no_src_projection",
     "explicit_state_handle_rules": {
@@ -967,8 +1207,8 @@
     "s3_explicit_state_handle_design_rules": {
       "status": "prepared_no_runtime_change",
       "source_of_truth": "_workflow/sessionless_inventory.json",
-      "guard": "_tests/smoke_s3_explicit_state_handle_design_rules.js",
-      "purpose": "prepare explicit state handle policy before S4 runtime prototype",
+      "guard": "_tests/smoke_explicit_state_handle_design_rules.js",
+      "purpose": "prepare explicit state-handle policy before the historical hidden runtime prototype",
       "protocol_boundary": "tool_design_pattern_not_wire_protocol_feature",
       "current_runtime_behavior_changed": false,
       "connector_refresh_required_now": false,
@@ -1070,12 +1310,12 @@
       },
       "blocker_reassessment": {
         "stale_blockers_removed": [
-          "missing explicit handle rules before S4"
+          "missing explicit handle rules before the historical hidden prototype route"
         ],
         "valid_blockers_remaining": [
-          "S4 runtime prototype still requires explicit operator approval",
+          "the historical hidden prototype route still required explicit operator approval at that checkpoint",
           "current OAuth21 connector remains stable-compatible",
-          "handle-bearing tools require S3 compliance guard"
+          "handle-bearing tools required the explicit-state-handle compliance guard at that checkpoint"
         ]
       }
     },
@@ -1083,27 +1323,31 @@
       "status": "live_loaded_default_disabled",
       "route": "/mcp/sessionless",
       "env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+      "transitional_migration_debt_only": true,
       "default_enabled": false,
       "current_mcp_route_changed": false,
       "current_oauth21_connector_route_changed": false,
       "session_code_removed": false,
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
-      "guard": "_tests/smoke_s4_sessionless_runtime_prototype.js",
+      "guard": "_tests/smoke_sessionless_runtime_prototype.js",
       "live_3008_server_start_id": "2026-06-29T05:38:06.443Z",
       "default_disabled_probe": "GET /mcp/sessionless -> 404 Not found"
     },
     "s5_workbench_deprecation_standardization": {
       "status": "prepared_no_runtime_change",
       "source_of_truth": "_workflow/sessionless_inventory.json",
-      "guard": "_tests/smoke_s5_workbench_sessionless_standardization.js",
-      "purpose": "prepare deprecation of stable session-based workbench method for new work and standardize S4 sessionless prototype as the new workbench method",
+      "guard": "_tests/smoke_workbench_sessionless_standardization.js",
+      "purpose": "prepare deprecation of the stable session-based workbench method for new work and standardize the historical hidden prototype route for isolated tests",
       "current_stable_route": "/mcp",
       "current_stable_route_status": "legacy_compatible_do_not_remove",
       "previous_method": "stable_streamable_http_sessions_initialize_mcp_session_id_get_sse",
       "previous_method_deprecation": "soft_deprecated_for_new_workbench_development_only",
       "new_standard_method": "s4_sessionless_prototype_explicit_state_handles",
       "new_standard_route": "/mcp/sessionless",
+      "historical_transition_standard_only": true,
+      "not_the_final_end_state_route": true,
+      "superseded_as_end_state_by": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
       "new_standard_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
       "workbench_standardization_status": "standard_for_isolated_higher_port_tests",
       "default_3008_enabled_now": false,
@@ -1145,11 +1389,11 @@
       "status": "complete_no_runtime_change",
       "legacy_auth_archive": "_tests/archive/legacy_retired_auth",
       "legacy_auth_archived_count": 17,
-      "legacy_auth_negative_guard": "_tests/smoke_s6_legacy_retired_auth_negative_controls.js",
+      "legacy_auth_negative_guard": "_tests/smoke_legacy_retired_auth_negative_controls.js",
       "root_specs_sessionless_ready": true,
       "root_spec_count": 30,
       "root_spec_field": "sessionless_ready_review",
-      "guard": "_tests/smoke_s6_legacy_archive_sessionless_ready_specs.js",
+      "guard": "_tests/smoke_legacy_archive_sessionless_ready_specs.js",
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "schema_change_required_now": false,
@@ -1166,7 +1410,7 @@
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
-      "guard": "_tests/smoke_s7_sessionless_sep2575_request_contract.js",
+      "guard": "_tests/smoke_sessionless_sep2575_request_contract.js",
       "contract": {
         "required_header": "MCP-Protocol-Version",
         "required_meta": [
@@ -1216,7 +1460,17 @@
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
-      "guard": "_tests/smoke_s8_isolated_sessionless_activation_regression.js"
+      "guard": "_tests/smoke_isolated_sessionless_activation_regression.js"
+    },
+    "subscriptions_listen_isolated_validation": {
+      "status": "passed_ephemeral_higher_port_no_stable_route_change",
+      "record": "_workflow/operator_decisions/subscriptions_listen_isolated_validation.md",
+      "guard": "_tests/smoke_subscriptions_listen_isolated_validation.js",
+      "transitional_request_scoped_sse_only": true,
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "stable_mcp_changed": false
     },
     "s9_oauth21_3008_activation": {
       "status": "live_active_no_connector_change",
@@ -1229,13 +1483,13 @@
       "connector_refresh_required_now": false,
       "public_3009_start_required_now": false,
       "stable_mcp_changed": false,
-      "guard": "_tests/smoke_s9_oauth21_sessionless_activation_trial.js"
+      "guard": "_tests/smoke_oauth21_sessionless_activation_trial.js"
     },
     "s10a_manual_probe_contract": {
       "status": "historical_prepared_only",
       "route": "/mcp/sessionless",
       "port": 3008,
-      "guard": "_tests/smoke_s10a_manual_live_probe_contract.js",
+      "guard": "_tests/smoke_sessionless_manual_probe_contract.js",
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
@@ -1245,8 +1499,8 @@
       "status": "passed_live_no_connector_change",
       "route": "/mcp/sessionless",
       "port": 3008,
-      "live_probe_command": "node _workflow/scripts/s10b_live_authenticated_sessionless_probe.js",
-      "guard": "_tests/smoke_s10b_live_authenticated_sessionless_probe.js",
+      "live_probe_command": "node _workflow/scripts/sessionless_live_authenticated_probe.js",
+      "guard": "_tests/smoke_sessionless_live_authenticated_probe.js",
       "checks": [
         "healthz_internal_43",
         "get_405",
@@ -1276,8 +1530,8 @@
     },
     "s11_connector_migration_readiness": {
       "status": "prepared_no_migration",
-      "record": "_workflow/operator_decisions/s11_connector_migration_readiness_coexistence_boundary.md",
-      "guard": "_tests/smoke_s11_connector_migration_readiness_coexistence_boundary.js",
+      "record": "_workflow/operator_decisions/connector_route_coexistence_boundary.md",
+      "guard": "_tests/smoke_connector_route_coexistence_boundary.js",
       "sessionless_route_ready_as_workbench_target": true,
       "stable_mcp_status": "legacy_compatible_do_not_remove",
       "connector_migration_requires_separate_operator_decision": true,
@@ -1285,31 +1539,75 @@
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
       "stable_mcp_removal_forbidden_now": true,
-      "next_recommended_step": "S12 connector migration dry-run plan / no refresh"
+      "historical_next_recommended_step": "S12 connector migration dry-run plan / no refresh",
+      "next_recommended_step": "single-route no-SSE streamable-HTTP target contract and migration plan",
+      "superseded_by_current_active_queue": true
     },
     "s12_connector_migration_dry_run_plan": {
       "status": "prepared_no_refresh",
-      "record": "_workflow/operator_decisions/s12_connector_migration_dry_run_plan.md",
-      "guard": "_tests/smoke_s12_connector_migration_dry_run_plan.js",
+      "record": "_workflow/operator_decisions/connector_migration_dry_run_plan.md",
+      "guard": "_tests/smoke_connector_migration_dry_run_plan.js",
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
       "connector_migration_performed_now": false,
       "stable_mcp_status": "legacy_compatible_preserved",
-      "next_recommended_step": "S13 connector migration dry-run execution harness / still no refresh",
-      "alternative_next_step": "S13 connector refresh approval package / no execution"
+      "historical_next_recommended_step": "S13 connector migration dry-run execution harness / still no refresh",
+      "historical_alternative_next_step": "S13 connector refresh approval package / no execution",
+      "next_recommended_step": "single-route no-SSE streamable-HTTP target contract and migration plan",
+      "alternative_next_step": "SEP-2549 ttlMs/cacheScope inventory for list/read builders",
+      "superseded_by_current_active_queue": true
     },
     "s13_connector_migration_dry_run_execution_harness": {
       "status": "executed_no_refresh",
-      "record": "_workflow/operator_decisions/s13_connector_migration_dry_run_execution_harness.md",
-      "guard": "_tests/smoke_s13_connector_migration_dry_run_execution_harness.js",
+      "record": "_workflow/operator_decisions/connector_migration_dry_run_harness.md",
+      "guard": "_tests/smoke_connector_migration_dry_run_harness.js",
       "connector_refresh_required_now": false,
       "runtime_restart_required_now": false,
       "public_3009_start_required_now": false,
       "connector_migration_performed_now": false,
       "stable_mcp_status": "legacy_compatible_preserved",
-      "next_recommended_step": "S14 connector refresh approval package / no execution",
-      "alternative_next_step": "S14 stable /mcp and /mcp/sessionless coexistence regression hardening"
+      "historical_next_recommended_step": "S14 connector refresh approval package / no execution",
+      "historical_alternative_next_step": "S14 historical sessionless coexistence checkpoint",
+      "next_recommended_step": "single-route no-SSE streamable-HTTP target contract and migration plan",
+      "alternative_next_step": "SEP-2549 ttlMs/cacheScope inventory for list/read builders",
+      "superseded_by_current_active_queue": true
+    },
+    "s14_connector_refresh_approval_package": {
+      "status": "prepared_no_execution",
+      "record": "_workflow/operator_decisions/connector_refresh_approval_package.md",
+      "guard": "_tests/smoke_connector_refresh_approval_package.js",
+      "connector_refresh_required_now": false,
+      "runtime_restart_required_now": false,
+      "public_3009_start_required_now": false,
+      "connector_execution_performed_now": false,
+      "stable_connector_target": "/mcp",
+      "operator_ui_refresh_equivalent": "remove_and_add_connector",
+      "historical_next_recommended_step": "S15 connector reconnect execution evidence on stable /mcp",
+      "historical_alternative_next_step": "S15 historical sessionless coexistence checkpoint",
+      "next_recommended_step": "single-route no-SSE streamable-HTTP target contract and migration plan",
+      "alternative_next_step": "SEP-2549 ttlMs/cacheScope inventory for list/read builders",
+      "superseded_by_current_active_queue": true
+    },
+    "s15_connector_reconnect_execution_evidence": {
+      "status": "confirmed_43_tools_auth_prompt_accepted",
+      "record": "_workflow/operator_decisions/connector_reconnect_execution_evidence.md",
+      "guard": "_tests/smoke_connector_reconnect_execution_evidence.js",
+      "stable_connector_target": "/mcp",
+      "auth_prompt_observed": true,
+      "password_accepted": true,
+      "final_visible_tool_count_confirmed": true,
+      "final_visible_tool_count": 43,
+      "visible_tool_groups": {
+        "read_only_internal_create": 40,
+        "write_delete": 3
+      },
+      "evidence_source": "operator report from Claude Code connector UI on 2026-06-29",
+      "historical_next_recommended_step": "historical sessionless coexistence checkpoint after connector reconnect closeout",
+      "historical_alternative_next_step": "S16 state and snapshot hygiene repair",
+      "next_recommended_step": "single-route no-SSE streamable-HTTP target contract and migration plan",
+      "alternative_next_step": "SEP-2549 ttlMs/cacheScope inventory for list/read builders",
+      "superseded_by_current_active_queue": true
     }
   }
 }
