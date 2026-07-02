@@ -123,7 +123,8 @@
     "returns_method_not_allowed": true,
     "stable_sse_stream_supported": false,
     "last_event_id_replay_supported": false,
-    "teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md"
+    "teardown_record": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md",
+    "residual_cleanup_record": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md"
   },
   "stable_mcp_request_contract_bridge": {
     "route": "/mcp",

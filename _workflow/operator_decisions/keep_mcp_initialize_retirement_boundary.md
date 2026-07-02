@@ -82,7 +82,7 @@ Actual `initialize` removal on `/mcp` remains blocked by at least:
 
 ## Next safe workflow step
 
-Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`.
+Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract.
 
 ## Declarations
 

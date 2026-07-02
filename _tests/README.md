@@ -8,7 +8,7 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-07-02`:
 
-- `297` JavaScript files total in `_tests`
+- `293` JavaScript files total in `_tests`
 - `218` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
@@ -32,7 +32,7 @@ Latest full active validation:
 - Helper manifests: `run_all_workflow_control_plane_smoke_scripts.json`, `run_all_readiness_smoke_scripts.json`, `run_all_targeted_debt_smoke_scripts.json`
 - Current workflow/control-plane helper manifest size: `25` scripts
 - Current readiness helper manifest size: `45` scripts
-- Current targeted/debt helper manifest size: `10` scripts
+- Current targeted/debt helper manifest size: `6` scripts
 - Legacy retired auth archive: `archive/legacy_retired_auth/`
 - Archived stale non-`run_all` scripts: `archive/non_run_all_stale/`
 - Historical names with `stage` / `step` prefixes are not authoritative for current navigation.
@@ -80,7 +80,7 @@ Current top-level non-`run_all` inventory:
 - Current targeted guards include: `smoke_audit_redaction_integration_plan.js`, `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
 - Meta guard: `smoke_harness_no_pollution_guard.js`
 - Historical workflow wrappers: `smoke_decision_runtime_integration_plan.js`, `smoke_decision_runtime_interface_contract_readiness_gate.js`, `smoke_decision_runtime_operator_gate.js`, `smoke_logs_migration.js`, `smoke_debt_reduction_guard.js`, `smoke_project_debt_review_guard.js`, `smoke_repo_layout_contract.js`, `smoke_runtime_apply_package_preparation_no_apply.js`, `smoke_runtime_execution_package_no_apply.js`, `smoke_runtime_execution_package_operator_approval.js`, `smoke_runtime_implementation_plan_no_code.js`, `smoke_runtime_implementation_plan_operator_approval.js`, `smoke_runtime_scope_approval_package.js`, `smoke_runtime_scope_operator_decision.js`
-- Transitional SSE/list-changed debt guards are now grouped under `_tests/targeted_debt/` and exercised through `run_all_targeted_debt_smoke_scripts.json`.
+- The old transitional SSE/list-changed debt guards were retired after their unreachable helper files were removed from the active repo. `run_all_targeted_debt_smoke_scripts.json` now contains only the remaining workflow/control-plane review subset.
 
 Stress inventory:
 

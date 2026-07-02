@@ -11,22 +11,27 @@ The no-SSE destination recorded here is a stricter project target. Current offic
 
 ## Confirmed debt inventory
 
-### Runtime code
+### Runtime code still requiring later action
 
 - `src/runtime/accept_policy.js`
   - Historical SSE-oriented accept branches still exist as residual debt even though stable POST `/mcp` is JSON-only and stable GET `/mcp` returns `405`.
-- `src/runtime/mcp_get_stream_handler.js`
-  - Legacy GET SSE stream, keepalive, and `Last-Event-ID` handling remain in repo as unreachable cleanup debt.
 - `src/runtime/session.js`
   - Historical transport-session object remains in repo after stable `/mcp` retirement from protocol sessions.
-- `src/runtime/session_store.js`
-  - Historical in-memory transport-session store remains in repo after stable `/mcp` retirement from protocol sessions.
 - `src/runtime/outbound_request_manager.js`
   - Session-bound pending-response correlation still exists for historical SSE/session flows that are no longer active on surviving `/mcp`.
 - `src/runtime/sessionless_prototype_route_handler.js`
   - Retired hidden-route handler file remains in repo as historical cleanup debt.
 - `src/runtime/sse_response.js`
   - Shared SSE response writer remains in repo for residual historical helpers, not for active surviving-route behavior.
+
+### First bounded residual cleanup already completed
+
+- `src/runtime/mcp_get_stream_handler.js`
+  - Legacy GET SSE stream, keepalive, and `Last-Event-ID` helper file was removed from the active repo.
+- `src/runtime/session_store.js`
+  - Historical in-memory transport-session store was removed from the active repo.
+- `src/runtime/tools_list_changed_emitter.js`
+  - Historical push-style tool-list notifier was removed from the active repo.
 
 ### Root/runtime specs
 
@@ -39,15 +44,12 @@ The no-SSE destination recorded here is a stricter project target. Current offic
 - `SERVER_CONNECTOR_SURFACE_SPEC.json`
   - Sessionless-ready block still retains historical transition-route evidence for traceability.
 
-### Active smoke coverage tied to transitional debt
+### Active smoke coverage tied to remaining transitional debt
 
-- `_tests/smoke_get_sse_stream.js`
-- `_tests/smoke_get_sse_requires_auth.js`
-- `_tests/smoke_sse_keepalive.js`
-- `_tests/smoke_sse_resumability.js`
-- `_tests/replay_gap_guard.js`
 - `_tests/smoke_post_sse_response.js`
 - `_tests/smoke_streamable_http_session_lifecycle.js`
+- `_tests/smoke_pending_request_correlation.js`
+- `_tests/smoke_sampling_roundtrip.js`
 - `_tests/smoke_subscriptions_listen_isolated_validation.js`
 - `_tests/smoke_oauth21_sessionless_activation_trial.js`
 - `_tests/smoke_workbench_sessionless_standardization.js`
@@ -61,16 +63,14 @@ The no-SSE destination recorded here is a stricter project target. Current offic
 ## Required later migration buckets
 
 1. Transport cleanup
-   - remove residual unreachable `GET /mcp` SSE helpers
-   - remove residual `Last-Event-ID` replay helpers
    - remove residual shared SSE writer paths that no longer serve active `/mcp`
 2. Session cleanup
-   - remove residual SessionStore/session helper code that no longer serves active `/mcp`
-   - collapse or quarantine session-bound pending-response paths that are no longer reachable from active `/mcp`
+   - scope the remaining session-bound outbound/sampling internals
+   - collapse, redesign, or explicitly quarantine session-bound pending-response paths that are no longer part of the intended active `/mcp` contract
 3. Historical route cleanup
    - quarantine or remove residual hidden-route runtime files that no longer serve active `/mcp`
 4. Coverage cleanup
-   - reclassify or retire SSE-specific smoke guards once replacement behavior exists
+   - reclassify or retire remaining session-bound historical guards once replacement behavior exists
 
 ## Non-actions
 

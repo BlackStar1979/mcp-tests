@@ -156,6 +156,9 @@ Current records:
 - `keep_mcp_hidden_sessionless_route_live_verification.md`
   - Controlled OAuth21 `3008` restart and bounded live verification. Hidden `/mcp/sessionless` now returns `404` live while stable `/mcp` still reports 43 tools.
 
+- `keep_mcp_residual_session_sse_cleanup_package.md`
+  - Removes residual unreachable GET-SSE, SessionStore, replay-helper, and push-emitter files from the active repo without changing the surviving `/mcp` contract.
+
 - `sessionless_inventory_truth_consolidation.md`
   - Corrects target-selection preparation by removing duplicate source projection and making `_workflow/sessionless_inventory.json#target_selection_readiness` the single authoritative SEP/sessionless target source.
 
@@ -292,7 +295,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`.
+1. Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.

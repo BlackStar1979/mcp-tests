@@ -14,8 +14,8 @@ const inventory = readJson("_workflow/sessionless_inventory.json");
 const canon = read("_workflow/WORKFLOW_CANON.md");
 const index = read("_workflow/ACTIVE_WORKFLOW_INDEX.md");
 const routeDispatcher = read("src/runtime/create_server_route_dispatcher.js");
-const notifierSource = read("src/runtime/tools_list_changed_emitter.js");
 const dryRunSource = read("src/list_changed_notification_bus.js");
+const notifierPath = path.join(ROOT, "src/runtime/tools_list_changed_emitter.js");
 
 assert.ok(record.includes("Status: GREEN / SOURCE-BOUND PROJECT CONTRACT RECORDED / WORKFLOW-ONLY"));
 assert.ok(record.includes("no SSE at all"));
@@ -41,7 +41,8 @@ assert.ok(index.includes("subscriptions_listen_no_sse_project_contract.md"));
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 
 assert.equal(routeDispatcher.includes("/mcp/sessionless"), false);
-assert.ok(notifierSource.includes("LIST_CHANGED_METHOD"));
+assert.equal(fs.existsSync(notifierPath), false);
 assert.ok(dryRunSource.includes("dry-run only"));
+assert.ok(dryRunSource.includes("LIST_CHANGED_METHOD"));
 
 console.log("smoke_subscriptions_listen_no_sse_project_contract ok");

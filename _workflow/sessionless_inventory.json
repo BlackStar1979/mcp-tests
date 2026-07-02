@@ -77,10 +77,9 @@
     "src/runtime/mcp_entry_dispatcher.js",
     "src/runtime/session_tracker.js",
     "src/runtime/session.js",
-    "src/runtime/mcp_get_stream_handler.js",
     "src/runtime/outbound_request_manager.js",
     "src/runtime/sessionless_prototype_route_handler.js",
-    "src/runtime/tools_list_changed_emitter.js",
+    "src/list_changed_notification_bus.js",
     "src/runtime/sampling_context.js",
     "src/runtime/initialize_message_handler.js",
     "src/runtime/initialize_response.js",
@@ -189,7 +188,7 @@
         "SEP-2575"
       ],
       "target_lifecycle": "legacy_compat",
-      "repo_current_model": "stable /mcp no longer creates or requires transport sessions; in-memory session/SSE helpers remain in repo only as residual cleanup debt",
+      "repo_current_model": "stable /mcp no longer creates or requires transport sessions; SessionStore is removed from the active repo, while remaining McpSession/outbound helpers still exist as bounded cleanup debt",
       "implementation_status": "partial",
       "migration_path": "parallel sessionless target with request-scoped or explicit state handles",
       "checklist": [
@@ -224,6 +223,11 @@
           "item": "retire active surviving-route transport-session lifecycle",
           "status": "done",
           "evidence": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
+        },
+        {
+          "item": "remove residual SessionStore and push/SSE helper files that no longer serve active /mcp",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md"
         }
       ]
     },
@@ -235,15 +239,15 @@
         "SEP-2596"
       ],
       "target_lifecycle": "removed",
-      "repo_current_model": "stable GET /mcp now returns 405; legacy SSE helper file remains in repo as transitional debt",
-      "implementation_status": "partial",
+      "repo_current_model": "stable GET /mcp now returns 405 and the residual GET-SSE helper file is removed from the active repo",
+      "implementation_status": "done",
       "migration_path": "subscriptions/listen RPC over POST in stateless target",
       "checklist": [
         {
           "item": "map GET SSE stream and tests",
           "status": "done",
           "evidence": [
-            "src/runtime/mcp_get_stream_handler.js",
+            "_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md",
             "_tests/smoke_get_sse_stream.js"
           ]
         },
@@ -261,6 +265,11 @@
           "item": "apply bounded GET teardown on surviving /mcp route",
           "status": "done",
           "evidence": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md"
+        },
+        {
+          "item": "remove residual unreachable GET-SSE helper files from the active repo",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md"
         }
       ]
     },
@@ -365,8 +374,8 @@
         "SEP-2575"
       ],
       "target_lifecycle": "removed",
-      "repo_current_model": "stable /mcp replay behavior no longer reachable; legacy SSE helper/tests remain as transitional debt",
-      "implementation_status": "partial",
+      "repo_current_model": "stable /mcp replay behavior is no longer reachable and residual replay helper files are removed from the active repo",
+      "implementation_status": "done",
       "migration_path": "connection drop cancels request; durable work uses tasks primitive",
       "checklist": [
         {
@@ -385,6 +394,11 @@
           "item": "remove stable-route replay reachability",
           "status": "done",
           "evidence": "_workflow/operator_decisions/keep_mcp_get_sse_teardown.md"
+        },
+        {
+          "item": "remove residual replay helper files from the active repo",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md"
         }
       ]
     },
@@ -580,6 +594,7 @@
     "Current SSE-based and dual-route behavior must be treated as migration debt, not as the target architecture.",
     "SEP-2549 inventory is complete: tools/list already exposes ttlMs=0 and cacheScope=private, while broader tool-level freshness remains undecided.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
+    "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
     "Prototype-route retirement scoping is complete and now remains historical evidence only because hidden /mcp/sessionless is already retired from active repo/runtime truth.",
     "Initialize-retirement boundary is complete: legacy initialize on surviving /mcp is compatibility-only and must not grow as target-facing protocol surface.",
     "Replacement-coverage scoping is complete and now remains historical evidence; the remaining bounded cleanup is residual unreachable session/SSE debt on surviving /mcp rather than hidden-route retirement authorization.",
@@ -617,6 +632,7 @@
     "state_handle_tool_pattern_decision_record": "_workflow/operator_decisions/keep_mcp_state_handle_tool_pattern_decision.md",
     "hidden_sessionless_route_retirement_package_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_retirement_package.md",
     "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md",
+    "residual_session_sse_cleanup_package_record": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md",
     "status": "active_workflow_target",
     "single_route_only": true,
     "selected_surviving_route": "/mcp",

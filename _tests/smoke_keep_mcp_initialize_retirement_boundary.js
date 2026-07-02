@@ -22,7 +22,7 @@ const runtimeSpec = readJson("SERVER_RUNTIME_CONFIG_SPEC.json");
 assert.ok(record.includes("Status: GREEN / FINAL LEGACY BOUNDARY RECORDED / WORKFLOW-ONLY"));
 assert.ok(record.includes("`initialize` is legacy compatibility only."));
 assert.ok(record.includes("`server/discover` is the canonical target-facing request-contract surface."));
-assert.ok(record.includes("Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`."));
+assert.ok(record.includes("Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract."));
 
 assert.equal(state.active_target_direction.initialize_retirement_boundary_record, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");
 assert.equal(inventory.active_target_contract.initialize_retirement_boundary_record, "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md");

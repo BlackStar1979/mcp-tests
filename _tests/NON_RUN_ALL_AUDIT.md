@@ -17,7 +17,7 @@ Audit date: `2026-07-01`
 Post-audit drift now visible from the current tree:
 
 - current mechanical non-`run_all` count is `40`
-- four transitional SSE/list-changed debt guards were moved out of the top-level `_tests` surface into `_tests/targeted_debt/` and are now exercised through `run_all_targeted_debt_smoke_scripts.json`
+- the former transitional SSE/list-changed debt guards were later removed entirely after their unreachable helper files were retired from the active repo
 - all seven `stress_*.js` files were rechecked directly in source on `2026-06-30`
 - each stress file posts directly to `process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3009/mcp"` and therefore requires a separately running MCP server
 - direct standalone execution without a running target server fails at transport level and must not be misread as proof of stale assertions
@@ -98,7 +98,7 @@ Helper execution slices now available:
 - `smoke_subscriptions_listen_no_sse_project_contract.js`
   Reason: current targeted guard for the stricter project-level no-SSE interpretation of the final TEST MCP destination.
   Recommendation: keep outside default `run_all`; it protects target-policy truth rather than default runtime behavior.
-These current targeted/debt guards are additionally grouped in `run_all_targeted_debt_smoke_scripts.json` so they can be exercised together without promoting them into the default active baseline. The SSE/list-changed debt subset now lives under `_tests/targeted_debt/` instead of the top-level `_tests` surface.
+These current targeted/debt guards are additionally grouped in `run_all_targeted_debt_smoke_scripts.json` so they can be exercised together without promoting them into the default active baseline. The older SSE/list-changed targeted-debt subset has already been removed along with the unreachable helper files it was preserving.
 
 ### `meta_guard`
 

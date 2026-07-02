@@ -44,18 +44,6 @@
       "status": "active_code_event"
     },
     {
-      "name": "sse_replay_rejected",
-      "status": "active_code_event"
-    },
-    {
-      "name": "sse_stream_closed",
-      "status": "active_code_event"
-    },
-    {
-      "name": "sse_stream_opened",
-      "status": "active_code_event"
-    },
-    {
       "name": "streamable_http_preflight",
       "status": "active_code_event"
     },
@@ -186,10 +174,6 @@
     {
       "name": "tool_surface_changed",
       "status": "active_code_event"
-    },
-    {
-      "name": "tools_list_changed_emitted",
-      "status": "active_code_event_runtime_path_present_but_live_emission_disabled_now"
     }
   ],
   "rules": {

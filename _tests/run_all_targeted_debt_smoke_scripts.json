@@ -4,9 +4,5 @@
   "_tests/smoke_policy_spec.js",
   "_tests/smoke_preflight_control_plane_guard.js",
   "_tests/smoke_repo_layout_contract.js",
-  "_tests/smoke_logs_migration.js",
-  "_tests/targeted_debt/replay_gap_guard.js",
-  "_tests/targeted_debt/smoke_sse_keepalive.js",
-  "_tests/targeted_debt/smoke_sse_resumability.js",
-  "_tests/targeted_debt/smoke_tools_list_changed_runtime.js"
+  "_tests/smoke_logs_migration.js"
 ]

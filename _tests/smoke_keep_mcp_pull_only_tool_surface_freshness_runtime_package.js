@@ -61,7 +61,6 @@ assert.ok(toolsListSource.includes('cacheScope: "private"'));
 assert.equal(runtimeSpec.stable_mcp_request_contract_bridge.tools_list_changed_capability_advertised, false);
 assert.equal(runtimeSpec.retired_sessionless_transition.status, "retired_from_active_repo_and_live_3008");
 const listChangedEvent = eventSpec.events.find((item) => item.name === "tools_list_changed_emitted");
-assert.ok(listChangedEvent);
-assert.equal(listChangedEvent.status, "active_code_event_runtime_path_present_but_live_emission_disabled_now");
+assert.equal(listChangedEvent, undefined);
 
 console.log("smoke_keep_mcp_pull_only_tool_surface_freshness_runtime_package ok");

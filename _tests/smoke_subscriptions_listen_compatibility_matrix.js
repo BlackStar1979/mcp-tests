@@ -13,8 +13,8 @@ function read(relativePath) {
 const inventory = JSON.parse(read("_workflow/sessionless_inventory.json"));
 const record = read("_workflow/operator_decisions/subscriptions_listen_compatibility_matrix.md");
 const routeDispatcher = read("src/runtime/create_server_route_dispatcher.js");
-const sseSource = read("src/runtime/mcp_get_stream_handler.js");
-const notifierSource = read("src/runtime/tools_list_changed_emitter.js");
+const sseHandlerPath = path.join(ROOT, "src/runtime/mcp_get_stream_handler.js");
+const notifierPath = path.join(ROOT, "src/runtime/tools_list_changed_emitter.js");
 
 assert.ok(record.includes("Status: GREEN / DESIGN RECORDED / NO RUNTIME CHANGE"));
 assert.ok(record.includes("Historical status note: this record is hidden-route transition design evidence only."));
@@ -41,8 +41,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("Hidden-route 
 assert.ok(inventory.recommended_next.some((item) => item.includes("Historical /mcp/sessionless live-operation artifacts are quarantined")));
 
 assert.equal(routeDispatcher.includes("/mcp/sessionless"), false);
-assert.ok(sseSource.includes("getLastEventId"));
-assert.ok(sseSource.includes("validateReplayRequest"));
-assert.ok(notifierSource.includes('LIST_CHANGED_METHOD = "notifications/tools/list_changed"'));
+assert.equal(fs.existsSync(sseHandlerPath), false);
+assert.equal(fs.existsSync(notifierPath), false);
 
 console.log("smoke_subscriptions_listen_compatibility_matrix ok");

@@ -49,9 +49,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
-1. Prepare the bounded cleanup package for residual session/SSE runtime debt that is no longer reachable from active `/mcp`.
+1. Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract.
 
-Next recommended action: use `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` to isolate residual session/SSE helpers that are no longer reachable from active `/mcp`, without reopening historical `/mcp/sessionless` planning as if it were current target architecture. The hidden-route retirement package is already repo-applied and live-verified: after the controlled OAuth21 `3008` restart, `GET /mcp/sessionless` returns `404`, `healthz` still reports `internal` and `43` tools, and authenticated `tools/list` on stable `/mcp` still returns `43` tools with hash `8b62ecaf89227335`. Connector refresh remains unnecessary because surviving `/mcp` is unchanged. Public 3009 start remains unnecessary unless a narrower record says otherwise.
+Next recommended action: use `_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md` to scope the remaining `session.js` / `outbound_request_manager.js` / `sampling_context.js` debt without reopening historical `/mcp/sessionless` planning as if it were current target architecture. The first bounded residual cleanup is already repo-applied: unreachable GET-SSE, SessionStore, replay-helper, and push-emitter files were removed from the active repo while stable `/mcp` remained unchanged. The hidden-route retirement package is already repo-applied and live-verified: after the controlled OAuth21 `3008` restart, `GET /mcp/sessionless` returns `404`, `healthz` still reports `internal` and `43` tools, and authenticated `tools/list` on stable `/mcp` still returns `43` tools with hash `8b62ecaf89227335`. Connector refresh remains unnecessary because surviving `/mcp` is unchanged. Public 3009 start remains unnecessary unless a narrower record says otherwise.
 
 Snapshot clarification: `_workflow/control_plane/snapshots/**` is archival evidence only. It may preserve superseded `/mcp/sessionless` files, old guard names, and stage-era labels exactly as captured; those copies must not be treated as current route or workflow authority.
 
@@ -330,9 +330,9 @@ Phase A Streamable HTTP preflight green: `accept_policy.js`, `protocol_version_p
 
 Phase B POST SSE response path green: `sse_response.js`, single-payload SSE response mode, and `_tests/smoke_post_sse_response.js` are active. JSON response path remains compatible. Next implementation phase: Phase C - SessionStore and lifecycle.
 
-Phase C SessionStore lifecycle green: `session.js`, `session_store.js`, initialize-created `Mcp-Session-Id`, known-session acceptance, unknown-session 404, and `_tests/smoke_streamable_http_session_lifecycle.js` are active. Next implementation phase: Phase D - GET SSE stream and outbound queue.
+Historical Phase C SessionStore lifecycle green at that time: `session.js`, `session_store.js`, initialize-created `Mcp-Session-Id`, known-session acceptance, unknown-session 404, and `_tests/smoke_streamable_http_session_lifecycle.js` were active. `session_store.js` was later removed by `_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md`.
 
-Phase D GET SSE/outbound queue green: `mcp_get_stream_handler.js`, session stream attachment/detachment, outbound queue buffering/flushing, `_tests/smoke_get_sse_stream.js`, and `_tests/smoke_outbound_queue.js` are active. Next implementation phase: Phase E - Pending request correlation.
+Historical Phase D GET SSE/outbound queue green at that time: `mcp_get_stream_handler.js`, session stream attachment/detachment, outbound queue buffering/flushing, `_tests/smoke_get_sse_stream.js`, and `_tests/smoke_outbound_queue.js` were active. `mcp_get_stream_handler.js` was later removed by `_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md`.
 
 Phase E pending request correlation green: `outbound_request_manager.js`, session pending map, server-originated request id namespace, POST JSON-RPC response acceptance, unknown pending fail-closed, batch response acceptance, and `_tests/smoke_pending_request_correlation.js` are active. Next implementation phase: Phase F - Sampling readiness.
 
@@ -356,7 +356,7 @@ H6 JWKS key rotation green: `oauth_jwks_cache.js` and `_tests/smoke_oauth_key_ro
 
 H7 sampling user-approval policy green: `SERVER_SAMPLING_POLICY_SPEC.json`, runtime approval/budget enforcement in `sampling_context.js`, and `_tests/smoke_sampling_user_approval_policy.js` are active. Next implementation phase: H8 - SSE keepalive/resumability.
 
-H8 SSE keepalive/resumability green: `sse_response.js`, `mcp_get_stream_handler.js`, `session.js`, `_tests/smoke_sse_keepalive.js`, and `_tests/smoke_sse_resumability.js` are active. Next phase: H9 - Live connector refresh readiness after explicit operator approval.
+Historical H8 SSE keepalive/resumability green at that time: `sse_response.js`, `mcp_get_stream_handler.js`, `session.js`, `_tests/smoke_sse_keepalive.js`, and `_tests/smoke_sse_resumability.js` were active. The dedicated H8 helper/test files were later removed by `_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md`.
 
 H9 live connector refresh readiness green: `SERVER_CONNECTOR_SURFACE_SPEC.json`, `_workflow/CONNECTOR_REFRESH_READINESS.md`, and `_tests/smoke_connector_refresh_readiness.js` are active. OAuth production hardening H1-H9 is green. OAuth21 connector refresh was performed later in Stage 6 after explicit operator action; JWKS HTTP cache-control/max-age parsing and too-old Last-Event-ID fail-closed behavior were closed by guards.
 

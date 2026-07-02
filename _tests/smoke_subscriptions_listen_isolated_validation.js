@@ -18,9 +18,9 @@ const record = read("_workflow/operator_decisions/subscriptions_listen_isolated_
 const inventory = readJson("_workflow/sessionless_inventory.json");
 const runtimeSpec = readJson("SERVER_RUNTIME_CONFIG_SPEC.json");
 const routeDispatcher = read("src/runtime/create_server_route_dispatcher.js");
-const toolsListChangedEmitter = read("src/runtime/tools_list_changed_emitter.js");
 const canon = read("_workflow/WORKFLOW_CANON.md");
 const index = read("_workflow/ACTIVE_WORKFLOW_INDEX.md");
+const toolsListChangedEmitterPath = path.join(ROOT, "src/runtime/tools_list_changed_emitter.js");
 
 assert.ok(record.includes("Status: GREEN / ISOLATED HIGHER-PORT VALIDATION PASSED / STABLE ROUTE UNCHANGED"));
 assert.ok(record.includes("This record is historical transition-debt evidence only."));
@@ -52,7 +52,7 @@ assert.equal(readiness.stable_mcp_changed, false);
 assert.equal(runtimeSpec.http_routes.includes("/mcp/sessionless"), false);
 assert.equal(Object.hasOwn(runtimeSpec, "sessionless_prototype"), false);
 assert.equal(routeDispatcher.includes("/mcp/sessionless"), false);
-assert.ok(toolsListChangedEmitter.includes('LIST_CHANGED_METHOD = "notifications/tools/list_changed"'));
+assert.equal(fs.existsSync(toolsListChangedEmitterPath), false);
 
 assert.ok(canon.includes("`subscriptions/listen` isolated validation green"));
 assert.ok(canon.includes("transitional migration debt rather than the final target"));
