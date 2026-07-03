@@ -56,6 +56,7 @@ function buildRuntimeStatus(context) {
     schemaCompatibility,
     runtimeIdentity,
     toolLabels,
+    requestContract,
     network,
     fs,
     serverStartId,
@@ -101,6 +102,17 @@ function buildRuntimeStatus(context) {
       public_exposure: profile === "public",
       policy_status: profilePolicy().ok ? "ok" : "error",
     },
+    request_contract: typeof requestContract === "function"
+      ? requestContract()
+      : {
+        route: "/mcp",
+        post_only: true,
+        initialize_required: false,
+        protocol_sessions: false,
+        server_discover_supported: true,
+        legacy_initialize_supported: true,
+        transport_mode: "streamable_http_stateless_legacy_initialize_compat",
+      },
     audit: {
       enabled: true,
       version: auditVersion,

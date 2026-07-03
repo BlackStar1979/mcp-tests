@@ -33,6 +33,7 @@ function createObservabilityStatusTool(options = {}) {
         audit_jsonl_health: { status: "error" },
         runtime: { status: "unknown" },
         connector_map: { comparison_available: false, status: "unknown" },
+        client_entry_path_diagnostics: { status: "unknown" },
         connector_map_health: { status: "unknown" },
         events: {},
         tool_call_balance: {},
@@ -55,7 +56,7 @@ function createObservabilityStatusTool(options = {}) {
       name: TOOL_NAME,
       title: "Observability status",
       description:
-        "Read-only TEST MCP observability snapshot for audit-log latency, tool-call errors, stale connector-map comparison, stream-break indicators, and child-process anomaly readiness. Does not change auth, tools/list, connector config, plug-ins, or server state.",
+        "Read-only TEST MCP observability snapshot for audit-log latency, client entry-path diagnostics, stale connector-map comparison, stream-break indicators, and child-process anomaly readiness. Does not change auth, tools/list, connector config, plug-ins, or server state.",
       inputSchema: OBSERVABILITY_STATUS_INPUT_SCHEMA,
       outputSchema: GENERIC_OBSERVABILITY_OUTPUT_SCHEMA,
       annotations: READ_ONLY_OBSERVABILITY_ANNOTATIONS,

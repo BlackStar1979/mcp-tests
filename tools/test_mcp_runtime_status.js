@@ -23,7 +23,7 @@ function createTestMcpRuntimeStatusTool(getRuntimeStatus) {
       name: TOOL_NAME,
       title: "TEST MCP runtime status",
       description:
-        "Read-only runtime governance snapshot for TEST MCP. Returns versions, enabled tools, auth mode, limits, and network policy without secrets.",
+        "Read-only runtime governance snapshot for TEST MCP. Returns versions, active request-contract posture, enabled tools, auth mode, limits, and network policy without secrets.",
       inputSchema: RUNTIME_STATUS_INPUT_SCHEMA,
       outputSchema: RUNTIME_STATUS_OUTPUT_SCHEMA,
       annotations: READ_ONLY_LOCAL_ANNOTATIONS,

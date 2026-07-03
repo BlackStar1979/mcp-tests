@@ -56,6 +56,7 @@ async function dispatchRpcMessage({
       return handleServerDiscoverMessage({
         id,
         protocolVersion: context.requestMetadata?.protocolVersion,
+        requestMetadata: context.requestMetadata,
         serverName,
         serverVersion,
         connectorShapeVersion,
@@ -65,6 +66,9 @@ async function dispatchRpcMessage({
         tools,
         serverStartId,
         disableLegacyInitialize,
+        auditLog,
+        requestId: context.requestId,
+        sessionId: context.sessionId,
       });
     }
 

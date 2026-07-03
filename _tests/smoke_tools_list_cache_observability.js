@@ -12,6 +12,15 @@ function runtimeStatus() {
     server_start_id: "start-a",
     auth: { mode: "oauth21" },
     profile: { mode: "internal" },
+    request_contract: {
+      route: "/mcp",
+      post_only: true,
+      initialize_required: false,
+      protocol_sessions: false,
+      server_discover_supported: true,
+      legacy_initialize_supported: true,
+      transport_mode: "streamable_http_stateless_legacy_initialize_compat",
+    },
     enabled_tools: ["test_mcp_runtime_status"],
     tool_surface: { tool_count: 1, tool_names_hash: "hash-a", combined_fingerprint: "fp-a" },
     security_boundary: { status: "ok" },
@@ -30,7 +39,10 @@ assert.equal(noList.tools_list_cache_diagnostics.current_window_counts.initializ
 assert.equal(noList.tools_list_cache_diagnostics.current_window_counts.tools_list_served, 0);
 assert.equal(noList.tools_list_cache_diagnostics.current_window_counts.tools_call_start, 1);
 assert.equal(noList.tools_list_cache_diagnostics.tools_call_after_initialize_without_tools_list, true);
-assert.ok(noList.recommended_actions[0].includes("tools-list cache diagnostic"));
+assert.equal(noList.client_entry_path_diagnostics.status, "initialize_only");
+assert.equal(noList.client_entry_path_diagnostics.current_window_counts.server_discover_received, 0);
+assert.ok(noList.recommended_actions.some((item) => item.includes("tools-list cache diagnostic")));
+assert.ok(noList.recommended_actions.some((item) => item.includes("legacy initialize-only traffic")));
 
 const withList = buildObservabilityStatus({
   args: { window_size: 50, slow_ms: 1000, top_n: 5 },
@@ -46,6 +58,7 @@ assert.equal(withList.tools_list_cache_diagnostics.ttl_cache_directive_observed,
 assert.equal(withList.tools_list_cache_diagnostics.last_tools_list_cache_directive.ttl_ms, 0);
 assert.equal(withList.tools_list_cache_diagnostics.last_tools_list_cache_directive.cache_scope, "private");
 assert.equal(withList.tools_list_cache_diagnostics.last_tools_list_served.fingerprint, "fp-a");
+assert.equal(withList.client_entry_path_diagnostics.status, "initialize_only");
 
 const direct = buildToolsListCacheDiagnostics([], runtimeStatus());
 assert.equal(direct.status, "no_current_session_observed");

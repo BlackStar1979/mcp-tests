@@ -4,6 +4,7 @@ const crypto = require("node:crypto");
 const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("./stage_metadata");
 const { assessAuditExportSafety } = require("./audit_export_safety");
 const { buildToolsListCacheDiagnostics } = require("./tools_list_cache_diagnostics");
+const { buildClientEntryPathDiagnostics } = require("./client_entry_path_diagnostics");
 
 const OBSERVABILITY_VERSION = "test-mcp-observability-v1";
 const DEFAULT_WINDOW_SIZE = 800;
@@ -489,6 +490,7 @@ function buildObservabilityStatus(options = {}) {
 
   const auditExportSafety = assessAuditExportSafety(parsedAuditEntries, { maxSamples: 10 });
   const toolsListCacheDiagnostics = buildToolsListCacheDiagnostics(parsedAuditEntries, runtimeStatus);
+  const clientEntryPathDiagnostics = buildClientEntryPathDiagnostics(parsedAuditEntries, runtimeStatus);
 
   const recommendedActions = buildRecommendedActions({
     connectorComparison,
@@ -504,6 +506,9 @@ function buildObservabilityStatus(options = {}) {
   });
   if (toolsListCacheDiagnostics.tools_call_after_initialize_without_tools_list) {
     recommendedActions.unshift("tools-list cache diagnostic indicates initialize + tools/call without observed tools/list for the current server_start_id; manually refresh connector tools and re-check tools_list_served/cache_directive.");
+  }
+  if (clientEntryPathDiagnostics.status === "initialize_only") {
+    recommendedActions.unshift("Client-entry diagnostic shows legacy initialize-only traffic in the current audit window; keep the bounded compatibility shim in place and do not treat initialize retirement as client-ready yet.");
   }
 
   return {
@@ -543,9 +548,11 @@ function buildObservabilityStatus(options = {}) {
       profile: runtimeStatus.profile?.mode || "unknown",
       enabled_tool_count: runtimeTools.length,
       security_boundary_status: runtimeStatus.security_boundary?.status || "unknown",
+      request_contract: runtimeStatus.request_contract || null,
     },
     connector_map: connectorComparison,
     tools_list_cache_diagnostics: toolsListCacheDiagnostics,
+    client_entry_path_diagnostics: clientEntryPathDiagnostics,
     connector_map_health: {
       status: connectorComparison.status,
       comparison_available: connectorComparison.comparison_available,

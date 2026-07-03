@@ -26,6 +26,7 @@ function createRuntimeStatusAssembly({
   runtimeProfile,
   toolsList,
   serverStartId,
+  disableLegacyInitialize,
 }) {
   return createRuntimeStatusProvider({
     serverName,
@@ -49,6 +50,17 @@ function createRuntimeStatusAssembly({
     schemaCompatibility: () => assertToolSchemas(toolsList()),
     runtimeIdentity: () => buildRuntimeIdentity(),
     toolLabels: () => buildToolLabelsSync(toolsList()),
+    requestContract: () => ({
+      route: "/mcp",
+      post_only: true,
+      initialize_required: false,
+      protocol_sessions: false,
+      server_discover_supported: true,
+      legacy_initialize_supported: disableLegacyInitialize !== true,
+      transport_mode: disableLegacyInitialize === true
+        ? "streamable_http_stateless_no_initialize"
+        : "streamable_http_stateless_legacy_initialize_compat",
+    }),
     network: {
       envFlagEnabled,
       getAllowedDomains,

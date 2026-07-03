@@ -45,6 +45,29 @@ const PROFILE_STATUS_SCHEMA = {
   },
 };
 
+const REQUEST_CONTRACT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "route",
+    "post_only",
+    "initialize_required",
+    "protocol_sessions",
+    "server_discover_supported",
+    "legacy_initialize_supported",
+    "transport_mode",
+  ],
+  properties: {
+    route: { type: "string" },
+    post_only: { type: "boolean" },
+    initialize_required: { type: "boolean" },
+    protocol_sessions: { type: "boolean" },
+    server_discover_supported: { type: "boolean" },
+    legacy_initialize_supported: { type: "boolean" },
+    transport_mode: { type: "string" },
+  },
+};
+
 const TOOL_POLICY_SUMMARY_ITEM_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -86,6 +109,7 @@ const RUNTIME_STATUS_OUTPUT_SCHEMA = {
     "runtime_identity",
     "auth",
     "profile",
+    "request_contract",
     "audit",
     "limits",
     "network",
@@ -137,6 +161,7 @@ const RUNTIME_STATUS_OUTPUT_SCHEMA = {
     },
     auth: AUTH_STATUS_SCHEMA,
     profile: PROFILE_STATUS_SCHEMA,
+    request_contract: REQUEST_CONTRACT_SCHEMA,
     audit: {
       type: "object",
       additionalProperties: false,
@@ -184,6 +209,7 @@ const RUNTIME_STATUS_OUTPUT_SCHEMA = {
 module.exports = {
   AUTH_STATUS_SCHEMA,
   PROFILE_STATUS_SCHEMA,
+  REQUEST_CONTRACT_SCHEMA,
   RUNTIME_STATUS_INPUT_SCHEMA,
   RUNTIME_STATUS_OUTPUT_SCHEMA,
   TOOL_POLICY_SUMMARY_ITEM_SCHEMA,

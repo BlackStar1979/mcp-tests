@@ -17,6 +17,15 @@ assert.doesNotMatch(bootstrapSource, /const stageStatus = "stage8_20-runtime-sta
 const tool = createTestMcpRuntimeStatusTool(() => ({
   compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   stage_status: CURRENT_STAGE_STATUS,
+  request_contract: {
+    route: "/mcp",
+    post_only: true,
+    initialize_required: false,
+    protocol_sessions: false,
+    server_discover_supported: true,
+    legacy_initialize_supported: true,
+    transport_mode: "streamable_http_stateless_legacy_initialize_compat",
+  },
   enabled_tools: ["a"],
   tool_policy_summary: [{ tool: "a" }],
   tool_surface: { tool_count: 40, tool_names: ["a"], tool_names_hash: "abc123abc123", per_tool: [{ tool: "a" }] },
@@ -27,6 +36,9 @@ const tool = createTestMcpRuntimeStatusTool(() => ({
   const status = await tool.execute({ include_tools: false });
   assert.equal(status.compatibility_label, CURRENT_COMPATIBILITY_LABEL);
   assert.equal(status.stage_status, CURRENT_STAGE_STATUS);
+  assert.equal(status.request_contract.route, "/mcp");
+  assert.equal(status.request_contract.server_discover_supported, true);
+  assert.equal(status.request_contract.legacy_initialize_supported, true);
   assert.deepEqual(status.enabled_tools, []);
   assert.deepEqual(status.tool_policy_summary, []);
   assert.equal(status.tool_surface.tool_count, 40);

@@ -132,6 +132,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     runtimeProfile,
     toolsList,
     serverStartId,
+    disableLegacyInitialize: bootstrapConfig.disableLegacyInitialize === true,
   });
 
   const { getOptionalTool } = configureOptionalToolsAssembly({

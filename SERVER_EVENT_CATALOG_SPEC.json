@@ -144,6 +144,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "server_discover_received",
+      "status": "active_code_event"
+    },
+    {
       "name": "tools_list_served",
       "status": "active_code_event"
     },

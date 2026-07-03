@@ -10,6 +10,9 @@
     "src/runtime/mcp_entry_dispatcher.js",
     "src/auth/oauth21_authorization_server.js",
     "src/tool_loader.js",
+    "src/runtime_status.js",
+    "src/observability_status.js",
+    "src/client_entry_path_diagnostics.js",
     "src/runtime/state_handle_prototype.js",
     "src/runtime/request_metadata_policy.js",
     "src/runtime/server_discover_message_handler.js"
@@ -148,6 +151,12 @@
     "tools_list_changed_capability_advertised": false,
     "tool_surface_freshness_model": "pull_only_tools_list_ttl0_private",
     "transition_mode": "stateless_legacy_initialize_compat",
+    "runtime_status_tool_reports_request_contract": true,
+    "observability_client_entry_diagnostics_available": true,
+    "client_entry_audit_events": [
+      "initialize_received",
+      "server_discover_received"
+    ],
     "record": "_workflow/operator_decisions/keep_mcp_request_contract_bridge.md",
     "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md"
   },

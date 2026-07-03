@@ -12,6 +12,15 @@ const runtimeStatus = {
   stage_status: CURRENT_STAGE_STATUS,
   auth: { mode: "none" },
   profile: { mode: "public" },
+  request_contract: {
+    route: "/mcp",
+    post_only: true,
+    initialize_required: false,
+    protocol_sessions: false,
+    server_discover_supported: true,
+    legacy_initialize_supported: true,
+    transport_mode: "streamable_http_stateless_legacy_initialize_compat",
+  },
   enabled_tools: ["search", "fetch", "observability_status"],
   security_boundary: { status: "ok" },
 };
@@ -40,6 +49,8 @@ assert.equal(status.list_changed_enabled, false);
 assert.equal(status.runtime.server_version, "0.40.0");
 assert.equal(status.runtime.compatibility_label, CURRENT_COMPATIBILITY_LABEL);
 assert.equal(status.runtime.enabled_tool_count, 3);
+assert.equal(status.runtime.request_contract.route, "/mcp");
+assert.equal(status.client_entry_path_diagnostics.request_contract.server_discover_supported, true);
 assert.equal(status.connector_map.comparison_available, true);
 assert.equal(status.connector_map.status, "drift_detected");
 assert.deepEqual(status.connector_map.missing_in_connector, ["observability_status"]);

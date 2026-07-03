@@ -7,6 +7,7 @@ const { SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS } = require("./request_metadata_
 function handleServerDiscoverMessage({
   id,
   protocolVersion,
+  requestMetadata,
   serverName,
   serverVersion,
   connectorShapeVersion,
@@ -16,6 +17,9 @@ function handleServerDiscoverMessage({
   tools,
   serverStartId,
   disableLegacyInitialize,
+  auditLog,
+  requestId,
+  sessionId,
 } = {}) {
   const sourceTools = Array.isArray(tools) ? tools : [];
   const toolSurface = buildToolSurfaceFingerprint(sourceTools);
@@ -24,6 +28,20 @@ function handleServerDiscoverMessage({
     : SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS[0];
 
   const legacyInitializeSupported = disableLegacyInitialize !== true;
+
+  if (typeof auditLog === "function") {
+    auditLog("server_discover_received", {
+      request_id: requestId,
+      session_id: sessionId || "",
+      protocol_version: resolvedProtocolVersion,
+      client_name: requestMetadata?.clientInfo?.name || "",
+      client_version: requestMetadata?.clientInfo?.version || "",
+      has_client_capabilities: Boolean(requestMetadata?.clientCapabilities),
+      auth_mode: authMode,
+      profile,
+      server_start_id: typeof serverStartId === "string" ? serverStartId : "",
+    });
+  }
 
   return rpcResult(id, {
     supportedVersions: [...SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS],
