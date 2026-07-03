@@ -33,6 +33,12 @@ The intended target architecture for this server is:
 - no initialize/session dependency as part of the target protocol direction
 - sessionless/stateless request model
 
+Compatibility note:
+
+- bounded dual recognition of legacy `initialize` and modern `server/discover` on the single surviving route may remain temporarily as a client-compatibility shim
+- this does not change the target architecture above
+- legacy `initialize` remains compatibility debt only, not destination protocol truth
+
 The final surviving route is selected separately in `_workflow/operator_decisions/single_route_selection_keep_mcp.md`. The selected surviving route is `/mcp`, and `/mcp/sessionless` is transition-only debt.
 
 ## Interpretation rules for historical records

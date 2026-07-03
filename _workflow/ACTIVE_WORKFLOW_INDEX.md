@@ -141,6 +141,9 @@ Current records:
 - `initialize_no_handshake_repo_evidence.md`
   - Repo-side evidence record for `initialize` retirement scoping. Confirms the surviving `/mcp` route already supports `server/discover` and useful `tools/list` / `tools/call` flow without a preceding `initialize`; the remaining blocker is external client/connector compatibility evidence.
 
+- `initialize_client_compatibility_evidence.md`
+  - Real client compatibility evidence for `initialize` retirement scoping. Confirms a freshly re-added Codex desktop Streamable HTTP connector can complete OAuth and still call legacy `initialize`, so bounded single-route dual recognition remains temporary compatibility debt rather than destination architecture.
+
 - `subscriptions_listen_compatibility_matrix.md`
   - Design-only compatibility matrix between stable `GET /mcp` SSE, future sessionless `subscriptions/listen`, and existing `tools/list_changed` dry-run work. No runtime change, restart, or connector refresh.
 
@@ -331,12 +334,12 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Obtain bounded client/connector compatibility evidence that the surviving `/mcp` route can be used via `server/discover` and direct request flow without relying on legacy `initialize`, then only after explicit authorization retire `initialize`.
+1. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use `_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md`, `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md`, `_workflow/state.json`, and `_workflow/sessionless_inventory.json` to run the remaining connector/client compatibility check for legacy-`initialize` retirement. Do not reopen historical `/mcp/sessionless` planning or treat missing repo-side request flow as the blocker; the blocker is now external compatibility evidence plus explicit removal authorization.
+Next recommended action: use `_workflow/operator_decisions/initialize_client_compatibility_evidence.md`, `_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md`, `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md`, `_workflow/state.json`, and `_workflow/sessionless_inventory.json` to preserve a bounded compatibility shim on surviving `/mcp` without misdocumenting it as permanent dual-standard architecture. Do not reopen historical `/mcp/sessionless` planning or treat missing repo-side request flow as the blocker; the blocker is now confirmed external client compatibility plus explicit removal authorization.
 
 Recently completed:
 
@@ -347,6 +350,8 @@ Recently completed:
 - Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
 
 - Recorded repo-side no-handshake evidence for the surviving `/mcp` route: `server/discover` plus useful `tools/list` / `tools/call` behavior no longer depend on a preceding `initialize`.
+
+- Recorded real client compatibility evidence for the surviving `/mcp` route: a freshly re-added Codex desktop Streamable HTTP connector can complete OAuth and still call legacy `initialize`, so bounded dual recognition remains temporary compatibility debt only.
 
 - Closed the stale `session_store` and `roots_sampling_logging_deprecation` ledger items using the already-recorded local-helper classification and sampling-detachment truth.
 

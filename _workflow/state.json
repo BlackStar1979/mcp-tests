@@ -3,7 +3,7 @@
   "status": "compact_orientation_map_not_progress_log",
   "updated_at": "2026-07-02T11:35Z",
   "project": "mcp-tests",
-  "purpose": "Machine-readable startup orientation for the TEST MCP server; not a chronological log.",
+  "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
     "_workflow/README.md",
     "_workflow/ACTIVE_WORKFLOW_INDEX.md",
@@ -67,31 +67,31 @@
     "allowed_history_locations": [
       "_workflow/operator_decisions/*.md",
       "_workflow/control_plane/snapshots/**",
-      "_workflow/WORKFLOW_CANON.md closeout notes",
+      "_workflow/WORKFLOW_CANON.md",
       "git history"
     ],
     "forbidden_history_locations": [
       "_workflow/state.json",
       "root SERVER_*_SPEC.json",
-      "_workflow/sessionless_inventory.json except checklist status/evidence fields"
+      "_workflow/sessionless_inventory.json beyond checklist status/evidence fields"
     ]
   },
   "root_spec_map": {
     "SERVER_SPEC.json": "server identity, runtime topology, maintenance rules",
     "SERVER_AUTH_SPEC.json": "OAuth/OAuth21 resource-server contract",
-    "SERVER_CONNECTOR_SURFACE_SPEC.json": "connector surface and refresh-readiness",
+    "SERVER_CONNECTOR_SURFACE_SPEC.json": "connector surface and refresh rules",
     "SERVER_TOOLS_SPEC.json": "MCP-callable tool surfaces and catalog",
     "SERVER_PROFILES_SPEC.json": "public/tests profiles and schema policy",
     "SERVER_AUTHZ_DECISION_SPEC.json": "authorization decision envelope",
-    "SERVER_RESOURCE_POLICY_SPEC.json": "resource classes and operation permissions",
+    "SERVER_RESOURCE_POLICY_SPEC.json": "resource classes and permissions",
     "SERVER_POLICY_RUNTIME_SPEC.json": "runtime policy composition gate",
     "SERVER_NETWORK_POLICY_SPEC.json": "network tool policy and allowlist",
     "SERVER_MEMORY_POLICY_SPEC.json": "agent memory/state/task policy",
     "SERVER_DATABASE_POLICY_SPEC.json": "database/state-store policy",
-    "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json": "plugin visibility and hotplug/list_changed policy",
+    "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json": "plugin visibility and hotplug policy",
     "SERVER_SAMPLING_POLICY_SPEC.json": "client sampling approval and budget policy",
-    "SERVER_DECISION_RUNTIME_SPEC.json": "decision model/runtime contract from historical Stage12 work",
-    "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "runtime topology and restart authority",
+    "SERVER_DECISION_RUNTIME_SPEC.json": "decision runtime contract from historical Stage12 work",
+    "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "runtime topology and restart control",
     "SERVER_RUNTIME_CONFIG_SPEC.json": "runtime CLI/env/route config surface",
     "SERVER_EVENT_CATALOG_SPEC.json": "runtime audit event catalog",
     "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json": "critical policy authority",
@@ -229,6 +229,7 @@
     "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
     "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
     "initialize_no_handshake_repo_evidence_record": "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md",
+    "initialize_client_compatibility_evidence_record": "_workflow/operator_decisions/initialize_client_compatibility_evidence.md",
     "transport_session_retirement_package_record": "_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md",
     "residual_session_sse_cleanup_package_record": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md",
     "sampling_runtime_detachment_package_record": "_workflow/operator_decisions/keep_mcp_sampling_runtime_detachment_package.md",
@@ -245,6 +246,8 @@
     "stable_get_mcp_supported": false,
     "stable_server_discover_supported": true,
     "stable_protocol_sessions": false,
+    "bounded_initialize_compatibility_shim_allowed_now": true,
+    "bounded_initialize_compatibility_shim_is_end_state": false,
     "subscriptions_listen_supported_in_end_state": false,
     "tools_list_changed_push_supported_in_end_state": false,
     "stable_list_changed_capability_advertised_now": false,
@@ -256,7 +259,7 @@
     "sse_allowed_in_end_state": false,
     "session_transport_dependency_allowed_in_end_state": false,
     "dual_route_coexistence_is_target": false,
-    "notes": "Target contract: single surviving /mcp route, POST JSON-only, no SSE end state, no active transport-session dependency, and pull-only tools/list freshness with ttlMs=0 and cacheScope=private. Hidden /mcp/sessionless is retired from active repo/runtime truth. Remaining session/outbound/sampling files are bounded local compatibility helpers only; deprecated roots/sampling/logging inventory is non-active and inventoried.",
+    "notes": "Target contract: one surviving /mcp route, POST JSON-only, no SSE end state, no active transport-session dependency, and pull-only tools/list freshness with ttlMs=0 and cacheScope=private. Hidden /mcp/sessionless is retired. Remaining session/outbound/sampling files are bounded local compatibility helpers only.",
     "hidden_sessionless_route_live_verification_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md"
   },
   "current_runtime_truth": {

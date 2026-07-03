@@ -80,6 +80,11 @@ Actual `initialize` removal on `/mcp` remains blocked by at least:
 2. final no-SSE replacement behavior for `subscriptions/listen`
 3. explicit authorization and coverage for removing legacy `initialize` entirely after compatibility evidence exists
 
+Current evidence update:
+
+- `_workflow/operator_decisions/initialize_client_compatibility_evidence.md` now records that a freshly re-added Codex desktop Streamable HTTP connector successfully completed OAuth and then still called legacy `initialize` rather than `server/discover`.
+- This confirms the blocker is real external compatibility, not speculative workflow caution.
+
 ## Next safe workflow step
 
 Scope the remaining session-bound outbound/sampling internals that still depend on `McpSession` semantics but are no longer part of the intended active `/mcp` contract.

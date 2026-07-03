@@ -101,7 +101,7 @@
       "target_lifecycle": "removed",
       "repo_current_model": "stable initialize remains present only as legacy compatibility; surviving /mcp already supports server/discover and useful tools/list/tools/call flow without a preceding initialize handshake, so the remaining blocker is external client/connector compatibility evidence before removal",
       "implementation_status": "blocked_stable_compat",
-      "migration_path": "server/discover plus per-request protocol version and client capability metadata",
+      "migration_path": "server/discover plus per-request protocol version and client capability metadata, with bounded single-route initialize compatibility retained only until tested clients upgrade",
       "checklist": [
         {
           "item": "map current initialize handlers",
@@ -140,6 +140,11 @@
           "item": "record repo-side no-handshake evidence on surviving /mcp",
           "status": "done",
           "evidence": "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md"
+        },
+        {
+          "item": "record real client evidence that some connectors still call initialize after successful OAuth",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/initialize_client_compatibility_evidence.md"
         }
       ]
     },
@@ -651,7 +656,8 @@
     "SessionStore migration debt is complete for the surviving /mcp contract: SessionStore is removed from the active repo and remaining session/outbound helpers are bounded local compatibility fixtures rather than active runtime wiring.",
     "Deprecated roots/sampling/logging cleanup is complete for current workflow scope: active /mcp no longer injects sampling, no active roots surface is confirmed, and remaining sampling/audit code is bounded compatibility or generic server logging.",
     "Restart resilience is complete for the current topology boundary: OAuth21 3008 restart authority is supervisor-managed, machine-readable, and no longer an open blocker in workflow truth.",
-    "Initialize retirement remains blocked only by stable client/connector compatibility evidence: repo-side no-handshake flow is already proven on surviving /mcp via server/discover plus direct tools/list/tools/call behavior.",
+    "Initialize retirement remains blocked only by stable client/connector compatibility evidence: repo-side no-handshake flow is already proven on surviving /mcp via server/discover plus direct tools/list/tools/call behavior, but a tested Codex desktop Streamable HTTP connector still calls initialize after successful OAuth.",
+    "Bounded initialize/server-discover dual recognition on surviving /mcp is authorized only as a temporary client-compatibility shim on one route; it is not authorization for permanent dual-standard destination architecture.",
     "Runtime policy scope matrix is complete for the current bounded gate: the policy/resource enforcement path is repo-applied, wired in tools/call, and live-loaded on OAuth21 3008.",
     "Feature lifecycle governance is complete at the inventory layer: lifecycle/status/migration/checklist structure and smoke coverage are already in place for tracked SEP items.",
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
@@ -698,6 +704,7 @@
     "sessionless_prototype_route_retirement_scoping_record": "_workflow/operator_decisions/sessionless_prototype_route_retirement_scoping.md",
     "initialize_retirement_boundary_record": "_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md",
     "initialize_no_handshake_repo_evidence_record": "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md",
+    "initialize_client_compatibility_evidence_record": "_workflow/operator_decisions/initialize_client_compatibility_evidence.md",
     "sessionless_replacement_coverage_scoping_record": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md",
     "subscriptions_listen_pull_only_contract_record": "_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md",
     "pull_only_tool_surface_freshness_runtime_package_record": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md",
@@ -714,6 +721,8 @@
     "stable_get_mcp_supported": false,
     "stable_server_discover_supported": true,
     "stable_protocol_sessions": false,
+    "bounded_initialize_compatibility_shim_allowed_now": true,
+    "bounded_initialize_compatibility_shim_is_end_state": false,
     "sse_allowed_in_end_state": false,
     "subscriptions_listen_supported_in_end_state": false,
     "tools_list_changed_push_supported_in_end_state": false,

@@ -68,6 +68,7 @@ for (const item of inventory.deprecation_ledger) {
 assert.deepEqual(ledger.get("initialize_handshake").sep_sources, ["SEP-2575", "SEP-2596"]);
 assert.match(ledger.get("initialize_handshake").repo_current_model, /without a preceding initialize handshake/);
 assert.equal(ledger.get("initialize_handshake").checklist.find((item) => item.item === "record repo-side no-handshake evidence on surviving /mcp").status, "done");
+assert.equal(ledger.get("initialize_handshake").checklist.find((item) => item.item === "record real client evidence that some connectors still call initialize after successful OAuth").status, "done");
 assert.ok(ledger.get("mcp_session_id_header").sep_sources.includes("SEP-2567"));
 assert.equal(ledger.get("mcp_session_id_header").implementation_status, "done");
 assert.match(ledger.get("mcp_session_id_header").repo_current_model, /POST ignores supplied session headers/);
@@ -109,6 +110,7 @@ assert.ok(inventory.recommended_next.some((item) => item.includes("SessionStore 
 assert.ok(inventory.recommended_next.some((item) => item.includes("Deprecated roots/sampling/logging cleanup is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Restart resilience is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Initialize retirement remains blocked only by stable client/connector compatibility evidence")));
+assert.ok(inventory.recommended_next.some((item) => item.includes("temporary client-compatibility shim")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Runtime policy scope matrix is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("Feature lifecycle governance is complete")));
 assert.ok(inventory.recommended_next.some((item) => item.includes("transport-session retirement is complete")));
@@ -133,7 +135,10 @@ assert.equal(inventory.active_target_contract.restart_resilience_closeout_record
 assert.equal(inventory.active_target_contract.runtime_policy_scope_matrix_closeout_record, "_workflow/operator_decisions/runtime_policy_scope_matrix_closeout.md");
 assert.equal(inventory.active_target_contract.feature_lifecycle_deprecation_policy_closeout_record, "_workflow/operator_decisions/feature_lifecycle_deprecation_policy_closeout.md");
 assert.equal(inventory.active_target_contract.initialize_no_handshake_repo_evidence_record, "_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md");
+assert.equal(inventory.active_target_contract.initialize_client_compatibility_evidence_record, "_workflow/operator_decisions/initialize_client_compatibility_evidence.md");
 assert.equal(inventory.active_target_contract.stable_post_mcp_response_mode, "json_only");
+assert.equal(inventory.active_target_contract.bounded_initialize_compatibility_shim_allowed_now, true);
+assert.equal(inventory.active_target_contract.bounded_initialize_compatibility_shim_is_end_state, false);
 assert.equal(inventory.active_target_contract.stable_get_mcp_supported, false);
 assert.equal(inventory.active_target_contract.list_results_ttl_cache_scope_runtime_package_record, "_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 assert.equal(inventory.target_selection_readiness.status, "selected_parallel_track_stable_mcp_preserved");

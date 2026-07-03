@@ -43,6 +43,10 @@ It means the remaining `initialize_handshake` blocker is now specifically:
 - external compatibility evidence for the clients/connectors that matter operationally
 - followed by explicit authorization before removing legacy `initialize`
 
+Follow-up evidence:
+
+- `_workflow/operator_decisions/initialize_client_compatibility_evidence.md` now records a confirmed tested-client case where OAuth succeeded but the client still used legacy `initialize` instead of `server/discover`.
+
 It is no longer accurate to describe this ledger item as blocked because the repo lacks a no-handshake request path on the surviving route.
 
 ## Workflow consequence
