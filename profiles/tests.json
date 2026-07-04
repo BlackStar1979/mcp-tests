@@ -55,6 +55,8 @@
         "auth_runtime_readonly",
         "observability_audit_readonly",
         "tool_surface_planning",
+        "runtime_tool_registry_readonly",
+        "workspace_index_readonly",
         "runtime_status_readonly"
       ],
       "denied_resource_policy_refs": [],

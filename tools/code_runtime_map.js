@@ -1,5 +1,6 @@
 const {
   CODE_RUNTIME_MAP_OUTPUT_SCHEMA,
+  EMPTY_INPUT_SCHEMA,
   READ_ONLY_TRUTH_ANNOTATIONS,
 } = require("../src/schemas/truth_tools");
 const { buildCodeRuntimeMap } = require("../src/truth/code_runtime_map");
@@ -16,7 +17,7 @@ const codeRuntimeMapTool = {
     name: TOOL_NAME,
     title: "Code runtime map",
     description: "Read-only map of runtime entrypoints, truth modules, canonical docs, guards, and control-plane links.",
-    inputSchema: { type: "object", additionalProperties: false, required: [], properties: {} },
+    inputSchema: EMPTY_INPUT_SCHEMA,
     outputSchema: CODE_RUNTIME_MAP_OUTPUT_SCHEMA,
     annotations: READ_ONLY_TRUTH_ANNOTATIONS,
   },

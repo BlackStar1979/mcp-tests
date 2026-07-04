@@ -10,7 +10,7 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 53,
+    "full_tests_authenticated_tool_count": 66,
     "target_active_runtime_count": 2,
     "target_active_runtime_modes": [
       "none",
@@ -22,7 +22,7 @@
     },
     "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
     "public_tool_count": 13,
-    "authenticated_tool_count": 53,
+    "authenticated_tool_count": 66,
     "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {
@@ -31,8 +31,8 @@
     "updates_must_modify_structured_sections": true,
     "root_spec_snapshot_allowlisted": true,
     "root_spec_snapshot_allowlist_source": "_workflow/scripts/workflow_snapshot.js",
-    "index_rebuild_required_before_work": true,
-    "index_rebuild_tool": "GPT_MCP.build_index",
+    "index_rebuild_required_before_work": false,
+    "index_rebuild_tool": "internal_build_workspace_index_not_connector_exposed_stage8_53b",
     "index_status_check_required": true,
     "closeout_control_review_required": true,
     "closeout_control_review": {
@@ -48,8 +48,8 @@
       "required_start_sequence": [
         "read SERVER_SPEC.json",
         "check index_status",
-        "run build_index before substantive repo work",
-        "re-check index_status after rebuild"
+        "if index_status is missing or stale, rebuild with the internal workspace-index helper before relying on retrieval helpers",
+        "re-check index_status after internal rebuild"
       ],
       "authority_order": [
         "repo_root_current_files",
@@ -76,13 +76,13 @@
     }
   },
   "workflow_progress_markers": {
-    "current_working_course": "stage8_53a-tests-truth-tools-surface-parity",
-    "next_primary": "stage8_53b-modular-safe-tool-surface-consolidation",
-    "next_secondary": "stage8_53c-modular-unsafe-tool-governance-boundary",
+    "current_working_course": "stage8_53b-modular-safe-tool-surface-consolidation",
+    "next_primary": "stage8_53c-modular-unsafe-tool-governance-boundary",
+    "next_secondary": "stage8_53d-live-restart-and-connector-surface-reconciliation",
     "stage_labels": [
-      "Stage 8 / Step 53a - tests truth_tools surface parity",
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
-      "Stage 8 / Step 53c - modular unsafe tool governance boundary"
+      "Stage 8 / Step 53c - modular unsafe tool governance boundary",
+      "Stage 8 / Step 53d - live restart and connector surface reconciliation"
     ]
   },
   "spec_refs": {

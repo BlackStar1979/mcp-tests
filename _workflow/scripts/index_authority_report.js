@@ -63,8 +63,8 @@ function validateRules() {
     ".mcp_trash/",
     ".mcp_backups/",
   ];
-  if (rules.index_rebuild_required_before_work !== true) errors.push("index_rebuild_required_before_work must be true");
-  if (rules.index_rebuild_tool !== "GPT_MCP.build_index") errors.push("index_rebuild_tool must be GPT_MCP.build_index");
+  if (rules.index_rebuild_required_before_work !== false) errors.push("index_rebuild_required_before_work must be false while rebuild stays internal-only");
+  if (rules.index_rebuild_tool !== "internal_build_workspace_index_not_connector_exposed_stage8_53b") errors.push("index_rebuild_tool must point at the current internal-only rebuild path");
   if (rules.index_status_check_required !== true) errors.push("index_status_check_required must be true");
   if (protocol.index_role !== "discovery_only_not_source_of_truth") errors.push("index_role must be discovery_only_not_source_of_truth");
   for (const p of requiredNonAuthoritative) {

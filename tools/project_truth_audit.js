@@ -1,4 +1,5 @@
 const {
+  EMPTY_INPUT_SCHEMA,
   PROJECT_TRUTH_AUDIT_OUTPUT_SCHEMA,
   READ_ONLY_TRUTH_ANNOTATIONS,
 } = require("../src/schemas/truth_tools");
@@ -16,7 +17,7 @@ const projectTruthAuditTool = {
     name: TOOL_NAME,
     title: "Project truth audit",
     description: "Read-only repo truth audit covering stage metadata, canonical workflow docs, and drift findings.",
-    inputSchema: { type: "object", additionalProperties: false, required: [], properties: {} },
+    inputSchema: EMPTY_INPUT_SCHEMA,
     outputSchema: PROJECT_TRUTH_AUDIT_OUTPUT_SCHEMA,
     annotations: READ_ONLY_TRUTH_ANNOTATIONS,
   },

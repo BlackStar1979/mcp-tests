@@ -14,6 +14,7 @@ const { loadServerProfileConfig } = require("../src/server_profile_loader");
 const { createTestMcpRuntimeStatusTool } = require("../tools/authorized/test_mcp_runtime_status");
 const { createObservabilityStatusTool } = require("../tools/authorized/observability_status");
 const { CONNECTOR_SHAPE_VERSION, SERVER_NAME, SERVER_VERSION } = require("../src/runtime/identity");
+const { createRuntimeSupportAssembly } = require("../src/runtime/runtime_support_assembly");
 
 const ROOT = path.resolve(__dirname, "..");
 
@@ -26,6 +27,19 @@ function runtimeStatusProvider() {
 
 function buildAuthorizedRegistry() {
   const serverProfileConfig = loadServerProfileConfig({ profileName: "tests", authMode: "oauth21", rootDir: ROOT });
+  const runtimeSupport = createRuntimeSupportAssembly({
+    auditLogPath: path.join(ROOT, "_logs", ".stage8-registry-diff-dry-run-support.jsonl"),
+    auditVersion: "tmp",
+    serverName: SERVER_NAME,
+    serverVersion: SERVER_VERSION,
+    connectorShapeVersion: CONNECTOR_SHAPE_VERSION,
+    docs: [],
+    publicBaseUrl: "http://127.0.0.1:3008",
+    maxFetchTextChars: 2500,
+    outputMode: "structured",
+    optionalTools: [],
+    rootDir: ROOT,
+  });
   const optionalTools = loadOptionalTools({
     profile: "internal",
     authPolicy: { mode: "oauth21", requiresAuth: true },
@@ -35,6 +49,7 @@ function buildAuthorizedRegistry() {
       runtimeStatusProvider,
       auditLogPath: path.join(ROOT, "_logs", ".stage8-registry-diff-dry-run.jsonl"),
     }),
+    createRuntimeRegistryContext: (label) => runtimeSupport.registryContext({ label }),
   });
   const coreDescriptors = buildCoreToolDescriptors({
     connectorShapeVersion: CONNECTOR_SHAPE_VERSION,

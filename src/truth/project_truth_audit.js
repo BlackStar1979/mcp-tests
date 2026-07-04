@@ -15,14 +15,14 @@ const EXPECTED = Object.freeze({
   server_version: "0.40.0",
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
-  current_working_course: "stage8_53a-tests-truth-tools-surface-parity",
-  next_primary: "stage8_53b-modular-safe-tool-surface-consolidation",
-  next_secondary: "stage8_53c-modular-unsafe-tool-governance-boundary",
-  tool_names_hash: "ef588fb6c45448bc",
-  input_schema_fingerprint: "7f71f40c71e6d87a",
-  output_schema_fingerprint: "21a9bb7388198894",
-  descriptor_fingerprint: "bf974ebd2a5c004e",
-  combined_fingerprint: "e2d4957058b360f2",
+  current_working_course: "stage8_53b-modular-safe-tool-surface-consolidation",
+  next_primary: "stage8_53c-modular-unsafe-tool-governance-boundary",
+  next_secondary: "stage8_53d-live-restart-and-connector-surface-reconciliation",
+  tool_names_hash: "dc8454841a9b1383",
+  input_schema_fingerprint: "1b525b220a134c8f",
+  output_schema_fingerprint: "6d111daafa125899",
+  descriptor_fingerprint: "35926df6e27fb50d",
+  combined_fingerprint: "9b679c9a6aea3e82",
 });
 
 function readText(repoRoot, relPath) {
@@ -75,9 +75,9 @@ function buildProjectTruthAudit(options = {}) {
     requireIncludes(findings, name, text, EXPECTED.current_working_course);
     requireIncludes(findings, name, text, EXPECTED.next_primary);
     requireIncludes(findings, name, text, EXPECTED.next_secondary);
-    requireIncludes(findings, name, text, "Stage 8 / Step 53a");
     requireIncludes(findings, name, text, "Stage 8 / Step 53b");
-    requireIncludes(findings, name, text, "truth_tools");
+    requireIncludes(findings, name, text, "Stage 8 / Step 53c");
+    requireIncludes(findings, name, text, "tool_registry");
   }
 
   const activePrimaryStillDirectSplit = docs.working_course.includes("Next primary implementation course:\r\n\r\n```text\r\nStage 8 / Step 53 — server.js runtime container extraction")

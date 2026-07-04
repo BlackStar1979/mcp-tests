@@ -57,7 +57,7 @@ function buildCodeRuntimeMap(options = {}) {
     control_plane: controlPlane,
     guards,
     missing,
-    invariant: "Stage 8 / Step 53a owns bounded connector-visible truth-tool parity on the tests surface; later surface growth must remain explicitly approved and workflow-tracked.",
+    invariant: "Stage 8 / Step 53b owns the approved modular safe-tool expansion on the tests surface; repo-visible surface growth is allowed here, but live 3008 and connector truth must remain explicitly reconciled and workflow-tracked.",
   };
 }
 

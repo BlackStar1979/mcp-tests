@@ -24,7 +24,7 @@ const { CURRENT_WORKING_COURSE, NEXT_PRIMARY_STAGE, NEXT_SECONDARY_STAGE } = req
   const runtimeMap = await codeRuntimeMapTool.execute({});
   assert.equal(runtimeMap.stage_plan.current, CURRENT_WORKING_COURSE);
   assert.ok(runtimeMap.planned_truth_modules.includes("src/truth/project_truth_audit.js"));
-  assert.ok(runtimeMap.invariant.includes("Stage 8 / Step 53a"));
+  assert.ok(runtimeMap.invariant.includes("Stage 8 / Step 53b"));
 
   const decision = await deployDecisionGuardTool.execute({
     changed_paths: ["tools/project_truth_audit.js"],

@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 40,
+      "tool_count": 53,
       "tools": [
         "code_sample_js",
         "get_info",
@@ -38,6 +38,19 @@
         "deploy_decision_guard",
         "change_workflow_simulator",
         "tool_usage_snapshot",
+        "tool_registry_status",
+        "tool_registry_list",
+        "tool_registry_get_tool",
+        "tool_registry_validate_tool",
+        "tool_registry_policy",
+        "tool_registry_preflight",
+        "tool_registry_plan",
+        "tool_registry_execute",
+        "index_status",
+        "search_index",
+        "search_index_context",
+        "collect_context",
+        "collect_romionsim_context",
         "dev_code_audit",
         "dev_code_dependencies",
         "dev_code_impact",
@@ -84,7 +97,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 53,
+  "total_mcp_callable_tool_count": 66,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -711,6 +724,149 @@
       "tool_category": "truth",
       "resource_class": "observability_audit_readonly",
       "operation_class": "summarize",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_status": {
+      "name": "tool_registry_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_list": {
+      "name": "tool_registry_list",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_get_tool": {
+      "name": "tool_registry_get_tool",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_validate_tool": {
+      "name": "tool_registry_validate_tool",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_policy": {
+      "name": "tool_registry_policy",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_preflight": {
+      "name": "tool_registry_preflight",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "preflight",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_plan": {
+      "name": "tool_registry_plan",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "plan",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_registry_execute": {
+      "name": "tool_registry_execute",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "tool_registry",
+      "resource_class": "runtime_tool_registry_readonly",
+      "operation_class": "readonly_execute",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "index_status": {
+      "name": "index_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "workspace_index",
+      "resource_class": "workspace_index_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "search_index": {
+      "name": "search_index",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "workspace_index",
+      "resource_class": "workspace_index_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "search_index_context": {
+      "name": "search_index_context",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "workspace_index",
+      "resource_class": "workspace_index_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "collect_context": {
+      "name": "collect_context",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "workspace_index",
+      "resource_class": "workspace_index_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "collect_romionsim_context": {
+      "name": "collect_romionsim_context",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "workspace_index",
+      "resource_class": "workspace_index_readonly",
+      "operation_class": "search",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],

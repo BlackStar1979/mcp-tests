@@ -35,10 +35,24 @@ function buildScenario({ profileName, authMode }) {
   const runtimeProfile = authRequired ? "internal" : "public";
   const serverProfileConfig = loadServerProfileConfig({ profileName, authMode, rootDir: ROOT });
   const dynamicTools = makeDynamicTools();
+  const registrySupport = createRuntimeSupportAssembly({
+    auditLogPath: path.join(ROOT, "_logs", `.stage8-static-registry-support-${authMode}.jsonl`),
+    auditVersion: AUDIT_VERSION,
+    serverName: SERVER_NAME,
+    serverVersion: SERVER_VERSION,
+    connectorShapeVersion: CONNECTOR_SHAPE_VERSION,
+    docs: [],
+    publicBaseUrl: authRequired ? "http://127.0.0.1:3008" : "http://127.0.0.1:3009",
+    maxFetchTextChars: 2500,
+    outputMode: "structured",
+    optionalTools: [],
+    rootDir: ROOT,
+  });
   const optionalTools = loadOptionalTools({
     profile: runtimeProfile,
     authPolicy: { mode: authMode, requiresAuth: authRequired },
     serverProfileConfig,
+    createRuntimeRegistryContext: (label) => registrySupport.registryContext({ label }),
     ...dynamicTools,
   });
   const coreDescriptors = buildCoreToolDescriptors({
@@ -88,7 +102,7 @@ function assertEquivalentScenario(label, scenario, expected) {
   assertEquivalentScenario("public", publicScenario, { total: 13, optional: 11 });
 
   const authorizedScenario = buildScenario({ profileName: "tests", authMode: "oauth21" });
-  assertEquivalentScenario("authorized", authorizedScenario, { total: 53, optional: 51 });
+  assertEquivalentScenario("authorized", authorizedScenario, { total: 66, optional: 64 });
 
   assert.throws(() => createStaticToolRegistry({
     coreDescriptors: [{ name: "dup" }, { name: "dup" }],

@@ -5,6 +5,13 @@ const READ_ONLY_TRUTH_ANNOTATIONS = {
   openWorldHint: false,
 };
 
+const EMPTY_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {},
+};
+
 const CHANGED_PATHS_COMMON = {
   type: "array",
   minItems: 1,
@@ -307,6 +314,7 @@ module.exports = {
   CHANGE_GUARD_OUTPUT_SCHEMA,
   CHANGE_WORKFLOW_SIMULATOR_OUTPUT_SCHEMA,
   CODE_RUNTIME_MAP_OUTPUT_SCHEMA,
+  EMPTY_INPUT_SCHEMA,
   PROJECT_TRUTH_AUDIT_OUTPUT_SCHEMA,
   READ_ONLY_TRUTH_ANNOTATIONS,
   TOOL_USAGE_SNAPSHOT_OUTPUT_SCHEMA,

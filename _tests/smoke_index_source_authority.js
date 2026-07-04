@@ -10,8 +10,8 @@ const spec = JSON.parse(fs.readFileSync(path.join(root, "SERVER_SPEC.json"), "ut
 const rules = spec.maintenance_rules || {};
 const protocol = rules.index_usage_protocol || {};
 
-assert.equal(rules.index_rebuild_required_before_work, true);
-assert.equal(rules.index_rebuild_tool, "GPT_MCP.build_index");
+assert.equal(rules.index_rebuild_required_before_work, false);
+assert.equal(rules.index_rebuild_tool, "internal_build_workspace_index_not_connector_exposed_stage8_53b");
 assert.equal(rules.index_status_check_required, true);
 assert.equal(protocol.index_role, "discovery_only_not_source_of_truth");
 assert.ok(String(protocol.verification_rule || "").includes("direct read"));

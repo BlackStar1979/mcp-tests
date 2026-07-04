@@ -95,7 +95,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const stageStatus = CURRENT_STAGE_STATUS;
   const securityBoundary = assertSecurityBoundary({ profile: runtimeProfile, authPolicy, stageStatus });
 
-  const { auditLog, documentRuntimeContext, toolsList } = createRuntimeSupportAssembly({
+  const { auditLog, documentRuntimeContext, toolsList, registryContext } = createRuntimeSupportAssembly({
     auditLogPath,
     auditVersion: AUDIT_VERSION,
     serverName: SERVER_NAME,
@@ -143,6 +143,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     runtimeStatusProvider: getRuntimeStatus,
     auditLogPath,
     restartController,
+    runtimeRegistryContextProvider: (label) => registryContext({ label }),
   });
 
   const toolSurfaceStateFile = env.MCP_TEST_TOOL_SURFACE_STATE_FILE || defaultToolSurfaceStateFile(rootDir);

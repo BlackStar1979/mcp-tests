@@ -41,6 +41,7 @@ function buildSupportScenario({ authMode, runtimeProfile }) {
     serverProfileConfig,
     runtimeStatusProvider: makeRuntimeStatusProvider({ authMode, profile: runtimeProfile }),
     auditLogPath: path.join(ROOT, "_logs", `.stage9-runtime-registry-${authMode}-optional.jsonl`),
+    runtimeRegistryContextProvider: (label) => support.registryContext({ label }),
   });
 
   return { support, optionalTools };
@@ -83,9 +84,9 @@ function assertScenario(label, authMode, runtimeProfile, expected) {
     required: ["search", "fetch", "fs_list_public", "net_http_get_allowlisted"],
   });
   assertScenario("authorized", "oauth21", "internal", {
-    total: 53,
-    optional: 51,
-    required: ["search", "fetch", "test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "list_directory", "read_file", "project_truth_audit", "change_workflow_simulator"],
+    total: 66,
+    optional: 64,
+    required: ["search", "fetch", "test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "list_directory", "read_file", "project_truth_audit", "change_workflow_simulator", "tool_registry_status", "index_status"],
   });
 
   console.log("smoke_runtime_registry_context_assembly ok");

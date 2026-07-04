@@ -112,6 +112,24 @@
       ],
       "public_surface_allowed": false
     },
+    "runtime_tool_registry_readonly": {
+      "description": "Read-only runtime registry/policy introspection for connector-visible tool metadata and dry-run governance.",
+      "allowed_operations": [
+        "read",
+        "preflight",
+        "plan",
+        "readonly_execute"
+      ],
+      "public_surface_allowed": false
+    },
+    "workspace_index_readonly": {
+      "description": "Read-only workspace retrieval helper index stored under TEST MCP control-plane state.",
+      "allowed_operations": [
+        "read",
+        "search"
+      ],
+      "public_surface_allowed": false
+    },
     "runtime_status_readonly": {
       "description": "Read-only server runtime/status resource.",
       "allowed_operations": [

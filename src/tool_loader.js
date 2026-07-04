@@ -21,6 +21,7 @@ function loadOptionalTools(options = {}) {
   const tools = [];
   const createRuntimeStatusTool = options.createRuntimeStatusTool;
   const createObservabilityStatusTool = options.createObservabilityStatusTool;
+  const createRuntimeRegistryContext = options.createRuntimeRegistryContext;
   const profile = options.profile || "public";
   const authMode = String(options.authMode || options.authPolicy?.mode || "none").trim().toLowerCase();
   const authRequired = Boolean(options.authPolicy?.requiresAuth) || authMode !== "none";
@@ -85,6 +86,28 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/deploy_decision_guard", "deployDecisionGuardTool", "deploy_decision_guard");
     add("../tools/authorized/change_workflow_simulator", "changeWorkflowSimulatorTool", "change_workflow_simulator");
     add("../tools/authorized/tool_usage_snapshot", "toolUsageSnapshotTool", "tool_usage_snapshot");
+  }
+
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_RUNTIME_TOOL_REGISTRY_TOOLS", true)) {
+    if (typeof createRuntimeRegistryContext !== "function") {
+      throw new Error("Runtime tool-registry tools requested but createRuntimeRegistryContext was not provided.");
+    }
+    tools.push(require("../tools/authorized/tool_registry_status").createToolRegistryStatusTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_list").createToolRegistryListTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_get_tool").createToolRegistryGetTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_validate_tool").createToolRegistryValidateTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_policy").createToolRegistryPolicyTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_preflight").createToolRegistryPreflightTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_plan").createToolRegistryPlanTool(createRuntimeRegistryContext));
+    tools.push(require("../tools/authorized/tool_registry_execute").createToolRegistryExecuteTool(createRuntimeRegistryContext));
+  }
+
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_INDEX_TOOLS", true)) {
+    add("../tools/authorized/index_status", "indexStatusTool", "index_status");
+    add("../tools/authorized/search_index", "searchIndexTool", "search_index");
+    add("../tools/authorized/search_index_context", "searchIndexContextTool", "search_index_context");
+    add("../tools/authorized/collect_context", "collectContextTool", "collect_context");
+    add("../tools/authorized/collect_romionsim_context", "collectRomionsimContextTool", "collect_romionsim_context");
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_EXECUTION_TOOLS", true)) {

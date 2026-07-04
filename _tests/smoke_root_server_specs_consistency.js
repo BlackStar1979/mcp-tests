@@ -66,9 +66,9 @@ assert.equal(resourcePolicy.runtime_enforced, true);
 assert.equal(policyRuntime.scope.includes("not runtime enforcement"), false);
 assert.equal(policyRuntime.decision_runtime_spec_ref, "SERVER_DECISION_RUNTIME_SPEC.json");
 
-assert.equal(tools.total_mcp_callable_tool_count, 53);
-assert.equal(rootSpec.server.full_tests_authenticated_tool_count, 53);
-assert.equal(connector.authenticated_connector.expected_public_plus_authorized_count, 53);
+assert.equal(tools.total_mcp_callable_tool_count, 66);
+assert.equal(rootSpec.server.full_tests_authenticated_tool_count, 66);
+assert.equal(connector.authenticated_connector.expected_public_plus_authorized_count, 66);
 assert.equal(connector.authenticated_connector.expected_count_source.includes("SERVER_TOOLS_SPEC"), true);
 assert.equal(connector.public_connector.expected_tool_count, 13);
 

@@ -104,7 +104,7 @@
       "tests_authenticated": {
         "profile": "tests",
         "auth": "oauth21",
-        "tool_count": 43,
+        "tool_count": 66,
         "auth_flow": "OAuth21 DCR + PKCE + operator-login + token exchange + Authorization: Bearer injection through smoke_auth_fetch_patch",
         "script_count_after_stage3_quarantine": 135,
         "legacy_retired_auth_pending_stage4_5": 0,
@@ -114,7 +114,7 @@
         "script_count_after_stage5_reclassification": 136,
         "legacy_retired_auth_manifest": "_tests/legacy_retired_auth_smoke_manifest.json",
         "stage5_status": "legacy access/bearer tests excluded from active run_all manifest",
-        "tool_count_current": 43,
+        "tool_count_current": 66,
         "script_count": 152,
         "script_count_after_stage6_closeout": 136,
         "stage6_status": "green_source_aligned_active_run_all",

@@ -29,6 +29,8 @@ const { createObservabilityStatusTool } = require("../tools/authorized/observabi
 const { buildToolSurfaceFingerprint } = require("../src/schema_compat");
 const { createAuthPolicy } = require("../src/auth/auth_policy");
 const { getRuntimeProfile } = require("../src/tool_policy");
+const { createRuntimeSupportAssembly } = require("../src/runtime/runtime_support_assembly");
+const { AUDIT_VERSION } = require("../src/runtime/identity");
 
 const MANIFEST_PATH = path.join(
   __dirname,
@@ -48,6 +50,19 @@ const outputMode = String(process.env.MCP_TEST_OUTPUT_MODE || "structured")
 const maxFetchTextChars = Number(process.env.MCP_TEST_FETCH_CAP_CHARS || 2500);
 const authMode = createAuthPolicy().mode;
 const profile = getRuntimeProfile();
+const runtimeSupport = createRuntimeSupportAssembly({
+  auditLogPath: path.join(__dirname, "..", "_logs", ".baseline-manifest-runtime-support.jsonl"),
+  auditVersion: AUDIT_VERSION,
+  serverName: SERVER_NAME,
+  serverVersion: SERVER_VERSION,
+  connectorShapeVersion: CONNECTOR_SHAPE_VERSION,
+  docs: [],
+  publicBaseUrl: profile === "public" ? "http://127.0.0.1:3009" : "http://127.0.0.1:3008",
+  maxFetchTextChars,
+  outputMode,
+  optionalTools: [],
+  rootDir: path.join(__dirname, ".."),
+});
 
 const tools = [
   ...buildCoreToolDescriptors({
@@ -61,6 +76,7 @@ const tools = [
     createRuntimeStatusTool: () => createTestMcpRuntimeStatusTool(() => ({ status: "ok" })),
     createObservabilityStatusTool: () =>
       createObservabilityStatusTool({ auditLogPath: "_logs/.mcp-tests-audit.jsonl" }),
+    createRuntimeRegistryContext: (label) => runtimeSupport.registryContext({ label }),
   }).map((tool) => tool.descriptor),
 ];
 

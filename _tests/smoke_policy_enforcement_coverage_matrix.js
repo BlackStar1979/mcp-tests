@@ -18,7 +18,7 @@ function buildSupport({ authMode, runtimeProfile }) {
   const optionalTools = [];
   const support = createRuntimeSupportAssembly({ auditLogPath: path.join(ROOT, "_logs", `.stage10-policy-coverage-${authMode}.jsonl`), auditVersion: AUDIT_VERSION, serverName: SERVER_NAME, serverVersion: SERVER_VERSION, connectorShapeVersion: CONNECTOR_SHAPE_VERSION, docs: [], publicBaseUrl: authMode === "none" ? "http://127.0.0.1:3009" : "http://127.0.0.1:3008", maxFetchTextChars: 2500, outputMode: "structured", optionalTools, rootDir: ROOT });
   const serverProfileConfig = loadServerProfileConfig({ profileName: "tests", authMode, rootDir: ROOT });
-  configureOptionalToolsAssembly({ optionalTools, profile: runtimeProfile, authPolicy: { mode: authMode, requiresAuth: authMode !== "none" }, serverProfileConfig, runtimeStatusProvider: makeRuntimeStatusProvider({ authMode, profile: runtimeProfile }), auditLogPath: path.join(ROOT, "_logs", `.stage10-policy-coverage-${authMode}-optional.jsonl`) });
+  configureOptionalToolsAssembly({ optionalTools, profile: runtimeProfile, authPolicy: { mode: authMode, requiresAuth: authMode !== "none" }, serverProfileConfig, runtimeStatusProvider: makeRuntimeStatusProvider({ authMode, profile: runtimeProfile }), auditLogPath: path.join(ROOT, "_logs", `.stage10-policy-coverage-${authMode}-optional.jsonl`), runtimeRegistryContextProvider: (label) => support.registryContext({ label }) });
   return { support, serverProfileConfig };
 }
 function assertMatrix(label, matrix, expected) {
@@ -57,7 +57,7 @@ function assertMatrix(label, matrix, expected) {
   assert.equal(publicMatrix.audit_required_count, 0, "public has no audit-required tools");
   const auth = buildSupport({ authMode: "oauth21", runtimeProfile: "internal" });
   const authMatrix = buildPolicyEnforcementCoverageMatrix({ registryContext: auth.support.registryContext, serverProfileConfig: auth.serverProfileConfig, surfaceName: "authenticated", authMode: "oauth21", rootDir: ROOT, label: "authorized-policy-coverage" });
-  assertMatrix("authorized", authMatrix, { total: 43, required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "plugin_execution_governance", "plugin_visibility_status", "plugin_catalog_search"] });
+  assertMatrix("authorized", authMatrix, { total: 66, required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "plugin_execution_governance", "plugin_visibility_status", "plugin_catalog_search", "tool_registry_status", "search_index"] });
   assert.ok(authMatrix.mutating_tools.includes("memory_save"), "authorized mutating tool inventory includes memory_save");
   assert.ok(authMatrix.audit_required_tools.includes("memory_save"), "memory_save audit required");
   assert.ok(authMatrix.audit_required_tools.includes("plugin_visibility_plan"), "plugin_visibility_plan audit required");

@@ -61,7 +61,7 @@ assert.equal(rpcDestroy.ok, true);
 const rpcAfterDestroy = rpcStore.read({ handle: rpcCreate.handle, authContext: authA, kind: "task" });
 assert.equal(rpcAfterDestroy.reason, "state_handle_revoked");
 
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_active, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_repo_retired_now, true);
 

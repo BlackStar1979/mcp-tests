@@ -46,6 +46,7 @@ function buildMatrix({ authMode, runtimeProfile, surfaceName }) {
     serverProfileConfig,
     runtimeStatusProvider: makeRuntimeStatusProvider({ authMode, profile: runtimeProfile }),
     auditLogPath: path.join(ROOT, "_logs", `.stage10-policy-reason-codes-${authMode}-optional.jsonl`),
+    runtimeRegistryContextProvider: (label) => support.registryContext({ label }),
   });
   return buildPolicyEnforcementCoverageMatrix({
     registryContext: support.registryContext,
@@ -92,8 +93,8 @@ function buildMatrix({ authMode, runtimeProfile, surfaceName }) {
   assert.equal(publicDecision.execute_allowed_now, false);
 
   const authorizedDecision = evaluatePolicyPreflightMatrix(buildMatrix({ authMode: "oauth21", runtimeProfile: "internal", surfaceName: "authenticated" }));
-  assert.equal(authorizedDecision.tool_count, 53);
-  assert.equal(authorizedDecision.would_allow_count, 53);
+  assert.equal(authorizedDecision.tool_count, 66);
+  assert.equal(authorizedDecision.would_allow_count, 66);
   assert.equal(authorizedDecision.would_deny_count, 0);
   assert.deepEqual(authorizedDecision.denied_tools, []);
   const memorySave = authorizedDecision.decisions.find((decision) => decision.tool === "memory_save");

@@ -1,4 +1,5 @@
 const {
+  EMPTY_INPUT_SCHEMA,
   READ_ONLY_TRUTH_ANNOTATIONS,
   TOOL_USAGE_SNAPSHOT_OUTPUT_SCHEMA,
 } = require("../src/schemas/truth_tools");
@@ -16,7 +17,7 @@ const toolUsageSnapshotTool = {
     name: TOOL_NAME,
     title: "Tool usage snapshot",
     description: "Read-only summary of recent local MCP tool usage derived from the shared TEST MCP audit log.",
-    inputSchema: { type: "object", additionalProperties: false, required: [], properties: {} },
+    inputSchema: EMPTY_INPUT_SCHEMA,
     outputSchema: TOOL_USAGE_SNAPSHOT_OUTPUT_SCHEMA,
     annotations: READ_ONLY_TRUTH_ANNOTATIONS,
   },

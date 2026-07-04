@@ -41,6 +41,7 @@ function buildSupport({ authMode, runtimeProfile }) {
     serverProfileConfig,
     runtimeStatusProvider: makeRuntimeStatusProvider({ authMode, profile: runtimeProfile }),
     auditLogPath: path.join(ROOT, "_logs", `.stage9-runtime-registry-summary-${authMode}-optional.jsonl`),
+    runtimeRegistryContextProvider: (label) => support.registryContext({ label }),
   });
   return support;
 }
@@ -71,7 +72,7 @@ function assertSummary(label, summary, expected) {
   const authorizedSupport = buildSupport({ authMode: "oauth21", runtimeProfile: "internal" });
   const provider = createRuntimeRegistrySummaryProvider({ registryContext: authorizedSupport.registryContext, defaultLabel: "authorized-summary" });
   const authorizedSummary = provider();
-  assertSummary("authorized", authorizedSummary, { total: 53, optional: 51 });
+  assertSummary("authorized", authorizedSummary, { total: 66, optional: 64 });
 
   assert.throws(() => buildRuntimeRegistrySummary({}), /requires registryContext function/);
 

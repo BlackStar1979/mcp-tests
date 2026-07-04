@@ -13,6 +13,7 @@ function configureOptionalToolsAssembly({
   runtimeStatusProvider,
   auditLogPath,
   restartController,
+  runtimeRegistryContextProvider,
 }) {
   optionalTools.push(
     ...loadOptionalTools({
@@ -21,6 +22,7 @@ function configureOptionalToolsAssembly({
       serverProfileConfig,
       createRuntimeStatusTool: () => createTestMcpRuntimeStatusTool(runtimeStatusProvider),
       createObservabilityStatusTool: () => createObservabilityStatusTool({ runtimeStatusProvider, auditLogPath }),
+      createRuntimeRegistryContext: (label) => runtimeRegistryContextProvider(label),
     })
   );
 

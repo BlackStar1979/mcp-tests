@@ -16,7 +16,7 @@ function buildEval() {
   const optionalTools = [];
   const support = createRuntimeSupportAssembly({ auditLogPath: path.join(ROOT, "_logs", ".stage10-policy-receipt.jsonl"), auditVersion: AUDIT_VERSION, serverName: SERVER_NAME, serverVersion: SERVER_VERSION, connectorShapeVersion: CONNECTOR_SHAPE_VERSION, docs: [], publicBaseUrl: "http://127.0.0.1:3008", maxFetchTextChars: 2500, outputMode: "structured", optionalTools, rootDir: ROOT });
   const serverProfileConfig = loadServerProfileConfig({ profileName: "tests", authMode: "oauth21", rootDir: ROOT });
-  configureOptionalToolsAssembly({ optionalTools, profile: "internal", authPolicy: { mode: "oauth21", requiresAuth: true }, serverProfileConfig, runtimeStatusProvider: provider({ authMode: "oauth21", profile: "internal" }), auditLogPath: path.join(ROOT, "_logs", ".stage10-policy-receipt-optional.jsonl") });
+  configureOptionalToolsAssembly({ optionalTools, profile: "internal", authPolicy: { mode: "oauth21", requiresAuth: true }, serverProfileConfig, runtimeStatusProvider: provider({ authMode: "oauth21", profile: "internal" }), auditLogPath: path.join(ROOT, "_logs", ".stage10-policy-receipt-optional.jsonl"), runtimeRegistryContextProvider: (label) => support.registryContext({ label }) });
   const matrix = buildPolicyEnforcementCoverageMatrix({ registryContext: support.registryContext, serverProfileConfig, surfaceName: "authenticated", authMode: "oauth21", rootDir: ROOT, label: "receipt-shape" });
   return evaluatePolicyPreflightMatrix(matrix);
 }
@@ -70,7 +70,7 @@ function assertNoRawSecrets(value) {
   assertNoRawSecrets(allowedReceipt);
   const receiptSet = buildPolicyPreflightReceipts({ evaluation, profileSurface: "authenticated", authMode: "oauth21", argsByTool: { memory_save: { content: "super-secret-token" } } });
   assert.equal(receiptSet.schema_version, "stage10-policy-preflight-receipt-set-v1");
-  assert.equal(receiptSet.receipt_count, 43);
+  assert.equal(receiptSet.receipt_count, 66);
   assert.equal(receiptSet.denied_receipt_count, 0);
   assert.equal(receiptSet.raw_arguments_included, false);
   assert.equal(receiptSet.runtime_audit_event_emitted, false);

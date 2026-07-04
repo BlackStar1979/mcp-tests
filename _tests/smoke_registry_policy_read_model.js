@@ -10,6 +10,7 @@ const { loadServerProfileConfig } = require("../src/server_profile_loader");
 const { createTestMcpRuntimeStatusTool } = require("../tools/authorized/test_mcp_runtime_status");
 const { createObservabilityStatusTool } = require("../tools/authorized/observability_status");
 const { CONNECTOR_SHAPE_VERSION, SERVER_NAME, SERVER_VERSION } = require("../src/runtime/identity");
+const { createRuntimeSupportAssembly } = require("../src/runtime/runtime_support_assembly");
 
 const ROOT = path.resolve(__dirname, "..");
 const toolsSpec = loadServerToolsSpec({ rootDir: ROOT });
@@ -25,6 +26,19 @@ function buildRegistry({ profileName, authMode }) {
   const authRequired = authMode !== "none";
   const runtimeProfile = authRequired ? "internal" : "public";
   const serverProfileConfig = loadServerProfileConfig({ profileName, authMode, rootDir: ROOT });
+  const runtimeSupport = createRuntimeSupportAssembly({
+    auditLogPath: path.join(ROOT, "_logs", `.stage8-registry-policy-runtime-support-${authMode}.jsonl`),
+    auditVersion: "tmp",
+    serverName: SERVER_NAME,
+    serverVersion: SERVER_VERSION,
+    connectorShapeVersion: CONNECTOR_SHAPE_VERSION,
+    docs: [],
+    publicBaseUrl: authRequired ? "http://127.0.0.1:3008" : "http://127.0.0.1:3009",
+    maxFetchTextChars: 2500,
+    outputMode: "structured",
+    optionalTools: [],
+    rootDir: ROOT,
+  });
   const optionalTools = loadOptionalTools({
     profile: runtimeProfile,
     authPolicy: { mode: authMode, requiresAuth: authRequired },
@@ -34,6 +48,7 @@ function buildRegistry({ profileName, authMode }) {
       runtimeStatusProvider,
       auditLogPath: path.join(ROOT, "_logs", ".stage8-registry-policy-read-model.jsonl"),
     }),
+    createRuntimeRegistryContext: (label) => runtimeSupport.registryContext({ label }),
   });
   const coreDescriptors = buildCoreToolDescriptors({
     connectorShapeVersion: CONNECTOR_SHAPE_VERSION,
@@ -73,8 +88,8 @@ function assertModel(label, model, expected) {
   const authorizedRegistry = buildRegistry({ profileName: "tests", authMode: "oauth21" });
   const authorizedModel = buildRegistryPolicyReadModel({ registry: authorizedRegistry, toolsSpec });
   assertModel("authorized", authorizedModel, {
-    tool_count: 53,
-    required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "get_info", "read_file", "project_truth_audit", "deploy_decision_guard"],
+    tool_count: 66,
+    required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "get_info", "read_file", "project_truth_audit", "deploy_decision_guard", "tool_registry_status", "index_status"],
   });
   assert.equal(authorizedModel.get("memory_save").catalog_summary.operation_class, "write");
   assert.equal(authorizedModel.get("memory_save").tool_policy_summary.read_only, false);
