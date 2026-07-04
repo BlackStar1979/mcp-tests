@@ -10,7 +10,7 @@ const retiredStage12Root = "SERVER_" + "STAGE12.json";
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.ok(stateText.length < 15000, "state.json must remain compact");
+assert.ok(stateText.length < 16000, "state.json must remain compact");
 
 for (const key of [
   "server_identity",
@@ -70,7 +70,8 @@ for (const spec of [
 assert.equal(state.runtime_topology.public.port, 3009);
 assert.equal(state.runtime_topology.authorized.port, 3008);
 assert.equal(state.tool_surfaces.public_mcp_tools.count, 13);
-assert.equal(state.tool_surfaces.authenticated_total.count, 43);
+assert.equal(state.tool_surfaces.authorized_mcp_tools.count, 40);
+assert.equal(state.tool_surfaces.authenticated_total.count, 53);
 assert.equal(state.sessionless_inventory.coverage.official_final_seps, 41);
 assert.equal(state.sessionless_inventory.coverage.unclassified, 0);
 assert.equal(state.current_work_constraints.do_not_use_state_json_as_log, true);

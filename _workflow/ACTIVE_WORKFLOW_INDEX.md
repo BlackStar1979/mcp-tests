@@ -1,8 +1,18 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-02
+Date: 2026-07-04
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
+
+Current repo/runtime note: repo truth now expects `53` authenticated tools after the workspace-readonly filesystem batch plus the bounded tests-surface truth-tools batch. After the controlled restart on 2026-07-04, live OAuth21 `3008` healthz, live authenticated `tools/list`, and live `test_mcp_runtime_status` all confirm `53` tools on `/mcp`. Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+
+Current workflow markers:
+- `current_working_course = stage8_53a-tests-truth-tools-surface-parity`
+- `next_primary = stage8_53b-modular-safe-tool-surface-consolidation`
+- `next_secondary = stage8_53c-modular-unsafe-tool-governance-boundary`
+- `Stage 8 / Step 53a` = tests `truth_tools` surface parity
+- `Stage 8 / Step 53b` = modular safe tool surface consolidation
+- `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 
 ## Current source of truth
 
@@ -32,7 +42,12 @@ Read these first, in this order:
    - `SERVER_RESOURCE_POLICY_SPEC.json`
    - category policy specs as referenced by root specs.
 
-5. Current run-all manifest:
+5. Current migration inventory for sibling modular server consolidation:
+   - `_workflow/inventories/modular_tool_migration_inventory.json`
+   - `_workflow/inventories/modular_tool_migration_inventory.md`
+   - Generated from `C:\Work\mcp` and normalized to current `public` vs `tests` target surfaces.
+
+6. Current run-all manifest:
    - `_tests/run_all_smoke_scripts.json`
 
 Do not infer active work from historical plan files unless `_workflow/state.json` or this index names it as active.
@@ -53,10 +68,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, 43 runtime tools;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 53 tools / live authenticated runtime + `tools/list` confirmed 53 tools on 2026-07-04;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
+- Repo surface is live-aligned on authenticated `/mcp`; only connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 

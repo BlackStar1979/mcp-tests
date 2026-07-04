@@ -97,11 +97,58 @@ const NETWORK_OUTPUT_SCHEMA = {
   },
 };
 
+const PACKAGE_LOOKUP_STATUS_SCHEMA = {
+  type: "string",
+  enum: [
+    "ok",
+    "not_found",
+    "http_error",
+    "payload_too_large",
+    "invalid_json",
+    "blocked",
+  ],
+};
+
+const PACKAGE_METADATA_COMMON_PROPERTIES = {
+  package: { type: "string" },
+  found: { type: "boolean" },
+  package_status: PACKAGE_LOOKUP_STATUS_SCHEMA,
+  name: { type: "string" },
+  version: { type: "string" },
+  license: { type: ["string", "null"] },
+};
+
+const NPM_PACKAGE_OUTPUT_SCHEMA = {
+  ...NETWORK_OUTPUT_SCHEMA,
+  properties: {
+    ...NETWORK_OUTPUT_SCHEMA.properties,
+    ...PACKAGE_METADATA_COMMON_PROPERTIES,
+    description: { type: "string" },
+    homepage: { type: ["string", "null"] },
+    repository_url: { type: ["string", "null"] },
+  },
+};
+
+const PYPI_PACKAGE_OUTPUT_SCHEMA = {
+  ...NETWORK_OUTPUT_SCHEMA,
+  properties: {
+    ...NETWORK_OUTPUT_SCHEMA.properties,
+    ...PACKAGE_METADATA_COMMON_PROPERTIES,
+    summary: { type: "string" },
+    project_url: { type: ["string", "null"] },
+    package_url: { type: ["string", "null"] },
+    requires_python: { type: ["string", "null"] },
+    vulnerabilities_count: { type: "integer", minimum: 0 },
+  },
+};
+
 module.exports = {
   GITHUB_RAW_INPUT_SCHEMA,
   HEAD_INPUT_SCHEMA,
   NETWORK_OUTPUT_SCHEMA,
+  NPM_PACKAGE_OUTPUT_SCHEMA,
   PACKAGE_INPUT_SCHEMA,
+  PYPI_PACKAGE_OUTPUT_SCHEMA,
   READ_ONLY_NETWORK_ANNOTATIONS,
   URL_INPUT_SCHEMA,
 };

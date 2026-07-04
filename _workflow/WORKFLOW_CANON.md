@@ -34,6 +34,11 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_210`.
 - Latest validated public section count: `7`.
 - Latest validated authenticated smoke count: `210`.
+- Repo current authenticated tool target after modular workspace-readonly filesystem plus bounded tests-surface truth-tools consolidation: `53`.
+- Live OAuth21 `3008` after the 2026-07-04 controlled restart now confirms authenticated `/mcp` tool count `53` through healthz, live authenticated `tools/list`, and live `test_mcp_runtime_status`.
+- Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current `53` proof is runtime/MCP truth, not a fresh UI inventory proof.
+- Workflow progress markers: `current_working_course = stage8_53a-tests-truth-tools-surface-parity`; `next_primary = stage8_53b-modular-safe-tool-surface-consolidation`; `next_secondary = stage8_53c-modular-unsafe-tool-governance-boundary`.
+- Stage marker vocabulary: `Stage 8 / Step 53a` = tests `truth_tools` surface parity; `Stage 8 / Step 53b` = modular safe tool surface consolidation; `Stage 8 / Step 53c` = modular unsafe tool governance boundary.
 - Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
 - Runtime identity / workflow boundary: `runtime_stage_status` is a runtime/API compatibility label only. Workflow progress truth is `_workflow/state.json` and `_workflow/WORKFLOW_CANON.md`.

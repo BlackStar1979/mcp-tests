@@ -17,14 +17,14 @@ assert.ok(record.includes("Status: GREEN / WORKFLOW TRUTH REPAIRED"));
 assert.ok(record.includes("Every future next-step recommendation"));
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
 assert.equal(state.source_of_operational_truth, "_workflow/WORKFLOW_CANON.md");
-assert.ok(stateText.length < 15000);
+assert.ok(stateText.length < 16000);
 for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliation", "tools_list_cache_diagnostics", "current_" + "work_" + "package", "completed_" + "work_" + "packages"]) {
   assert.equal(Object.hasOwn(state, forbidden), false);
 }
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "in_sync_43_of_43");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_repo_aligned_53_connector_ui_visibility_unverified");
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
 assert.ok(readme.includes("Do not ask the operator to restart `3008`"));

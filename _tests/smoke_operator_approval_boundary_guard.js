@@ -13,9 +13,9 @@ function readinessReport(overrides = {}) {
   return { ...buildEnforcementApplyReadinessReport({
     publicMatrix: { tool_count: 13, blocked_count: 0, runtime_enforcement_changed: false, allow_deny_behavior_changed: false, connector_visible_schema_changed: false },
     publicEvaluation: { would_deny_count: 0, would_allow_count: 13, runtime_enforcement_changed: false, allow_deny_behavior_changed: false, connector_visible_schema_changed: false },
-    authorizedMatrix: { tool_count: 43, blocked_count: 0, runtime_enforcement_changed: false, allow_deny_behavior_changed: false, connector_visible_schema_changed: false },
-    authorizedEvaluation: { would_deny_count: 0, would_allow_count: 43, runtime_enforcement_changed: false, allow_deny_behavior_changed: false, connector_visible_schema_changed: false },
-    receiptSet: { receipt_count: 43, denied_receipt_count: 0, raw_arguments_included: false, runtime_audit_event_emitted: false },
+    authorizedMatrix: { tool_count: 53, blocked_count: 0, runtime_enforcement_changed: false, allow_deny_behavior_changed: false, connector_visible_schema_changed: false },
+    authorizedEvaluation: { would_deny_count: 0, would_allow_count: 53, runtime_enforcement_changed: false, allow_deny_behavior_changed: false, connector_visible_schema_changed: false },
+    receiptSet: { receipt_count: 53, denied_receipt_count: 0, raw_arguments_included: false, runtime_audit_event_emitted: false },
     remediation: { declarative_gaps_removed: true, public_blocked_after: 0, authorized_blocked_after: 0, authorized_would_deny_after: 0 },
   }), ...overrides };
 }

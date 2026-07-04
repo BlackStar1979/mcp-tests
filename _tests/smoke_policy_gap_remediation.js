@@ -67,12 +67,12 @@ function buildMatrix({ authMode, runtimeProfile, surfaceName }) {
 
   const authorizedMatrix = buildMatrix({ authMode: "oauth21", runtimeProfile: "internal", surfaceName: "authenticated" });
   const authorizedEval = evaluatePolicyPreflightMatrix(authorizedMatrix);
-  assert.equal(authorizedMatrix.tool_count, 43);
+  assert.equal(authorizedMatrix.tool_count, 53);
   assert.equal(authorizedMatrix.blocked_count, 0);
   assert.deepEqual(authorizedMatrix.blocked_tools, []);
   assert.equal(authorizedEval.would_deny_count, 0);
   assert.deepEqual(authorizedEval.denied_tools, []);
-  assert.equal(authorizedEval.would_allow_count, 43);
+  assert.equal(authorizedEval.would_allow_count, 53);
 
   for (const name of REMEDIATED_TOOLS) {
     const coverage = authorizedMatrix.entries.find((entry) => entry.name === name);

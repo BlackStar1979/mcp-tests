@@ -10,7 +10,7 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 43,
+    "full_tests_authenticated_tool_count": 53,
     "target_active_runtime_count": 2,
     "target_active_runtime_modes": [
       "none",
@@ -22,7 +22,7 @@
     },
     "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
     "public_tool_count": 13,
-    "authenticated_tool_count": 43,
+    "authenticated_tool_count": 53,
     "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {
@@ -74,6 +74,16 @@
       "sandbox_copy_rule": "Indexed copies under _public_sandbox/mcp-tests are historical or public-sandbox material and must never outrank root _workflow/state.json, root SERVER_*.json, root _tests, or live runtime status.",
       "query_rule": "Path-qualified searches are helpful but insufficient; filter result paths by authority before drawing conclusions."
     }
+  },
+  "workflow_progress_markers": {
+    "current_working_course": "stage8_53a-tests-truth-tools-surface-parity",
+    "next_primary": "stage8_53b-modular-safe-tool-surface-consolidation",
+    "next_secondary": "stage8_53c-modular-unsafe-tool-governance-boundary",
+    "stage_labels": [
+      "Stage 8 / Step 53a - tests truth_tools surface parity",
+      "Stage 8 / Step 53b - modular safe tool surface consolidation",
+      "Stage 8 / Step 53c - modular unsafe tool governance boundary"
+    ]
   },
   "spec_refs": {
     "auth": "SERVER_AUTH_SPEC.json",

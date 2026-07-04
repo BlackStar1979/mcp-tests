@@ -32,7 +32,7 @@ assert.ok(record.includes("reduce `_workflow/state.json` back to a compact orien
 assert.ok(record.includes("stop and clean recursive snapshot embedding"));
 assert.ok(record.includes("Existing nested snapshot subtrees under top-level snapshot directories were removed."));
 
-assert.ok(stateText.length < 15000);
+assert.ok(stateText.length < 16000);
 for (const removed of [
   "next_step_recommendation_policy",
   "hotplug_lifecycle",
@@ -44,11 +44,14 @@ for (const removed of [
   assert.equal(Object.hasOwn(state, removed), false, `state.json must not retain ${removed}`);
 }
 
-assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 43);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 43);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "8b62ecaf89227335");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "in_sync_43_of_43");
+assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 53);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 53);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "e265afb87c872196");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 53);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_repo_aligned_53_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
 
 assert.ok(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence);
 assert.equal(pluginSpec.hotplug_lifecycle_readiness.status, "hpl1_to_hpl4_reconciled_hpl5_gated");

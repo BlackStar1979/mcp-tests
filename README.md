@@ -45,7 +45,7 @@ node server.js
 ```text
 server.js                Thin runtime entrypoint
 src/                     Runtime, auth, policy, schema, and support modules
-tools/                   Public and internal tool facade modules
+tools/                   Public, authorized, and internal tool facade modules
 _tests/                  Smoke tests, guards, stress checks, and fixtures
 _workflow/               Workflow canon, state, baselines, and control scripts
 _docs/                   Local reference-doc area; only README is tracked by default
@@ -54,6 +54,12 @@ plugins/                 Sample plugin candidates
 profiles/                Runtime profile configs
 docker/                  Docker/devcontainer scaffolding
 ```
+
+## Workspace Roots
+
+Authorized workspace-readonly filesystem tools resolve bare paths under `C:\Work` on Windows by default. Extra explicit roots can be added with `MCP_TEST_EXTRA_ROOTS` using `alias=path;alias2=path2`, then addressed as `@alias/...`.
+
+The authorized/tests surface also exposes bounded read-only truth tools for repo/workflow drift inspection and change-flow planning. They do not mutate runtime, connector config, auth state, or files.
 
 ## GitHub Import Policy
 

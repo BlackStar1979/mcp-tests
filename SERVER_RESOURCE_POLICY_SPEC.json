@@ -31,6 +31,7 @@
       "allowed_operations": [
         "read",
         "list",
+        "stat",
         "analyze"
       ],
       "public_surface_allowed": false

@@ -71,6 +71,22 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/dev_code_locate", "devCodeLocateTool", "dev_code_locate");
   }
 
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_FS_TOOLS", true)) {
+    add("../tools/authorized/get_info", "getInfoTool", "get_info");
+    add("../tools/authorized/list_directory", "listDirectoryTool", "list_directory");
+    add("../tools/authorized/read_file", "readFileTool", "read_file");
+    add("../tools/authorized/read_file_lines", "readFileLinesTool", "read_file_lines");
+    add("../tools/authorized/read_file_chunk", "readFileChunkTool", "read_file_chunk");
+  }
+
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_TRUTH_TOOLS", true)) {
+    add("../tools/authorized/project_truth_audit", "projectTruthAuditTool", "project_truth_audit");
+    add("../tools/authorized/code_runtime_map", "codeRuntimeMapTool", "code_runtime_map");
+    add("../tools/authorized/deploy_decision_guard", "deployDecisionGuardTool", "deploy_decision_guard");
+    add("../tools/authorized/change_workflow_simulator", "changeWorkflowSimulatorTool", "change_workflow_simulator");
+    add("../tools/authorized/tool_usage_snapshot", "toolUsageSnapshotTool", "tool_usage_snapshot");
+  }
+
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_EXECUTION_TOOLS", true)) {
     add("../tools/authorized/plugin_execution_governance", "pluginExecutionGovernanceTool", "plugin_execution_governance");
     add("../tools/authorized/auth_legacy_retirement_status", "authLegacyRetirementStatusTool", "auth_legacy_retirement_status");

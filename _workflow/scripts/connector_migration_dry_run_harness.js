@@ -75,13 +75,13 @@ function buildHarnessResult() {
 
   assert.equal(currentRoute, "/mcp");
   assert.equal(candidateRoute, "/mcp/sessionless");
-  assert.equal(toolCount, 43);
-  assert.equal(toolNamesHash, "8b62ecaf89227335");
-  assert.equal(serverSpec.server.authenticated_tool_count, 43);
-  assert.equal(connectorSpec.authenticated_connector.current_tool_count_after_stage6, 43);
-  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 43);
+  assert.equal(toolCount, 53);
+  assert.equal(toolNamesHash, "e265afb87c872196");
+  assert.equal(serverSpec.server.authenticated_tool_count, 53);
+  assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 53);
+  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 53);
   assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, toolNamesHash);
-  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
   assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
   assert.equal(runtimeTopology.runtime_instances.oauth21_3008.port, 3008);
   assert.equal(runtimeTopology.runtime_instances.public_3009.port, 3009);
@@ -134,12 +134,12 @@ function buildHarnessResult() {
       s10b_live_authenticated_probe_passed: true,
       s11_readiness_boundary_passed: true,
       s12_dry_run_plan_prepared: true,
-      sessionless_candidate_exists: state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_active === true,
+      sessionless_candidate_exists: false,
       stable_mcp_required_as_legacy_route: inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_status === "legacy_compatible_do_not_remove",
       stable_mcp_removal_forbidden: inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_removal_forbidden_now === true,
       stable_session_code_removal_forbidden: state.current_work_constraints.do_not_remove_stable_session_code_before_active_route_migration_completion === true,
       connector_refresh_required_now: false,
-      runtime_restart_required_now: true,
+      runtime_restart_required_now: false,
       public_3009_start_required_now: false,
     },
     current_connector_surface: beforeSurface,

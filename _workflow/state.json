@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-02T11:35Z",
+  "updated_at": "2026-07-04T14:05Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -32,7 +32,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 43,
+      "expected_tool_count": 53,
       "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
     },
     "retired": {
@@ -46,11 +46,11 @@
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authorized_mcp_tools": {
-      "count": 30,
+      "count": 40,
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authenticated_total": {
-      "count": 43,
+      "count": 53,
       "source_spec": "SERVER_SPEC.json / SERVER_TOOLS_SPEC.json"
     }
   },
@@ -62,6 +62,16 @@
     "do_not_remove_legacy_initialize_without_client_connector_compat_evidence": true,
     "do_not_use_state_json_as_log": true,
     "active_target_is_single_route_no_sse_streamable_http": true
+  },
+  "workflow_progress_markers": {
+    "current_working_course": "stage8_53a-tests-truth-tools-surface-parity",
+    "next_primary": "stage8_53b-modular-safe-tool-surface-consolidation",
+    "next_secondary": "stage8_53c-modular-unsafe-tool-governance-boundary",
+    "stage_labels": [
+      "Stage 8 / Step 53a - tests truth_tools surface parity",
+      "Stage 8 / Step 53b - modular safe tool surface consolidation",
+      "Stage 8 / Step 53c - modular unsafe tool governance boundary"
+    ]
   },
   "history_policy": {
     "allowed_history_locations": [
@@ -114,7 +124,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
-      "live_3008_server_start_id": "2026-06-28T18:29:15.549Z",
+      "live_3008_server_start_id": "2026-07-04T13:02:11.340Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -266,16 +276,16 @@
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
-      "expected_tool_count": 43,
-      "server_start_id": "2026-07-01T05:24:50.211Z",
+      "expected_tool_count": 53,
+      "server_start_id": "2026-07-04T13:02:11.340Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": true,
+      "restart_required_now": false,
       "c3_cooperative_cancellation_live_loaded": true,
       "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,
       "sessionless_hidden_route_repo_retired_now": true,
-      "transport_session_retirement_repo_applied_not_live_loaded_yet": true
+      "transport_session_retirement_repo_applied_not_live_loaded_yet": false
     },
     "public_3009": {
       "auth_mode": "none",
@@ -288,11 +298,14 @@
   },
   "current_connector_truth": {
     "oauth21_3008_tools": {
-      "tool_count": 43,
-      "tool_names_hash": "8b62ecaf89227335",
-      "combined_fingerprint": "f43a3eed6fb79bb6",
-      "connector_map_status": "in_sync_43_of_43",
-      "last_tools_list_request_id": "mqy1eq6w-10",
+      "tool_count": 53,
+      "tool_names_hash": "e265afb87c872196",
+      "combined_fingerprint": "7b5beb8582d9925e",
+      "connector_map_status": "live_authenticated_tools_list_repo_aligned_53_connector_ui_visibility_unverified",
+      "repo_current_expected_tool_count": 53,
+      "evidence_source": "live_authenticated_mcp_tools_list_on_oauth21_3008",
+      "server_start_id": "2026-07-04T13:02:11.340Z",
+      "connector_ui_visibility_verified_now": false,
       "ttl_ms": 0,
       "cache_scope": "private",
       "connector_refresh_required_now": false

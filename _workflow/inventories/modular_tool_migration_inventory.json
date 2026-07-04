@@ -1,0 +1,1399 @@
+{
+  "generated_at": "2026-07-04T12:58:53.479Z",
+  "source_repo": {
+    "name": "mcp",
+    "path": "C:/Work/mcp"
+  },
+  "target_repo": {
+    "name": "mcp-tests",
+    "path": "C:/Work/mcp-tests"
+  },
+  "normalization_notes": [
+    "mcp-tests runtime code currently uses public/internal profile labels; this inventory normalizes the broad authenticated surface to tests to match workflow terminology.",
+    "Only external MCP-visible tool registrations from mcp/core/**/*.js are inventoried here.",
+    "Review entries are intentionally conservative and should be resolved before migration."
+  ],
+  "current_mcp_tests_surface": {
+    "public": [
+      "fetch",
+      "fs_get_public_info",
+      "fs_list_public",
+      "fs_read_public_chunk",
+      "fs_read_public_lines",
+      "fs_read_public_text",
+      "net_check_npm_package",
+      "net_check_pypi_package",
+      "net_check_url_head",
+      "net_fetch_github_raw",
+      "net_fetch_text_allowlisted",
+      "net_http_get_allowlisted",
+      "search"
+    ],
+    "tests": [
+      "auth_legacy_retirement_status",
+      "change_workflow_simulator",
+      "code_runtime_map",
+      "code_sample_js",
+      "deploy_decision_guard",
+      "dev_code_audit",
+      "dev_code_dependencies",
+      "dev_code_impact",
+      "dev_code_locate",
+      "dev_code_symbols",
+      "dev_code_syntax_check",
+      "fetch",
+      "fs_get_public_info",
+      "fs_list_public",
+      "fs_read_public_chunk",
+      "fs_read_public_lines",
+      "fs_read_public_text",
+      "get_info",
+      "list_directory",
+      "memory_create_task",
+      "memory_get_state",
+      "memory_get_tasks",
+      "memory_save",
+      "memory_search",
+      "memory_set_state",
+      "net_check_npm_package",
+      "net_check_pypi_package",
+      "net_check_url_head",
+      "net_fetch_github_raw",
+      "net_fetch_text_allowlisted",
+      "net_http_get_allowlisted",
+      "observability_status",
+      "plugin_catalog_describe",
+      "plugin_catalog_search",
+      "plugin_execute_readonly",
+      "plugin_execution_governance",
+      "plugin_execution_preflight",
+      "plugin_execution_verify_receipt",
+      "plugin_registry_audit",
+      "plugin_registry_get",
+      "plugin_registry_list",
+      "plugin_registry_status",
+      "plugin_visibility_plan",
+      "plugin_visibility_status",
+      "project_truth_audit",
+      "read_file",
+      "read_file_chunk",
+      "read_file_lines",
+      "search",
+      "session_toolset_plan",
+      "session_toolset_status",
+      "test_mcp_runtime_status",
+      "tool_usage_snapshot"
+    ]
+  },
+  "items": [
+    {
+      "tool": "append_file",
+      "source_files": [
+        "core/filesystem/mutation_tools.js"
+      ],
+      "family": "filesystem_mutation",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "build_index",
+      "source_files": [
+        "core/tools_index.js"
+      ],
+      "family": "index",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "change_workflow_simulator",
+      "source_files": [
+        "core/truth/workflow_tools.js"
+      ],
+      "family": "truth",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "change_workflow_simulator",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "check_npm_package",
+      "source_files": [
+        "core/web/package_tools.js"
+      ],
+      "family": "web",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "net_check_npm_package",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "merged_into_existing_keep_existing",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench tool already includes bounded transport fields plus normalized npm summary fields.",
+        "Do not port a second npm metadata tool; keep the consolidated workbench tool."
+      ]
+    },
+    {
+      "tool": "check_pypi_package",
+      "source_files": [
+        "core/web/package_tools.js"
+      ],
+      "family": "web",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "net_check_pypi_package",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "merged_into_existing_keep_existing",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench tool already includes bounded transport fields plus normalized PyPI summary fields and found/not_found semantics.",
+        "Do not port a second PyPI metadata tool; keep the consolidated workbench tool."
+      ]
+    },
+    {
+      "tool": "code_apply_patch",
+      "source_files": [
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "code_audit",
+      "source_files": [
+        "core/code/analysis_tools.js",
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "dev_code_audit",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "prefer_existing",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench dev tool already provides bounded dependency audit output.",
+        "Keep one tool unless modular code exposes extra semantics worth merging."
+      ]
+    },
+    {
+      "tool": "code_dependencies",
+      "source_files": [
+        "core/code/analysis_tools.js",
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "dev_code_dependencies",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "prefer_existing",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench dev tool already provides bounded dependency graph inspection.",
+        "Keep one tool unless modular code exposes extra semantics worth merging."
+      ]
+    },
+    {
+      "tool": "code_impact",
+      "source_files": [
+        "core/code/analysis_tools.js",
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "dev_code_impact",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "prefer_existing",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench dev tool already provides bounded code impact tracing.",
+        "Keep one tool unless modular code exposes extra semantics worth merging."
+      ]
+    },
+    {
+      "tool": "code_orchestrate",
+      "source_files": [
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "code_patch_plan",
+      "source_files": [
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "code_rollback_patch",
+      "source_files": [
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "code_runtime_map",
+      "source_files": [
+        "core/truth/audit_tools.js"
+      ],
+      "family": "truth",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "code_runtime_map",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "code_scenario",
+      "source_files": [
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "code_symbols",
+      "source_files": [
+        "core/code/symbols_tools.js",
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "dev_code_symbols",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "prefer_existing",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench dev tool already provides the bounded symbol extraction capability on workspace code.",
+        "Keep one tool unless modular code exposes extra semantics worth merging."
+      ]
+    },
+    {
+      "tool": "collect_context",
+      "source_files": [
+        "core/tools_index.js"
+      ],
+      "family": "index",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "collect_romionsim_context",
+      "source_files": [
+        "core/tools_index.js"
+      ],
+      "family": "index",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "copy_path",
+      "source_files": [
+        "core/filesystem/mutation_tools.js"
+      ],
+      "family": "filesystem_mutation",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "delete_path",
+      "source_files": [
+        "core/filesystem/mutation_tools.js"
+      ],
+      "family": "filesystem_mutation",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "delete_remote_site_file",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "deploy_decision_guard",
+      "source_files": [
+        "core/truth/workflow_tools.js"
+      ],
+      "family": "truth",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "deploy_decision_guard",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "edit_file_patch",
+      "source_files": [
+        "core/filesystem/patch_tools.js"
+      ],
+      "family": "filesystem_patch",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "edit_remote_site_file",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "fetch",
+      "source_files": [
+        "core/connector_tools.js"
+      ],
+      "family": "connector",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "name_conflict_semantic_divergence",
+      "mapped_tool": "fetch",
+      "migration_action": "rename_on_port",
+      "overlap_resolution": "keep_existing_and_port_renamed",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "Exact tool already present on current public surface.",
+        "mcp-tests fetch reads public test documents; modular fetch reads arbitrary workspace files from search results.",
+        "Do not overwrite the public fetch contract on workbench.",
+        "If ported, modular fetch must land under a new authorized/tests-only name."
+      ]
+    },
+    {
+      "tool": "fetch_github_file",
+      "source_files": [
+        "core/web/github_tools.js"
+      ],
+      "family": "web",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "net_fetch_github_raw",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "prefer_existing",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench tool already covers the raw GitHub fetch use case with stricter input validation and bounded output.",
+        "Do not port a second GitHub raw fetch tool unless new functionality appears."
+      ]
+    },
+    {
+      "tool": "fits_info",
+      "source_files": [
+        "core/science_tools.js"
+      ],
+      "family": "science",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "get_info",
+      "source_files": [
+        "core/filesystem/read_tools.js"
+      ],
+      "family": "filesystem_read",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "get_info",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "hdf5_info",
+      "source_files": [
+        "core/science_tools.js"
+      ],
+      "family": "science",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "http_get",
+      "source_files": [
+        "core/web/http_tools.js"
+      ],
+      "family": "web",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "net_http_get_allowlisted",
+      "migration_action": "keep_existing",
+      "overlap_resolution": "prefer_existing",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "Equivalent capability already exists under a different tool name.",
+        "Current workbench tool already adds SSRF guardrails, redirect handling, DNS/IP checks, and richer transport metadata.",
+        "Do not port a second HTTP GET tool unless new functionality appears."
+      ]
+    },
+    {
+      "tool": "index_status",
+      "source_files": [
+        "core/tools_index.js"
+      ],
+      "family": "index",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "inventory_tree",
+      "source_files": [
+        "core/science_tools.js"
+      ],
+      "family": "science",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "list_directory",
+      "source_files": [
+        "core/filesystem/read_tools.js"
+      ],
+      "family": "filesystem_read",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "list_directory",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "list_remote_site_files",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "move_path",
+      "source_files": [
+        "core/filesystem/mutation_tools.js"
+      ],
+      "family": "filesystem_mutation",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "move_remote_site_file",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "preview_remote_site_retention",
+      "source_files": [
+        "core/remote_site/runtime_tools.js"
+      ],
+      "family": "remote_site_runtime",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "process_runner_status",
+      "source_files": [
+        "core/process_tools_safe.js"
+      ],
+      "family": "process",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "project_truth_audit",
+      "source_files": [
+        "core/truth/audit_tools.js"
+      ],
+      "family": "truth",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "project_truth_audit",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "pypi_info",
+      "source_files": [
+        "core/web/package_tools.js"
+      ],
+      "family": "web",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "capability_overlap",
+      "mapped_tool": "net_check_pypi_package",
+      "migration_action": "do_not_port_alias",
+      "overlap_resolution": "merge_unique_fields",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests.",
+        "modular pypi_info is the same handler family as check_pypi_package and should not survive as a second alias on workbench.",
+        "Any useful extra fields should merge into net_check_pypi_package instead."
+      ]
+    },
+    {
+      "tool": "read_file",
+      "source_files": [
+        "core/filesystem/read_tools.js"
+      ],
+      "family": "filesystem_read",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "read_file",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "read_file_chunk",
+      "source_files": [
+        "core/filesystem/read_tools.js"
+      ],
+      "family": "filesystem_read",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "read_file_chunk",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "read_file_lines",
+      "source_files": [
+        "core/filesystem/read_tools.js"
+      ],
+      "family": "filesystem_read",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "read_file_lines",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "read_remote_site_file",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "remote_site_runtime_status",
+      "source_files": [
+        "core/remote_site/runtime_tools.js"
+      ],
+      "family": "remote_site_runtime",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "restore_path",
+      "source_files": [
+        "core/filesystem/mutation_tools.js"
+      ],
+      "family": "filesystem_mutation",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "restore_remote_site_file",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "run_process",
+      "source_files": [
+        "core/process_tools_safe.js"
+      ],
+      "family": "process",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "search",
+      "source_files": [
+        "core/connector_tools.js"
+      ],
+      "family": "connector",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "public",
+      "overlap_status": "name_conflict_semantic_divergence",
+      "mapped_tool": "search",
+      "migration_action": "rename_on_port",
+      "overlap_resolution": "keep_existing_and_port_renamed",
+      "notes": [
+        "Bounded read-only retrieval capability candidate for public exposure.",
+        "Public-safe, bounded retrieval capability.",
+        "Exact tool already present on current public surface.",
+        "mcp-tests search is public document search; modular search is workspace search across configured roots.",
+        "Do not overwrite the public search contract on workbench.",
+        "If ported, modular search must land under a new authorized/tests-only name."
+      ]
+    },
+    {
+      "tool": "search_index",
+      "source_files": [
+        "core/tools_index.js"
+      ],
+      "family": "index",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "search_index_context",
+      "source_files": [
+        "core/tools_index.js"
+      ],
+      "family": "index",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "table_profile",
+      "source_files": [
+        "core/science_tools.js"
+      ],
+      "family": "science",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_dispatch",
+      "source_files": [
+        "core/code_tools.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_execute",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_get_tool",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_list",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_plan",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_policy",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_preflight",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_status",
+      "source_files": [
+        "core/code_tools.js",
+        "core/registry_tools_safe.js"
+      ],
+      "family": "code",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_registry_validate_tool",
+      "source_files": [
+        "core/registry_tools_safe.js"
+      ],
+      "family": "registry",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "tool_usage_snapshot",
+      "source_files": [
+        "core/truth/usage_tools.js"
+      ],
+      "family": "truth",
+      "module_visibility": "external",
+      "safety": "safe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_usage_snapshot",
+      "migration_action": "already_present",
+      "overlap_resolution": "",
+      "notes": [
+        "Read-only inspection, planning, status, or analysis capability.",
+        "Safe capability still requires full-workspace or non-public operational scope.",
+        "Exact tool already present on current authenticated surface."
+      ]
+    },
+    {
+      "tool": "write_file",
+      "source_files": [
+        "core/filesystem/mutation_tools.js"
+      ],
+      "family": "filesystem_mutation",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    },
+    {
+      "tool": "write_remote_site_file",
+      "source_files": [
+        "core/remote_site/file_ops_tools.js"
+      ],
+      "family": "remote_site_file_ops",
+      "module_visibility": "external",
+      "safety": "unsafe",
+      "safety_confidence": "high",
+      "target_surface": "tests",
+      "overlap_status": "missing",
+      "mapped_tool": null,
+      "migration_action": "port_tests",
+      "overlap_resolution": "",
+      "notes": [
+        "Name or operation implies mutation, deletion, process execution, or write-side effects.",
+        "Unsafe capability belongs only on the broad authenticated tests surface.",
+        "No exact or conservative capability-equivalent tool found in mcp-tests."
+      ]
+    }
+  ],
+  "summary": {
+    "total_tools": 63,
+    "by_surface": {
+      "tests": 56,
+      "public": 7
+    },
+    "by_safety": {
+      "unsafe": 18,
+      "safe": 45
+    },
+    "by_action": {
+      "port_tests": 42,
+      "already_present": 10,
+      "keep_existing": 8,
+      "rename_on_port": 2,
+      "do_not_port_alias": 1
+    },
+    "exact_or_equivalent_overlap_count": 21,
+    "missing_count": 42
+  }
+}

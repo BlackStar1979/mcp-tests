@@ -15,7 +15,7 @@ assert.equal(spec.runtime_instances.public_3009.auth_mode, "none");
 assert.equal(spec.runtime_instances.public_3009.expected_tool_count, 13);
 assert.equal(spec.runtime_instances.oauth21_3008.port, 3008);
 assert.equal(spec.runtime_instances.oauth21_3008.auth_mode, "oauth21");
-assert.equal(spec.runtime_instances.oauth21_3008.expected_tool_count, 43);
+assert.equal(spec.runtime_instances.oauth21_3008.expected_tool_count, 53);
 assert.ok(spec.runtime_instances.oauth21_3008.required_startup_args.includes("--profile"));
 assert.ok(spec.runtime_instances.oauth21_3008.required_startup_args.includes("--auth"));
 assert.ok(spec.runtime_instances.oauth21_3008.required_startup_args.includes("--oauth-secret-file"));

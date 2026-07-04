@@ -57,7 +57,7 @@ function buildCodeRuntimeMap(options = {}) {
     control_plane: controlPlane,
     guards,
     missing,
-    invariant: "Stage 8 / Step 53a may add internal truth modules and tests only; Stage 8 / Step 53b owns server.js runtime extraction.",
+    invariant: "Stage 8 / Step 53a owns bounded connector-visible truth-tool parity on the tests surface; later surface growth must remain explicitly approved and workflow-tracked.",
   };
 }
 

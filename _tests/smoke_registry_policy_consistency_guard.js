@@ -23,9 +23,9 @@ const EXPECTED = {
   authorized: {
     authMode: "oauth21",
     runtimeProfile: "internal",
-    total: 43,
-    optional: 41,
-    required: ["search", "fetch", "test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan"],
+    total: 53,
+    optional: 51,
+    required: ["search", "fetch", "test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "list_directory", "read_file", "project_truth_audit", "tool_usage_snapshot"],
     forbidden: [],
   },
 };

@@ -1,0 +1,72 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const { projectTruthAuditTool } = require("../tools/project_truth_audit");
+const { codeRuntimeMapTool } = require("../tools/code_runtime_map");
+const { deployDecisionGuardTool } = require("../tools/deploy_decision_guard");
+const { changeWorkflowSimulatorTool } = require("../tools/change_workflow_simulator");
+const { toolUsageSnapshotTool } = require("../tools/tool_usage_snapshot");
+const { buildToolUsageSnapshot } = require("../src/truth/tool_usage_snapshot");
+const { CURRENT_WORKING_COURSE, NEXT_PRIMARY_STAGE, NEXT_SECONDARY_STAGE } = require("../src/stage_metadata");
+
+(async () => {
+  const truthAudit = await projectTruthAuditTool.execute({});
+  assert.equal(projectTruthAuditTool.name, "project_truth_audit");
+  assert.equal(projectTruthAuditTool.descriptor.annotations.readOnlyHint, true);
+  assert.equal(truthAudit.current.current_working_course, CURRENT_WORKING_COURSE);
+  assert.equal(truthAudit.current.next_primary, NEXT_PRIMARY_STAGE);
+  assert.equal(truthAudit.current.next_secondary, NEXT_SECONDARY_STAGE);
+  assert.equal(Array.isArray(truthAudit.findings), true);
+
+  const runtimeMap = await codeRuntimeMapTool.execute({});
+  assert.equal(runtimeMap.stage_plan.current, CURRENT_WORKING_COURSE);
+  assert.ok(runtimeMap.planned_truth_modules.includes("src/truth/project_truth_audit.js"));
+  assert.ok(runtimeMap.invariant.includes("Stage 8 / Step 53a"));
+
+  const decision = await deployDecisionGuardTool.execute({
+    changed_paths: ["tools/project_truth_audit.js"],
+    tool_surface_change: true,
+  });
+  assert.equal(decision.classification, "runtime_with_connector_refresh");
+  assert.equal(decision.requires_restart_mcp, true);
+  assert.equal(decision.requires_connector_refresh, true);
+  assert.equal(decision.requires_operator_approval, true);
+
+  const simulation = await changeWorkflowSimulatorTool.execute({
+    changed_paths: ["_workflow/WORKFLOW_CANON.md"],
+  });
+  assert.equal(simulation.classification, "repo_only");
+  assert.ok(simulation.workflow.includes("run full smoke"));
+
+  const missing = buildToolUsageSnapshot({ auditLogPath: path.join(os.tmpdir(), "missing-test-mcp-audit.jsonl") });
+  assert.equal(missing.log_available, false);
+  assert.equal(missing.total_tool_invocations, 0);
+
+  const tempLog = path.join(os.tmpdir(), `mcp-tests-truth-tools-${process.pid}.jsonl`);
+  try {
+    fs.writeFileSync(tempLog, [
+      JSON.stringify({ ts: "2026-07-04T10:00:00Z", event: "tool_call_start", tool: "project_truth_audit" }),
+      JSON.stringify({ ts: "2026-07-04T10:00:01Z", event: "tool_call_start", tool: "net_check_npm_package" }),
+      JSON.stringify({ ts: "2026-07-04T10:00:02Z", event: "tool_call_start", tool: "plugin_registry_status" }),
+    ].join("\n"));
+    const snapshot = buildToolUsageSnapshot({ auditLogPath: tempLog });
+    assert.equal(snapshot.log_available, true);
+    assert.equal(snapshot.total_tool_invocations, 3);
+    assert.equal(snapshot.family_counts.truth_tools, 1);
+    assert.equal(snapshot.family_counts.web_tools, 1);
+    assert.equal(snapshot.family_counts.registry_tools, 1);
+  } finally {
+    try {
+      fs.unlinkSync(tempLog);
+    } catch (_) {}
+  }
+
+  assert.equal(toolUsageSnapshotTool.descriptor.annotations.readOnlyHint, true);
+  console.log("smoke_truth_tools ok");
+})().catch((error) => {
+  console.error(error);
+  process.exit(1);
+});

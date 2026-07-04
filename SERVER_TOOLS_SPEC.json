@@ -25,9 +25,19 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 30,
+      "tool_count": 40,
       "tools": [
         "code_sample_js",
+        "get_info",
+        "list_directory",
+        "read_file",
+        "read_file_lines",
+        "read_file_chunk",
+        "project_truth_audit",
+        "code_runtime_map",
+        "deploy_decision_guard",
+        "change_workflow_simulator",
+        "tool_usage_snapshot",
         "dev_code_audit",
         "dev_code_dependencies",
         "dev_code_impact",
@@ -74,7 +84,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 43,
+  "total_mcp_callable_tool_count": 53,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -122,6 +132,61 @@
       "auth_required": true,
       "public_safe": false,
       "stage5_surface_reclassification": "moved_from_restricted_core_tools_to_authorized_mcp_tools_to_match_runtime_loader"
+    },
+    "get_info": {
+      "name": "get_info",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "stat",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "list_directory": {
+      "name": "list_directory",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "read_file": {
+      "name": "read_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "read_file_lines": {
+      "name": "read_file_lines",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "read_file_chunk": {
+      "name": "read_file_chunk",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
     },
     "net_http_get_allowlisted": {
       "name": "net_http_get_allowlisted",
@@ -591,6 +656,61 @@
       "tool_category": "auth_retirement_status",
       "resource_class": "runtime_status_readonly",
       "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "project_truth_audit": {
+      "name": "project_truth_audit",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "truth",
+      "resource_class": "tool_surface_planning",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "code_runtime_map": {
+      "name": "code_runtime_map",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "truth",
+      "resource_class": "tool_surface_planning",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "deploy_decision_guard": {
+      "name": "deploy_decision_guard",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "truth",
+      "resource_class": "tool_surface_planning",
+      "operation_class": "plan",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "change_workflow_simulator": {
+      "name": "change_workflow_simulator",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "truth",
+      "resource_class": "tool_surface_planning",
+      "operation_class": "plan",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "tool_usage_snapshot": {
+      "name": "tool_usage_snapshot",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "truth",
+      "resource_class": "observability_audit_readonly",
+      "operation_class": "summarize",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],

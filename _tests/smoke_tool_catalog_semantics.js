@@ -1,7 +1,9 @@
 "use strict";
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
-function read(p){return JSON.parse(fs.readFileSync(p,"utf8"));}
+const path = require("node:path");
+const ROOT = path.resolve(__dirname, "..");
+function read(rel){return JSON.parse(fs.readFileSync(path.join(ROOT, rel),"utf8"));}
 const tools=read("SERVER_TOOLS_SPEC.json");
 const res=read("SERVER_RESOURCE_POLICY_SPEC.json");
 const cata=tools.tool_catalog;
@@ -30,6 +32,14 @@ expect("net_check_url_head",{tool_category:"network",resource_class:"network_all
 expect("net_check_npm_package",{tool_category:"network",resource_class:"network_allowlisted",operation_class:"metadata"});
 expect("fs_list_public",{tool_category:"filesystem",resource_class:"filesystem_public",operation_class:"list"});
 expect("fs_get_public_info",{tool_category:"filesystem",resource_class:"filesystem_public",operation_class:"stat"});
+expect("get_info",{tool_category:"filesystem",resource_class:"filesystem_workspace_readonly",operation_class:"stat"});
+expect("list_directory",{tool_category:"filesystem",resource_class:"filesystem_workspace_readonly",operation_class:"list"});
+expect("read_file",{tool_category:"filesystem",resource_class:"filesystem_workspace_readonly",operation_class:"read"});
+expect("project_truth_audit",{tool_category:"truth",resource_class:"tool_surface_planning",operation_class:"read"});
+expect("code_runtime_map",{tool_category:"truth",resource_class:"tool_surface_planning",operation_class:"read"});
+expect("deploy_decision_guard",{tool_category:"truth",resource_class:"tool_surface_planning",operation_class:"plan"});
+expect("change_workflow_simulator",{tool_category:"truth",resource_class:"tool_surface_planning",operation_class:"plan"});
+expect("tool_usage_snapshot",{tool_category:"truth",resource_class:"observability_audit_readonly",operation_class:"summarize"});
 expect("dev_code_symbols",{tool_category:"code_analysis",resource_class:"filesystem_workspace_readonly",operation_class:"analyze"});
 for(const [name,item] of Object.entries(cata)){
   assert.ok(item.resource_policy_refs.includes("SERVER_RESOURCE_POLICY_SPEC.json"),name+" resource policy ref");

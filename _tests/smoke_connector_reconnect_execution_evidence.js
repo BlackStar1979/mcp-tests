@@ -31,8 +31,8 @@ assert.ok(record.includes("This record is no longer an active instruction source
 
 assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oauth21.romionologic.dev/mcp");
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 43);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "8b62ecaf89227335");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 53);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "e265afb87c872196");
 
 assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence.status, "confirmed_43_tools_auth_prompt_accepted");
 assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence.record, "_workflow/operator_decisions/connector_reconnect_execution_evidence.md");
