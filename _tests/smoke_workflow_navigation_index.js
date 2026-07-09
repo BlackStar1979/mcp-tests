@@ -44,7 +44,7 @@ assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, 
 assert.ok(index.includes("single_route_no_sse_streamable_http_target_plan.md"));
 
 assert.ok(canon.includes("Latest validated public section count: `7`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `223`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `216`"));
 assert.ok(canon.includes("Validated cleanup-closeout anchor on `main`: `aecec58`."));
 assert.ok(canon.includes("Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt."));
 assert.ok(canon.includes("`.codebase-memory/`, `_workflow/experiments/`."));

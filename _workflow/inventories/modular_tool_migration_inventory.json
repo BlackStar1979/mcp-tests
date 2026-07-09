@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-04T12:58:53.479Z",
+  "generated_at": "2026-07-09T09:01:26.671Z",
   "source_repo": {
     "name": "mcp",
     "path": "C:/Work/mcp"
@@ -32,8 +32,12 @@
     "tests": [
       "auth_legacy_retirement_status",
       "change_workflow_simulator",
+      "code_patch_plan",
       "code_runtime_map",
       "code_sample_js",
+      "code_scenario",
+      "collect_context",
+      "collect_romionsim_context",
       "deploy_decision_guard",
       "dev_code_audit",
       "dev_code_dependencies",
@@ -48,6 +52,7 @@
       "fs_read_public_lines",
       "fs_read_public_text",
       "get_info",
+      "index_status",
       "list_directory",
       "memory_create_task",
       "memory_get_state",
@@ -79,9 +84,19 @@
       "read_file_chunk",
       "read_file_lines",
       "search",
+      "search_index",
+      "search_index_context",
       "session_toolset_plan",
       "session_toolset_status",
       "test_mcp_runtime_status",
+      "tool_registry_execute",
+      "tool_registry_get_tool",
+      "tool_registry_list",
+      "tool_registry_plan",
+      "tool_registry_policy",
+      "tool_registry_preflight",
+      "tool_registry_status",
+      "tool_registry_validate_tool",
       "tool_usage_snapshot"
     ]
   },
@@ -309,14 +324,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "code_patch_plan",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -369,14 +384,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "code_scenario",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -412,14 +427,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "collect_context",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -432,14 +447,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "collect_romionsim_context",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -699,14 +714,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "index_status",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1084,14 +1099,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "search_index",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1104,14 +1119,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "search_index_context",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1164,14 +1179,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_execute",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1184,14 +1199,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_get_tool",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1204,14 +1219,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_list",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1224,14 +1239,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_plan",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1244,14 +1259,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_policy",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1264,14 +1279,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_preflight",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1285,14 +1300,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_status",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1305,14 +1320,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_registry_validate_tool",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1387,13 +1402,13 @@
       "safe": 45
     },
     "by_action": {
-      "port_tests": 42,
-      "already_present": 10,
+      "port_tests": 27,
+      "already_present": 25,
       "keep_existing": 8,
       "rename_on_port": 2,
       "do_not_port_alias": 1
     },
-    "exact_or_equivalent_overlap_count": 21,
-    "missing_count": 42
+    "exact_or_equivalent_overlap_count": 36,
+    "missing_count": 27
   }
 }

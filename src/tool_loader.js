@@ -68,6 +68,8 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/dev_code_dependencies", "devCodeDependenciesTool", "dev_code_dependencies");
     add("../tools/authorized/dev_code_audit", "devCodeAuditTool", "dev_code_audit");
     add("../tools/authorized/dev_code_impact", "devCodeImpactTool", "dev_code_impact");
+    add("../tools/authorized/code_patch_plan", "codePatchPlanTool", "code_patch_plan");
+    add("../tools/authorized/code_scenario", "codeScenarioTool", "code_scenario");
     add("../tools/authorized/dev_code_syntax_check", "devCodeSyntaxCheckTool", "dev_code_syntax_check");
     add("../tools/authorized/dev_code_locate", "devCodeLocateTool", "dev_code_locate");
   }

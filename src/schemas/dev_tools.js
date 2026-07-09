@@ -51,6 +51,41 @@ const DEV_CODE_IMPACT_INPUT_SCHEMA = {
   },
 };
 
+const DEV_CODE_SCENARIO_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["path", "target"],
+  properties: {
+    ...DEV_CODE_GRAPH_INPUT_SCHEMA.properties,
+    target: DEV_PATH_PROP,
+    change_type: {
+      type: "string",
+      enum: ["internal_refactor", "api_change", "rename", "remove", "behavior_change"],
+      default: "internal_refactor",
+    },
+    max_depth: { type: "integer", minimum: 1, maximum: 20, default: 5 },
+    direction: { type: "string", enum: ["both", "dependents", "dependencies"], default: "both" },
+  },
+};
+
+const DEV_CODE_PATCH_PLAN_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["path", "target"],
+  properties: {
+    ...DEV_CODE_GRAPH_INPUT_SCHEMA.properties,
+    target: DEV_PATH_PROP,
+    intent: {
+      type: "string",
+      enum: ["refactor", "change_behavior", "change_api", "rename", "remove"],
+      default: "refactor",
+    },
+    objective: { type: "string", maxLength: 2000 },
+    max_depth: { type: "integer", minimum: 1, maximum: 20, default: 5 },
+    direction: { type: "string", enum: ["both", "dependents", "dependencies"], default: "both" },
+  },
+};
+
 const DEV_CODE_SYNTAX_INPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -132,6 +167,20 @@ const DEV_CODE_IMPACT_OUTPUT_SCHEMA = {
   properties: {},
 };
 
+const DEV_CODE_SCENARIO_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {},
+};
+
+const DEV_CODE_PATCH_PLAN_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {},
+};
+
 const DEV_CODE_SYNTAX_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -160,6 +209,10 @@ module.exports = {
   DEV_CODE_IMPACT_OUTPUT_SCHEMA,
   DEV_CODE_LOCATE_INPUT_SCHEMA,
   DEV_CODE_LOCATE_OUTPUT_SCHEMA,
+  DEV_CODE_PATCH_PLAN_INPUT_SCHEMA,
+  DEV_CODE_PATCH_PLAN_OUTPUT_SCHEMA,
+  DEV_CODE_SCENARIO_INPUT_SCHEMA,
+  DEV_CODE_SCENARIO_OUTPUT_SCHEMA,
   DEV_CODE_SYMBOLS_INPUT_SCHEMA,
   DEV_CODE_SYMBOLS_OUTPUT_SCHEMA,
   DEV_CODE_SYNTAX_INPUT_SCHEMA,

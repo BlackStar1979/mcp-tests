@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-04
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `66` authenticated tools after the modular safe-tool consolidation batch added runtime `tool_registry_*` and workspace-index retrieval helpers. Live OAuth21 `3008` is still on the earlier `53`-tool runtime from the 2026-07-04 restart, so repo and live runtime are intentionally out of sync until the next controlled `3008` restart. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `68` authenticated tools after the modular safe-tool consolidation batch added runtime `tool_registry_*`, workspace-index retrieval helpers, and the read-only `code_patch_plan` / `code_scenario` planning tools. Live OAuth21 `3008` is still on the earlier `53`-tool runtime from the 2026-07-04 restart, so repo and live runtime are intentionally out of sync until the next controlled `3008` restart. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = stage8_53b-modular-safe-tool-surface-consolidation`
@@ -57,9 +57,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_223`.
+- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_216`.
 - Public section count: `7`.
-- Authenticated smoke count: `223`.
+- Authenticated smoke count: `216`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -68,7 +68,7 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 66 tools / live authenticated runtime + `tools/list` still confirms 53 tools from the previous restart on 2026-07-04;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 68 tools / live authenticated runtime + `tools/list` still confirms 53 tools from the previous restart on 2026-07-04;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
@@ -361,7 +361,7 @@ Recently completed:
 
 - Applied the bounded surviving-route transport-session retirement package: stable `/mcp` no longer creates transport sessions, no longer emits `Mcp-Session-Id`, ignores session headers on POST, and now reports `protocol_sessions: false` from `server/discover`.
 
-- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `223` authenticated scripts.
+- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `216` authenticated scripts.
 
 - Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
 

@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 53,
+      "tool_count": 55,
       "tools": [
         "code_sample_js",
         "get_info",
@@ -54,6 +54,8 @@
         "dev_code_audit",
         "dev_code_dependencies",
         "dev_code_impact",
+        "code_patch_plan",
+        "code_scenario",
         "dev_code_locate",
         "dev_code_symbols",
         "dev_code_syntax_check",
@@ -97,7 +99,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 66,
+  "total_mcp_callable_tool_count": 68,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -352,6 +354,28 @@
     },
     "dev_code_impact": {
       "name": "dev_code_impact",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "code_patch_plan": {
+      "name": "code_patch_plan",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "code_scenario": {
+      "name": "code_scenario",
       "surface_class": "authorized_mcp_tools",
       "tool_category": "code_analysis",
       "resource_class": "filesystem_workspace_readonly",

@@ -81,7 +81,7 @@ async function callTool(mcpUrl, name, args = {}) {
   await withMcpUrl(async (mcpUrl) => {
     const listed = await rpc(mcpUrl, "tools/list", {});
     const toolNames = (listed.result?.tools || []).map((tool) => tool.name);
-    assert.equal(toolNames.length, 66);
+    assert.equal(toolNames.length, 68);
     assert.ok(toolNames.includes("observability_status"));
 
     const status = await callTool(mcpUrl, "observability_status", {
@@ -105,7 +105,7 @@ async function callTool(mcpUrl, name, args = {}) {
     assert.equal(status.runtime.server_version, "0.40.0");
     assert.equal(status.runtime.auth_mode, process.env.MCP_TEST_AUTH_MODE || "oauth21");
     assert.equal(status.runtime.profile, "internal");
-    assert.equal(status.runtime.enabled_tool_count, 66);
+    assert.equal(status.runtime.enabled_tool_count, 68);
 
     assert.equal(status.audit_log.path_disclosed, false);
     assert.equal(status.audit_jsonl_health.status, "ok");

@@ -533,6 +533,144 @@ function impactGraph(graph, target, direction = "both", maxDepth = 5) {
   };
 }
 
+function scenarioRisk(graph, impact, changeType) {
+  const fanIn = impact.affected_count || 0;
+  const fanOut = impact.dependencies_count || 0;
+  let score = fanIn * 3 + fanOut * 2;
+  if (graph.truncated) score += 3;
+  if (["remove", "rename", "api_change"].includes(changeType)) score += 6;
+  if (changeType === "internal_refactor") score += 1;
+  const level = score >= 20 ? "high" : score >= 8 ? "medium" : "low";
+  return { level, score, fan_in: fanIn, fan_out: fanOut };
+}
+
+function scenarioPlan(graph, target, changeType, direction, maxDepth) {
+  const impact = impactGraph(graph, target, direction, maxDepth);
+  if (!impact.found) {
+    return {
+      ...impact,
+      risk: { level: "unknown", score: 0, fan_in: 0, fan_out: 0 },
+      context_files: [],
+      recommended_checks: ["target not found in dependency graph"],
+    };
+  }
+  const risk = scenarioRisk(graph, impact, changeType);
+  const contextSet = new Set([impact.target]);
+  for (const item of [...impact.affected, ...impact.dependencies]) contextSet.add(item.path);
+  const context_files = [...contextSet].slice(0, 50);
+  const recommended_checks = [];
+  if (impact.affected_count > 0) recommended_checks.push("review affected dependents before editing public API");
+  if (impact.dependencies_count > 0) recommended_checks.push("review downstream dependencies for invariant assumptions");
+  if (["remove", "rename", "api_change"].includes(changeType)) recommended_checks.push("run targeted tests for all affected modules");
+  if (risk.level === "high") recommended_checks.push("split change into minimal patch and validation pass");
+  if (risk.level === "low") recommended_checks.push("single-file change likely safe if local tests pass");
+  return { ...impact, risk, context_files, recommended_checks };
+}
+
+const INTENT_TO_CHANGE_TYPE = Object.freeze({
+  refactor: "internal_refactor",
+  change_behavior: "behavior_change",
+  change_api: "api_change",
+  rename: "rename",
+  remove: "remove",
+});
+
+function mapIntentToChangeType(intent) {
+  return INTENT_TO_CHANGE_TYPE[intent] || "internal_refactor";
+}
+
+function uniquePaths(items) {
+  return [...new Set((items || []).filter(Boolean))];
+}
+
+function patchPlan(graph, target, intent, objective, direction, maxDepth) {
+  const changeType = mapIntentToChangeType(intent);
+  const scenario = scenarioPlan(graph, target, changeType, direction, maxDepth);
+
+  if (!scenario.found) {
+    return {
+      intent,
+      objective: objective || "",
+      change_type: changeType,
+      scenario,
+      plan: [
+        { step: 1, type: "stop", files: [], reason: "Target is not present in the dependency graph." },
+        { step: 2, type: "validate_target", files: [scenario.target], reason: "Check path spelling, scope and supported file type." },
+      ],
+      gates: {
+        require_user_approval: true,
+        require_tests: false,
+        allow_auto_write: false,
+        allow_execution: false,
+      },
+      read_plan: [],
+      anchor_strategy: { primary: null, fallback: null },
+      patch_constraints: ["target must exist before patch planning"],
+      validation_plan: [],
+      decision: { status: "blocked", proceed: false, next_required_action: "validate target path before planning" },
+    };
+  }
+
+  const targetFile = scenario.target;
+  const affectedFiles = scenario.affected.map((item) => item.path);
+  const dependencyFiles = scenario.dependencies.map((item) => item.path);
+  const plan = [];
+  let step = 1;
+  const add = (type, files, reason) => plan.push({ step: step++, type, files: uniquePaths(files), reason });
+
+  add("inspect_target", [targetFile], "Understand the exact change surface before editing.");
+  if (dependencyFiles.length) add("inspect_dependencies", dependencyFiles, "Review downstream assumptions used by the target module.");
+  if (affectedFiles.length) add("inspect_affected_dependents", affectedFiles, "Review modules that import or depend on the target.");
+
+  if (scenario.risk.level === "high") {
+    add("split_patch", scenario.context_files, "High-risk change: split into the smallest coherent patch and a separate validation pass.");
+    add("define_regression_checks", affectedFiles.length ? affectedFiles : scenario.context_files, "Define targeted checks for every affected module before implementation.");
+  } else if (scenario.risk.level === "medium") {
+    add("define_targeted_checks", scenario.context_files, "Medium-risk change: validate target, dependencies and affected dependents.");
+  } else {
+    add("local_validation", [targetFile], "Low-risk change: local validation should be sufficient before broader review.");
+  }
+
+  add("manual_edit_required", [targetFile], "Plan-only tool: no automatic writes or execution are allowed.");
+
+  return {
+    intent,
+    objective: objective || "",
+    change_type: changeType,
+    scenario,
+    plan,
+    gates: {
+      require_user_approval: true,
+      require_tests: scenario.risk.level === "medium" || scenario.risk.level === "high",
+      allow_auto_write: false,
+      allow_execution: false,
+    },
+    read_plan: [
+      { type: "target", files: [targetFile], reason: "Read the target before designing any patch." },
+      { type: "dependencies", files: dependencyFiles.slice(0, 5), reason: "Read direct dependencies for invariant assumptions." },
+      { type: "affected", files: affectedFiles.slice(0, 5), reason: "Read direct dependents to assess call-site impact." },
+    ],
+    anchor_strategy: {
+      primary: "Use a unique function/class signature or exact top-level declaration in target.",
+      fallback: "Use a unique import line or nearby top-level statement only after reading the target.",
+      required_property: "future edit anchor must match exactly once",
+    },
+    patch_constraints: [
+      "anchor must match exactly once",
+      "no multi-file write in single patch",
+      "no modification without prior read",
+      "must use dry-run before any future write path",
+      "do not execute code in patch planning",
+    ],
+    validation_plan: [
+      "verify affected modules still import correctly",
+      "verify no broken dependencies",
+      "run targeted tests if medium/high risk",
+    ],
+    decision: { status: "patch_plan_only", proceed: false, next_required_action: "manual review of patch plan" },
+  };
+}
+
 function runBoundedProcess(command, args, { timeoutMs = 6000, cwd = WORKSPACE_ROOT } = {}) {
   return new Promise((resolve) => {
     const started = Date.now();
@@ -598,10 +736,13 @@ module.exports = {
   codeSymbols,
   extractSymbols,
   impactGraph,
+  mapIntentToChangeType,
   locateCode,
   languageForPath,
   linesOf,
   normalizeWorkspacePath,
+  patchPlan,
   resolveWorkspacePath,
+  scenarioPlan,
   syntaxCheck,
 };

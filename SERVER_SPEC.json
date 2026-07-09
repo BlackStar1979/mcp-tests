@@ -10,7 +10,7 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 66,
+    "full_tests_authenticated_tool_count": 68,
     "target_active_runtime_count": 2,
     "target_active_runtime_modes": [
       "none",
@@ -22,7 +22,7 @@
     },
     "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
     "public_tool_count": 13,
-    "authenticated_tool_count": 66,
+    "authenticated_tool_count": 68,
     "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {

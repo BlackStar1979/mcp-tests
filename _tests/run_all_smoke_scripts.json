@@ -43,6 +43,7 @@
   "_tests/smoke_tool_surface_fingerprints.js",
   "_tests/smoke_compact_connector_map.js",
   "_tests/smoke_dev_code_locate.js",
+  "_tests/smoke_dev_code_planning.js",
   "_tests/smoke_runtime_status_compact.js",
   "_tests/smoke_status_current.js",
   "_tests/smoke_no_stale_stage_strings.js",
