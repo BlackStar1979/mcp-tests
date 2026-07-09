@@ -15,14 +15,14 @@ const EXPECTED = Object.freeze({
   server_version: "0.40.0",
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
-  current_working_course: "stage8_53b-modular-safe-tool-surface-consolidation",
-  next_primary: "stage8_53c-modular-unsafe-tool-governance-boundary",
-  next_secondary: "stage8_53d-live-restart-and-connector-surface-reconciliation",
-  tool_names_hash: "e5cd996ec678d02f",
-  input_schema_fingerprint: "d2099321cfcfe0e1",
-  output_schema_fingerprint: "9cec0b9d153edfde",
-  descriptor_fingerprint: "99200f22c0d6dc8b",
-  combined_fingerprint: "3dbdad234e9c584f",
+  current_working_course: "stage8_53c-modular-unsafe-tool-governance-boundary",
+  next_primary: "stage8_53d-live-restart-and-connector-surface-reconciliation",
+  next_secondary: "post_53d-remaining-modular-parity-triage",
+  tool_names_hash: "c8cf1842ac2a3dfe",
+  input_schema_fingerprint: "ae404a432a858de3",
+  output_schema_fingerprint: "6864276ac1ebd159",
+  descriptor_fingerprint: "c0260fc9ddd1b1d0",
+  combined_fingerprint: "3248a1bef9b94318",
 });
 
 function readText(repoRoot, relPath) {

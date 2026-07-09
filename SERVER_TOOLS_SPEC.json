@@ -25,9 +25,17 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 56,
+      "tool_count": 65,
       "tools": [
         "code_sample_js",
+        "write_file",
+        "append_file",
+        "copy_path",
+        "move_path",
+        "delete_path",
+        "restore_path",
+        "edit_file_patch",
+        "build_index",
         "get_info",
         "list_directory",
         "read_file",
@@ -66,6 +74,7 @@
         "memory_search",
         "memory_set_state",
         "observability_status",
+        "run_process",
         "process_runner_status",
         "plugin_catalog_describe",
         "plugin_catalog_search",
@@ -100,7 +109,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 69,
+  "total_mcp_callable_tool_count": 78,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -148,6 +157,110 @@
       "auth_required": true,
       "public_safe": false,
       "stage5_surface_reclassification": "moved_from_restricted_core_tools_to_authorized_mcp_tools_to_match_runtime_loader"
+    },
+    "write_file": {
+      "name": "write_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "append_file": {
+      "name": "append_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "copy_path": {
+      "name": "copy_path",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "move_path": {
+      "name": "move_path",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "delete_path": {
+      "name": "delete_path",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "restore_path": {
+      "name": "restore_path",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "edit_file_patch": {
+      "name": "edit_file_patch",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "build_index": {
+      "name": "build_index",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "workspace_index",
+      "resource_class": "workspace_index_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
     },
     "get_info": {
       "name": "get_info",
@@ -501,6 +614,19 @@
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
       "audit_required": true
+    },
+    "run_process": {
+      "name": "run_process",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_execution_bounded",
+      "operation_class": "execute",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
     },
     "process_runner_status": {
       "name": "process_runner_status",

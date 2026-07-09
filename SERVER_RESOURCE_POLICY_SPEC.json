@@ -36,6 +36,13 @@
       ],
       "public_surface_allowed": false
     },
+    "filesystem_workspace_mutation": {
+      "description": "Bounded authenticated workspace mutation inside configured writable roots with backup/trash/restore controls.",
+      "allowed_operations": [
+        "write"
+      ],
+      "public_surface_allowed": false
+    },
     "network_allowlisted": {
       "description": "Read-only outbound HTTP(S) access restricted by allowlist, redirect limits, timeout, byte cap and SSRF guard.",
       "allowed_operations": [
@@ -130,10 +137,24 @@
       ],
       "public_surface_allowed": false
     },
+    "workspace_index_mutation": {
+      "description": "Bounded authenticated workspace index rebuild/update under TEST MCP control-plane state.",
+      "allowed_operations": [
+        "write"
+      ],
+      "public_surface_allowed": false
+    },
     "runtime_status_readonly": {
       "description": "Read-only server runtime/status resource.",
       "allowed_operations": [
         "read"
+      ],
+      "public_surface_allowed": false
+    },
+    "process_execution_bounded": {
+      "description": "Bounded authenticated process execution restricted by allowlist, cwd, timeout, output caps, and environment minimization.",
+      "allowed_operations": [
+        "execute"
       ],
       "public_surface_allowed": false
     },
@@ -213,6 +234,9 @@
     },
     "audit": {
       "mutation": false
+    },
+    "execute": {
+      "mutation": true
     }
   },
   "mandatory_rules": {

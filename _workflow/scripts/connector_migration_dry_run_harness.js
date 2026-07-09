@@ -75,12 +75,11 @@ function buildHarnessResult() {
 
   assert.equal(currentRoute, "/mcp");
   assert.equal(candidateRoute, "/mcp/sessionless");
-  assert.equal(toolCount, 69);
-  assert.equal(serverSpec.server.authenticated_tool_count, 69);
-  assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 69);
-  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 53);
-  assert.notEqual(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, toolNamesHash);
-  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+  assert.equal(toolCount, 78);
+  assert.equal(serverSpec.server.authenticated_tool_count, 78);
+  assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 78);
+  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 78);
+  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
   assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
   assert.equal(runtimeTopology.runtime_instances.oauth21_3008.port, 3008);
   assert.equal(runtimeTopology.runtime_instances.public_3009.port, 3009);
@@ -137,8 +136,8 @@ function buildHarnessResult() {
       stable_mcp_required_as_legacy_route: inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_status === "legacy_compatible_do_not_remove",
       stable_mcp_removal_forbidden: inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_removal_forbidden_now === true,
       stable_session_code_removal_forbidden: state.current_work_constraints.do_not_remove_stable_session_code_before_active_route_migration_completion === true,
-      connector_refresh_required_now: true,
-      runtime_restart_required_now: true,
+      connector_refresh_required_now: false,
+      runtime_restart_required_now: false,
       public_3009_start_required_now: false,
     },
     current_connector_surface: beforeSurface,

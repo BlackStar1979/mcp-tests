@@ -92,8 +92,89 @@ const PROCESS_RUNNER_STATUS_OUTPUT_SCHEMA = {
   },
 };
 
+const PROCESS_TOOL_ANNOTATIONS = {
+  readOnlyHint: false,
+  destructiveHint: true,
+  idempotentHint: false,
+  openWorldHint: false,
+};
+
+const RUN_PROCESS_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["command"],
+  properties: {
+    command: { type: "string", minLength: 1, maxLength: 200 },
+    args: {
+      type: "array",
+      default: [],
+      maxItems: 100,
+      items: { type: "string", maxLength: 4000 },
+    },
+    cwd: { type: "string", default: ".", maxLength: 1000 },
+    timeout_ms: { type: "integer", minimum: 100, maximum: 120000, default: 30000 },
+    max_output_chars: { type: "integer", minimum: 1000, maximum: 250000, default: 60000 },
+    env: {
+      type: "object",
+      default: {},
+      additionalProperties: { type: "string" },
+    },
+    trace_id: {
+      anyOf: [
+        { type: "string", maxLength: 200 },
+        { type: "null" },
+      ],
+      default: null,
+    },
+  },
+};
+
+const RUN_PROCESS_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "status",
+    "command",
+    "args",
+    "cwd",
+    "workspace",
+    "exit_code",
+    "signal",
+    "timed_out",
+    "duration_ms",
+    "stdout",
+    "stderr",
+    "stdout_truncated",
+    "stderr_truncated",
+    "output_limit_chars",
+    "trace_id",
+    "error",
+  ],
+  properties: {
+    status: { type: "string", enum: ["ok", "nonzero_exit", "timeout", "spawn_error"] },
+    command: { type: "string" },
+    args: { type: "array", items: { type: "string" } },
+    cwd: { type: "string" },
+    workspace: { type: "string" },
+    exit_code: { type: ["integer", "null"] },
+    signal: { type: ["string", "null"] },
+    timed_out: { type: "boolean" },
+    duration_ms: { type: "integer", minimum: 0 },
+    stdout: { type: "string" },
+    stderr: { type: "string" },
+    stdout_truncated: { type: "boolean" },
+    stderr_truncated: { type: "boolean" },
+    output_limit_chars: { type: "integer", minimum: 1 },
+    trace_id: { type: ["string", "null"] },
+    error: { type: ["string", "null"] },
+  },
+};
+
 module.exports = {
   EMPTY_INPUT_SCHEMA,
+  PROCESS_TOOL_ANNOTATIONS,
   READ_ONLY_PROCESS_ANNOTATIONS,
+  RUN_PROCESS_INPUT_SCHEMA,
+  RUN_PROCESS_OUTPUT_SCHEMA,
   PROCESS_RUNNER_STATUS_OUTPUT_SCHEMA,
 };

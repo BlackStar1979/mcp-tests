@@ -35,13 +35,13 @@ assert.ok(record.includes("This is no longer the active queue; current target au
 assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oauth21.romionologic.dev/mcp");
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
 assert.equal(connectorSpec.authenticated_connector.current_tool_count_after_stage6, 43);
-assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 69);
+assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 78);
 
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 53);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "e265afb87c872196");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 69);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo_ahead_live_authenticated_tools_list_53_expected_69_restart_required_connector_ui_visibility_unverified");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 78);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "b8fadaa824febfbb");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 78);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_78_matches_repo_expected_78_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
 
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.status, "prepared_no_execution");
@@ -57,12 +57,12 @@ assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.next_recommended_step, "single-route no-SSE streamable-HTTP target contract and migration plan");
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.superseded_by_current_active_queue, true);
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_216`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `216`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_220`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `220`"));
 assert.ok(canon.includes("S14 connector refresh approval package / no execution green"));
 assert.ok(canon.includes("S15 connector reconnect execution evidence on stable `/mcp`"));
-assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_216`."));
-assert.ok(index.includes("Authenticated smoke count: `216`."));
+assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_220`."));
+assert.ok(index.includes("Authenticated smoke count: `220`."));
 assert.ok(index.includes("connector_refresh_approval_package.md"));
 assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, and stable stream-path replay semantics."));
 

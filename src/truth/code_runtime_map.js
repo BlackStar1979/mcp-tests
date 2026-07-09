@@ -15,7 +15,7 @@ function buildCodeRuntimeMap(options = {}) {
     "src/truth/parity_audit.js",
   ];
   const runtimeEntryPoints = [
-    { file: "server.js", role: "current TEST MCP runtime entrypoint", planned_stage: "8.53b" },
+    { file: "server.js", role: "current TEST MCP runtime entrypoint", planned_stage: "8.53c" },
   ];
   const canonicalDocs = [
     "_workflow/WORKFLOW_CANON.md",
@@ -57,7 +57,7 @@ function buildCodeRuntimeMap(options = {}) {
     control_plane: controlPlane,
     guards,
     missing,
-    invariant: "Stage 8 / Step 53b owns the approved modular safe-tool expansion on the tests surface; repo-visible surface growth is allowed here, but live 3008 and connector truth must remain explicitly reconciled and workflow-tracked.",
+    invariant: "Stage 8 / Step 53c owns the approved bounded unsafe-tool governance expansion on the tests surface; repo-visible surface growth is allowed here, but live 3008 and connector truth must remain explicitly reconciled and workflow-tracked.",
   };
 }
 

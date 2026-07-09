@@ -31,13 +31,13 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_216`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_220`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `216`.
-- Repo current authenticated tool target after modular safe-tool surface consolidation: `69`.
-- Live OAuth21 `3008` is still on the earlier authenticated `/mcp` tool count `53` from the 2026-07-04 controlled restart; repo and live runtime are intentionally out of sync until the next approved `3008` restart.
-- Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current live `53` proof is runtime/MCP truth only, not a fresh UI inventory proof.
-- Workflow progress markers: `current_working_course = stage8_53b-modular-safe-tool-surface-consolidation`; `next_primary = stage8_53c-modular-unsafe-tool-governance-boundary`; `next_secondary = stage8_53d-live-restart-and-connector-surface-reconciliation`.
+- Latest validated authenticated smoke count: `220`.
+- Repo current authenticated tool target after the bounded modular unsafe-governance batch: `78`.
+- Live OAuth21 `3008` is reconciled to the authenticated `/mcp` tool count `78`; controlled restart plus authenticated `tools/list` and `test_mcp_runtime_status` confirm server_start_id `2026-07-09T22:04:37.376Z`.
+- Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current live `78` proof is runtime/MCP truth only, not a fresh UI inventory proof.
+- Workflow progress markers: `current_working_course = stage8_53c-modular-unsafe-tool-governance-boundary`; `next_primary = stage8_53d-live-restart-and-connector-surface-reconciliation`; `next_secondary = post_53d-remaining-modular-parity-triage`.
 - Stage marker vocabulary: `Stage 8 / Step 53b` = modular safe tool surface consolidation; `Stage 8 / Step 53c` = modular unsafe tool governance boundary; `Stage 8 / Step 53d` = live restart and connector surface reconciliation.
 - Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
@@ -563,6 +563,6 @@ Auth/security adjacent SEP triage green: `_workflow/operator_decisions/auth_secu
 
 Adjacent/auth watchlist review green: `_workflow/operator_decisions/adjacent_sep_watchlist_review.md` reviews the remaining watchlist after the two SEP triage records. No new dedicated ledger is opened now. `SEP-1613`, `SEP-1319`, and `SEP-991` are sufficient for current scope without new workflow expansion; `SEP-2164` and `SEP-973` are deferred until their target surfaces exist; `SEP-1303` remains the first semantics-sensitive item to reopen if tool-validation-error behavior becomes an active migration topic. No runtime change, restart, connector refresh, or public 3009 start was performed.
 
-Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The cleanup-closeout anchor remains `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green for the closeout package with `7` public and `216` authenticated scripts. Later workflow-only truth-sync commits on `main` do not reopen this debt. The previous dirty-worktree push blocker is closed for `main`; the cleanup-closeout checkpoint preserved only local-only untracked `.codebase-memory/` and `_workflow/experiments/` outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.
+Repo cleanup/normalization closeout green: the cleanup branch `cleanup-normalization-20260701` was split into `44957ab`, `1b5ab42`, and `aecec58`, then fast-forward merged into `main`. The cleanup-closeout anchor remains `aecec58`, and both `node server.js --self-test` and `node ./_tests/run_all_smokes.js --skip-network` are green for the closeout package with `7` public and `220` authenticated scripts. Later workflow-only truth-sync commits on `main` do not reopen this debt. The previous dirty-worktree push blocker is closed for `main`; the cleanup-closeout checkpoint preserved only local-only untracked `.codebase-memory/` and `_workflow/experiments/` outside committed scope. Required archive-boundary README files in `_workflow/control_plane/snapshots/` and `_workflow/control_plane/retired_root_backups/` are intentional committed files and must not be removed as ignored artifacts.
 
 Historical next-step quarantine green: completed side records with `Historical status note:` and a `Next recommendation` section are now guarded by `_tests/smoke_historical_next_recommendation_quarantine.js` so they cannot silently grow back into parallel active queues.

@@ -1,15 +1,15 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-04
+Date: 2026-07-10
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` authenticated tools after the modular safe-tool consolidation batch added runtime `tool_registry_*`, workspace-index retrieval helpers, the read-only `code_patch_plan` / `code_scenario` planning tools, and now `process_runner_status` as a status-only process-policy surface. Live OAuth21 `3008` is still on the earlier `53`-tool runtime from the 2026-07-04 restart, so repo and live runtime are intentionally out of sync until the next controlled `3008` restart. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth expects `78` authenticated tools after the modular unsafe-governance batch promoted bounded workspace mutation, index rebuild, and allowlisted process execution into the authenticated surface. Live OAuth21 `3008` has now been controlled-restarted and authenticated `tools/list` plus `test_mcp_runtime_status` both confirm `78` tools on server_start_id `2026-07-09T22:04:37.376Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
-- `current_working_course = stage8_53b-modular-safe-tool-surface-consolidation`
-- `next_primary = stage8_53c-modular-unsafe-tool-governance-boundary`
-- `next_secondary = stage8_53d-live-restart-and-connector-surface-reconciliation`
+- `current_working_course = stage8_53c-modular-unsafe-tool-governance-boundary`
+- `next_primary = stage8_53d-live-restart-and-connector-surface-reconciliation`
+- `next_secondary = post_53d-remaining-modular-parity-triage`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -57,9 +57,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_216`.
+- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_220`.
 - Public section count: `7`.
-- Authenticated smoke count: `216`.
+- Authenticated smoke count: `220`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -68,11 +68,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 tools / live authenticated runtime + `tools/list` still confirms 53 tools from the previous restart on 2026-07-04;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 78 tools / live authenticated runtime + `tools/list` now confirms 78 tools on server_start_id `2026-07-09T22:04:37.376Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Repo surface is ahead of live authenticated `/mcp`; controlled `3008` restart is now the next required live-reconciliation step, and connector-UI visible-tool re-enumeration remains unverified in this turn.
+- Live authenticated `/mcp` is reconciled to the repo `78`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 
@@ -361,7 +361,7 @@ Recently completed:
 
 - Applied the bounded surviving-route transport-session retirement package: stable `/mcp` no longer creates transport sessions, no longer emits `Mcp-Session-Id`, ignores session headers on POST, and now reports `protocol_sessions: false` from `server/discover`.
 
-- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `216` authenticated scripts.
+- Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history, `node server.js --self-test` is green, and `node _tests/run_all_smokes.js --skip-network` is green with `7` public and `220` authenticated scripts.
 
 - Added `_tests/smoke_historical_next_recommendation_quarantine.js` and rewrote lingering historical `Next recommendation` leakage so completed side records no longer masquerade as the active queue.
 

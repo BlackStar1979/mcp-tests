@@ -10,7 +10,7 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 69,
+    "full_tests_authenticated_tool_count": 78,
     "target_active_runtime_count": 2,
     "target_active_runtime_modes": [
       "none",
@@ -22,7 +22,7 @@
     },
     "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
     "public_tool_count": 13,
-    "authenticated_tool_count": 69,
+    "authenticated_tool_count": 78,
     "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {
@@ -76,9 +76,9 @@
     }
   },
   "workflow_progress_markers": {
-    "current_working_course": "stage8_53b-modular-safe-tool-surface-consolidation",
-    "next_primary": "stage8_53c-modular-unsafe-tool-governance-boundary",
-    "next_secondary": "stage8_53d-live-restart-and-connector-surface-reconciliation",
+    "current_working_course": "stage8_53c-modular-unsafe-tool-governance-boundary",
+    "next_primary": "stage8_53d-live-restart-and-connector-surface-reconciliation",
+    "next_secondary": "post_53d-remaining-modular-parity-triage",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -474,7 +474,7 @@
     "all_target_policy_classes_specified": true
   },
   "oauth21_durable_state": {
-    "status": "implemented_repo_not_live_loaded_until_controlled_restart",
+    "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "env": "MCP_TEST_OAUTH_STATE_FILE",
     "default": "~/.romion/tests_oauth_state.json"
   },

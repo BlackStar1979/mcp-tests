@@ -5,11 +5,28 @@ const READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS = {
   openWorldHint: false,
 };
 
+const STATE_CHANGING_WORKSPACE_INDEX_ANNOTATIONS = {
+  readOnlyHint: false,
+  destructiveHint: false,
+  idempotentHint: false,
+  openWorldHint: false,
+};
+
 const INDEX_STATUS_INPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
   required: [],
   properties: {},
+};
+
+const BUILD_INDEX_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {
+    max_files: { type: "integer", minimum: 1, maximum: 50000, default: 20000 },
+    max_dirs: { type: "integer", minimum: 1, maximum: 20000, default: 5000 },
+  },
 };
 
 const SEARCH_INDEX_INPUT_SCHEMA = {
@@ -116,6 +133,56 @@ const INDEX_STATUS_OUTPUT_SCHEMA = {
   },
 };
 
+const BUILD_INDEX_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "success",
+    "error",
+    "status",
+    "count",
+    "created_at",
+    "roots",
+    "visited_files",
+    "visited_dirs",
+    "truncated",
+    "skipped",
+  ],
+  properties: {
+    success: { type: "boolean" },
+    error: { type: "string" },
+    status: { type: "string", enum: ["built", "error"] },
+    count: { type: "integer", minimum: 0 },
+    created_at: { type: "string" },
+    roots: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["alias", "path", "primary"],
+        properties: {
+          alias: { type: "string" },
+          path: { type: "string" },
+          primary: { type: "boolean" },
+        },
+      },
+    },
+    visited_files: { type: "integer", minimum: 0 },
+    visited_dirs: { type: "integer", minimum: 0 },
+    truncated: { type: "boolean" },
+    skipped: {
+      type: "object",
+      additionalProperties: false,
+      required: ["oversized", "extension", "directories"],
+      properties: {
+        oversized: { type: "integer", minimum: 0 },
+        extension: { type: "integer", minimum: 0 },
+        directories: { type: "integer", minimum: 0 },
+      },
+    },
+  },
+};
+
 const SEARCH_INDEX_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -172,6 +239,8 @@ const COLLECT_ROMIONSIM_CONTEXT_OUTPUT_SCHEMA = {
 };
 
 module.exports = {
+  BUILD_INDEX_INPUT_SCHEMA,
+  BUILD_INDEX_OUTPUT_SCHEMA,
   COLLECT_CONTEXT_INPUT_SCHEMA,
   COLLECT_CONTEXT_OUTPUT_SCHEMA,
   COLLECT_ROMIONSIM_CONTEXT_INPUT_SCHEMA,
@@ -179,6 +248,7 @@ module.exports = {
   INDEX_STATUS_INPUT_SCHEMA,
   INDEX_STATUS_OUTPUT_SCHEMA,
   READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS,
+  STATE_CHANGING_WORKSPACE_INDEX_ANNOTATIONS,
   SEARCH_INDEX_CONTEXT_INPUT_SCHEMA,
   SEARCH_INDEX_CONTEXT_OUTPUT_SCHEMA,
   SEARCH_INDEX_INPUT_SCHEMA,

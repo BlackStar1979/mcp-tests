@@ -57,7 +57,10 @@
         "tool_surface_planning",
         "runtime_tool_registry_readonly",
         "workspace_index_readonly",
-        "runtime_status_readonly"
+        "workspace_index_mutation",
+        "filesystem_workspace_mutation",
+        "runtime_status_readonly",
+        "process_execution_bounded"
       ],
       "denied_resource_policy_refs": [],
       "allowed_memory_scopes": [

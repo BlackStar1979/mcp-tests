@@ -82,6 +82,16 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/read_file_chunk", "readFileChunkTool", "read_file_chunk");
   }
 
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_MUTATION_TOOLS", true)) {
+    add("../tools/authorized/write_file", "writeFileTool", "write_file");
+    add("../tools/authorized/append_file", "appendFileTool", "append_file");
+    add("../tools/authorized/copy_path", "copyPathTool", "copy_path");
+    add("../tools/authorized/move_path", "movePathTool", "move_path");
+    add("../tools/authorized/delete_path", "deletePathTool", "delete_path");
+    add("../tools/authorized/restore_path", "restorePathTool", "restore_path");
+    add("../tools/authorized/edit_file_patch", "editFilePatchTool", "edit_file_patch");
+  }
+
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_TRUTH_TOOLS", true)) {
     add("../tools/authorized/project_truth_audit", "projectTruthAuditTool", "project_truth_audit");
     add("../tools/authorized/code_runtime_map", "codeRuntimeMapTool", "code_runtime_map");
@@ -105,6 +115,7 @@ function loadOptionalTools(options = {}) {
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_INDEX_TOOLS", true)) {
+    add("../tools/authorized/build_index", "buildIndexTool", "build_index");
     add("../tools/authorized/index_status", "indexStatusTool", "index_status");
     add("../tools/authorized/search_index", "searchIndexTool", "search_index");
     add("../tools/authorized/search_index_context", "searchIndexContextTool", "search_index_context");
@@ -128,6 +139,10 @@ function loadOptionalTools(options = {}) {
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_VISIBILITY_TOOLS", true)) {
     add("../tools/authorized/plugin_visibility_status", "pluginVisibilityStatusTool", "plugin_visibility_status");
     add("../tools/authorized/plugin_visibility_plan", "pluginVisibilityPlanTool", "plugin_visibility_plan");
+  }
+
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PROCESS_EXECUTION_TOOL", true)) {
+    add("../tools/authorized/run_process", "runProcessTool", "run_process");
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_CATALOG_TOOLS", true)) {

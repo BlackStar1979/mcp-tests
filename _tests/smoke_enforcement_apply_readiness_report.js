@@ -92,10 +92,10 @@ function buildMatrixAndEvaluation({ authMode, runtimeProfile, surfaceName }) {
   assert.equal(report.public.tool_count, 13);
   assert.equal(report.public.blocked_count, 0);
   assert.equal(report.public.would_deny_count, 0);
-  assert.equal(report.authorized.tool_count, 69);
+  assert.equal(report.authorized.tool_count, 78);
   assert.equal(report.authorized.blocked_count, 0);
   assert.equal(report.authorized.would_deny_count, 0);
-  assert.equal(report.receipts.receipt_count, 69);
+  assert.equal(report.receipts.receipt_count, 78);
   assert.equal(report.receipts.denied_receipt_count, 0);
   assert.equal(report.receipts.raw_arguments_included, false);
   assert.equal(report.receipts.runtime_audit_event_emitted, false);
