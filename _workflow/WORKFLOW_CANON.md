@@ -34,7 +34,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_216`.
 - Latest validated public section count: `7`.
 - Latest validated authenticated smoke count: `216`.
-- Repo current authenticated tool target after modular safe-tool surface consolidation: `68`.
+- Repo current authenticated tool target after modular safe-tool surface consolidation: `69`.
 - Live OAuth21 `3008` is still on the earlier authenticated `/mcp` tool count `53` from the 2026-07-04 controlled restart; repo and live runtime are intentionally out of sync until the next approved `3008` restart.
 - Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current live `53` proof is runtime/MCP truth only, not a fresh UI inventory proof.
 - Workflow progress markers: `current_working_course = stage8_53b-modular-safe-tool-surface-consolidation`; `next_primary = stage8_53c-modular-unsafe-tool-governance-boundary`; `next_secondary = stage8_53d-live-restart-and-connector-surface-reconciliation`.

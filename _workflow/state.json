@@ -32,7 +32,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 68,
+      "expected_tool_count": 69,
       "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
     },
     "retired": {
@@ -46,11 +46,11 @@
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authorized_mcp_tools": {
-      "count": 55,
+      "count": 56,
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authenticated_total": {
-      "count": 68,
+      "count": 69,
       "source_spec": "SERVER_SPEC.json / SERVER_TOOLS_SPEC.json"
     }
   },
@@ -276,7 +276,7 @@
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
-      "expected_tool_count": 68,
+      "expected_tool_count": 69,
       "server_start_id": "2026-07-04T13:02:11.340Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
@@ -301,8 +301,8 @@
       "tool_count": 53,
       "tool_names_hash": "e265afb87c872196",
       "combined_fingerprint": "7b5beb8582d9925e",
-      "connector_map_status": "repo_ahead_live_authenticated_tools_list_53_expected_68_restart_required_connector_ui_visibility_unverified",
-      "repo_current_expected_tool_count": 68,
+      "connector_map_status": "repo_ahead_live_authenticated_tools_list_53_expected_69_restart_required_connector_ui_visibility_unverified",
+      "repo_current_expected_tool_count": 69,
       "evidence_source": "live_authenticated_mcp_tools_list_on_oauth21_3008",
       "server_start_id": "2026-07-04T13:02:11.340Z",
       "connector_ui_visibility_verified_now": false,

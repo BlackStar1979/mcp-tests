@@ -148,6 +148,7 @@ function loadOptionalTools(options = {}) {
     }
     assertToolAllowedInProfile("observability_status", profile);
     tools.push(createObservabilityStatusTool());
+    add("../tools/authorized/process_runner_status", "processRunnerStatusTool", "process_runner_status");
   }
 
   if (memoryToolsRequested && memoryToolsAllowed) {

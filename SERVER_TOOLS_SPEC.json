@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 55,
+      "tool_count": 56,
       "tools": [
         "code_sample_js",
         "get_info",
@@ -66,6 +66,7 @@
         "memory_search",
         "memory_set_state",
         "observability_status",
+        "process_runner_status",
         "plugin_catalog_describe",
         "plugin_catalog_search",
         "plugin_execute_readonly",
@@ -99,7 +100,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 68,
+  "total_mcp_callable_tool_count": 69,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -494,6 +495,17 @@
       "name": "observability_status",
       "surface_class": "authorized_mcp_tools",
       "tool_category": "core",
+      "resource_class": "runtime_status_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "process_runner_status": {
+      "name": "process_runner_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
       "resource_class": "runtime_status_readonly",
       "operation_class": "read",
       "resource_policy_refs": [

@@ -1,14 +1,14 @@
 # Modular Tool Migration Inventory
 
-Generated: 2026-07-09T09:01:26.671Z
+Generated: 2026-07-09T09:20:56.096Z
 
 ## Summary
 
 - Source repo: `C:/Work/mcp`
 - Target repo: `C:/Work/mcp-tests`
 - Total modular external tools: 63
-- Existing exact/equivalent overlap: 36
-- Missing in mcp-tests: 27
+- Existing exact/equivalent overlap: 37
+- Missing in mcp-tests: 26
 
 ### By target surface
 
@@ -22,10 +22,10 @@ Generated: 2026-07-09T09:01:26.671Z
 
 ### By migration action
 
-- `already_present`: 25
+- `already_present`: 26
 - `do_not_port_alias`: 1
 - `keep_existing`: 8
-- `port_tests`: 27
+- `port_tests`: 26
 - `rename_on_port`: 2
 
 ## Review-first items
@@ -53,6 +53,7 @@ Generated: 2026-07-09T09:01:26.671Z
 - `http_get` -> `net_http_get_allowlisted` : `prefer_existing`
 - `index_status` -> `index_status` : `already_present`
 - `list_directory` -> `list_directory` : `already_present`
+- `process_runner_status` -> `process_runner_status` : `already_present`
 - `project_truth_audit` -> `project_truth_audit` : `already_present`
 - `pypi_info` -> `net_check_pypi_package` : `merge_unique_fields`
 - `read_file` -> `read_file` : `already_present`
@@ -111,7 +112,7 @@ Generated: 2026-07-09T09:01:26.671Z
 | `move_path` | `filesystem_mutation` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
 | `move_remote_site_file` | `remote_site_file_ops` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
 | `preview_remote_site_retention` | `remote_site_runtime` | `safe` | `tests` | `missing` | `-` | `port_tests` |
-| `process_runner_status` | `process` | `safe` | `tests` | `missing` | `-` | `port_tests` |
+| `process_runner_status` | `process` | `safe` | `tests` | `exact_tests:process_runner_status` | `-` | `already_present` |
 | `project_truth_audit` | `truth` | `safe` | `tests` | `exact_tests:project_truth_audit` | `-` | `already_present` |
 | `pypi_info` | `web` | `safe` | `public` | `capability_overlap:net_check_pypi_package` | `merge_unique_fields` | `do_not_port_alias` |
 | `read_file` | `filesystem_read` | `safe` | `tests` | `exact_tests:read_file` | `-` | `already_present` |

@@ -66,6 +66,7 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "plugin_execution_verify_receipt",
   "auth_legacy_retirement_status",
   "observability_status",
+  "process_runner_status",
   "memory_save",
   "memory_search",
   "memory_get_state",
@@ -145,6 +146,7 @@ const TOOL_POLICIES = Object.freeze({
   plugin_execution_verify_receipt: policy({ usesFs: false, fsScope: "none" }),
   auth_legacy_retirement_status: policy({ usesFs: false, fsScope: "none" }),
   observability_status: policy({ usesFs: true, fsScope: "observability-audit-preview" }),
+  process_runner_status: policy({ usesFs: false, fsScope: "none", publicSafe: false }),
 });
 
 function policy(overrides = {}) {

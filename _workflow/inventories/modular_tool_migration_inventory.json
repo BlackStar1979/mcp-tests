@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T09:01:26.671Z",
+  "generated_at": "2026-07-09T09:20:56.096Z",
   "source_repo": {
     "name": "mcp",
     "path": "C:/Work/mcp"
@@ -79,6 +79,7 @@
       "plugin_registry_status",
       "plugin_visibility_plan",
       "plugin_visibility_status",
+      "process_runner_status",
       "project_truth_audit",
       "read_file",
       "read_file_chunk",
@@ -854,14 +855,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "process_runner_status",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1402,13 +1403,13 @@
       "safe": 45
     },
     "by_action": {
-      "port_tests": 27,
-      "already_present": 25,
+      "port_tests": 26,
+      "already_present": 26,
       "keep_existing": 8,
       "rename_on_port": 2,
       "do_not_port_alias": 1
     },
-    "exact_or_equivalent_overlap_count": 36,
-    "missing_count": 27
+    "exact_or_equivalent_overlap_count": 37,
+    "missing_count": 26
   }
 }

@@ -72,7 +72,7 @@ function assertSummary(label, summary, expected) {
   const authorizedSupport = buildSupport({ authMode: "oauth21", runtimeProfile: "internal" });
   const provider = createRuntimeRegistrySummaryProvider({ registryContext: authorizedSupport.registryContext, defaultLabel: "authorized-summary" });
   const authorizedSummary = provider();
-  assertSummary("authorized", authorizedSummary, { total: 68, optional: 66 });
+  assertSummary("authorized", authorizedSummary, { total: 69, optional: 67 });
 
   assert.throws(() => buildRuntimeRegistrySummary({}), /requires registryContext function/);
 

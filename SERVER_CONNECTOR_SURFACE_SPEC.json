@@ -52,7 +52,7 @@
       "authorized",
       "restricted_core_after_authz"
     ],
-    "expected_public_plus_authorized_count": 68,
+    "expected_public_plus_authorized_count": 69,
     "expected_authorized_tools": [
       "test_mcp_runtime_status",
       "code_sample_js",
@@ -103,6 +103,7 @@
       "plugin_execution_verify_receipt",
       "auth_legacy_retirement_status",
       "observability_status",
+      "process_runner_status",
       "memory_save",
       "memory_search",
       "memory_get_state",
@@ -129,7 +130,7 @@
     "current_tool_count_after_stage4": 43,
     "current_tool_count_after_stage5": 43,
     "current_tool_count_after_stage6": 43,
-    "repo_current_expected_tool_count": 68,
+    "repo_current_expected_tool_count": 69,
     "expected_count_source": "SERVER_SPEC.server.full_tests_authenticated_tool_count / SERVER_TOOLS_SPEC.total_mcp_callable_tool_count",
     "historical_expected_public_plus_authorized_count": 45
   },

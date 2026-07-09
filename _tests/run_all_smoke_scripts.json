@@ -34,6 +34,7 @@
   "_tests/smoke_observability_status.js",
   "_tests/smoke_client_entry_path_diagnostics.js",
   "_tests/smoke_process_runner_observability.js",
+  "_tests/smoke_process_runner_status_tool.js",
   "_tests/smoke_observability_hardening.js",
   "_tests/smoke_observability_self_observation.js",
   "_tests/smoke_dev_code_impact_normalization.js",

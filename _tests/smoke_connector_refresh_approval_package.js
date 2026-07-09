@@ -35,12 +35,12 @@ assert.ok(record.includes("This is no longer the active queue; current target au
 assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oauth21.romionologic.dev/mcp");
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
 assert.equal(connectorSpec.authenticated_connector.current_tool_count_after_stage6, 43);
-assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 68);
+assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 69);
 
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 53);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "e265afb87c872196");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 68);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo_ahead_live_authenticated_tools_list_53_expected_68_restart_required_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 69);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo_ahead_live_authenticated_tools_list_53_expected_69_restart_required_connector_ui_visibility_unverified");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
 

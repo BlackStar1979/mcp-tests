@@ -18,11 +18,11 @@ const EXPECTED = Object.freeze({
   current_working_course: "stage8_53b-modular-safe-tool-surface-consolidation",
   next_primary: "stage8_53c-modular-unsafe-tool-governance-boundary",
   next_secondary: "stage8_53d-live-restart-and-connector-surface-reconciliation",
-  tool_names_hash: "dc8454841a9b1383",
-  input_schema_fingerprint: "1b525b220a134c8f",
-  output_schema_fingerprint: "6d111daafa125899",
-  descriptor_fingerprint: "35926df6e27fb50d",
-  combined_fingerprint: "9b679c9a6aea3e82",
+  tool_names_hash: "e5cd996ec678d02f",
+  input_schema_fingerprint: "d2099321cfcfe0e1",
+  output_schema_fingerprint: "9cec0b9d153edfde",
+  descriptor_fingerprint: "99200f22c0d6dc8b",
+  combined_fingerprint: "3dbdad234e9c584f",
 });
 
 function readText(repoRoot, relPath) {

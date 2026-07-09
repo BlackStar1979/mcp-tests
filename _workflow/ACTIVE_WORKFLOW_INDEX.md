@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-04
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `68` authenticated tools after the modular safe-tool consolidation batch added runtime `tool_registry_*`, workspace-index retrieval helpers, and the read-only `code_patch_plan` / `code_scenario` planning tools. Live OAuth21 `3008` is still on the earlier `53`-tool runtime from the 2026-07-04 restart, so repo and live runtime are intentionally out of sync until the next controlled `3008` restart. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` authenticated tools after the modular safe-tool consolidation batch added runtime `tool_registry_*`, workspace-index retrieval helpers, the read-only `code_patch_plan` / `code_scenario` planning tools, and now `process_runner_status` as a status-only process-policy surface. Live OAuth21 `3008` is still on the earlier `53`-tool runtime from the 2026-07-04 restart, so repo and live runtime are intentionally out of sync until the next controlled `3008` restart. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = stage8_53b-modular-safe-tool-surface-consolidation`
@@ -68,7 +68,7 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 68 tools / live authenticated runtime + `tools/list` still confirms 53 tools from the previous restart on 2026-07-04;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 tools / live authenticated runtime + `tools/list` still confirms 53 tools from the previous restart on 2026-07-04;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
