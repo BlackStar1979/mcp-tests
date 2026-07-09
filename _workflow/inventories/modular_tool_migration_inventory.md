@@ -7,8 +7,8 @@ Generated: 2026-07-09T09:20:56.096Z
 - Source repo: `C:/Work/mcp`
 - Target repo: `C:/Work/mcp-tests`
 - Total modular external tools: 63
-- Existing exact/equivalent overlap: 37
-- Missing in mcp-tests: 26
+- Existing exact/equivalent overlap: 41
+- Missing in mcp-tests: 22
 
 ### By target surface
 
@@ -22,10 +22,10 @@ Generated: 2026-07-09T09:20:56.096Z
 
 ### By migration action
 
-- `already_present`: 26
+- `already_present`: 30
 - `do_not_port_alias`: 1
 - `keep_existing`: 8
-- `port_tests`: 26
+- `port_tests`: 22
 - `rename_on_port`: 2
 
 ## Review-first items

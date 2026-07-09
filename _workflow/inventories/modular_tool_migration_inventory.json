@@ -1407,13 +1407,13 @@
       "safe": 45
     },
     "by_action": {
-      "port_tests": 26,
-      "already_present": 26,
+      "port_tests": 22,
+      "already_present": 30,
       "keep_existing": 8,
       "rename_on_port": 2,
       "do_not_port_alias": 1
     },
-    "exact_or_equivalent_overlap_count": 37,
-    "missing_count": 26
+    "exact_or_equivalent_overlap_count": 41,
+    "missing_count": 22
   }
 }
