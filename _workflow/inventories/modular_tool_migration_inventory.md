@@ -101,12 +101,12 @@ Generated: 2026-07-09T09:20:56.096Z
 | `edit_remote_site_file` | `remote_site_file_ops` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
 | `fetch` | `connector` | `safe` | `public` | `name_conflict_semantic_divergence:fetch` | `keep_existing_and_port_renamed` | `rename_on_port` |
 | `fetch_github_file` | `web` | `safe` | `public` | `capability_overlap:net_fetch_github_raw` | `prefer_existing` | `keep_existing` |
-| `fits_info` | `science` | `safe` | `tests` | `missing` | `-` | `port_tests` |
+| `fits_info` | `science` | `safe` | `tests` | `exact_tests:fits_info` | `-` | `already_present` |
 | `get_info` | `filesystem_read` | `safe` | `tests` | `exact_tests:get_info` | `-` | `already_present` |
-| `hdf5_info` | `science` | `safe` | `tests` | `missing` | `-` | `port_tests` |
+| `hdf5_info` | `science` | `safe` | `tests` | `exact_tests:hdf5_info` | `-` | `already_present` |
 | `http_get` | `web` | `safe` | `public` | `capability_overlap:net_http_get_allowlisted` | `prefer_existing` | `keep_existing` |
 | `index_status` | `index` | `safe` | `tests` | `exact_tests:index_status` | `-` | `already_present` |
-| `inventory_tree` | `science` | `safe` | `tests` | `missing` | `-` | `port_tests` |
+| `inventory_tree` | `science` | `safe` | `tests` | `exact_tests:inventory_tree` | `-` | `already_present` |
 | `list_directory` | `filesystem_read` | `safe` | `tests` | `exact_tests:list_directory` | `-` | `already_present` |
 | `list_remote_site_files` | `remote_site_file_ops` | `safe` | `tests` | `missing` | `-` | `port_tests` |
 | `move_path` | `filesystem_mutation` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
@@ -126,7 +126,7 @@ Generated: 2026-07-09T09:20:56.096Z
 | `search` | `connector` | `safe` | `public` | `name_conflict_semantic_divergence:search` | `keep_existing_and_port_renamed` | `rename_on_port` |
 | `search_index` | `index` | `safe` | `tests` | `exact_tests:search_index` | `-` | `already_present` |
 | `search_index_context` | `index` | `safe` | `tests` | `exact_tests:search_index_context` | `-` | `already_present` |
-| `table_profile` | `science` | `safe` | `tests` | `missing` | `-` | `port_tests` |
+| `table_profile` | `science` | `safe` | `tests` | `exact_tests:table_profile` | `-` | `already_present` |
 | `tool_dispatch` | `code` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
 | `tool_registry_execute` | `registry` | `safe` | `tests` | `exact_tests:tool_registry_execute` | `-` | `already_present` |
 | `tool_registry_get_tool` | `registry` | `safe` | `tests` | `exact_tests:tool_registry_get_tool` | `-` | `already_present` |
@@ -139,4 +139,3 @@ Generated: 2026-07-09T09:20:56.096Z
 | `tool_usage_snapshot` | `truth` | `safe` | `tests` | `exact_tests:tool_usage_snapshot` | `-` | `already_present` |
 | `write_file` | `filesystem_mutation` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
 | `write_remote_site_file` | `remote_site_file_ops` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
-

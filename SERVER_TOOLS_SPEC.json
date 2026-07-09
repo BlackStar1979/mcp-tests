@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 65,
+      "tool_count": 69,
       "tools": [
         "code_sample_js",
         "write_file",
@@ -41,6 +41,10 @@
         "read_file",
         "read_file_lines",
         "read_file_chunk",
+        "fits_info",
+        "hdf5_info",
+        "inventory_tree",
+        "table_profile",
         "project_truth_audit",
         "code_runtime_map",
         "deploy_decision_guard",
@@ -109,7 +113,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 78,
+  "total_mcp_callable_tool_count": 82,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -312,6 +316,50 @@
       "tool_category": "filesystem",
       "resource_class": "filesystem_workspace_readonly",
       "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "fits_info": {
+      "name": "fits_info",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "science",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "hdf5_info": {
+      "name": "hdf5_info",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "science",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "inventory_tree": {
+      "name": "inventory_tree",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "science",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "table_profile": {
+      "name": "table_profile",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "science",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],

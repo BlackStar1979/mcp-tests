@@ -44,12 +44,12 @@ for (const removed of [
   assert.equal(Object.hasOwn(state, removed), false, `state.json must not retain ${removed}`);
 }
 
-assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 78);
+assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 82);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 78);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "b8fadaa824febfbb");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 78);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_78_matches_repo_expected_78_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 82);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "5b582591966cff61");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 82);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_82_matches_repo_expected_82_connector_ui_visibility_unverified");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
 
@@ -89,11 +89,11 @@ function walk(dir) {
 walk(snapshotRoot);
 assert.deepEqual(nested, []);
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_220`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `220`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_221`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `221`"));
 assert.ok(canon.includes("S16 state and snapshot hygiene repair green"));
-assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_220`."));
-assert.ok(index.includes("Authenticated smoke count: `220`."));
+assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_221`."));
+assert.ok(index.includes("Authenticated smoke count: `221`."));
 assert.ok(index.includes("state_and_snapshot_hygiene.md"));
 assert.ok(manifest.includes("_tests/smoke_state_and_snapshot_hygiene.js"));
 

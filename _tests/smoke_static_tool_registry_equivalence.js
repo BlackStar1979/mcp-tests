@@ -102,7 +102,7 @@ function assertEquivalentScenario(label, scenario, expected) {
   assertEquivalentScenario("public", publicScenario, { total: 13, optional: 11 });
 
   const authorizedScenario = buildScenario({ profileName: "tests", authMode: "oauth21" });
-  assertEquivalentScenario("authorized", authorizedScenario, { total: 78, optional: 76 });
+  assertEquivalentScenario("authorized", authorizedScenario, { total: 82, optional: 80 });
 
   assert.throws(() => createStaticToolRegistry({
     coreDescriptors: [{ name: "dup" }, { name: "dup" }],

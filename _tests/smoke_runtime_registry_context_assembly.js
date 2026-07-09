@@ -84,8 +84,8 @@ function assertScenario(label, authMode, runtimeProfile, expected) {
     required: ["search", "fetch", "fs_list_public", "net_http_get_allowlisted"],
   });
   assertScenario("authorized", "oauth21", "internal", {
-    total: 78,
-    optional: 76,
+    total: 82,
+    optional: 80,
     required: ["search", "fetch", "test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "list_directory", "read_file", "project_truth_audit", "change_workflow_simulator", "tool_registry_status", "index_status", "code_patch_plan", "code_scenario"],
   });
 

@@ -19,7 +19,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 78,
+      "expected_tool_count": 82,
       "role": "authenticated TESTS_MCP runtime",
       "required_startup_args": [
         "server.js",

@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-09T22:13Z",
+  "updated_at": "2026-07-09T23:05:56Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -32,7 +32,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 78,
+      "expected_tool_count": 82,
       "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
     },
     "retired": {
@@ -46,11 +46,11 @@
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authorized_mcp_tools": {
-      "count": 56,
+      "count": 60,
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authenticated_total": {
-      "count": 78,
+      "count": 82,
       "source_spec": "SERVER_SPEC.json / SERVER_TOOLS_SPEC.json"
     }
   },
@@ -124,7 +124,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
-      "live_3008_server_start_id": "2026-07-09T22:04:37.376Z",
+      "live_3008_server_start_id": "2026-07-09T23:04:07.382Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -180,7 +180,7 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 72,
+    "env_var_count": 74,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -276,8 +276,8 @@
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
-      "expected_tool_count": 78,
-      "server_start_id": "2026-07-09T22:04:37.376Z",
+      "expected_tool_count": 82,
+      "server_start_id": "2026-07-09T23:04:07.382Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -298,13 +298,13 @@
   },
   "current_connector_truth": {
     "oauth21_3008_tools": {
-      "tool_count": 78,
-      "tool_names_hash": "b8fadaa824febfbb",
-      "combined_fingerprint": "3248a1bef9b94318",
-      "connector_map_status": "live_authenticated_tools_list_78_matches_repo_expected_78_connector_ui_visibility_unverified",
-      "repo_current_expected_tool_count": 78,
+      "tool_count": 82,
+      "tool_names_hash": "5b582591966cff61",
+      "combined_fingerprint": "7996c0640f1c9039",
+      "connector_map_status": "live_authenticated_tools_list_82_matches_repo_expected_82_connector_ui_visibility_unverified",
+      "repo_current_expected_tool_count": 82,
       "evidence_source": "live_authenticated_mcp_tools_list_plus_runtime_status_on_oauth21_3008",
-      "server_start_id": "2026-07-09T22:04:37.376Z",
+      "server_start_id": "2026-07-09T23:04:07.382Z",
       "connector_ui_visibility_verified_now": false,
       "ttl_ms": 0,
       "cache_scope": "private",

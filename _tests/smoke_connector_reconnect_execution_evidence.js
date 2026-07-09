@@ -31,8 +31,8 @@ assert.ok(record.includes("This record is no longer an active instruction source
 
 assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oauth21.romionologic.dev/mcp");
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 78);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "b8fadaa824febfbb");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 82);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "5b582591966cff61");
 
 assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence.status, "confirmed_43_tools_auth_prompt_accepted");
 assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence.record, "_workflow/operator_decisions/connector_reconnect_execution_evidence.md");
@@ -45,11 +45,11 @@ assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execut
 assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence.visible_tool_groups.read_only_internal_create, 40);
 assert.equal(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence.visible_tool_groups.write_delete, 3);
 
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_220`"));
-assert.ok(canon.includes("Latest validated authenticated smoke count: `220`"));
+assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_221`"));
+assert.ok(canon.includes("Latest validated authenticated smoke count: `221`"));
 assert.ok(canon.includes("S15 connector reconnect execution evidence on stable `/mcp` green"));
-assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_220`."));
-assert.ok(index.includes("Authenticated smoke count: `220`."));
+assert.ok(index.includes("Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_221`."));
+assert.ok(index.includes("Authenticated smoke count: `221`."));
 assert.ok(index.includes("connector_reconnect_execution_evidence.md"));
 assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, and stable stream-path replay semantics."));
 assert.ok(manifest.includes("_tests/smoke_connector_reconnect_execution_evidence.js"));

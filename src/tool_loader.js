@@ -82,6 +82,13 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/read_file_chunk", "readFileChunkTool", "read_file_chunk");
   }
 
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_SCIENCE_TOOLS", true)) {
+    add("../tools/authorized/fits_info", "fitsInfoTool", "fits_info");
+    add("../tools/authorized/hdf5_info", "hdf5InfoTool", "hdf5_info");
+    add("../tools/authorized/inventory_tree", "inventoryTreeTool", "inventory_tree");
+    add("../tools/authorized/table_profile", "tableProfileTool", "table_profile");
+  }
+
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_MUTATION_TOOLS", true)) {
     add("../tools/authorized/write_file", "writeFileTool", "write_file");
     add("../tools/authorized/append_file", "appendFileTool", "append_file");

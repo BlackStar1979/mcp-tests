@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-10
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth expects `78` authenticated tools after the modular unsafe-governance batch promoted bounded workspace mutation, index rebuild, and allowlisted process execution into the authenticated surface. Live OAuth21 `3008` has now been controlled-restarted and authenticated `tools/list` plus `test_mcp_runtime_status` both confirm `78` tools on server_start_id `2026-07-09T22:04:37.376Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth expects `82` authenticated tools after the modular unsafe-governance batch plus the bounded science parity package promoted `fits_info`, `hdf5_info`, `inventory_tree`, and `table_profile` into the authenticated surface. Live OAuth21 `3008` has now been controlled-restarted and authenticated `tools/list` plus `test_mcp_runtime_status` both confirm `82` tools on server_start_id `2026-07-09T23:04:07.382Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = stage8_53c-modular-unsafe-tool-governance-boundary`
@@ -57,9 +57,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_220`.
+- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_221`.
 - Public section count: `7`.
-- Authenticated smoke count: `220`.
+- Authenticated smoke count: `221`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -68,11 +68,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 78 tools / live authenticated runtime + `tools/list` now confirms 78 tools on server_start_id `2026-07-09T22:04:37.376Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 82 tools / live authenticated runtime + `tools/list` now confirms 82 tools on server_start_id `2026-07-09T23:04:07.382Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Live authenticated `/mcp` is reconciled to the repo `78`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
+- Live authenticated `/mcp` is reconciled to the repo `82`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 
@@ -350,12 +350,13 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
+1. Continue modular-to-workbench consolidation on the authenticated `/mcp` surface; after the bounded science parity package, `22` modular tools remain to be reconciled, ported, merged, or intentionally retired.
+2. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use `_workflow/operator_decisions/initialize_client_compatibility_evidence.md`, `_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md`, `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md`, `_workflow/state.json`, and `_workflow/sessionless_inventory.json` to preserve a bounded compatibility shim on surviving `/mcp` without misdocumenting it as permanent dual-standard architecture. Do not reopen historical `/mcp/sessionless` planning or treat missing repo-side request flow as the blocker; the blocker is now confirmed external client compatibility plus explicit removal authorization.
+Next recommended action: use `_workflow/inventories/modular_tool_migration_inventory.json`, `_workflow/inventories/modular_tool_migration_inventory.md`, `_workflow/state.json`, and the authenticated surface specs to keep draining the remaining modular parity backlog on surviving `/mcp` without reopening retired `/mcp/sessionless` target planning. The `initialize` retirement track remains secondary until the modular consolidation target is materially closer to completion.
 
 Recently completed:
 
