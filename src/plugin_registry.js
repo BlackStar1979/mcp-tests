@@ -8,6 +8,7 @@ const { classifyToolRisk, validatePluginManifest } = require("./plugin_policy");
 const PLUGINS_ROOT = path.resolve(__dirname, "..", "plugins");
 const MANIFEST_FILE = "plugin.manifest.json";
 const MAX_PLUGINS = 100;
+const REGISTRY_WARM_CACHE = new Map();
 
 function sha256Text(text) {
   return crypto.createHash("sha256").update(String(text || ""), "utf8").digest("hex");
@@ -36,6 +37,41 @@ async function discoverManifestFiles() {
     if (error?.code === "ENOENT") return [];
     throw error;
   }
+}
+
+async function describeManifestInventory(files) {
+  const described = [];
+  for (const sourceInfo of files) {
+    let manifest_mtime_ms = -1;
+    let manifest_size = -1;
+    try {
+      const stat = await fsp.stat(sourceInfo.manifest_path);
+      manifest_mtime_ms = Number(stat.mtimeMs) || 0;
+      manifest_size = Number(stat.size) || 0;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+    }
+    described.push({
+      ...sourceInfo,
+      manifest_mtime_ms,
+      manifest_size,
+    });
+  }
+  described.sort((a, b) => a.plugin_dir.localeCompare(b.plugin_dir));
+  return {
+    files: described,
+    fingerprint: described
+      .map((item) => `${item.plugin_dir}:${item.manifest_path}:${item.manifest_mtime_ms}:${item.manifest_size}`)
+      .join("|"),
+  };
+}
+
+function cacheKeyForReservedToolNames(reservedToolNames) {
+  return [...reservedToolNames].sort().join("|");
+}
+
+function resetPluginRegistryWarmCache() {
+  REGISTRY_WARM_CACHE.clear();
 }
 
 function summarizeManifest(manifest, validation, sourceInfo, rawText) {
@@ -133,7 +169,13 @@ function applyCrossManifestChecks(plugins, reservedToolNames) {
 
 async function buildPluginRegistry(options = {}) {
   const reservedToolNames = new Set(options.reservedToolNames || PUBLIC_TOOL_NAMES);
-  const files = await discoverManifestFiles();
+  const cacheKey = cacheKeyForReservedToolNames(reservedToolNames);
+  const inventory = await describeManifestInventory(await discoverManifestFiles());
+  const cached = REGISTRY_WARM_CACHE.get(cacheKey);
+  if (cached && cached.fingerprint === inventory.fingerprint) {
+    return cached.registry;
+  }
+  const files = inventory.files;
   const plugins = [];
 
   for (const sourceInfo of files) {
@@ -158,7 +200,7 @@ async function buildPluginRegistry(options = {}) {
   const errors = [...manifestErrors, ...cross.errors];
   const warnings = [...manifestWarnings, ...cross.warnings];
 
-  return {
+  const registry = {
     registry_version: "test-mcp-plugin-registry-v1",
     mode: "preview-only",
     plugins_root: path.relative(path.resolve(__dirname, ".."), PLUGINS_ROOT).replace(/\\/g, "/"),
@@ -175,6 +217,8 @@ async function buildPluginRegistry(options = {}) {
     plugins,
     candidate_tools: candidateTools,
   };
+  REGISTRY_WARM_CACHE.set(cacheKey, { fingerprint: inventory.fingerprint, registry });
+  return registry;
 }
 
 async function getPluginRegistryStatus() {
@@ -239,4 +283,5 @@ module.exports = {
   getPlugin,
   getPluginRegistryStatus,
   listPluginRegistry,
+  resetPluginRegistryWarmCache,
 };

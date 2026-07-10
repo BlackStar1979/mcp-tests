@@ -24,6 +24,7 @@
   "_tests/smoke_truth_tools.js",
   "_tests/smoke_devtools.js",
   "_tests/smoke_plugin_registry.js",
+  "_tests/smoke_plugin_registry_cache.js",
   "_tests/smoke_plugin_catalog.js",
   "_tests/smoke_security_boundary.js",
   "_tests/smoke_plugin_visibility.js",
