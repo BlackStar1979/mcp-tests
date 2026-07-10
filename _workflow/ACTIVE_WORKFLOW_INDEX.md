@@ -4,12 +4,12 @@ Status: active navigation index
 Date: 2026-07-10
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `95` authenticated tools after the final modular parity batch promoted `code_orchestrate`, `code_apply_patch`, `code_rollback_patch`, and `tool_dispatch` into the authenticated surface and reduced the modular migration inventory to `missing_count = 0`. Live OAuth21 `3008` has not been restarted for this batch yet, so authenticated `tools/list` plus `test_mcp_runtime_status` still confirm `82` live tools on server_start_id `2026-07-09T23:04:07.382Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth expects `95` authenticated tools after the final modular parity batch promoted `code_orchestrate`, `code_apply_patch`, `code_rollback_patch`, and `tool_dispatch` into the authenticated surface and reduced the modular migration inventory to `missing_count = 0`. Live OAuth21 `3008` is now restarted and authenticated `tools/list` plus `test_mcp_runtime_status` confirm `95` live tools on server_start_id `2026-07-10T10:02:19.395Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
-- `current_working_course = stage8_53d-live-restart-and-connector-surface-reconciliation`
-- `next_primary = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_secondary = post_53d-connector-visible-surface-revalidation`
+- `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
+- `next_primary = post_53d-connector-visible-surface-revalidation`
+- `next_secondary = post_53d-bounded-initialize-retirement-decision-prep`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -68,11 +68,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 95 tools / live authenticated runtime + `tools/list` now confirms 82 tools on server_start_id `2026-07-09T23:04:07.382Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 95 tools / live authenticated runtime + `tools/list` now confirms 95 tools on server_start_id `2026-07-10T10:02:19.395Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Live authenticated `/mcp` is currently one bounded restart behind the repo `95`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
+- Live authenticated `/mcp` is now aligned with the repo `95`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 

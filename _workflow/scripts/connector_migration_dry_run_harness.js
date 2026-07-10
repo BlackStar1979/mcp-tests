@@ -78,7 +78,7 @@ function buildHarnessResult() {
   assert.equal(toolCount, 95);
   assert.equal(serverSpec.server.authenticated_tool_count, 95);
   assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 95);
-  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 82);
+  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 95);
   assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
   assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
   assert.equal(runtimeTopology.runtime_instances.oauth21_3008.port, 3008);

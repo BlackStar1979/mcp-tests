@@ -44,12 +44,12 @@ for (const removed of [
   assert.equal(Object.hasOwn(state, removed), false, `state.json must not retain ${removed}`);
 }
 
-assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 82);
+assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 95);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 82);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "5b582591966cff61");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 95);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "af4d2ceb3b657566");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 95);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_82_repo_expected_95_restart_pending_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_95_repo_expected_95_connector_ui_visibility_unverified");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
 
