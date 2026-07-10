@@ -35,7 +35,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Latest validated public section count: `7`.
 - Latest validated authenticated smoke count: `221`.
 - Repo current connector-visible authenticated tool target is `69` (`13 public + 56 authorized-visible`), with `26` server-internal helpers intentionally hidden from MCP schema/tools-list.
-- Live OAuth21 `3008` is aligned with the authenticated `/mcp` connector-visible tool count `69`; the hidden-internal surface split is now live-loaded after a controlled restart. Current live proof is server_start_id `2026-07-10T10:30:03.347Z`.
+- Live OAuth21 `3008` is aligned with the authenticated `/mcp` connector-visible tool count `69`; the hidden-internal surface split is now live-loaded after a controlled restart. Current live proof is server_start_id `2026-07-10T11:14:38.432Z`.
 - Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current live `69` proof is runtime/MCP truth only, not a fresh UI inventory proof.
 - Workflow progress markers: `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`; `next_primary = post_53d-connector-visible-surface-revalidation`; `next_secondary = post_53d-bounded-initialize-retirement-decision-prep`.
 - Stage marker vocabulary: `Stage 8 / Step 53b` = modular safe tool surface consolidation; `Stage 8 / Step 53c` = modular unsafe tool governance boundary; `Stage 8 / Step 53d` = live restart and connector surface reconciliation.
@@ -88,7 +88,7 @@ Spec-boundary clarification: current official MCP Streamable HTTP direction stil
 
 No-SSE subscriptions/listen clarification: `_workflow/operator_decisions/subscriptions_listen_no_sse_project_contract.md` records that the current `/mcp/sessionless` request-scoped SSE listener is transition-only evidence, not the final TEST MCP design. The exact no-SSE replacement transport remains unresolved and must not be guessed.
 
-SEP-2549 cache-inventory clarification: `_workflow/operator_decisions/sep2549_list_read_cache_inventory.md` remains the mechanical baseline inventory. It confirms that there are no active top-level MCP `resources/*` or `prompts/*` handlers in the current dispatcher and records the pre-package boundary before generic `tools/call` freshness was added.
+SEP-2549 cache-inventory clarification: `_workflow/operator_decisions/sep2549_list_read_cache_inventory.md` remains the mechanical baseline inventory. It now records that top-level `resources/list`, `resources/templates/list`, and `prompts/list` exist only as empty compatibility handlers, while real active repo semantics still live in `tools/list` and bounded `tools/call` outputs.
 
 SEP-2549 runtime-package clarification: `_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md` records the repo-applied bounded extension of `ttlMs` / `cacheScope` to active `tools/call` outputs whose `SERVER_TOOLS_SPEC.json` `operation_class` is genuinely list/read-like (`read`, `list`, `search`, `metadata`, `stat`, `head`, `task_list`). Non-read/list-like outputs remain unchanged by design.
 

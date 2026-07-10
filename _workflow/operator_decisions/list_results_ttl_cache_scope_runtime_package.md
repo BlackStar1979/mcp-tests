@@ -28,7 +28,7 @@ Inputs reviewed:
 The earlier inventory established this active boundary:
 
 - `tools/list` already returned `ttlMs: 0` and `cacheScope: "private"`
-- there are no active top-level `resources/*` or `prompts/*` MCP handlers in the current dispatcher
+- top-level `resources/list`, `resources/templates/list`, and `prompts/list` now exist only as empty compatibility handlers; there is still no active resource/prompt catalog in the dispatcher
 - active `tools/call` outputs did not yet share any generic SEP-2549 response layer
 
 The narrow follow-on decision for this package is:
@@ -100,7 +100,7 @@ After this package, active repo truth becomes:
 
 - `tools/list` still explicitly returns `ttlMs: 0` and `cacheScope: "private"`
 - active `tools/call` results now share the same directives when their `operation_class` is bounded as list/read-like
-- there are still no active top-level `resources/*` or `prompts/*` handlers in the stable dispatcher
+- top-level `resources/list`, `resources/templates/list`, and `prompts/list` may exist as empty compatibility handlers without changing the bounded freshness scope of this package
 
 ## Non-actions
 

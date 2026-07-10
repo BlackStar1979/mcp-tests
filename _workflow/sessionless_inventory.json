@@ -435,7 +435,7 @@
         "SEP-2567"
       ],
       "target_lifecycle": "active",
-      "repo_current_model": "tools/list explicitly returns ttlMs=0 and cacheScope=private; no active top-level resources/prompts handlers exist; active tools/call results now share ttlMs=0 and cacheScope=private when SERVER_TOOLS_SPEC operation_class is bounded as read/list-like",
+      "repo_current_model": "tools/list explicitly returns ttlMs=0 and cacheScope=private; top-level resources/list, resources/templates/list, and prompts/list now exist only as empty compatibility handlers and do not expose active repo resources or prompts; active tools/call results now share ttlMs=0 and cacheScope=private when SERVER_TOOLS_SPEC operation_class is bounded as read/list-like",
       "implementation_status": "done",
       "migration_path": "add ttlMs and cacheScope; list_changed remains immediate invalidation",
       "checklist": [

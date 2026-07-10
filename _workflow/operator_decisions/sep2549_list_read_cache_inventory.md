@@ -1,13 +1,13 @@
 # SEP-2549 List/Read Cache Inventory
 
-Status: GREEN / INVENTORY RECORDED / WORKFLOW-ONLY
-Date: 2026-06-30
+Status: GREEN / INVENTORY RECORDED / COMPATIBILITY-UPDATED
+Date: 2026-07-10
 
 ## Purpose
 
 Record the current repo truth for SEP-2549-style `ttlMs` / `cacheScope` across active MCP list/read result builders.
 
-This record is intentionally mechanical. It does not invent new cache policy, does not claim broader coverage than the code really has, and does not change runtime behavior.
+This record is intentionally mechanical. It does not invent new cache policy and does not claim broader coverage than the code really has.
 
 ## Inputs reviewed
 
@@ -21,18 +21,28 @@ This record is intentionally mechanical. It does not invent new cache policy, do
 
 ## Confirmed active MCP runtime result builders
 
-The active stable `/mcp` dispatcher currently exposes only these MCP methods:
+The active stable `/mcp` dispatcher currently exposes these MCP methods:
 
 - `initialize`
 - `ping`
 - `server/discover`
 - `tools/list`
+- `resources/list`
+- `resources/templates/list`
+- `prompts/list`
 - `tools/call`
 
 Confirmed from `src/runtime/rpc_message_dispatcher.js`:
 
 - there is an active `tools/list` result builder
-- there are no active `resources/list`, `resources/read`, `prompts/list`, or `prompts/get` handlers in the current MCP dispatcher
+- there are active compatibility-only `resources/list`, `resources/templates/list`, and `prompts/list` handlers
+- there are still no active `resources/read` or `prompts/get` handlers in the current MCP dispatcher
+
+Compatibility meaning:
+
+- top-level MCP resources/prompts remain compatibility-only and do not expose active repo resources or prompts
+- each compatibility handler currently returns an empty list
+- the compatibility layer exists because real clients were observed calling `resources/list` after `tools/list`
 
 ## Confirmed current cache-directive coverage
 
@@ -52,6 +62,27 @@ Interpretation:
 - cache semantics are currently explicit only for `tools/list`
 - current value is effectively "do not reuse without revalidation" / private-client scope
 - this is existing repo truth, not a new policy decision from this record
+
+### `resources/list`, `resources/templates/list`, `prompts/list`
+
+- builders:
+  - `src/runtime/resources_list_message_handler.js`
+  - `src/runtime/resource_templates_list_message_handler.js`
+  - `src/runtime/prompts_list_message_handler.js`
+- responses currently include:
+  - `resources: []`
+  - `resourceTemplates: []`
+  - `prompts: []`
+- audit path:
+  - emits `resources_list_served`
+  - emits `resource_templates_list_served`
+  - emits `prompts_list_served`
+
+Interpretation:
+
+- these methods now exist only as a bounded compatibility surface
+- they do not expose a real repository resource catalog or prompt catalog
+- they are not the place where current repo tool semantics live
 
 ### `server/discover`
 
@@ -84,7 +115,9 @@ Current active inventory for SEP-2549-style cache directives is:
    - `ttlMs = 0`
    - `cacheScope = private`
 2. top-level MCP `resources/*` / `prompts/*`
-   - not implemented in current dispatcher
+   - compatibility-only empty-list handlers exist for `resources/list`, `resources/templates/list`, and `prompts/list`
+   - no active top-level resource or prompt catalog is exposed
+   - `resources/read` and `prompts/get` remain unimplemented
 3. `tools/call` list/read-like tool payloads
    - present as tool semantics
    - no shared SEP-2549 response layer yet
@@ -98,17 +131,17 @@ Current active inventory for SEP-2549-style cache directives is:
 
 ## Non-actions
 
-- no runtime code change
+- bounded runtime code change
 - no schema change
-- no restart
+- restart required for the live process to pick up the compatibility handlers
 - no connector refresh
 
 ## Declarations
 
-- server_change: false
+- server_change: true
 - workflow_change: true
 - schema_change: false
-- runtime_restart_required: false
+- runtime_restart_required: true
 - connector_refresh_required: false
 - backup_required: false
 - rollback_path: git revert this commit

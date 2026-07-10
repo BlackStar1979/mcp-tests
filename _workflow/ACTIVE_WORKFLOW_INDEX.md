@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-10
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` was restarted and `healthz` plus the supervisor startup inventory confirm `69` live tools on server_start_id `2026-07-10T10:30:03.347Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` was restarted and `healthz` plus the supervisor startup inventory confirm `69` live tools on server_start_id `2026-07-10T11:14:38.432Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
@@ -68,7 +68,7 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / live runtime `healthz` plus startup inventory now confirm 69 tools on server_start_id `2026-07-10T10:30:03.347Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / live runtime `healthz` plus startup inventory now confirm 69 tools on server_start_id `2026-07-10T11:14:38.432Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
@@ -170,7 +170,7 @@ Current records:
   - Source-bound clarification that official MCP still allows request-scoped SSE here, but TEST MCP deliberately chooses a stricter no-SSE destination. The current `/mcp/sessionless` listener remains transition-only evidence, not the target design.
 
 - `sep2549_list_read_cache_inventory.md`
-  - Mechanical baseline inventory for SEP-2549-style `ttlMs` / `cacheScope` coverage before the bounded `tools/call` runtime package. Confirms no active top-level `resources/*` or `prompts/*` handlers in the stable dispatcher.
+  - Mechanical baseline inventory for SEP-2549-style `ttlMs` / `cacheScope` coverage before the bounded `tools/call` runtime package. Confirms that top-level `resources/list`, `resources/templates/list`, and `prompts/list` are compatibility-only empty-list handlers rather than an active repo resource/prompt surface.
 
 - `list_results_ttl_cache_scope_runtime_package.md`
   - Repo-applied bounded runtime package for active `tools/call` results. Shared `ttlMs: 0` / `cacheScope: "private"` now apply only to `SERVER_TOOLS_SPEC.json` operation classes that are genuinely list/read-like; analytical, planning, and mutating outputs remain unchanged.

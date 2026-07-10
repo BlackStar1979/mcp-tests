@@ -23,10 +23,10 @@ const optionalToolCallHandler = read("src/runtime/optional_tool_call_handler.js"
 const toolsSpec = readJson("SERVER_TOOLS_SPEC.json");
 const runtimePackage = read("_workflow/operator_decisions/list_results_ttl_cache_scope_runtime_package.md");
 
-assert.ok(record.includes("Status: GREEN / INVENTORY RECORDED / WORKFLOW-ONLY"));
+assert.ok(record.includes("Status: GREEN / INVENTORY RECORDED / COMPATIBILITY-UPDATED"));
 assert.ok(record.includes("`ttlMs: 0`"));
 assert.ok(record.includes('`cacheScope: "private"`'));
-assert.ok(record.includes("there are no active `resources/list`, `resources/read`, `prompts/list`, or `prompts/get` handlers"));
+assert.ok(record.includes("top-level MCP resources/prompts remain compatibility-only and do not expose active repo resources or prompts"));
 assert.ok(record.includes("payloads behind `tools/call`, not shared MCP top-level result builders"));
 assert.ok(runtimePackage.includes("Status: GREEN / REPO-APPLIED"));
 assert.ok(runtimePackage.includes("active `tools/call` results whose `SERVER_TOOLS_SPEC.json` `operation_class` is list/read-like"));
@@ -50,9 +50,10 @@ assert.ok(index.includes("list_results_ttl_cache_scope_runtime_package.md"));
 assert.ok(index.includes("Controlled OAuth21 `3008` restart and bounded live verification for the hidden-route retirement package."));
 
 assert.ok(dispatcher.includes('case "tools/list"'));
-assert.equal(dispatcher.includes('case "resources/list"'), false);
+assert.ok(dispatcher.includes('case "resources/list"'));
 assert.equal(dispatcher.includes('case "resources/read"'), false);
-assert.equal(dispatcher.includes('case "prompts/list"'), false);
+assert.ok(dispatcher.includes('case "resources/templates/list"'));
+assert.ok(dispatcher.includes('case "prompts/list"'));
 assert.equal(dispatcher.includes('case "prompts/get"'), false);
 
 assert.ok(toolsListResponse.includes("ttlMs: 0"));
