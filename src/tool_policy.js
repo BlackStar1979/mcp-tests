@@ -17,7 +17,6 @@ const PUBLIC_TOOL_NAMES = [
 ];
 
 const AUTHORIZED_MCP_TOOL_NAMES = [
-  "test_mcp_runtime_status",
   "code_sample_js",
   "write_file",
   "append_file",
@@ -50,14 +49,6 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "deploy_decision_guard",
   "change_workflow_simulator",
   "tool_usage_snapshot",
-  "tool_registry_status",
-  "tool_registry_list",
-  "tool_registry_get_tool",
-  "tool_registry_validate_tool",
-  "tool_registry_policy",
-  "tool_registry_preflight",
-  "tool_registry_plan",
-  "tool_registry_execute",
   "index_status",
   "search_index",
   "search_index_context",
@@ -75,6 +66,25 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "code_apply_patch",
   "code_rollback_patch",
   "tool_dispatch",
+  "run_process",
+  "memory_save",
+  "memory_search",
+  "memory_get_state",
+  "memory_set_state",
+  "memory_create_task",
+  "memory_get_tasks",
+];
+
+const INTERNAL_RUNTIME_TOOL_NAMES = [
+  "test_mcp_runtime_status",
+  "tool_registry_status",
+  "tool_registry_list",
+  "tool_registry_get_tool",
+  "tool_registry_validate_tool",
+  "tool_registry_policy",
+  "tool_registry_preflight",
+  "tool_registry_plan",
+  "tool_registry_execute",
   "plugin_registry_status",
   "plugin_registry_list",
   "plugin_registry_get",
@@ -91,14 +101,7 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "plugin_execution_verify_receipt",
   "auth_legacy_retirement_status",
   "observability_status",
-  "run_process",
   "process_runner_status",
-  "memory_save",
-  "memory_search",
-  "memory_get_state",
-  "memory_set_state",
-  "memory_create_task",
-  "memory_get_tasks",
 ];
 
 const TOOL_POLICIES = Object.freeze({
@@ -347,7 +350,8 @@ function summarizeToolPolicies(toolNames) {
 module.exports = {
   PUBLIC_TOOL_NAMES,
   AUTHORIZED_MCP_TOOL_NAMES,
-  NON_PUBLIC_MCP_TOOL_NAMES: AUTHORIZED_MCP_TOOL_NAMES,
+  INTERNAL_RUNTIME_TOOL_NAMES,
+  NON_PUBLIC_MCP_TOOL_NAMES: [...AUTHORIZED_MCP_TOOL_NAMES, ...INTERNAL_RUNTIME_TOOL_NAMES],
   TOOL_POLICIES,
   VALID_PROFILES,
   assertProfilePolicy,

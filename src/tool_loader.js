@@ -19,9 +19,6 @@ function requireTool(modulePath, exportName, expectedName) {
 
 function loadOptionalTools(options = {}) {
   const tools = [];
-  const createRuntimeStatusTool = options.createRuntimeStatusTool;
-  const createObservabilityStatusTool = options.createObservabilityStatusTool;
-  const createRuntimeRegistryContext = options.createRuntimeRegistryContext;
   const profile = options.profile || "public";
   const authMode = String(options.authMode || options.authPolicy?.mode || "none").trim().toLowerCase();
   const authRequired = Boolean(options.authPolicy?.requiresAuth) || authMode !== "none";
@@ -126,20 +123,6 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/tool_usage_snapshot", "toolUsageSnapshotTool", "tool_usage_snapshot");
   }
 
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_RUNTIME_TOOL_REGISTRY_TOOLS", true)) {
-    if (typeof createRuntimeRegistryContext !== "function") {
-      throw new Error("Runtime tool-registry tools requested but createRuntimeRegistryContext was not provided.");
-    }
-    tools.push(require("../tools/authorized/tool_registry_status").createToolRegistryStatusTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_list").createToolRegistryListTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_get_tool").createToolRegistryGetTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_validate_tool").createToolRegistryValidateTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_policy").createToolRegistryPolicyTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_preflight").createToolRegistryPreflightTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_plan").createToolRegistryPlanTool(createRuntimeRegistryContext));
-    tools.push(require("../tools/authorized/tool_registry_execute").createToolRegistryExecuteTool(createRuntimeRegistryContext));
-  }
-
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_INDEX_TOOLS", true)) {
     add("../tools/authorized/build_index", "buildIndexTool", "build_index");
     add("../tools/authorized/index_status", "indexStatusTool", "index_status");
@@ -149,47 +132,8 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/collect_romionsim_context", "collectRomionsimContextTool", "collect_romionsim_context");
   }
 
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_EXECUTION_TOOLS", true)) {
-    add("../tools/authorized/plugin_execution_governance", "pluginExecutionGovernanceTool", "plugin_execution_governance");
-    add("../tools/authorized/auth_legacy_retirement_status", "authLegacyRetirementStatusTool", "auth_legacy_retirement_status");
-    add("../tools/authorized/plugin_execution_verify_receipt", "pluginExecutionVerifyReceiptTool", "plugin_execution_verify_receipt");
-    add("../tools/authorized/plugin_execution_preflight", "pluginExecutionPreflightTool", "plugin_execution_preflight");
-    add("../tools/authorized/plugin_execute_readonly", "pluginExecuteReadonlyTool", "plugin_execute_readonly");
-  }
-
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_SESSION_TOOLSET_TOOLS", true)) {
-    add("../tools/authorized/session_toolset_status", "sessionToolsetStatusTool", "session_toolset_status");
-    add("../tools/authorized/session_toolset_plan", "sessionToolsetPlanTool", "session_toolset_plan");
-  }
-
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_VISIBILITY_TOOLS", true)) {
-    add("../tools/authorized/plugin_visibility_status", "pluginVisibilityStatusTool", "plugin_visibility_status");
-    add("../tools/authorized/plugin_visibility_plan", "pluginVisibilityPlanTool", "plugin_visibility_plan");
-  }
-
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PROCESS_EXECUTION_TOOL", true)) {
     add("../tools/authorized/run_process", "runProcessTool", "run_process");
-  }
-
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_CATALOG_TOOLS", true)) {
-    add("../tools/authorized/plugin_catalog_search", "pluginCatalogSearchTool", "plugin_catalog_search");
-    add("../tools/authorized/plugin_catalog_describe", "pluginCatalogDescribeTool", "plugin_catalog_describe");
-  }
-
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PLUGIN_REGISTRY_TOOLS", true)) {
-    add("../tools/authorized/plugin_registry_status", "pluginRegistryStatusTool", "plugin_registry_status");
-    add("../tools/authorized/plugin_registry_list", "pluginRegistryListTool", "plugin_registry_list");
-    add("../tools/authorized/plugin_registry_get", "pluginRegistryGetTool", "plugin_registry_get");
-    add("../tools/authorized/plugin_registry_audit", "pluginRegistryAuditTool", "plugin_registry_audit");
-  }
-
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_OBSERVABILITY_TOOLS", true)) {
-    if (typeof createObservabilityStatusTool !== "function") {
-      throw new Error("Observability status tool requested but createObservabilityStatusTool was not provided.");
-    }
-    assertToolAllowedInProfile("observability_status", profile);
-    tools.push(createObservabilityStatusTool());
-    add("../tools/authorized/process_runner_status", "processRunnerStatusTool", "process_runner_status");
   }
 
   if (memoryToolsRequested && memoryToolsAllowed) {
@@ -199,14 +143,6 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/memory_set_state", "memorySetStateTool", "memory_set_state");
     add("../tools/authorized/memory_create_task", "memoryCreateTaskTool", "memory_create_task");
     add("../tools/authorized/memory_get_tasks", "memoryGetTasksTool", "memory_get_tasks");
-  }
-
-  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_RUNTIME_STATUS", true)) {
-    if (typeof createRuntimeStatusTool !== "function") {
-      throw new Error("Runtime status tool requested but createRuntimeStatusTool was not provided.");
-    }
-    assertToolAllowedInProfile("test_mcp_runtime_status", profile);
-    tools.push(createRuntimeStatusTool());
   }
 
   return tools;

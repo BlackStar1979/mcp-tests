@@ -47,6 +47,10 @@ function expectInvalid(profile, expectedName, label, needle) {
   expectInvalid(p, "tests", "public includes authorized group", "must not include authorized runtime tool group");
 }
 {
+  const p = copy(testsProfile); p.surfaces.public.optional_tool_groups.push("internal");
+  expectInvalid(p, "tests", "public includes internal group", "must not include internal runtime tool group");
+}
+{
   const p = copy(testsProfile); p.surfaces.public.include_non_public_tools = true;
   expectInvalid(p, "tests", "public include non-public", "include_non_public_tools must be false");
 }

@@ -5,7 +5,7 @@ const path = require("node:path");
 
 const PROFILE_NAME_RE = /^[a-z0-9_-]+$/;
 const VALID_SURFACES = new Set(["public", "authenticated"]);
-const VALID_TOOL_GROUPS = new Set(["public", "authorized"]);
+const VALID_TOOL_GROUPS = new Set(["public", "authorized", "internal"]);
 const VALID_AUTH_EXCLUSION_KEYS = new Set(["access", "bearer", "oauth", "oauth21"]);
 const TOP_LEVEL_KEYS = new Set(["name", "version", "description", "surfaces"]);
 const SURFACE_KEYS = new Set(["description", "optional_tool_groups", "include_non_public_tools", "include_memory_tools", "auth_mode_exclusions", "allowed_resource_policy_refs", "denied_resource_policy_refs", "allowed_memory_scopes", "denied_memory_scopes", "allowed_network_scopes", "denied_network_scopes", "allowed_database_scopes", "denied_database_scopes", "allowed_plugin_scopes", "denied_plugin_scopes"]);
@@ -136,10 +136,11 @@ function validateSurface(profileName, surfaceName, surface, errors) {
   const groups = new Set(Array.isArray(surface.optional_tool_groups) ? surface.optional_tool_groups : []);
   if (surfaceName === "public") {
     if (groups.has("authorized")) push(errors, prefix + " must not include authorized runtime tool group");
+    if (groups.has("internal")) push(errors, prefix + " must not include internal runtime tool group");
     if (surface.include_non_public_tools !== false) push(errors, prefix + ".include_non_public_tools must be false");
     if (surface.include_memory_tools !== false) push(errors, prefix + ".include_memory_tools must be false");
   }
-  if (groups.has("authorized") && surface.include_non_public_tools !== true) push(errors, prefix + " includes internal group but include_non_public_tools is not true");
+  if ((groups.has("authorized") || groups.has("internal")) && surface.include_non_public_tools !== true) push(errors, prefix + " includes non-public group but include_non_public_tools is not true");
   if (surface.include_memory_tools === true && surface.include_non_public_tools !== true) push(errors, prefix + ".include_memory_tools true requires include_non_public_tools true");
   if (surface.include_memory_tools === true && !groups.has("authorized")) push(errors, prefix + ".include_memory_tools true requires authorized runtime tool group");
   validateAuthModeExclusions(prefix, surface.auth_mode_exclusions, errors);

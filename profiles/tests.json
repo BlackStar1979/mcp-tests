@@ -36,7 +36,8 @@
       "description": "authenticated access, bearer, or future OAuth surface",
       "optional_tool_groups": [
         "public",
-        "authorized"
+        "authorized",
+        "internal"
       ],
       "include_non_public_tools": true,
       "include_memory_tools": true,

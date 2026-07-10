@@ -11,9 +11,9 @@ const { CONNECTOR_SHAPE_VERSION, SERVER_NAME, SERVER_VERSION, AUDIT_VERSION } = 
 
 const ROOT = path.resolve(__dirname, "..");
 const REMEDIATED_TOOLS = [
-  "plugin_execution_governance",
-  "plugin_visibility_status",
-  "plugin_catalog_search",
+  "memory_save",
+  "write_remote_site_file",
+  "tool_dispatch",
 ];
 
 function provider({ authMode, profile }) {
@@ -68,12 +68,12 @@ function buildMatrix({ authMode, runtimeProfile, surfaceName }) {
 
   const authorizedMatrix = buildMatrix({ authMode: "oauth21", runtimeProfile: "internal", surfaceName: "authenticated" });
   const authorizedEval = evaluatePolicyPreflightMatrix(authorizedMatrix);
-  assert.equal(authorizedMatrix.tool_count, 95);
+  assert.equal(authorizedMatrix.tool_count, 69);
   assert.equal(authorizedMatrix.blocked_count, 0);
   assert.deepEqual(authorizedMatrix.blocked_tools, []);
   assert.equal(authorizedEval.would_deny_count, 0);
   assert.deepEqual(authorizedEval.denied_tools, []);
-  assert.equal(authorizedEval.would_allow_count, 95);
+  assert.equal(authorizedEval.would_allow_count, 69);
 
   for (const name of REMEDIATED_TOOLS) {
     const coverage = authorizedMatrix.entries.find((entry) => entry.name === name);

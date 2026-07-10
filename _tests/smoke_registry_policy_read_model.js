@@ -88,12 +88,12 @@ function assertModel(label, model, expected) {
   const authorizedRegistry = buildRegistry({ profileName: "tests", authMode: "oauth21" });
   const authorizedModel = buildRegistryPolicyReadModel({ registry: authorizedRegistry, toolsSpec });
   assertModel("authorized", authorizedModel, {
-    tool_count: 95,
-    required: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "get_info", "read_file", "project_truth_audit", "deploy_decision_guard", "tool_registry_status", "index_status", "code_orchestrate", "code_apply_patch", "code_rollback_patch", "tool_dispatch"],
+    tool_count: 69,
+    required: ["memory_save", "get_info", "read_file", "project_truth_audit", "deploy_decision_guard", "index_status", "code_orchestrate", "code_apply_patch", "code_rollback_patch", "tool_dispatch"],
   });
   assert.equal(authorizedModel.get("memory_save").catalog_summary.operation_class, "write");
   assert.equal(authorizedModel.get("memory_save").tool_policy_summary.read_only, false);
-  assert.equal(authorizedModel.get("auth_legacy_retirement_status").catalog_summary.audit_required, true);
+  assert.equal(authorizedModel.get("deploy_decision_guard").catalog_summary.audit_required, true);
 
   const badRegistry = createStaticToolRegistry({
     coreDescriptors: [{ name: "unknown_tool", inputSchema: { type: "object" } }],

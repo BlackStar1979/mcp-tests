@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-10
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth expects `95` authenticated tools after the final modular parity batch promoted `code_orchestrate`, `code_apply_patch`, `code_rollback_patch`, and `tool_dispatch` into the authenticated surface and reduced the modular migration inventory to `missing_count = 0`. Live OAuth21 `3008` is now restarted and authenticated `tools/list` plus `test_mcp_runtime_status` confirm `95` live tools on server_start_id `2026-07-10T10:02:19.395Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` was restarted and `healthz` plus the supervisor startup inventory confirm `69` live tools on server_start_id `2026-07-10T10:30:03.347Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
@@ -68,11 +68,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 95 tools / live authenticated runtime + `tools/list` now confirms 95 tools on server_start_id `2026-07-10T10:02:19.395Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / live runtime `healthz` plus startup inventory now confirm 69 tools on server_start_id `2026-07-10T10:30:03.347Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Live authenticated `/mcp` is now aligned with the repo `95`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
+- Live authenticated `/mcp` is now aligned with the repo `69`-tool connector-visible surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 
@@ -350,14 +350,14 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Perform a controlled OAuth21 `3008` restart and revalidate live authenticated `/mcp` against repo truth `95`, including post-restart `tools/list`, `healthz`, and guarded smoke evidence.
-2. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
-3. Re-check connector-visible tool enumeration after the live restart if the Codex/OpenAI client layer starts exposing remote Streamable HTTP tool surfaces again.
+1. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
+2. Re-check connector-visible tool enumeration now that the live OAuth21 `3008` surface is revalidated at `69` connector-visible tools, if the Codex/OpenAI client layer starts exposing remote Streamable HTTP tool surfaces again.
+3. Prepare the bounded initialize-retirement decision package only after repo/runtime/client evidence stays coherent.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use the recovered supervisor-managed restart authority to live-load the repo `95`-tool authenticated surface on OAuth21 `3008`, then capture fresh runtime/MCP evidence before reopening the `initialize` retirement/debug track. Modular parity against `C:\Work\mcp` is now repo-complete; do not reopen `/mcp/sessionless` target planning.
+Next recommended action: keep the recovered supervisor-managed OAuth21 `3008` runtime stable at the repo `69`-tool connector-visible surface, then capture any client/connector evidence needed for the `initialize` retirement/debug track. Modular parity against `C:\Work\mcp` is now repo-complete; do not reopen `/mcp/sessionless` target planning.
 
 Recently completed:
 
