@@ -52,6 +52,7 @@
   "_tests/smoke_dev_code_locate.js",
   "_tests/smoke_dev_code_planning.js",
   "_tests/smoke_runtime_status_compact.js",
+  "_tests/smoke_runtime_status_tools_cache.js",
   "_tests/smoke_status_current.js",
   "_tests/smoke_rpc_message_dispatcher_lazy_tools.js",
   "_tests/smoke_no_stale_stage_strings.js",

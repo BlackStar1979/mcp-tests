@@ -10,6 +10,13 @@ const { getPublicFsMaxFileBytes, getPublicFsMaxListEntries, getPublicFsMaxTextCh
 const { buildRuntimeIdentity } = require("./identity");
 const { createRuntimeStatusProvider } = require("./runtime_status_provider");
 
+function sameToolReferences(left, right) {
+  return Array.isArray(left)
+    && Array.isArray(right)
+    && left.length === right.length
+    && left.every((tool, index) => tool === right[index]);
+}
+
 function createRuntimeStatusAssembly({
   serverName,
   serverVersion,
@@ -28,7 +35,36 @@ function createRuntimeStatusAssembly({
   serverStartId,
   disableLegacyInitialize,
 }) {
-  return createRuntimeStatusProvider({
+  let cachedToolRefs = null;
+  let cachedToolData = null;
+  let currentToolData = null;
+
+  function buildToolData(tools) {
+    const names = tools.map((tool) => tool.name);
+    return {
+      names,
+      profilePolicy: assertProfilePolicy(tools, { profile: runtimeProfile, authMode: authPolicy.mode }),
+      toolPolicySummary: summarizeToolPolicies(names),
+      toolSurfaceFingerprint: buildToolSurfaceFingerprint(tools),
+      schemaCompatibility: assertToolSchemas(tools),
+      toolLabels: buildToolLabelsSync(tools),
+    };
+  }
+
+  function getCachedToolData() {
+    if (currentToolData) return currentToolData;
+
+    const tools = toolsList();
+    if (!sameToolReferences(cachedToolRefs, tools)) {
+      cachedToolRefs = tools.slice();
+      cachedToolData = buildToolData(cachedToolRefs);
+    }
+
+    currentToolData = cachedToolData;
+    return currentToolData;
+  }
+
+  const provider = createRuntimeStatusProvider({
     serverName,
     serverVersion,
     connectorShapeVersion,
@@ -43,13 +79,13 @@ function createRuntimeStatusAssembly({
     stageStatus,
     securityBoundary: () => buildSecurityBoundary({ profile: runtimeProfile, authPolicy, stageStatus }),
     profile: runtimeProfile,
-    profilePolicy: () => assertProfilePolicy(toolsList(), { profile: runtimeProfile, authMode: authPolicy.mode }),
-    toolPolicySummary: () => summarizeToolPolicies(toolsList().map((tool) => tool.name)),
-    enabledTools: () => toolsList().map((tool) => tool.name),
-    toolSurfaceFingerprint: () => buildToolSurfaceFingerprint(toolsList()),
-    schemaCompatibility: () => assertToolSchemas(toolsList()),
+    profilePolicy: () => getCachedToolData().profilePolicy,
+    toolPolicySummary: () => getCachedToolData().toolPolicySummary,
+    enabledTools: () => getCachedToolData().names.slice(),
+    toolSurfaceFingerprint: () => getCachedToolData().toolSurfaceFingerprint,
+    schemaCompatibility: () => getCachedToolData().schemaCompatibility,
     runtimeIdentity: () => buildRuntimeIdentity(),
-    toolLabels: () => buildToolLabelsSync(toolsList()),
+    toolLabels: () => getCachedToolData().toolLabels,
     requestContract: () => ({
       route: "/mcp",
       post_only: true,
@@ -76,6 +112,15 @@ function createRuntimeStatusAssembly({
       getPublicFsMaxListEntries,
     },
   });
+
+  return function getRuntimeStatus(options = {}) {
+    currentToolData = null;
+    try {
+      return provider(options);
+    } finally {
+      currentToolData = null;
+    }
+  };
 }
 
 module.exports = {
