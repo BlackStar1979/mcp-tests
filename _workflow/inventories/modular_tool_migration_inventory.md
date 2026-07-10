@@ -1,14 +1,14 @@
 # Modular Tool Migration Inventory
 
-Generated: 2026-07-10T05:43:12.521Z
+Generated: 2026-07-10T05:55:44.029Z
 
 ## Summary
 
 - Source repo: `C:/Work/mcp`
 - Target repo: `C:/Work/mcp-tests`
 - Total modular external tools: 63
-- Existing exact/equivalent overlap: 59
-- Missing in mcp-tests: 4
+- Existing exact/equivalent overlap: 63
+- Missing in mcp-tests: 0
 
 ### By target surface
 
@@ -22,10 +22,9 @@ Generated: 2026-07-10T05:43:12.521Z
 
 ### By migration action
 
-- `already_present`: 48
+- `already_present`: 52
 - `do_not_port_alias`: 1
 - `keep_existing`: 8
-- `port_tests`: 4
 - `rename_on_port`: 2
 
 ## Review-first items
@@ -39,10 +38,13 @@ Generated: 2026-07-10T05:43:12.521Z
 - `change_workflow_simulator` -> `change_workflow_simulator` : `already_present`
 - `check_npm_package` -> `net_check_npm_package` : `merged_into_existing_keep_existing`
 - `check_pypi_package` -> `net_check_pypi_package` : `merged_into_existing_keep_existing`
+- `code_apply_patch` -> `code_apply_patch` : `already_present`
 - `code_audit` -> `dev_code_audit` : `prefer_existing`
 - `code_dependencies` -> `dev_code_dependencies` : `prefer_existing`
 - `code_impact` -> `dev_code_impact` : `prefer_existing`
+- `code_orchestrate` -> `code_orchestrate` : `already_present`
 - `code_patch_plan` -> `code_patch_plan` : `already_present`
+- `code_rollback_patch` -> `code_rollback_patch` : `already_present`
 - `code_runtime_map` -> `code_runtime_map` : `already_present`
 - `code_scenario` -> `code_scenario` : `already_present`
 - `code_symbols` -> `dev_code_symbols` : `prefer_existing`
@@ -82,6 +84,7 @@ Generated: 2026-07-10T05:43:12.521Z
 - `search_index` -> `search_index` : `already_present`
 - `search_index_context` -> `search_index_context` : `already_present`
 - `table_profile` -> `table_profile` : `already_present`
+- `tool_dispatch` -> `tool_dispatch` : `already_present`
 - `tool_registry_execute` -> `tool_registry_execute` : `already_present`
 - `tool_registry_get_tool` -> `tool_registry_get_tool` : `already_present`
 - `tool_registry_list` -> `tool_registry_list` : `already_present`
@@ -103,13 +106,13 @@ Generated: 2026-07-10T05:43:12.521Z
 | `change_workflow_simulator` | `truth` | `safe` | `tests` | `exact_tests:change_workflow_simulator` | `-` | `already_present` |
 | `check_npm_package` | `web` | `safe` | `public` | `capability_overlap:net_check_npm_package` | `merged_into_existing_keep_existing` | `keep_existing` |
 | `check_pypi_package` | `web` | `safe` | `public` | `capability_overlap:net_check_pypi_package` | `merged_into_existing_keep_existing` | `keep_existing` |
-| `code_apply_patch` | `code` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
+| `code_apply_patch` | `code` | `unsafe` | `tests` | `exact_tests:code_apply_patch` | `-` | `already_present` |
 | `code_audit` | `code` | `safe` | `tests` | `capability_overlap:dev_code_audit` | `prefer_existing` | `keep_existing` |
 | `code_dependencies` | `code` | `safe` | `tests` | `capability_overlap:dev_code_dependencies` | `prefer_existing` | `keep_existing` |
 | `code_impact` | `code` | `safe` | `tests` | `capability_overlap:dev_code_impact` | `prefer_existing` | `keep_existing` |
-| `code_orchestrate` | `code` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
+| `code_orchestrate` | `code` | `unsafe` | `tests` | `exact_tests:code_orchestrate` | `-` | `already_present` |
 | `code_patch_plan` | `code` | `safe` | `tests` | `exact_tests:code_patch_plan` | `-` | `already_present` |
-| `code_rollback_patch` | `code` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
+| `code_rollback_patch` | `code` | `unsafe` | `tests` | `exact_tests:code_rollback_patch` | `-` | `already_present` |
 | `code_runtime_map` | `truth` | `safe` | `tests` | `exact_tests:code_runtime_map` | `-` | `already_present` |
 | `code_scenario` | `code` | `safe` | `tests` | `exact_tests:code_scenario` | `-` | `already_present` |
 | `code_symbols` | `code` | `safe` | `tests` | `capability_overlap:dev_code_symbols` | `prefer_existing` | `keep_existing` |
@@ -149,7 +152,7 @@ Generated: 2026-07-10T05:43:12.521Z
 | `search_index` | `index` | `safe` | `tests` | `exact_tests:search_index` | `-` | `already_present` |
 | `search_index_context` | `index` | `safe` | `tests` | `exact_tests:search_index_context` | `-` | `already_present` |
 | `table_profile` | `science` | `safe` | `tests` | `exact_tests:table_profile` | `-` | `already_present` |
-| `tool_dispatch` | `code` | `unsafe` | `tests` | `missing` | `-` | `port_tests` |
+| `tool_dispatch` | `code` | `unsafe` | `tests` | `exact_tests:tool_dispatch` | `-` | `already_present` |
 | `tool_registry_execute` | `registry` | `safe` | `tests` | `exact_tests:tool_registry_execute` | `-` | `already_present` |
 | `tool_registry_get_tool` | `registry` | `safe` | `tests` | `exact_tests:tool_registry_get_tool` | `-` | `already_present` |
 | `tool_registry_list` | `registry` | `safe` | `tests` | `exact_tests:tool_registry_list` | `-` | `already_present` |

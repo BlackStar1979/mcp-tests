@@ -583,9 +583,15 @@ function uniquePaths(items) {
   return [...new Set((items || []).filter(Boolean))];
 }
 
-function patchPlan(graph, target, intent, objective, direction, maxDepth) {
+function orchestrationPlan(graph, target, intent, objective, direction, maxDepth) {
   const changeType = mapIntentToChangeType(intent);
   const scenario = scenarioPlan(graph, target, changeType, direction, maxDepth);
+  const gates = {
+    require_user_approval: true,
+    require_tests: scenario.risk.level === "medium" || scenario.risk.level === "high",
+    allow_auto_write: false,
+    allow_execution: false,
+  };
 
   if (!scenario.found) {
     return {
@@ -597,16 +603,7 @@ function patchPlan(graph, target, intent, objective, direction, maxDepth) {
         { step: 1, type: "stop", files: [], reason: "Target is not present in the dependency graph." },
         { step: 2, type: "validate_target", files: [scenario.target], reason: "Check path spelling, scope and supported file type." },
       ],
-      gates: {
-        require_user_approval: true,
-        require_tests: false,
-        allow_auto_write: false,
-        allow_execution: false,
-      },
-      read_plan: [],
-      anchor_strategy: { primary: null, fallback: null },
-      patch_constraints: ["target must exist before patch planning"],
-      validation_plan: [],
+      gates,
       decision: { status: "blocked", proceed: false, next_required_action: "validate target path before planning" },
     };
   }
@@ -639,12 +636,32 @@ function patchPlan(graph, target, intent, objective, direction, maxDepth) {
     change_type: changeType,
     scenario,
     plan,
-    gates: {
-      require_user_approval: true,
-      require_tests: scenario.risk.level === "medium" || scenario.risk.level === "high",
-      allow_auto_write: false,
-      allow_execution: false,
-    },
+    gates,
+    decision: { status: "plan_only", proceed: false, next_required_action: "manual review of orchestration plan" },
+  };
+}
+
+function patchPlan(graph, target, intent, objective, direction, maxDepth) {
+  const orchestration = orchestrationPlan(graph, target, intent, objective, direction, maxDepth);
+
+  if (!orchestration.scenario?.found) {
+    return {
+      ...orchestration,
+      read_plan: [],
+      anchor_strategy: { primary: null, fallback: null },
+      patch_constraints: ["target must exist before patch planning"],
+      validation_plan: [],
+      decision: { status: "blocked", proceed: false, next_required_action: "validate target path before planning" },
+    };
+  }
+
+  const scenario = orchestration.scenario;
+  const targetFile = scenario.target;
+  const affectedFiles = scenario.affected.map((item) => item.path);
+  const dependencyFiles = scenario.dependencies.map((item) => item.path);
+
+  return {
+    ...orchestration,
     read_plan: [
       { type: "target", files: [targetFile], reason: "Read the target before designing any patch." },
       { type: "dependencies", files: dependencyFiles.slice(0, 5), reason: "Read direct dependencies for invariant assumptions." },
@@ -741,6 +758,7 @@ module.exports = {
   languageForPath,
   linesOf,
   normalizeWorkspacePath,
+  orchestrationPlan,
   patchPlan,
   resolveWorkspacePath,
   scenarioPlan,

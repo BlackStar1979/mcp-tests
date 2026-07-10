@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-10T05:43:12.521Z",
+  "generated_at": "2026-07-10T05:55:44.029Z",
   "source_repo": {
     "name": "mcp",
     "path": "C:/Work/mcp"
@@ -34,7 +34,10 @@
       "auth_legacy_retirement_status",
       "build_index",
       "change_workflow_simulator",
+      "code_apply_patch",
+      "code_orchestrate",
       "code_patch_plan",
+      "code_rollback_patch",
       "code_runtime_map",
       "code_sample_js",
       "code_scenario",
@@ -110,6 +113,7 @@
       "session_toolset_status",
       "table_profile",
       "test_mcp_runtime_status",
+      "tool_dispatch",
       "tool_registry_execute",
       "tool_registry_get_tool",
       "tool_registry_list",
@@ -238,14 +242,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "code_apply_patch",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -327,14 +331,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "code_orchestrate",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -367,14 +371,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "code_rollback_patch",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1182,14 +1186,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "tool_dispatch",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1425,13 +1429,12 @@
       "safe": 45
     },
     "by_action": {
-      "already_present": 48,
+      "already_present": 52,
       "keep_existing": 8,
-      "port_tests": 4,
       "rename_on_port": 2,
       "do_not_port_alias": 1
     },
-    "exact_or_equivalent_overlap_count": 59,
-    "missing_count": 4
+    "exact_or_equivalent_overlap_count": 63,
+    "missing_count": 0
   }
 }

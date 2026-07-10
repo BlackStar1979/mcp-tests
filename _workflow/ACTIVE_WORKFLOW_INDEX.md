@@ -4,12 +4,12 @@ Status: active navigation index
 Date: 2026-07-10
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth expects `91` authenticated tools after the bounded remote-site mutation parity batch promoted `write_remote_site_file`, `edit_remote_site_file`, `delete_remote_site_file`, `move_remote_site_file`, and `restore_remote_site_file` into the authenticated surface. Live OAuth21 `3008` has not been restarted for this batch yet, so authenticated `tools/list` plus `test_mcp_runtime_status` still confirm `82` live tools on server_start_id `2026-07-09T23:04:07.382Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `95` authenticated tools after the final modular parity batch promoted `code_orchestrate`, `code_apply_patch`, `code_rollback_patch`, and `tool_dispatch` into the authenticated surface and reduced the modular migration inventory to `missing_count = 0`. Live OAuth21 `3008` has not been restarted for this batch yet, so authenticated `tools/list` plus `test_mcp_runtime_status` still confirm `82` live tools on server_start_id `2026-07-09T23:04:07.382Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
-- `current_working_course = stage8_53c-modular-unsafe-tool-governance-boundary`
-- `next_primary = stage8_53d-live-restart-and-connector-surface-reconciliation`
-- `next_secondary = post_53d-remaining-modular-parity-triage`
+- `current_working_course = stage8_53d-live-restart-and-connector-surface-reconciliation`
+- `next_primary = post_53d-initialize-compatibility-debug-and-retirement-scope`
+- `next_secondary = post_53d-connector-visible-surface-revalidation`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -68,11 +68,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 91 tools / live authenticated runtime + `tools/list` now confirms 82 tools on server_start_id `2026-07-09T23:04:07.382Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 95 tools / live authenticated runtime + `tools/list` now confirms 82 tools on server_start_id `2026-07-09T23:04:07.382Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Live authenticated `/mcp` is currently one bounded restart behind the repo `91`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
+- Live authenticated `/mcp` is currently one bounded restart behind the repo `95`-tool surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 
@@ -350,13 +350,14 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Continue modular-to-workbench consolidation on the authenticated `/mcp` surface; after the bounded remote-site mutation parity batch, `4` modular tools remain to be reconciled, ported, merged, or intentionally retired.
+1. Perform a controlled OAuth21 `3008` restart and revalidate live authenticated `/mcp` against repo truth `95`, including post-restart `tools/list`, `healthz`, and guarded smoke evidence.
 2. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
+3. Re-check connector-visible tool enumeration after the live restart if the Codex/OpenAI client layer starts exposing remote Streamable HTTP tool surfaces again.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: use `_workflow/inventories/modular_tool_migration_inventory.json`, `_workflow/inventories/modular_tool_migration_inventory.md`, `_workflow/state.json`, and the authenticated surface specs to keep draining the remaining modular parity backlog on surviving `/mcp` without reopening retired `/mcp/sessionless` target planning. The `initialize` retirement track remains secondary until the modular consolidation target is materially closer to completion.
+Next recommended action: use the recovered supervisor-managed restart authority to live-load the repo `95`-tool authenticated surface on OAuth21 `3008`, then capture fresh runtime/MCP evidence before reopening the `initialize` retirement/debug track. Modular parity against `C:\Work\mcp` is now repo-complete; do not reopen `/mcp/sessionless` target planning.
 
 Recently completed:
 

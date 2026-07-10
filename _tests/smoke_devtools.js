@@ -31,7 +31,7 @@ async function callTool(name, args) {
   assert.equal(deps.success, true);
   assert.ok(deps.nodes_count > 0);
   assert.ok(deps.external_workspace_edges_count > 0);
-  assert.ok(deps.external_workspace_edges.some((edge) => edge.to === "src/schemas/dev_tools.js"));
+  assert.ok(deps.external_workspace_edges.some((edge) => edge.to === "src/util/code_mutation_tools.js"));
   assert.ok(deps.external_workspace_edges.some((edge) => edge.to === "src/util/code_workspace.js"));
 
   const audit = await callTool("dev_code_audit", { path: "tools", recursive: true, max_files: 100, top_n: 5 });

@@ -8,7 +8,7 @@ const plan = fs.readFileSync(path.join(ROOT, "_workflow", "operator_decisions", 
 const index = fs.readFileSync(path.join(ROOT, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "utf8");
 const canon = fs.readFileSync(path.join(ROOT, "_workflow", "WORKFLOW_CANON.md"), "utf8");
 
-const expectedCurrentStatus = "live_authenticated_tools_list_82_repo_expected_91_restart_pending_connector_ui_visibility_unverified";
+const expectedCurrentStatus = "live_authenticated_tools_list_82_repo_expected_95_restart_pending_connector_ui_visibility_unverified";
 const expectedCurrentFingerprint = "7996c0640f1c9039";
 const expectedCurrentHash = "5b582591966cff61";
 
@@ -19,7 +19,7 @@ assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id.length > 0
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 82);
-assert.equal(c.repo_current_expected_tool_count, 91);
+assert.equal(c.repo_current_expected_tool_count, 95);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
@@ -30,10 +30,10 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repo truth expects `91` authenticated tools"));
+assert.ok(index.includes("expects `95` authenticated tools"));
 assert.ok(index.includes("live authenticated runtime + `tools/list` now confirms 82 tools"));
 assert.ok(index.includes("visible-tool enumeration is still not independently re-verified"));
-assert.ok(canon.includes("Repo current authenticated tool target after the bounded modular unsafe-governance batch plus science parity package and remote-site mutation parity batch: `91`"));
+assert.ok(canon.includes("Repo current authenticated tool target after the final modular parity batch: `95`"));
 assert.ok(canon.includes("Live OAuth21 `3008` is still at authenticated `/mcp` tool count `82`"));
 assert.ok(canon.includes("not a fresh UI inventory proof"));
 

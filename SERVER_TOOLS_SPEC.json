@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 78,
+      "tool_count": 82,
       "tools": [
         "code_sample_js",
         "write_file",
@@ -35,6 +35,8 @@
         "delete_path",
         "restore_path",
         "edit_file_patch",
+        "code_apply_patch",
+        "code_rollback_patch",
         "build_index",
         "get_info",
         "list_directory",
@@ -76,8 +78,10 @@
         "dev_code_dependencies",
         "dev_code_impact",
         "code_patch_plan",
+        "code_orchestrate",
         "code_scenario",
         "dev_code_locate",
+        "tool_dispatch",
         "dev_code_symbols",
         "dev_code_syntax_check",
         "memory_create_task",
@@ -122,7 +126,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 91,
+  "total_mcp_callable_tool_count": 95,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -1200,6 +1204,56 @@
       "surface_class": "authorized_mcp_tools",
       "tool_category": "remote_site",
       "resource_class": "remote_site_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "code_orchestrate": {
+      "name": "code_orchestrate",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_analysis",
+      "resource_class": "filesystem_workspace_readonly",
+      "operation_class": "analyze",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true
+    },
+    "code_apply_patch": {
+      "name": "code_apply_patch",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_mutation",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "code_rollback_patch": {
+      "name": "code_rollback_patch",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_mutation",
+      "resource_class": "filesystem_workspace_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "tool_dispatch": {
+      "name": "tool_dispatch",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "code_dispatch",
+      "resource_class": "filesystem_workspace_mutation",
       "operation_class": "write",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"

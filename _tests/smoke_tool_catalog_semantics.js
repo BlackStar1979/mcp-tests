@@ -41,6 +41,10 @@ expect("deploy_decision_guard",{tool_category:"truth",resource_class:"tool_surfa
 expect("change_workflow_simulator",{tool_category:"truth",resource_class:"tool_surface_planning",operation_class:"plan"});
 expect("tool_usage_snapshot",{tool_category:"truth",resource_class:"observability_audit_readonly",operation_class:"summarize"});
 expect("dev_code_symbols",{tool_category:"code_analysis",resource_class:"filesystem_workspace_readonly",operation_class:"analyze"});
+expect("code_orchestrate",{tool_category:"code_analysis",resource_class:"filesystem_workspace_readonly",operation_class:"analyze"});
+expect("code_apply_patch",{tool_category:"code_mutation",resource_class:"filesystem_workspace_mutation",operation_class:"write"});
+expect("code_rollback_patch",{tool_category:"code_mutation",resource_class:"filesystem_workspace_mutation",operation_class:"write"});
+expect("tool_dispatch",{tool_category:"code_dispatch",resource_class:"filesystem_workspace_mutation",operation_class:"write"});
 for(const [name,item] of Object.entries(cata)){
   assert.ok(item.resource_policy_refs.includes("SERVER_RESOURCE_POLICY_SPEC.json"),name+" resource policy ref");
   assert.equal(typeof item.audit_required,"boolean",name+" audit flag");

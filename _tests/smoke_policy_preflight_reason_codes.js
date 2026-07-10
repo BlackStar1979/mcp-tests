@@ -93,8 +93,8 @@ function buildMatrix({ authMode, runtimeProfile, surfaceName }) {
   assert.equal(publicDecision.execute_allowed_now, false);
 
   const authorizedDecision = evaluatePolicyPreflightMatrix(buildMatrix({ authMode: "oauth21", runtimeProfile: "internal", surfaceName: "authenticated" }));
-  assert.equal(authorizedDecision.tool_count, 91);
-  assert.equal(authorizedDecision.would_allow_count, 91);
+  assert.equal(authorizedDecision.tool_count, 95);
+  assert.equal(authorizedDecision.would_allow_count, 95);
   assert.equal(authorizedDecision.would_deny_count, 0);
   assert.deepEqual(authorizedDecision.denied_tools, []);
   const memorySave = authorizedDecision.decisions.find((decision) => decision.tool === "memory_save");

@@ -69,9 +69,11 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/dev_code_audit", "devCodeAuditTool", "dev_code_audit");
     add("../tools/authorized/dev_code_impact", "devCodeImpactTool", "dev_code_impact");
     add("../tools/authorized/code_patch_plan", "codePatchPlanTool", "code_patch_plan");
+    add("../tools/authorized/code_orchestrate", "codeOrchestrateTool", "code_orchestrate");
     add("../tools/authorized/code_scenario", "codeScenarioTool", "code_scenario");
     add("../tools/authorized/dev_code_syntax_check", "devCodeSyntaxCheckTool", "dev_code_syntax_check");
     add("../tools/authorized/dev_code_locate", "devCodeLocateTool", "dev_code_locate");
+    add("../tools/authorized/tool_dispatch", "toolDispatchTool", "tool_dispatch");
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_FS_TOOLS", true)) {
@@ -112,6 +114,8 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/delete_path", "deletePathTool", "delete_path");
     add("../tools/authorized/restore_path", "restorePathTool", "restore_path");
     add("../tools/authorized/edit_file_patch", "editFilePatchTool", "edit_file_patch");
+    add("../tools/authorized/code_apply_patch", "codeApplyPatchTool", "code_apply_patch");
+    add("../tools/authorized/code_rollback_patch", "codeRollbackPatchTool", "code_rollback_patch");
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_TRUTH_TOOLS", true)) {
