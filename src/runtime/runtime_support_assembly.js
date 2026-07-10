@@ -4,6 +4,10 @@ const { createAuditLogger } = require("./audit_log");
 const { createDocumentRuntimeContext } = require("./document_runtime_context");
 const { createRuntimeRegistryContextFactory } = require("./registry_context_assembly");
 
+function optionalToolsSignature(optionalTools) {
+  return optionalTools.map((tool) => `${tool?.name || ""}:${tool?.descriptor?.name || ""}`).join("|");
+}
+
 function createRuntimeSupportAssembly({
   auditLogPath,
   auditVersion,
@@ -41,8 +45,16 @@ function createRuntimeSupportAssembly({
     metadata: { source: "runtime_support_assembly" },
   });
 
+  let cachedToolsSignature = "";
+  let cachedToolsDescriptors = null;
+
   function toolsList() {
-    return registryContext({ label: "runtime-tools-list" }).descriptors();
+    const signature = optionalToolsSignature(optionalTools);
+    if (!cachedToolsDescriptors || cachedToolsSignature !== signature) {
+      cachedToolsDescriptors = Object.freeze(registryContext({ label: "runtime-tools-list" }).descriptors().slice());
+      cachedToolsSignature = signature;
+    }
+    return cachedToolsDescriptors.slice();
   }
 
   return {

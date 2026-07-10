@@ -153,6 +153,7 @@
   "_tests/smoke_runtime_status_assembly.js",
   "_tests/smoke_optional_tools_assembly.js",
   "_tests/smoke_runtime_support_assembly.js",
+  "_tests/smoke_runtime_support_tools_cache.js",
   "_tests/smoke_server_bootstrap_runtime.js",
   "_tests/smoke_streamable_http_workflow_plan.js",
   "_tests/smoke_streamable_http_preflight_guards.js",
