@@ -1,4 +1,4 @@
-const { EXPECTED } = require("./project_truth_audit");
+const { getWorkflowProgressMarkers } = require("./project_truth_audit");
 
 function classifyChange(changedPaths, flags = {}) {
   const paths = Array.isArray(changedPaths) ? changedPaths : [];
@@ -18,6 +18,7 @@ function classifyChange(changedPaths, flags = {}) {
 }
 
 function simulateChangeWorkflow(changedPaths, flags = {}) {
+  const workflowProgressMarkers = getWorkflowProgressMarkers();
   const classification = classifyChange(changedPaths, flags);
   const workflow = ["read PREFLIGHT", "inspect current repo/runtime truth", "make bounded changes", "run targeted validation", "run full smoke"];
 
@@ -39,9 +40,9 @@ function simulateChangeWorkflow(changedPaths, flags = {}) {
     version: "test-mcp-internal-change-workflow-simulator-v1",
     read_only: true,
     connector_visible: false,
-    current_working_course: EXPECTED.current_working_course,
-    next_primary: EXPECTED.next_primary,
-    next_secondary: EXPECTED.next_secondary,
+    current_working_course: workflowProgressMarkers.current_working_course,
+    next_primary: workflowProgressMarkers.next_primary,
+    next_secondary: workflowProgressMarkers.next_secondary,
     changed_paths: changedPaths,
     flags: {
       descriptor_change: Boolean(flags.descriptor_change),
@@ -54,6 +55,7 @@ function simulateChangeWorkflow(changedPaths, flags = {}) {
 }
 
 function buildDeployDecisionGuard(changedPaths, flags = {}) {
+  const workflowProgressMarkers = getWorkflowProgressMarkers();
   const classification = classifyChange(changedPaths, flags);
   const normalizedPaths = Array.isArray(changedPaths) ? changedPaths.map((item) => String(item || "")) : [];
   const descriptorChange = Boolean(flags.descriptor_change);
@@ -91,9 +93,9 @@ function buildDeployDecisionGuard(changedPaths, flags = {}) {
   return {
     status: "ok",
     guard_version: "test-mcp-deploy-decision-guard-v1",
-    current_working_course: EXPECTED.current_working_course,
-    next_primary: EXPECTED.next_primary,
-    next_secondary: EXPECTED.next_secondary,
+    current_working_course: workflowProgressMarkers.current_working_course,
+    next_primary: workflowProgressMarkers.next_primary,
+    next_secondary: workflowProgressMarkers.next_secondary,
     changed_paths: normalizedPaths,
     flags: {
       descriptor_change: descriptorChange,

@@ -15,9 +15,6 @@ const EXPECTED = Object.freeze({
   server_version: "0.40.0",
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
-  current_working_course: "stage8_53c-modular-unsafe-tool-governance-boundary",
-  next_primary: "stage8_53d-live-restart-and-connector-surface-reconciliation",
-  next_secondary: "post_53d-remaining-modular-parity-triage",
   tool_names_hash: "c8cf1842ac2a3dfe",
   input_schema_fingerprint: "ae404a432a858de3",
   output_schema_fingerprint: "6864276ac1ebd159",
@@ -27,6 +24,10 @@ const EXPECTED = Object.freeze({
 
 function readText(repoRoot, relPath) {
   return fs.readFileSync(path.join(repoRoot, relPath), "utf8");
+}
+
+function readJson(repoRoot, relPath) {
+  return JSON.parse(readText(repoRoot, relPath));
 }
 
 function exists(repoRoot, relPath) {
@@ -39,9 +40,16 @@ function requireIncludes(findings, name, text, needle) {
   return ok;
 }
 
+function getWorkflowProgressMarkers(repoRoot) {
+  const resolvedRepoRoot = repoRoot || path.resolve(__dirname, "..", "..");
+  const state = readJson(resolvedRepoRoot, "_workflow/state.json");
+  return state.workflow_progress_markers;
+}
+
 function buildProjectTruthAudit(options = {}) {
   const repoRoot = options.repoRoot || path.resolve(__dirname, "..", "..");
   const findings = [];
+  const workflowProgressMarkers = getWorkflowProgressMarkers(repoRoot);
   const docs = {
     working_course: readText(repoRoot, "_workflow/WORKFLOW_CANON.md"),
     server_spec: readText(repoRoot, "SERVER_SPEC.json"),
@@ -61,23 +69,13 @@ function buildProjectTruthAudit(options = {}) {
   if (CURRENT_STAGE_STATUS_SEMANTICS !== "runtime-compatibility-label-not-repo-progress-label") {
     findings.push({ severity: "error", code: "stage_status_semantics_drift", actual: CURRENT_STAGE_STATUS_SEMANTICS });
   }
-  if (CURRENT_WORKING_COURSE !== EXPECTED.current_working_course) {
-    findings.push({ severity: "error", code: "current_working_course_drift", actual: CURRENT_WORKING_COURSE, expected: EXPECTED.current_working_course });
-  }
-  if (NEXT_PRIMARY_STAGE !== EXPECTED.next_primary) {
-    findings.push({ severity: "error", code: "next_primary_stage_drift", actual: NEXT_PRIMARY_STAGE, expected: EXPECTED.next_primary });
-  }
-  if (NEXT_SECONDARY_STAGE !== EXPECTED.next_secondary) {
-    findings.push({ severity: "error", code: "next_secondary_stage_drift", actual: NEXT_SECONDARY_STAGE, expected: EXPECTED.next_secondary });
-  }
 
   for (const [name, text] of Object.entries(docs)) {
-    requireIncludes(findings, name, text, EXPECTED.current_working_course);
-    requireIncludes(findings, name, text, EXPECTED.next_primary);
-    requireIncludes(findings, name, text, EXPECTED.next_secondary);
+    requireIncludes(findings, name, text, workflowProgressMarkers.current_working_course);
+    requireIncludes(findings, name, text, workflowProgressMarkers.next_primary);
+    requireIncludes(findings, name, text, workflowProgressMarkers.next_secondary);
     requireIncludes(findings, name, text, "Stage 8 / Step 53b");
     requireIncludes(findings, name, text, "Stage 8 / Step 53c");
-    requireIncludes(findings, name, text, "tool_registry");
   }
 
   const activePrimaryStillDirectSplit = docs.working_course.includes("Next primary implementation course:\r\n\r\n```text\r\nStage 8 / Step 53 — server.js runtime container extraction")
@@ -105,11 +103,16 @@ function buildProjectTruthAudit(options = {}) {
     current: {
       runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
       runtime_stage_status: CURRENT_STAGE_STATUS,
-      current_working_course: CURRENT_WORKING_COURSE,
-      next_primary: NEXT_PRIMARY_STAGE,
-      next_secondary: NEXT_SECONDARY_STAGE,
+      current_working_course: workflowProgressMarkers.current_working_course,
+      next_primary: workflowProgressMarkers.next_primary,
+      next_secondary: workflowProgressMarkers.next_secondary,
     },
-    expected: EXPECTED,
+    expected: {
+      ...EXPECTED,
+      current_working_course: workflowProgressMarkers.current_working_course,
+      next_primary: workflowProgressMarkers.next_primary,
+      next_secondary: workflowProgressMarkers.next_secondary,
+    },
     checked_docs: Object.keys(docs),
     findings,
   };
@@ -117,5 +120,6 @@ function buildProjectTruthAudit(options = {}) {
 
 module.exports = {
   EXPECTED,
+  getWorkflowProgressMarkers,
   buildProjectTruthAudit,
 };

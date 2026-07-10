@@ -1,6 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
-const { EXPECTED } = require("./project_truth_audit");
+const { getWorkflowProgressMarkers } = require("./project_truth_audit");
 
 function exists(repoRoot, relPath) {
   return fs.existsSync(path.join(repoRoot, relPath));
@@ -8,6 +8,7 @@ function exists(repoRoot, relPath) {
 
 function buildCodeRuntimeMap(options = {}) {
   const repoRoot = options.repoRoot || path.resolve(__dirname, "..", "..");
+  const workflowProgressMarkers = getWorkflowProgressMarkers(repoRoot);
   const plannedTruthModules = [
     "src/truth/project_truth_audit.js",
     "src/truth/code_runtime_map.js",
@@ -47,9 +48,9 @@ function buildCodeRuntimeMap(options = {}) {
     read_only: true,
     connector_visible: false,
     stage_plan: {
-      current: EXPECTED.current_working_course,
-      next_primary: EXPECTED.next_primary,
-      next_secondary: EXPECTED.next_secondary,
+      current: workflowProgressMarkers.current_working_course,
+      next_primary: workflowProgressMarkers.next_primary,
+      next_secondary: workflowProgressMarkers.next_secondary,
     },
     runtime_entrypoints: runtimeEntryPoints,
     planned_truth_modules: plannedTruthModules,

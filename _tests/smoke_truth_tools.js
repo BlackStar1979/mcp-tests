@@ -10,36 +10,48 @@ const { deployDecisionGuardTool } = require("../tools/deploy_decision_guard");
 const { changeWorkflowSimulatorTool } = require("../tools/change_workflow_simulator");
 const { toolUsageSnapshotTool } = require("../tools/tool_usage_snapshot");
 const { buildToolUsageSnapshot } = require("../src/truth/tool_usage_snapshot");
-const { CURRENT_WORKING_COURSE, NEXT_PRIMARY_STAGE, NEXT_SECONDARY_STAGE } = require("../src/stage_metadata");
+
+const ROOT = path.resolve(__dirname, "..");
+const state = JSON.parse(fs.readFileSync(path.join(ROOT, "_workflow", "state.json"), "utf8"));
+const workflowMarkers = state.workflow_progress_markers;
 
 (async () => {
   const truthAudit = await projectTruthAuditTool.execute({});
   assert.equal(projectTruthAuditTool.name, "project_truth_audit");
   assert.equal(projectTruthAuditTool.descriptor.annotations.readOnlyHint, true);
-  assert.equal(truthAudit.current.current_working_course, CURRENT_WORKING_COURSE);
-  assert.equal(truthAudit.current.next_primary, NEXT_PRIMARY_STAGE);
-  assert.equal(truthAudit.current.next_secondary, NEXT_SECONDARY_STAGE);
+  assert.equal(truthAudit.current.current_working_course, workflowMarkers.current_working_course);
+  assert.equal(truthAudit.current.next_primary, workflowMarkers.next_primary);
+  assert.equal(truthAudit.current.next_secondary, workflowMarkers.next_secondary);
   assert.equal(Array.isArray(truthAudit.findings), true);
 
   const runtimeMap = await codeRuntimeMapTool.execute({});
-  assert.equal(runtimeMap.stage_plan.current, CURRENT_WORKING_COURSE);
+  assert.equal(runtimeMap.stage_plan.current, workflowMarkers.current_working_course);
+  assert.equal(runtimeMap.stage_plan.next_primary, workflowMarkers.next_primary);
+  assert.equal(runtimeMap.stage_plan.next_secondary, workflowMarkers.next_secondary);
   assert.ok(runtimeMap.planned_truth_modules.includes("src/truth/project_truth_audit.js"));
+  assert.equal(runtimeMap.runtime_entrypoints[0].planned_stage, "8.53c");
   assert.ok(runtimeMap.invariant.includes("Stage 8 / Step 53c"));
+
+  const simulation = await changeWorkflowSimulatorTool.execute({
+    changed_paths: ["_workflow/WORKFLOW_CANON.md"],
+  });
+  assert.equal(simulation.current_working_course, workflowMarkers.current_working_course);
+  assert.equal(simulation.next_primary, workflowMarkers.next_primary);
+  assert.equal(simulation.next_secondary, workflowMarkers.next_secondary);
+  assert.equal(simulation.classification, "repo_only");
+  assert.ok(simulation.workflow.includes("run full smoke"));
 
   const decision = await deployDecisionGuardTool.execute({
     changed_paths: ["tools/project_truth_audit.js"],
     tool_surface_change: true,
   });
+  assert.equal(decision.current_working_course, workflowMarkers.current_working_course);
+  assert.equal(decision.next_primary, workflowMarkers.next_primary);
+  assert.equal(decision.next_secondary, workflowMarkers.next_secondary);
   assert.equal(decision.classification, "runtime_with_connector_refresh");
   assert.equal(decision.requires_restart_mcp, true);
   assert.equal(decision.requires_connector_refresh, true);
   assert.equal(decision.requires_operator_approval, true);
-
-  const simulation = await changeWorkflowSimulatorTool.execute({
-    changed_paths: ["_workflow/WORKFLOW_CANON.md"],
-  });
-  assert.equal(simulation.classification, "repo_only");
-  assert.ok(simulation.workflow.includes("run full smoke"));
 
   const missing = buildToolUsageSnapshot({ auditLogPath: path.join(os.tmpdir(), "missing-test-mcp-audit.jsonl") });
   assert.equal(missing.log_available, false);

@@ -76,9 +76,9 @@
     }
   },
   "workflow_progress_markers": {
-    "current_working_course": "stage8_53d-live-restart-and-connector-surface-reconciliation",
-    "next_primary": "post_53d-initialize-compatibility-debug-and-retirement-scope",
-    "next_secondary": "post_53d-connector-visible-surface-revalidation",
+    "current_working_course": "post_53d-initialize-compatibility-debug-and-retirement-scope",
+    "next_primary": "post_53d-connector-visible-surface-revalidation",
+    "next_secondary": "post_53d-bounded-initialize-retirement-decision-prep",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
