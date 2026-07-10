@@ -81,7 +81,7 @@ function createMcpRuntimeHandlers({
       outputMode,
       authMode: authPolicy.mode,
       profile: runtimeProfile,
-      tools: toolsList(),
+      toolsList,
       documentRuntimeContext,
       auditLog,
       getOptionalTool,

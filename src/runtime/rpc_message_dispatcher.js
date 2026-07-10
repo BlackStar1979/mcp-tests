@@ -20,6 +20,7 @@ async function dispatchRpcMessage({
   authMode,
   profile,
   tools,
+  toolsList,
   documentRuntimeContext,
   auditLog,
   getOptionalTool,
@@ -28,6 +29,7 @@ async function dispatchRpcMessage({
   disableLegacyInitialize,
 }) {
   const { id, method, params } = prelude;
+  const getTools = typeof toolsList === "function" ? toolsList : () => tools;
 
   switch (method) {
     case "initialize": {
@@ -43,7 +45,7 @@ async function dispatchRpcMessage({
         outputMode,
         authMode,
         profile,
-        tools,
+        tools: getTools(),
         serverStartId,
         auditLog,
         requestId: context.requestId,
@@ -66,7 +68,7 @@ async function dispatchRpcMessage({
         outputMode,
         authMode,
         profile,
-        tools,
+        tools: getTools(),
         serverStartId,
         disableLegacyInitialize,
         auditLog,
@@ -76,7 +78,7 @@ async function dispatchRpcMessage({
     }
 
     case "tools/list": {
-      return handleToolsListMessage(id, tools, { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId, serverStartId });
+      return handleToolsListMessage(id, getTools(), { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId, serverStartId });
     }
 
     case "resources/list": {
