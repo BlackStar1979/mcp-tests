@@ -126,10 +126,28 @@ function buildToolSurfaceFingerprint(tools = []) {
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
 
-  const toolNames = normalized.map((tool) => tool.name);
-  const inputSchemaParts = normalized.map((tool) => `${tool.name}:${hash(stable(tool.inputSchema))}`);
-  const outputSchemaParts = normalized.map((tool) => `${tool.name}:${hash(stable(tool.outputSchema))}`);
-  const descriptorParts = normalized.map((tool) => `${tool.name}:${hash(stable(tool))}`);
+  const analyzed = normalized.map((tool) => {
+    const inputStable = stable(tool.inputSchema);
+    const outputStable = stable(tool.outputSchema);
+    const descriptorStable = stable(tool);
+    const inputHash = hash(inputStable);
+    const outputHash = hash(outputStable);
+    const descriptorHash = hash(descriptorStable);
+    return {
+      tool,
+      inputStable,
+      outputStable,
+      descriptorStable,
+      inputHash,
+      outputHash,
+      descriptorHash,
+    };
+  });
+
+  const toolNames = analyzed.map((item) => item.tool.name);
+  const inputSchemaParts = analyzed.map((item) => `${item.tool.name}:${item.inputHash}`);
+  const outputSchemaParts = analyzed.map((item) => `${item.tool.name}:${item.outputHash}`);
+  const descriptorParts = analyzed.map((item) => `${item.tool.name}:${item.descriptorHash}`);
 
   return {
     tool_count: normalized.length,
@@ -138,12 +156,12 @@ function buildToolSurfaceFingerprint(tools = []) {
     input_schema_fingerprint: hash(inputSchemaParts.join("|")),
     output_schema_fingerprint: hash(outputSchemaParts.join("|")),
     descriptor_fingerprint: hash(descriptorParts.join("|")),
-    combined_fingerprint: hash(stable(normalized)),
-    per_tool: normalized.map((tool) => ({
-      tool: tool.name,
-      input_schema_hash: hash(stable(tool.inputSchema)),
-      output_schema_hash: hash(stable(tool.outputSchema)),
-      descriptor_hash: hash(stable(tool)),
+    combined_fingerprint: hash(`[${analyzed.map((item) => item.descriptorStable).join(",")}]`),
+    per_tool: analyzed.map((item) => ({
+      tool: item.tool.name,
+      input_schema_hash: item.inputHash,
+      output_schema_hash: item.outputHash,
+      descriptor_hash: item.descriptorHash,
     })),
   };
 }
