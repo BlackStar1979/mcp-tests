@@ -2,6 +2,82 @@ $ErrorActionPreference = 'Stop'
 $RootDir = Split-Path -Parent $PSScriptRoot
 Set-Location $RootDir
 
+function Get-ExistingMcpServerStatus {
+  param(
+    [Parameter(Mandatory = $true)][int]$Port
+  )
+
+  try {
+    $listen = Get-NetTCPConnection -LocalAddress '127.0.0.1' -LocalPort $Port -State Listen -ErrorAction Stop |
+      Select-Object -First 1
+  } catch {
+    return $null
+  }
+
+  if (-not $listen) {
+    return $null
+  }
+
+  $commandLine = ''
+  try {
+    $process = Get-CimInstance Win32_Process -Filter "ProcessId = $($listen.OwningProcess)" -ErrorAction Stop
+    if ($process) {
+      $commandLine = [string]$process.CommandLine
+    }
+  } catch {}
+
+  $health = $null
+  try {
+    $health = Invoke-RestMethod -Uri ("http://127.0.0.1:{0}/healthz" -f $Port) -Method Get -TimeoutSec 2 -ErrorAction Stop
+  } catch {}
+
+  return [PSCustomObject]@{
+    Port        = $Port
+    ProcessId   = $listen.OwningProcess
+    CommandLine = $commandLine
+    Health      = $health
+  }
+}
+
+function Test-CompatibleRunningServer {
+  param(
+    [Parameter(Mandatory = $true)]$Status,
+    [Parameter(Mandatory = $true)][string]$ProfileName,
+    [Parameter(Mandatory = $true)][string]$AuthMode
+  )
+
+  if (-not $Status -or -not $Status.Health) {
+    return $false
+  }
+
+  $serverName = [string]$Status.Health.server
+  $healthAuth = [string]$Status.Health.auth.mode
+  $healthProfile = [string]$Status.Health.profile
+  $expectedHealthProfile = if ($ProfileName -eq 'tests') { 'internal' } else { $ProfileName }
+
+  if ($serverName -ne 'mcp-tests-response-shape') {
+    return $false
+  }
+  if ($healthAuth -ne $AuthMode) {
+    return $false
+  }
+  if ($healthProfile -ne $expectedHealthProfile) {
+    return $false
+  }
+
+  $cmd = [string]$Status.CommandLine
+  if (-not $cmd) {
+    return $true
+  }
+
+  return (
+    $cmd.Contains('server.js') -and
+    $cmd.Contains("--profile $ProfileName") -and
+    $cmd.Contains("--auth $AuthMode") -and
+    $cmd.Contains("--port $($Status.Port)")
+  )
+}
+
 $Cli = @{}
 $ForwardArgs = @()
 $i = 0
@@ -59,6 +135,31 @@ if ($AuthMode -eq 'oauth21') {
   $ServerArgs += @('--oauth-secret-file', $OAuthSecretFile)
 }
 $ServerArgs += $ForwardArgs
+
+if ($Port) {
+  $existing = Get-ExistingMcpServerStatus -Port ([int]$Port)
+  if ($existing) {
+    if (Test-CompatibleRunningServer -Status $existing -ProfileName $ProfileName -AuthMode $AuthMode) {
+      Write-Host "Serwer MCP już działa na 127.0.0.1:$Port (pid=$($existing.ProcessId)). Nie uruchamiam duplikatu." -ForegroundColor Yellow
+      if ($existing.Health) {
+        Write-Host "Healthz: auth=$($existing.Health.auth.mode), profile=$($existing.Health.profile), tools=$($existing.Health.tools_count)" -ForegroundColor Yellow
+      }
+      Write-Host 'Jeżeli chcesz wykonać kontrolowany restart istniejącego procesu, użyj scripts/request-restart.js albo zapisz trigger file.' -ForegroundColor Yellow
+      exit 0
+    }
+
+    Write-Host "Port 127.0.0.1:$Port jest już zajęty przez inny proces (pid=$($existing.ProcessId))." -ForegroundColor Red
+    if ($existing.CommandLine) {
+      Write-Host "Command line: $($existing.CommandLine)" -ForegroundColor Red
+    }
+    if ($existing.Health) {
+      Write-Host "Healthz wykrytego procesu: server=$($existing.Health.server) auth=$($existing.Health.auth.mode) profile=$($existing.Health.profile)" -ForegroundColor Red
+    } else {
+      Write-Host 'Healthz na zajętym porcie nie odpowiedział jako MCP TEST server.' -ForegroundColor Red
+    }
+    exit 1
+  }
+}
 
 while ($true) {
   Write-Host 'Uruchamianie serwera MCP HTTP...' -ForegroundColor Green

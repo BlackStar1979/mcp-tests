@@ -17,6 +17,8 @@ assert.ok(sh.includes("--oauth-secret-file"));
 assert.ok(sh.includes("--restart-trigger"));
 assert.ok(sh.includes("--trigger-file"));
 assert.ok(sh.includes("MCP_TEST_RESTART_TRIGGER_FILE"));
+assert.ok(sh.includes("/healthz"));
+assert.ok(sh.includes("Nie uruchamiam duplikatu"));
 assert.ok(sh.includes("42 43 44"));
 if (process.platform !== "win32") {
   const syntax = cp.spawnSync("bash", ["-n", path.join(__dirname, "..", "scripts/server.sh")], { encoding: "utf8" });
@@ -32,6 +34,9 @@ assert.ok(ps.includes("oauth-secret-file"));
 assert.ok(ps.includes("restart-trigger"));
 assert.ok(ps.includes("trigger-file"));
 assert.ok(ps.includes("$RestartCodes"));
+assert.ok(ps.includes("Get-ExistingMcpServerStatus"));
+assert.ok(ps.includes("/healthz"));
+assert.ok(ps.includes("Nie uruchamiam duplikatu"));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-trigger-"));
 const file = path.join(tmp, "request.json");
 const req = cp.spawnSync(process.execPath, [path.join(__dirname, "..", "scripts/request-restart.js"), "--code=44", "--reason=smoke", "--file=" + file], { encoding: "utf8" });

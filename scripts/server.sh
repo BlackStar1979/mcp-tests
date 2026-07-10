@@ -4,6 +4,39 @@ set -u
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+check_existing_server() {
+  local port="$1"
+  local profile_name="$2"
+  local auth_mode="$3"
+  if [[ -z "$port" ]]; then
+    return 1
+  fi
+  local health_json=""
+  health_json="$(curl -fsS --max-time 2 "http://127.0.0.1:${port}/healthz" 2>/dev/null || true)"
+  if [[ -z "$health_json" ]]; then
+    return 1
+  fi
+  node -e '
+const data = JSON.parse(process.argv[1]);
+const profileName = process.argv[2];
+const authMode = process.argv[3];
+const expectedProfile = profileName === "tests" ? "internal" : profileName;
+const ok = data
+  && data.status === "ok"
+  && data.server === "mcp-tests-response-shape"
+  && data.auth
+  && data.auth.mode === authMode
+  && data.profile === expectedProfile;
+if (!ok) process.exit(1);
+console.log(JSON.stringify({
+  ok: true,
+  auth: data.auth.mode,
+  profile: data.profile,
+  tools: data.tools_count
+}));
+' "$health_json" "$profile_name" "$auth_mode"
+}
+
 PROFILE="${MCP_SUPERVISOR_PROFILE:-public}"
 AUTH="${MCP_SUPERVISOR_AUTH:-none}"
 PORT="${MCP_SUPERVISOR_PORT:-}"
@@ -52,6 +85,16 @@ if [[ "$AUTH" == "oauth21" ]]; then
   ARGS+=(--oauth-secret-file "$OAUTH_SECRET_FILE")
 fi
 ARGS+=("${FORWARD_ARGS[@]}")
+
+if [[ -n "$PORT" ]]; then
+  EXISTING_JSON="$(check_existing_server "$PORT" "$PROFILE" "$AUTH" 2>/dev/null || true)"
+  if [[ -n "$EXISTING_JSON" ]]; then
+    echo "Serwer MCP już działa na 127.0.0.1:${PORT}. Nie uruchamiam duplikatu."
+    echo "Healthz: ${EXISTING_JSON}"
+    echo "Jeżeli chcesz wykonać kontrolowany restart istniejącego procesu, użyj scripts/request-restart.js albo zapisz trigger file."
+    exit 0
+  fi
+fi
 
 stop_requested=0
 child_pid=""
