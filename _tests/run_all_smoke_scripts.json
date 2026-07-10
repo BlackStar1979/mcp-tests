@@ -43,6 +43,7 @@
   "_tests/smoke_observability_hardening.js",
   "_tests/smoke_observability_self_observation.js",
   "_tests/smoke_dev_code_impact_normalization.js",
+  "_tests/smoke_dev_code_impact_cache.js",
   "_tests/smoke_audit_arg_summary_semantics.js",
   "_tests/smoke_network_allowlist_workflow.js",
   "_tests/smoke_schema_compat.js",

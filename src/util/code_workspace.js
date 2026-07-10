@@ -9,6 +9,7 @@ const MAX_CODE_FILE_BYTES = 2 * 1024 * 1024;
 const MAX_SYMBOLS = 1000;
 const MAX_GRAPH_FILES = 1000;
 const MAX_GRAPH_EDGES = 2000;
+const IMPACT_GRAPH_CACHE = Symbol("impactGraphCache");
 
 const DENY_DIRS = new Set([
   "node_modules",
@@ -467,9 +468,9 @@ function resolveImpactTarget(graph, target) {
   };
 }
 
-function impactGraph(graph, target, direction = "both", maxDepth = 5) {
-  const resolvedTarget = resolveImpactTarget(graph, target);
-  const start = resolvedTarget.start;
+function getImpactAdjacency(graph) {
+  if (graph && graph[IMPACT_GRAPH_CACHE]) return graph[IMPACT_GRAPH_CACHE];
+
   const nodeSet = new Set(graph.nodes.map((node) => node.path));
   const forward = new Map();
   const reverse = new Map();
@@ -484,6 +485,21 @@ function impactGraph(graph, target, direction = "both", maxDepth = 5) {
   for (const edge of graph.external_workspace_edges || []) {
     forward.get(edge.from)?.push({ path: edge.to, via: edge.source, line: edge.line, scope: "workspace-external" });
   }
+
+  const cache = { nodeSet, forward, reverse };
+  Object.defineProperty(graph, IMPACT_GRAPH_CACHE, {
+    value: cache,
+    enumerable: false,
+    configurable: true,
+    writable: true,
+  });
+  return cache;
+}
+
+function impactGraph(graph, target, direction = "both", maxDepth = 5) {
+  const resolvedTarget = resolveImpactTarget(graph, target);
+  const start = resolvedTarget.start;
+  const { nodeSet, forward, reverse } = getImpactAdjacency(graph);
   if (!nodeSet.has(start)) {
     return {
       target: start,
@@ -505,8 +521,9 @@ function impactGraph(graph, target, direction = "both", maxDepth = 5) {
     const seen = new Set([start]);
     const out = [];
     const queue = [{ path: start, depth: 0 }];
-    while (queue.length) {
-      const cur = queue.shift();
+    let head = 0;
+    while (head < queue.length) {
+      const cur = queue[head++];
       if (cur.depth >= maxDepth) continue;
       for (const next of map.get(cur.path) || []) {
         if (seen.has(next.path)) continue;
