@@ -19,10 +19,23 @@ function Get-ExistingMcpServerStatus {
   }
 
   $commandLine = ''
+  $parentProcessId = $null
+  $parentName = ''
+  $parentCommandLine = ''
   try {
     $process = Get-CimInstance Win32_Process -Filter "ProcessId = $($listen.OwningProcess)" -ErrorAction Stop
     if ($process) {
       $commandLine = [string]$process.CommandLine
+      $parentProcessId = $process.ParentProcessId
+      if ($parentProcessId) {
+        try {
+          $parent = Get-CimInstance Win32_Process -Filter "ProcessId = $parentProcessId" -ErrorAction Stop
+          if ($parent) {
+            $parentName = [string]$parent.Name
+            $parentCommandLine = [string]$parent.CommandLine
+          }
+        } catch {}
+      }
     }
   } catch {}
 
@@ -32,10 +45,13 @@ function Get-ExistingMcpServerStatus {
   } catch {}
 
   return [PSCustomObject]@{
-    Port        = $Port
-    ProcessId   = $listen.OwningProcess
-    CommandLine = $commandLine
-    Health      = $health
+    Port              = $Port
+    ProcessId         = $listen.OwningProcess
+    CommandLine       = $commandLine
+    ParentProcessId   = $parentProcessId
+    ParentName        = $parentName
+    ParentCommandLine = $parentCommandLine
+    Health            = $health
   }
 }
 
@@ -76,6 +92,22 @@ function Test-CompatibleRunningServer {
     $cmd.Contains("--auth $AuthMode") -and
     $cmd.Contains("--port $($Status.Port)")
   )
+}
+
+function Test-SupervisorManagedRunningServer {
+  param(
+    [Parameter(Mandatory = $true)]$Status
+  )
+
+  $cmd = [string]$Status.CommandLine
+  $parentCmd = [string]$Status.ParentCommandLine
+  $parentName = [string]$Status.ParentName
+
+  $directMatch = $parentCmd -match '(?i)[\\/]+scripts[\\/]+server\.ps1\b'
+  $shellLooksRight = $parentName -match '^(pwsh|powershell)\.exe$'
+  $childLooksLikeNodeServer = $cmd.Contains('server.js')
+
+  return ($directMatch -and $shellLooksRight -and $childLooksLikeNodeServer)
 }
 
 $Cli = @{}
@@ -140,12 +172,24 @@ if ($Port) {
   $existing = Get-ExistingMcpServerStatus -Port ([int]$Port)
   if ($existing) {
     if (Test-CompatibleRunningServer -Status $existing -ProfileName $ProfileName -AuthMode $AuthMode) {
+      $isSupervisorManaged = Test-SupervisorManagedRunningServer -Status $existing
       Write-Host "Serwer MCP już działa na 127.0.0.1:$Port (pid=$($existing.ProcessId)). Nie uruchamiam duplikatu." -ForegroundColor Yellow
       if ($existing.Health) {
         Write-Host "Healthz: auth=$($existing.Health.auth.mode), profile=$($existing.Health.profile), tools=$($existing.Health.tools_count)" -ForegroundColor Yellow
       }
-      Write-Host 'Jeżeli chcesz wykonać kontrolowany restart istniejącego procesu, użyj scripts/request-restart.js albo zapisz trigger file.' -ForegroundColor Yellow
-      exit 0
+      if ($isSupervisorManaged) {
+        Write-Host "Istniejący proces jest uruchomiony pod supervisorem: pid=$($existing.ParentProcessId) $($existing.ParentName)" -ForegroundColor Yellow
+        Write-Host 'Ten nowy proces server.ps1 nie przejmie tamtej pętli. Jeżeli chcesz zrestartować tamten supervisor, użyj scripts/request-restart.js albo trigger file.' -ForegroundColor Yellow
+        exit 0
+      }
+
+      Write-Host 'Istniejący proces nie wygląda na uruchomiony pod scripts/server.ps1.' -ForegroundColor Red
+      if ($existing.ParentCommandLine) {
+        Write-Host "Parent command line: $($existing.ParentCommandLine)" -ForegroundColor Red
+      }
+      Write-Host 'W takim stanie request-restart.js nie jest bezpieczną sugestią, bo ten skrypt nie kontroluje tamtego procesu.' -ForegroundColor Red
+      Write-Host 'Zatrzymaj istniejący proces ręcznie i dopiero uruchom scripts/server.ps1, jeżeli chcesz mieć supervisor-managed restart.' -ForegroundColor Red
+      exit 1
     }
 
     Write-Host "Port 127.0.0.1:$Port jest już zajęty przez inny proces (pid=$($existing.ProcessId))." -ForegroundColor Red

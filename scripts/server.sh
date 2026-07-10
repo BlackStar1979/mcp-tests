@@ -37,6 +37,25 @@ console.log(JSON.stringify({
 ' "$health_json" "$profile_name" "$auth_mode"
 }
 
+detect_supervisor_parent() {
+  local pid="$1"
+  if [[ -z "$pid" ]]; then
+    return 1
+  fi
+  local ppid=""
+  ppid="$(ps -o ppid= -p "$pid" 2>/dev/null | tr -d '[:space:]')"
+  if [[ -z "$ppid" ]]; then
+    return 1
+  fi
+  local parent_cmd=""
+  parent_cmd="$(ps -o command= -p "$ppid" 2>/dev/null || true)"
+  if [[ "$parent_cmd" == *"scripts/server.sh"* ]]; then
+    printf '%s\n' "$parent_cmd"
+    return 0
+  fi
+  return 1
+}
+
 PROFILE="${MCP_SUPERVISOR_PROFILE:-public}"
 AUTH="${MCP_SUPERVISOR_AUTH:-none}"
 PORT="${MCP_SUPERVISOR_PORT:-}"
@@ -89,10 +108,19 @@ ARGS+=("${FORWARD_ARGS[@]}")
 if [[ -n "$PORT" ]]; then
   EXISTING_JSON="$(check_existing_server "$PORT" "$PROFILE" "$AUTH" 2>/dev/null || true)"
   if [[ -n "$EXISTING_JSON" ]]; then
+    EXISTING_PID="$(lsof -nP -iTCP:${PORT} -sTCP:LISTEN -t 2>/dev/null | head -n 1 || true)"
     echo "Serwer MCP już działa na 127.0.0.1:${PORT}. Nie uruchamiam duplikatu."
     echo "Healthz: ${EXISTING_JSON}"
-    echo "Jeżeli chcesz wykonać kontrolowany restart istniejącego procesu, użyj scripts/request-restart.js albo zapisz trigger file."
-    exit 0
+    EXISTING_PARENT="$(detect_supervisor_parent "$EXISTING_PID" || true)"
+    if [[ -n "$EXISTING_PARENT" ]]; then
+      echo "Istniejący proces wygląda na uruchomiony pod supervisorem scripts/server.sh."
+      echo "Ten nowy proces server.sh nie przejmie tamtej pętli. Jeżeli chcesz zrestartować tamten supervisor, użyj scripts/request-restart.js albo trigger file."
+      exit 0
+    fi
+    echo "Istniejący proces nie wygląda na uruchomiony pod scripts/server.sh." >&2
+    echo "W takim stanie request-restart.js nie jest bezpieczną sugestią, bo ten skrypt nie kontroluje tamtego procesu." >&2
+    echo "Zatrzymaj istniejący proces ręcznie i dopiero uruchom scripts/server.sh, jeżeli chcesz mieć supervisor-managed restart." >&2
+    exit 1
   fi
 fi
 
