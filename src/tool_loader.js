@@ -89,6 +89,21 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/table_profile", "tableProfileTool", "table_profile");
   }
 
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_REMOTE_SITE_TOOLS", true)) {
+    add("../tools/authorized/list_remote_site_files", "listRemoteSiteFilesTool", "list_remote_site_files");
+    add("../tools/authorized/read_remote_site_file", "readRemoteSiteFileTool", "read_remote_site_file");
+    add("../tools/authorized/remote_site_runtime_status", "remoteSiteRuntimeStatusTool", "remote_site_runtime_status");
+    add("../tools/authorized/preview_remote_site_retention", "previewRemoteSiteRetentionTool", "preview_remote_site_retention");
+  }
+
+  if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_REMOTE_SITE_MUTATION_TOOLS", true)) {
+    add("../tools/authorized/write_remote_site_file", "writeRemoteSiteFileTool", "write_remote_site_file");
+    add("../tools/authorized/edit_remote_site_file", "editRemoteSiteFileTool", "edit_remote_site_file");
+    add("../tools/authorized/delete_remote_site_file", "deleteRemoteSiteFileTool", "delete_remote_site_file");
+    add("../tools/authorized/move_remote_site_file", "moveRemoteSiteFileTool", "move_remote_site_file");
+    add("../tools/authorized/restore_remote_site_file", "restoreRemoteSiteFileTool", "restore_remote_site_file");
+  }
+
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_MUTATION_TOOLS", true)) {
     add("../tools/authorized/write_file", "writeFileTool", "write_file");
     add("../tools/authorized/append_file", "appendFileTool", "append_file");

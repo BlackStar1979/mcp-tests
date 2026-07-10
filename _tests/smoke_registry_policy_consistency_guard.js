@@ -23,8 +23,8 @@ const EXPECTED = {
   authorized: {
     authMode: "oauth21",
     runtimeProfile: "internal",
-    total: 82,
-    optional: 80,
+    total: 91,
+    optional: 89,
     required: ["search", "fetch", "test_mcp_runtime_status", "auth_legacy_retirement_status", "memory_save", "plugin_visibility_plan", "list_directory", "read_file", "write_file", "project_truth_audit", "tool_usage_snapshot", "tool_registry_status", "search_index", "build_index", "run_process", "code_patch_plan", "code_scenario"],
     forbidden: [],
   },

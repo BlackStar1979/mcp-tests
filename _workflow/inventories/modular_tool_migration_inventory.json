@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-07-09T09:20:56.096Z",
+  "generated_at": "2026-07-10T05:43:12.521Z",
   "source_repo": {
     "name": "mcp",
     "path": "C:/Work/mcp"
@@ -30,7 +30,9 @@
       "search"
     ],
     "tests": [
+      "append_file",
       "auth_legacy_retirement_status",
+      "build_index",
       "change_workflow_simulator",
       "code_patch_plan",
       "code_runtime_map",
@@ -38,6 +40,9 @@
       "code_scenario",
       "collect_context",
       "collect_romionsim_context",
+      "copy_path",
+      "delete_path",
+      "delete_remote_site_file",
       "deploy_decision_guard",
       "dev_code_audit",
       "dev_code_dependencies",
@@ -45,21 +50,29 @@
       "dev_code_locate",
       "dev_code_symbols",
       "dev_code_syntax_check",
+      "edit_file_patch",
+      "edit_remote_site_file",
       "fetch",
+      "fits_info",
       "fs_get_public_info",
       "fs_list_public",
       "fs_read_public_chunk",
       "fs_read_public_lines",
       "fs_read_public_text",
       "get_info",
+      "hdf5_info",
       "index_status",
+      "inventory_tree",
       "list_directory",
+      "list_remote_site_files",
       "memory_create_task",
       "memory_get_state",
       "memory_get_tasks",
       "memory_save",
       "memory_search",
       "memory_set_state",
+      "move_path",
+      "move_remote_site_file",
       "net_check_npm_package",
       "net_check_pypi_package",
       "net_check_url_head",
@@ -79,20 +92,23 @@
       "plugin_registry_status",
       "plugin_visibility_plan",
       "plugin_visibility_status",
+      "preview_remote_site_retention",
       "process_runner_status",
       "project_truth_audit",
       "read_file",
       "read_file_chunk",
       "read_file_lines",
-      "fits_info",
-      "hdf5_info",
-      "inventory_tree",
-      "table_profile",
+      "read_remote_site_file",
+      "remote_site_runtime_status",
+      "restore_path",
+      "restore_remote_site_file",
+      "run_process",
       "search",
       "search_index",
       "search_index_context",
       "session_toolset_plan",
       "session_toolset_status",
+      "table_profile",
       "test_mcp_runtime_status",
       "tool_registry_execute",
       "tool_registry_get_tool",
@@ -102,7 +118,9 @@
       "tool_registry_preflight",
       "tool_registry_status",
       "tool_registry_validate_tool",
-      "tool_usage_snapshot"
+      "tool_usage_snapshot",
+      "write_file",
+      "write_remote_site_file"
     ]
   },
   "items": [
@@ -116,14 +134,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "append_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -136,14 +154,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "build_index",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -472,14 +490,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "copy_path",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -492,14 +510,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "delete_path",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -512,14 +530,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "delete_remote_site_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -552,14 +570,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "edit_file_patch",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -572,14 +590,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "edit_remote_site_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -779,14 +797,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "list_remote_site_files",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -799,14 +817,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "move_path",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -819,14 +837,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "move_remote_site_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -839,14 +857,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "preview_remote_site_retention",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -981,14 +999,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "read_remote_site_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1001,14 +1019,14 @@
       "safety": "safe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "remote_site_runtime_status",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Read-only inspection, planning, status, or analysis capability.",
         "Safe capability still requires full-workspace or non-public operational scope.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1021,14 +1039,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "restore_path",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1041,14 +1059,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "restore_remote_site_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1061,14 +1079,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "run_process",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1365,14 +1383,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "write_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     },
     {
@@ -1385,14 +1403,14 @@
       "safety": "unsafe",
       "safety_confidence": "high",
       "target_surface": "tests",
-      "overlap_status": "missing",
-      "mapped_tool": null,
-      "migration_action": "port_tests",
+      "overlap_status": "exact_tests",
+      "mapped_tool": "write_remote_site_file",
+      "migration_action": "already_present",
       "overlap_resolution": "",
       "notes": [
         "Name or operation implies mutation, deletion, process execution, or write-side effects.",
         "Unsafe capability belongs only on the broad authenticated tests surface.",
-        "No exact or conservative capability-equivalent tool found in mcp-tests."
+        "Exact tool already present on current authenticated surface."
       ]
     }
   ],
@@ -1407,13 +1425,13 @@
       "safe": 45
     },
     "by_action": {
-      "port_tests": 22,
-      "already_present": 30,
+      "already_present": 48,
       "keep_existing": 8,
+      "port_tests": 4,
       "rename_on_port": 2,
       "do_not_port_alias": 1
     },
-    "exact_or_equivalent_overlap_count": 41,
-    "missing_count": 22
+    "exact_or_equivalent_overlap_count": 59,
+    "missing_count": 4
   }
 }

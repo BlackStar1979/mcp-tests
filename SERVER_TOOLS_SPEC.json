@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces",
-      "tool_count": 69,
+      "tool_count": 78,
       "tools": [
         "code_sample_js",
         "write_file",
@@ -45,6 +45,15 @@
         "hdf5_info",
         "inventory_tree",
         "table_profile",
+        "list_remote_site_files",
+        "read_remote_site_file",
+        "remote_site_runtime_status",
+        "preview_remote_site_retention",
+        "write_remote_site_file",
+        "edit_remote_site_file",
+        "delete_remote_site_file",
+        "move_remote_site_file",
+        "restore_remote_site_file",
         "project_truth_audit",
         "code_runtime_map",
         "deploy_decision_guard",
@@ -113,7 +122,7 @@
       "stage5_note": "code_sample_js is now represented only in authorized_mcp_tools because runtime loader exposes it through tools/public/code_sample_js under authorized group."
     }
   },
-  "total_mcp_callable_tool_count": 82,
+  "total_mcp_callable_tool_count": 91,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -1081,6 +1090,123 @@
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
       "audit_required": true
+    },
+    "list_remote_site_files": {
+      "name": "list_remote_site_files",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_readonly",
+      "operation_class": "list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "read_remote_site_file": {
+      "name": "read_remote_site_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "remote_site_runtime_status": {
+      "name": "remote_site_runtime_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "preview_remote_site_retention": {
+      "name": "preview_remote_site_retention",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_readonly",
+      "operation_class": "preview",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "write_remote_site_file": {
+      "name": "write_remote_site_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "edit_remote_site_file": {
+      "name": "edit_remote_site_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "delete_remote_site_file": {
+      "name": "delete_remote_site_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "move_remote_site_file": {
+      "name": "move_remote_site_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "restore_remote_site_file": {
+      "name": "restore_remote_site_file",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "remote_site",
+      "resource_class": "remote_site_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
     }
   },
   "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json",

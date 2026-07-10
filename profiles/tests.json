@@ -60,7 +60,9 @@
         "workspace_index_mutation",
         "filesystem_workspace_mutation",
         "runtime_status_readonly",
-        "process_execution_bounded"
+        "process_execution_bounded",
+        "remote_site_readonly",
+        "remote_site_mutation"
       ],
       "denied_resource_policy_refs": [],
       "allowed_memory_scopes": [

@@ -24,7 +24,7 @@ for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliat
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_82_matches_repo_expected_82_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_authenticated_tools_list_82_repo_expected_91_restart_pending_connector_ui_visibility_unverified");
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
 assert.ok(readme.includes("Do not ask the operator to restart `3008`"));

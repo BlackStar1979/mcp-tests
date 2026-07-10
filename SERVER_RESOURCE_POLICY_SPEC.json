@@ -168,6 +168,22 @@
       ],
       "public_surface_allowed": false,
       "reserved": true
+    },
+    "remote_site_readonly": {
+      "description": "Read-only remote-site SFTP inspection and retention-preview resource bounded by per-call config references and remote site/ops roots.",
+      "allowed_operations": [
+        "read",
+        "list",
+        "preview"
+      ],
+      "public_surface_allowed": false
+    },
+    "remote_site_mutation": {
+      "description": "Authenticated remote-site SFTP mutation resource bounded by per-call config references, remote site/ops roots, soft-delete discipline, and metadata/audit artifact generation outside webroot.",
+      "allowed_operations": [
+        "write"
+      ],
+      "public_surface_allowed": false
     }
   },
   "operation_classes": {
