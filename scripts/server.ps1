@@ -110,6 +110,55 @@ function Test-SupervisorManagedRunningServer {
   return ($directMatch -and $shellLooksRight -and $childLooksLikeNodeServer)
 }
 
+function Wait-PortReleased {
+  param(
+    [Parameter(Mandatory = $true)][int]$Port,
+    [int]$TimeoutMs = 5000
+  )
+
+  $deadline = (Get-Date).AddMilliseconds($TimeoutMs)
+  do {
+    $stillListening = $false
+    try {
+      $listen = Get-NetTCPConnection -LocalAddress '127.0.0.1' -LocalPort $Port -State Listen -ErrorAction Stop |
+        Select-Object -First 1
+      if ($listen) {
+        $stillListening = $true
+      }
+    } catch {}
+
+    if (-not $stillListening) {
+      return $true
+    }
+
+    Start-Sleep -Milliseconds 150
+  } while ((Get-Date) -lt $deadline)
+
+  return $false
+}
+
+function Stop-ExistingMcpServerForTakeover {
+  param(
+    [Parameter(Mandatory = $true)]$Status
+  )
+
+  $isSupervisorManaged = Test-SupervisorManagedRunningServer -Status $Status
+  if ($isSupervisorManaged -and $Status.ParentProcessId) {
+    Write-Host "Przejmowanie supervisora na porcie 127.0.0.1:$($Status.Port): zatrzymuję parent pid=$($Status.ParentProcessId)." -ForegroundColor Yellow
+    Stop-Process -Id $Status.ParentProcessId -Force -ErrorAction Stop
+  } else {
+    Write-Host "Przejmowanie standalone servera na porcie 127.0.0.1:$($Status.Port): zatrzymuję pid=$($Status.ProcessId)." -ForegroundColor Yellow
+    Stop-Process -Id $Status.ProcessId -Force -ErrorAction Stop
+  }
+
+  if (-not (Wait-PortReleased -Port $Status.Port)) {
+    Write-Host "Port 127.0.0.1:$($Status.Port) nie zwolnił się po takeover stop." -ForegroundColor Red
+    exit 1
+  }
+
+  Write-Host "Port 127.0.0.1:$($Status.Port) został zwolniony. Kontynuuję start nowego supervisora." -ForegroundColor Green
+}
+
 $Cli = @{}
 $ForwardArgs = @()
 $i = 0
@@ -173,35 +222,29 @@ if ($Port) {
   if ($existing) {
     if (Test-CompatibleRunningServer -Status $existing -ProfileName $ProfileName -AuthMode $AuthMode) {
       $isSupervisorManaged = Test-SupervisorManagedRunningServer -Status $existing
-      Write-Host "Serwer MCP już działa na 127.0.0.1:$Port (pid=$($existing.ProcessId)). Nie uruchamiam duplikatu." -ForegroundColor Yellow
+      Write-Host "Serwer MCP już działa na 127.0.0.1:$Port (pid=$($existing.ProcessId)). Wykonuję takeover zamiast uruchamiać duplikat." -ForegroundColor Yellow
       if ($existing.Health) {
         Write-Host "Healthz: auth=$($existing.Health.auth.mode), profile=$($existing.Health.profile), tools=$($existing.Health.tools_count)" -ForegroundColor Yellow
       }
       if ($isSupervisorManaged) {
         Write-Host "Istniejący proces jest uruchomiony pod supervisorem: pid=$($existing.ParentProcessId) $($existing.ParentName)" -ForegroundColor Yellow
-        Write-Host 'Ten nowy proces server.ps1 nie przejmie tamtej pętli. Jeżeli chcesz zrestartować tamten supervisor, użyj scripts/request-restart.js albo trigger file.' -ForegroundColor Yellow
-        exit 0
+      } else {
+        Write-Host 'Istniejący proces nie wygląda na uruchomiony pod scripts/server.ps1; przejmuję standalone node server.' -ForegroundColor Yellow
       }
 
-      Write-Host 'Istniejący proces nie wygląda na uruchomiony pod scripts/server.ps1.' -ForegroundColor Red
-      if ($existing.ParentCommandLine) {
-        Write-Host "Parent command line: $($existing.ParentCommandLine)" -ForegroundColor Red
+      Stop-ExistingMcpServerForTakeover -Status $existing
+    } else {
+      Write-Host "Port 127.0.0.1:$Port jest już zajęty przez inny proces (pid=$($existing.ProcessId))." -ForegroundColor Red
+      if ($existing.CommandLine) {
+        Write-Host "Command line: $($existing.CommandLine)" -ForegroundColor Red
       }
-      Write-Host 'W takim stanie request-restart.js nie jest bezpieczną sugestią, bo ten skrypt nie kontroluje tamtego procesu.' -ForegroundColor Red
-      Write-Host 'Zatrzymaj istniejący proces ręcznie i dopiero uruchom scripts/server.ps1, jeżeli chcesz mieć supervisor-managed restart.' -ForegroundColor Red
+      if ($existing.Health) {
+        Write-Host "Healthz wykrytego procesu: server=$($existing.Health.server) auth=$($existing.Health.auth.mode) profile=$($existing.Health.profile)" -ForegroundColor Red
+      } else {
+        Write-Host 'Healthz na zajętym porcie nie odpowiedział jako MCP TEST server.' -ForegroundColor Red
+      }
       exit 1
     }
-
-    Write-Host "Port 127.0.0.1:$Port jest już zajęty przez inny proces (pid=$($existing.ProcessId))." -ForegroundColor Red
-    if ($existing.CommandLine) {
-      Write-Host "Command line: $($existing.CommandLine)" -ForegroundColor Red
-    }
-    if ($existing.Health) {
-      Write-Host "Healthz wykrytego procesu: server=$($existing.Health.server) auth=$($existing.Health.auth.mode) profile=$($existing.Health.profile)" -ForegroundColor Red
-    } else {
-      Write-Host 'Healthz na zajętym porcie nie odpowiedział jako MCP TEST server.' -ForegroundColor Red
-    }
-    exit 1
   }
 }
 

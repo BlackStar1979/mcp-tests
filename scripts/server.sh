@@ -56,6 +56,19 @@ detect_supervisor_parent() {
   return 1
 }
 
+wait_port_released() {
+  local port="$1"
+  local timeout_s="${2:-5}"
+  local deadline=$((SECONDS + timeout_s))
+  while (( SECONDS < deadline )); do
+    if ! lsof -nP -iTCP:"$port" -sTCP:LISTEN >/dev/null 2>&1; then
+      return 0
+    fi
+    sleep 0.15
+  done
+  return 1
+}
+
 PROFILE="${MCP_SUPERVISOR_PROFILE:-public}"
 AUTH="${MCP_SUPERVISOR_AUTH:-none}"
 PORT="${MCP_SUPERVISOR_PORT:-}"
@@ -109,18 +122,22 @@ if [[ -n "$PORT" ]]; then
   EXISTING_JSON="$(check_existing_server "$PORT" "$PROFILE" "$AUTH" 2>/dev/null || true)"
   if [[ -n "$EXISTING_JSON" ]]; then
     EXISTING_PID="$(lsof -nP -iTCP:${PORT} -sTCP:LISTEN -t 2>/dev/null | head -n 1 || true)"
-    echo "Serwer MCP już działa na 127.0.0.1:${PORT}. Nie uruchamiam duplikatu."
+    echo "Serwer MCP już działa na 127.0.0.1:${PORT}. Wykonuję takeover zamiast uruchamiać duplikat."
     echo "Healthz: ${EXISTING_JSON}"
     EXISTING_PARENT="$(detect_supervisor_parent "$EXISTING_PID" || true)"
     if [[ -n "$EXISTING_PARENT" ]]; then
       echo "Istniejący proces wygląda na uruchomiony pod supervisorem scripts/server.sh."
-      echo "Ten nowy proces server.sh nie przejmie tamtej pętli. Jeżeli chcesz zrestartować tamten supervisor, użyj scripts/request-restart.js albo trigger file."
-      exit 0
+      pkill -TERM -P "$(ps -o ppid= -p "$EXISTING_PID" 2>/dev/null | tr -d '[:space:]')" 2>/dev/null || true
+      kill -TERM "$(ps -o ppid= -p "$EXISTING_PID" 2>/dev/null | tr -d '[:space:]')" 2>/dev/null || true
+    else
+      echo "Istniejący proces nie wygląda na uruchomiony pod scripts/server.sh; przejmuję standalone node server."
+      kill -TERM "$EXISTING_PID" 2>/dev/null || true
     fi
-    echo "Istniejący proces nie wygląda na uruchomiony pod scripts/server.sh." >&2
-    echo "W takim stanie request-restart.js nie jest bezpieczną sugestią, bo ten skrypt nie kontroluje tamtego procesu." >&2
-    echo "Zatrzymaj istniejący proces ręcznie i dopiero uruchom scripts/server.sh, jeżeli chcesz mieć supervisor-managed restart." >&2
-    exit 1
+    if ! wait_port_released "$PORT" 5; then
+      echo "Port 127.0.0.1:${PORT} nie zwolnił się po takeover stop." >&2
+      exit 1
+    fi
+    echo "Port 127.0.0.1:${PORT} został zwolniony. Kontynuuję start nowego supervisora."
   fi
 fi
 
