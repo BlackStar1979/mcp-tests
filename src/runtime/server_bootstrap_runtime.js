@@ -17,7 +17,7 @@ const { configureOptionalToolsAssembly } = require("./optional_tools_assembly");
 const { runConfiguredRuntime } = require("./runtime_context_assembly");
 const { resolveAuthBootstrapConfig } = require("./auth_bootstrap_config_resolver");
 const { createAuthorizationServerMetadataProvider } = require("../auth/oauth_authorization_server_metadata");
-const { createOAuth21AuthorizationServer } = require("../auth/oauth21_authorization_server");
+const { createOAuth21McpAuthorizationServer } = require("../auth/oauth21_mcp_authorization_server");
 const { loadOAuth21SecretConfig } = require("./oauth21_secret_config");
 const { parseServerCliArgs } = require("./server_cli_args");
 const { loadServerProfileConfig } = require("../server_profile_loader");
@@ -27,6 +27,12 @@ const { DOCS } = require("./static_docs");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
 
 const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
+
+function canonicalMcpResource(publicBaseUrl) {
+  const base = String(publicBaseUrl || "").replace(/\/+$/, "");
+  if (!base) return "";
+  return base.endsWith("/mcp") ? base : `${base}/mcp`;
+}
 
 function runServerBootstrapRuntime({ argv = process.argv, env = process.env, rootDir = path.resolve(__dirname, "../..") } = {}) {
   const serverCliConfig = parseServerCliArgs(argv.slice(2));
@@ -62,11 +68,14 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const optionalTools = [];
   let oauth21AuthorizationServer = null;
   let oauth21Issuer = env.MCP_TEST_OAUTH_ISSUER;
+  let oauth21Resource = "";
   if (bootstrapConfig.authMode === "oauth21") {
     const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
     oauth21Issuer = secretConfig.issuer;
-    oauth21AuthorizationServer = createOAuth21AuthorizationServer({
+    oauth21Resource = String(env.MCP_TEST_OAUTH_AUDIENCE || canonicalMcpResource(publicBaseUrl)).trim();
+    oauth21AuthorizationServer = createOAuth21McpAuthorizationServer({
       issuer: oauth21Issuer,
+      resource: oauth21Resource,
       operatorSecret: secretConfig.operatorSecret,
       trustedProxyHeaders: bootstrapConfig.trustedProxy === true,
     });
@@ -79,7 +88,9 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     trustedProxy: bootstrapConfig.trustedProxy,
     publicBaseUrl,
     oauthIssuer: oauth21Issuer || env.MCP_TEST_OAUTH_ISSUER,
-    oauthAudience: env.MCP_TEST_OAUTH_AUDIENCE || publicBaseUrl,
+    oauthAudience: bootstrapConfig.authMode === "oauth21"
+      ? oauth21Resource
+      : (env.MCP_TEST_OAUTH_AUDIENCE || publicBaseUrl),
     oauthHmacSecretFile: env.MCP_TEST_OAUTH_HS256_SECRET_FILE,
     oauthJwksFile: env.MCP_TEST_OAUTH_JWKS_FILE,
     tokenValidator: oauth21AuthorizationServer ? oauth21AuthorizationServer.validateAccessToken : undefined,
@@ -210,5 +221,6 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
 }
 
 module.exports = {
+  canonicalMcpResource,
   runServerBootstrapRuntime,
 };
