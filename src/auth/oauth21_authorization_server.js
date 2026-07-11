@@ -308,6 +308,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     const target = new URL(item.redirectUri);
     target.searchParams.set("code", code);
     if (item.state) target.searchParams.set("state", item.state);
+    target.searchParams.set("iss", issuer);
     return { status: 302, location: target.toString() };
   }
 

@@ -104,6 +104,7 @@ async function getOauthToken(issuer, operatorSecret) {
   const callback = new URL(approved.headers.get("location"));
   const code = callback.searchParams.get("code");
   assert.ok(code);
+  assert.equal(callback.searchParams.get("iss"), issuer);
 
   const token = await json(`${issuer}/token`, {
     method: "POST",

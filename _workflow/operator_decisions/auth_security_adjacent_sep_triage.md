@@ -1,7 +1,7 @@
 # Auth and Security Adjacent SEP Triage
 
-Status: GREEN / WORKFLOW-ONLY TRIAGE / NO RUNTIME CHANGE
-Date: 2026-07-01
+Status: GREEN / TRIAGE UPDATED / RUNTIME COVERAGE CONFIRMED
+Date: 2026-07-11
 
 ## Purpose
 
@@ -12,7 +12,7 @@ This record only classifies adjacent auth/security SEPs against the current TEST
 ## Covered by existing runtime/spec/test evidence
 
 - `SEP-2468` Recommend Issuer (`iss`) Parameter in MCP Auth Responses
-  - Covered by validated authorization-server metadata, issuer checks, and protected-resource metadata publishing.
+  - Covered by validated authorization-server metadata, issuer checks, protected-resource metadata publishing, and local OAuth21 authorization responses that include `iss`.
 - `SEP-2207` OIDC-Flavored Refresh Token Guidance
   - Covered in the local OAuth21 authorization-server path, including refresh-token issuance and persistence tests.
 - `SEP-985` Align OAuth 2.0 Protected Resource Metadata with RFC 9728
@@ -34,10 +34,10 @@ This record only classifies adjacent auth/security SEPs against the current TEST
 
 ## Declarations
 
-- server_change: false
+- server_change: true
 - workflow_change: true
 - schema_change: false
-- runtime_restart_required: false
+- runtime_restart_required: true
 - connector_refresh_required: false
 - public_3009_start_required: false
 
