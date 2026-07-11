@@ -34,6 +34,14 @@ function canonicalMcpResource(publicBaseUrl) {
   return base.endsWith("/mcp") ? base : `${base}/mcp`;
 }
 
+function resolveOAuth21Resource({ publicBaseUrl, configuredAudience } = {}) {
+  const base = String(publicBaseUrl || "").replace(/\/+$/, "");
+  const configured = String(configuredAudience || "").replace(/\/+$/, "");
+  const canonical = canonicalMcpResource(base);
+  if (!configured || configured === base) return canonical;
+  return configured;
+}
+
 function runServerBootstrapRuntime({ argv = process.argv, env = process.env, rootDir = path.resolve(__dirname, "../..") } = {}) {
   const serverCliConfig = parseServerCliArgs(argv.slice(2));
 
@@ -72,7 +80,10 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   if (bootstrapConfig.authMode === "oauth21") {
     const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
     oauth21Issuer = secretConfig.issuer;
-    oauth21Resource = String(env.MCP_TEST_OAUTH_AUDIENCE || canonicalMcpResource(publicBaseUrl)).trim();
+    oauth21Resource = resolveOAuth21Resource({
+      publicBaseUrl,
+      configuredAudience: env.MCP_TEST_OAUTH_AUDIENCE,
+    });
     oauth21AuthorizationServer = createOAuth21McpAuthorizationServer({
       issuer: oauth21Issuer,
       resource: oauth21Resource,
@@ -222,5 +233,6 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
 
 module.exports = {
   canonicalMcpResource,
+  resolveOAuth21Resource,
   runServerBootstrapRuntime,
 };
