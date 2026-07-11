@@ -76,12 +76,13 @@ function jsonResponse(res, statusCode, body) {
   res.end(text);
 }
 
-function htmlResponse(res, statusCode, text) {
+function htmlResponse(res, statusCode, text, extraHeaders = {}) {
   const body = String(text || "");
   res.writeHead(statusCode, {
     "content-type": "text/html; charset=utf-8",
     "content-length": Buffer.byteLength(body),
     "cache-control": "no-store",
+    ...extraHeaders,
   });
   res.end(body);
 }

@@ -526,7 +526,12 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       const pid = url.searchParams.get("pid") || "";
       const item = pending.get(String(pid || ""));
       if (!item) return htmlResponse(res, 400, "Invalid or expired authorization request");
-      return htmlResponse(res, 200, buildLoginPage(item, pid));
+      return htmlResponse(res, 200, buildLoginPage(item, pid), {
+        "content-security-policy": "frame-ancestors 'none'",
+        "referrer-policy": "no-referrer",
+        "x-content-type-options": "nosniff",
+        "x-frame-options": "DENY",
+      });
     }
     if (url.pathname === "/oauth/operator-login" && req.method === "POST") {
       const body = await readFormBody(req);
