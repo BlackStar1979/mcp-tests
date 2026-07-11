@@ -556,7 +556,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     }
     if (url.pathname === "/token" && req.method === "POST") {
       const result = token(await readFormBody(req));
-      return jsonResponse(res, result.status, result.body);
+      return jsonResponse(res, result.status, result.body, { pragma: "no-cache" });
     }
     if (url.pathname === "/revoke" && req.method === "POST") {
       const result = revoke(await readFormBody(req));
