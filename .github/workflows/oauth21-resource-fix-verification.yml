@@ -66,23 +66,37 @@ jobs:
         run: npm ci --silent
 
       - name: Run full offline smoke suite
+        id: full_suite
+        continue-on-error: true
+        shell: pwsh
+        run: |
+          & npm test 2>&1 | Tee-Object -FilePath full-suite.log
+          $status = $LASTEXITCODE
+          "exit_code=$status" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          exit $status
+
+      - name: Upload full-suite log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: full-suite-log
+          path: full-suite.log
+          if-no-files-found: error
+
+      - name: Report full-suite failure
+        if: steps.full_suite.outputs.exit_code != '0'
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          npm test *> full-suite.log
-          $status = $LASTEXITCODE
-          Get-Content full-suite.log -Tail 40
-          if ($status -ne 0) {
-            $tail = Get-Content full-suite.log -Tail 80
-            @(
-              "Full offline smoke suite failed on commit $env:GITHUB_SHA.",
-              "",
-              "``````text",
-              $tail,
-              "``````"
-            ) | Set-Content failure-comment.md
-            gh pr comment $env:PR_NUMBER --body-file failure-comment.md
-          }
-          exit $status
+          $tail = Get-Content full-suite.log -Tail 80
+          @(
+            "Full offline smoke suite failed on commit $env:GITHUB_SHA.",
+            "",
+            "``````text",
+            $tail,
+            "``````"
+          ) | Set-Content failure-comment.md
+          gh pr comment $env:PR_NUMBER --body-file failure-comment.md
+          exit 1
