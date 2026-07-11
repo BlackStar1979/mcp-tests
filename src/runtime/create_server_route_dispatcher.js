@@ -42,7 +42,7 @@ async function dispatchCreateServerRoute({
     }
     return jsonResponse(res, 200, buildProtectedResourceMetadata({
       publicBaseUrl,
-      resource: authPolicy?.audience,
+      resource: authPolicy?.mode === "oauth21" ? authPolicy.audience : publicBaseUrl,
       authorizationServerMetadata,
     }));
   }
