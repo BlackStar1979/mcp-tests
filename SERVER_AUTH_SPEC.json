@@ -173,7 +173,7 @@
   },
   "pkce_client_flow_policy": {
     "status": "implemented_h5_policy",
-    "authorization_server_implemented_by_mcp_tests": false,
+    "authorization_server_implemented_by_mcp_tests": true,
     "grant_type": "authorization_code",
     "pkce_required_for_public_clients": true,
     "code_challenge_method_required": "S256",
@@ -203,7 +203,7 @@
     "resource_parameter_required_in_token_request": true,
     "resource_parameter_must_match_protected_resource_metadata_resource": true,
     "server_role": "resource_server_validates_access_tokens_only",
-    "server_must_not_issue_authorization_codes": true,
+    "server_must_not_issue_authorization_codes": false,
     "guard": "_tests/smoke_oauth_pkce_policy.js"
   },
   "jwks_key_rotation": {
