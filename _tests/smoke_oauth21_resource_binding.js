@@ -113,4 +113,20 @@ assert.equal(badRefresh.status,400);
 assert.equal(badRefresh.body.error,"invalid_target");
 assert.equal(badRefresh.body.error_description,"resource_mismatch");
 
+const loopbackRegistration=server.registerClient({
+  redirect_uris:["http://127.0.0.1:1/callback"],
+  token_endpoint_auth_method:"none",
+});
+assert.equal(loopbackRegistration.status,201);
+const loopbackAuthorize=server.authorize({
+  client_id:loopbackRegistration.body.client_id,
+  redirect_uri:"http://127.0.0.1:43121/callback",
+  response_type:"code",
+  code_challenge_method:"S256",
+  code_challenge:sha256Base64Url(verifier),
+  state:"loopback-port-flex",
+  resource:issuer,
+});
+assert.equal(loopbackAuthorize.status,302);
+
 console.log("smoke_oauth21_resource_binding ok");

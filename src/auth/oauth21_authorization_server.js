@@ -50,6 +50,11 @@ function isLoopbackHostname(hostname) {
   return value === "localhost" || value === "127.0.0.1" || value === "[::1]";
 }
 
+function isLoopbackIpHostname(hostname) {
+  const value = String(hostname || "").trim().toLowerCase();
+  return value === "127.0.0.1" || value === "[::1]";
+}
+
 function validateRedirectUri(value) {
   const text = String(value || "").trim();
   if (!text) return { ok: false, reason: "redirect_uri_empty" };
@@ -80,6 +85,38 @@ function validateRedirectUri(value) {
 
 function matchesResource(value, expectedResource) {
   return String(value || "").trim() === String(expectedResource || "").trim();
+}
+
+function matchesRegisteredRedirectUri(registeredValue, requestedValue) {
+  const registeredText = String(registeredValue || "").trim();
+  const requestedText = String(requestedValue || "").trim();
+  if (!registeredText || !requestedText) return false;
+  if (registeredText === requestedText) return true;
+
+  let registered;
+  let requested;
+  try {
+    registered = new URL(registeredText);
+    requested = new URL(requestedText);
+  } catch (_) {
+    return false;
+  }
+
+  if (
+    String(registered.protocol || "").toLowerCase() !== "http:"
+    || String(requested.protocol || "").toLowerCase() !== "http:"
+    || !isLoopbackIpHostname(registered.hostname)
+    || !isLoopbackIpHostname(requested.hostname)
+  ) {
+    return false;
+  }
+
+  return registered.hostname === requested.hostname
+    && registered.username === requested.username
+    && registered.password === requested.password
+    && registered.pathname === requested.pathname
+    && registered.search === requested.search
+    && registered.hash === requested.hash;
 }
 
 function normalizeScopeTokens(value, fallback = "mcp:tools") {
@@ -254,7 +291,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     const resource = String(query.resource || "");
     const state = String(query.state || "");
     const scopes = normalizeScopeTokens(query.scope || "mcp:tools");
-    if (!client.redirect_uris.includes(redirectUri)) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
+    if (!client.redirect_uris.some((item) => matchesRegisteredRedirectUri(item, redirectUri))) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
     if (!query.code_challenge) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
@@ -439,4 +476,4 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   return { issuer, metadata, registerClient, authorize, completeLogin, token, revoke, validateAccessToken, handleRoute, setAuditLog, status: () => ({ issuer, clients: clients.size, pending: pending.size, codes: codes.size, access_tokens: accessTokens.size, refresh_tokens: refreshTokens.size, oauth_state_file: oauthStatePath }) };
 }
 
-module.exports = { createOAuth21AuthorizationServer, sha256Base64Url, validateRedirectUri };
+module.exports = { createOAuth21AuthorizationServer, matchesRegisteredRedirectUri, sha256Base64Url, validateRedirectUri };
