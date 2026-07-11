@@ -23,6 +23,7 @@ async function dispatchCreateServerRoute({
   stageStatus,
   securityBoundary,
   publicBaseUrl,
+  toolIntrospection,
   toolsList,
   authorizationServerMetadataProvider,
   oauth21AuthorizationServer,
@@ -56,6 +57,7 @@ async function dispatchCreateServerRoute({
       stageStatus,
       securityBoundary,
       publicBaseUrl,
+      toolIntrospection,
       toolsList,
     });
     return;

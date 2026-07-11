@@ -16,10 +16,14 @@ function handleHealthRoute({
   stageStatus,
   securityBoundary,
   publicBaseUrl,
+  toolIntrospection,
   toolsList,
 }) {
   const full = ["1", "true", "yes", "on"].includes(String(process.env.MCP_TEST_HEALTH_FULL || "").trim().toLowerCase());
-  const tools = toolsList().map((tool) => tool.name);
+  const introspection = typeof toolIntrospection === "function" ? toolIntrospection() : null;
+  const tools = Array.isArray(introspection?.toolNames)
+    ? introspection.toolNames.slice()
+    : toolsList().map((tool) => tool.name);
   const body = {
     status: "ok",
     server: serverName,

@@ -65,12 +65,14 @@ function createRuntimeSupportAssembly({
     if (!cachedToolIntrospection) {
       cachedToolIntrospection = {
         tools,
+        toolNames: Object.freeze(tools.map((tool) => tool.name)),
         toolSurface: buildToolSurfaceFingerprint(tools),
         schemaCompatibility: assertToolSchemas(tools),
       };
     }
     return {
       tools: cachedToolIntrospection.tools.slice(),
+      toolNames: cachedToolIntrospection.toolNames.slice(),
       toolSurface: cachedToolIntrospection.toolSurface,
       schemaCompatibility: cachedToolIntrospection.schemaCompatibility,
     };
