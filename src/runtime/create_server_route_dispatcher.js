@@ -40,7 +40,11 @@ async function dispatchCreateServerRoute({
     if (authorizationServerMetadataProvider) {
       authorizationServerMetadata = authorizationServerMetadataProvider.get();
     }
-    return jsonResponse(res, 200, buildProtectedResourceMetadata({ publicBaseUrl, authorizationServerMetadata }));
+    return jsonResponse(res, 200, buildProtectedResourceMetadata({
+      publicBaseUrl,
+      resource: authPolicy?.audience,
+      authorizationServerMetadata,
+    }));
   }
   if (url.pathname === "/" || url.pathname === "/healthz") {
     handleHealthRoute({
