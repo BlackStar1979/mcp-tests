@@ -46,35 +46,41 @@ jobs:
           node _tests/smoke_oauth21_runtime_status_response.js
 
   full-suite:
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
+    runs-on: windows-latest
+    timeout-minutes: 25
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
         with:
           show-progress: false
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
       - name: Install dependencies
         run: npm ci --silent
 
       - name: Run full offline smoke suite
-        shell: bash
+        shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          set +e
-          npm test > full-suite.log 2>&1
-          status=$?
-          tail -n 40 full-suite.log
-          if [ "$status" -ne 0 ]; then
-            {
-              echo "Full offline smoke suite failed on commit $GITHUB_SHA."
-              echo
-              echo '```text'
-              tail -n 80 full-suite.log
-              echo '```'
-            } > failure-comment.md
-            gh pr comment "$PR_NUMBER" --body-file failure-comment.md
-          fi
+          npm test *> full-suite.log
+          $status = $LASTEXITCODE
+          Get-Content full-suite.log -Tail 40
+          if ($status -ne 0) {
+            $tail = Get-Content full-suite.log -Tail 80
+            @(
+              "Full offline smoke suite failed on commit $env:GITHUB_SHA.",
+              "",
+              "``````text",
+              $tail,
+              "``````"
+            ) | Set-Content failure-comment.md
+            gh pr comment $env:PR_NUMBER --body-file failure-comment.md
+          }
           exit $status
