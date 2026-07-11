@@ -133,6 +133,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     maxFetchTextChars,
     stageStatus,
     runtimeProfile,
+    toolIntrospection,
     toolsList,
     serverStartId,
     disableLegacyInitialize: bootstrapConfig.disableLegacyInitialize === true,

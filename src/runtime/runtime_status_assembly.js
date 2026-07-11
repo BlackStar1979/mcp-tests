@@ -31,6 +31,7 @@ function createRuntimeStatusAssembly({
   maxFetchTextChars,
   stageStatus,
   runtimeProfile,
+  toolIntrospection,
   toolsList,
   serverStartId,
   disableLegacyInitialize,
@@ -40,13 +41,14 @@ function createRuntimeStatusAssembly({
   let currentToolData = null;
 
   function buildToolData(tools) {
+    const introspection = typeof toolIntrospection === "function" ? toolIntrospection() : null;
     const names = tools.map((tool) => tool.name);
     return {
       names,
       profilePolicy: assertProfilePolicy(tools, { profile: runtimeProfile, authMode: authPolicy.mode }),
       toolPolicySummary: summarizeToolPolicies(names),
-      toolSurfaceFingerprint: buildToolSurfaceFingerprint(tools),
-      schemaCompatibility: assertToolSchemas(tools),
+      toolSurfaceFingerprint: introspection?.toolSurface || buildToolSurfaceFingerprint(tools),
+      schemaCompatibility: introspection?.schemaCompatibility || assertToolSchemas(tools),
       toolLabels: buildToolLabelsSync(tools),
     };
   }
