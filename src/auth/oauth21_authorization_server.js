@@ -250,11 +250,13 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     if (!client) return { status: 400, body: { error: "invalid_client" } };
     const redirectUri = String(query.redirect_uri || "");
     const resource = String(query.resource || "");
+    const state = String(query.state || "");
     const scopes = normalizeScopeTokens(query.scope || "mcp:tools");
     if (!client.redirect_uris.includes(redirectUri)) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
     if (!query.code_challenge) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
+    if (!state) return { status: 400, body: { error: "invalid_request", error_description: "state_required" } };
     if (!resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
     if (!matchesResource(resource, issuer)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
     if (!hasOnlySupportedScopes(scopes)) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
@@ -264,7 +266,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       redirectUri,
       resource,
       codeChallenge: String(query.code_challenge),
-      state: query.state === undefined ? "" : String(query.state),
+      state,
       scope: scopes.join(" "),
       expiresAt: now() + PENDING_TTL_MS,
     });
