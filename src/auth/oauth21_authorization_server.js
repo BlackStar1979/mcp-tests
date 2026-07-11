@@ -447,6 +447,32 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return { status: 400, body: { error: "unsupported_grant_type" } };
   }
 
+  function revokeGrant(grantId) {
+    const grantKey = String(grantId || "");
+    if (!grantKey) return false;
+    let changed = false;
+    for (const [key, item] of accessTokens) {
+      if (String(item?.grantId || "") === grantKey) {
+        accessTokens.delete(key);
+        changed = true;
+      }
+    }
+    for (const [key, item] of refreshTokens) {
+      if (String(item?.grantId || "") === grantKey) {
+        refreshTokens.delete(key);
+        changed = true;
+      }
+    }
+    for (const [key, item] of usedRefreshTokens) {
+      if (String(item?.grantId || "") === grantKey) {
+        usedRefreshTokens.delete(key);
+        changed = true;
+      }
+    }
+    activeRefreshTokensByGrant.delete(grantKey);
+    return changed;
+  }
+
   function revoke(body = {}) {
     const value = String(body.token || "");
     const clientId = String(body.client_id || "");
@@ -454,9 +480,10 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     if (!client) return { status: 400, body: { error: "invalid_client" } };
     const access = accessTokens.get(value);
     const refresh = refreshTokens.get(value);
-    const item = access || refresh;
+    const usedRefresh = usedRefreshTokens.get(value);
+    const item = access || refresh || usedRefresh;
     if (!item || item.clientId !== client.client_id) return { status: 200, body: {} };
-    const changed = accessTokens.delete(value) || refreshTokens.delete(value);
+    const changed = item.grantId ? revokeGrant(item.grantId) : (accessTokens.delete(value) || refreshTokens.delete(value) || usedRefreshTokens.delete(value));
     if (changed) saveOAuthState();
     return { status: 200, body: {} };
   }

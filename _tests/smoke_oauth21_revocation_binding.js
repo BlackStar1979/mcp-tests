@@ -115,7 +115,7 @@ async function issueToken(issuer, clientId, operatorSecret) {
     }),
   });
   assert.equal(token.status, 200);
-  return token.body.access_token;
+  return token.body;
 }
 
 async function toolsListStatus(issuer, accessToken) {
@@ -167,35 +167,73 @@ async function toolsListStatus(issuer, accessToken) {
 
     const clientA = await registerClient(issuer);
     const clientB = await registerClient(issuer);
-    const accessToken = await issueToken(issuer, clientA, operatorSecret);
-    assert.equal(await toolsListStatus(issuer, accessToken), 200);
+    const token = await issueToken(issuer, clientA, operatorSecret);
+    assert.equal(await toolsListStatus(issuer, token.access_token), 200);
 
     const missingClient = await json(`${issuer}/revoke`, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ token: accessToken }),
+      body: new URLSearchParams({ token: token.access_token }),
     });
     assert.equal(missingClient.status, 400);
     assert.deepEqual(missingClient.body, { error: "invalid_client" });
-    assert.equal(await toolsListStatus(issuer, accessToken), 200);
+    assert.equal(await toolsListStatus(issuer, token.access_token), 200);
 
     const wrongClient = await json(`${issuer}/revoke`, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ token: accessToken, client_id: clientB }),
+      body: new URLSearchParams({ token: token.access_token, client_id: clientB }),
     });
     assert.equal(wrongClient.status, 200);
     assert.deepEqual(wrongClient.body, {});
-    assert.equal(await toolsListStatus(issuer, accessToken), 200);
+    assert.equal(await toolsListStatus(issuer, token.access_token), 200);
 
     const correctClient = await json(`${issuer}/revoke`, {
       method: "POST",
       headers: { "content-type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ token: accessToken, client_id: clientA }),
+      body: new URLSearchParams({ token: token.access_token, client_id: clientA }),
     });
     assert.equal(correctClient.status, 200);
     assert.deepEqual(correctClient.body, {});
-    assert.equal(await toolsListStatus(issuer, accessToken), 401);
+    assert.equal(await toolsListStatus(issuer, token.access_token), 401);
+
+    const rotated = await issueToken(issuer, clientA, operatorSecret);
+    const refreshed = await json(`${issuer}/token`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        client_id: clientA,
+        refresh_token: rotated.refresh_token,
+        resource: issuer,
+      }),
+    });
+    assert.equal(refreshed.status, 200);
+    assert.equal(await toolsListStatus(issuer, rotated.access_token), 200);
+    assert.equal(await toolsListStatus(issuer, refreshed.body.access_token), 200);
+
+    const revokeRefresh = await json(`${issuer}/revoke`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ token: refreshed.body.refresh_token, client_id: clientA }),
+    });
+    assert.equal(revokeRefresh.status, 200);
+    assert.deepEqual(revokeRefresh.body, {});
+    assert.equal(await toolsListStatus(issuer, rotated.access_token), 401);
+    assert.equal(await toolsListStatus(issuer, refreshed.body.access_token), 401);
+
+    const revokedRefreshUse = await json(`${issuer}/token`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        client_id: clientA,
+        refresh_token: refreshed.body.refresh_token,
+        resource: issuer,
+      }),
+    });
+    assert.equal(revokedRefreshUse.status, 400);
+    assert.deepEqual(revokedRefreshUse.body, { error: "invalid_grant" });
 
     console.log("smoke_oauth21_revocation_binding ok");
   } finally {
