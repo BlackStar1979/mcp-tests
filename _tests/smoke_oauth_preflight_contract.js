@@ -26,6 +26,8 @@ assert.equal(policy.authenticate({headers:{authorization:"Bearer "+good},url:"/m
 assert.equal(policy.authenticate({headers:{authorization:"Bearer "+good},url:"/mcp?token=x"}).error,"query_token_forbidden");
 const badAud=sign({iss:"https://as.example",aud:"https://other.example",scope:"mcp:tools",exp:now+60},secret);
 assert.equal(policy.authenticate({headers:{authorization:"Bearer "+badAud},url:"/mcp"}).error,"invalid_audience");
+const noExp=sign({iss:"https://as.example",aud:"https://mcp.example/mcp",scope:"mcp:tools"},secret);
+assert.equal(policy.authenticate({headers:{authorization:"Bearer "+noExp},url:"/mcp"}).error,"token_exp_required");
 const noScope=sign({iss:"https://as.example",aud:"https://mcp.example/mcp",scope:"other",exp:now+60},secret);
 assert.equal(policy.authenticate({headers:{authorization:"Bearer "+noScope},url:"/mcp"}).status,403);
 assert.ok(authResponseHeaders(policy)["www-authenticate"].includes("oauth-protected-resource"));

@@ -21,6 +21,7 @@ function verifyRs256({ signingInput, signature, jwk } = {}) {
 }
 
 function verifyJwtTimeClaims(payload = {}, now = Math.floor(Date.now() / 1000)) {
+  if (typeof payload.exp !== "number") return { ok: false, reason: "token_exp_required" };
   if (typeof payload.exp === "number" && payload.exp <= now) return { ok: false, reason: "token_expired" };
   if (typeof payload.nbf === "number" && payload.nbf > now) return { ok: false, reason: "token_not_yet_valid" };
   if (typeof payload.iat === "number" && payload.iat > now + 60) return { ok: false, reason: "token_issued_in_future" };

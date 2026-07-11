@@ -23,10 +23,12 @@ try{
  assert.equal(policy.authenticate({headers:{authorization:"Bearer "+noKid},url:"/mcp"}).error,"missing_jwt_kid");
  const unknownKid=signRs({iss:issuer,aud:audience,scope:"mcp:tools",exp:now+60},privateKey,{kid:"missing"});
  assert.equal(policy.authenticate({headers:{authorization:"Bearer "+unknownKid},url:"/mcp"}).error,"unknown_kid");
- const badAud=signRs({iss:issuer,aud:"https://other.example",scope:"mcp:tools",exp:now+60},privateKey);
- assert.equal(policy.authenticate({headers:{authorization:"Bearer "+badAud},url:"/mcp"}).error,"invalid_audience");
- const hs=signHs({iss:issuer,aud:audience,scope:"mcp:tools",exp:now+60},"x".repeat(48));
- assert.equal(policy.authenticate({headers:{authorization:"Bearer "+hs},url:"/mcp"}).error,"unsupported_jwt_alg");
+const badAud=signRs({iss:issuer,aud:"https://other.example",scope:"mcp:tools",exp:now+60},privateKey);
+assert.equal(policy.authenticate({headers:{authorization:"Bearer "+badAud},url:"/mcp"}).error,"invalid_audience");
+const noExp=signRs({iss:issuer,aud:audience,scope:"mcp:tools"},privateKey);
+assert.equal(policy.authenticate({headers:{authorization:"Bearer "+noExp},url:"/mcp"}).error,"token_exp_required");
+const hs=signHs({iss:issuer,aud:audience,scope:"mcp:tools",exp:now+60},"x".repeat(48));
+assert.equal(policy.authenticate({headers:{authorization:"Bearer "+hs},url:"/mcp"}).error,"unsupported_jwt_alg");
  const tampered=good.slice(0,-2)+"xx";
  assert.equal(policy.authenticate({headers:{authorization:"Bearer "+tampered},url:"/mcp"}).error,"invalid_jwt_signature");
  console.log("smoke_oauth_jwks_rs256_validation ok");
