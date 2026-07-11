@@ -17,6 +17,7 @@ assert.ok(policy.forbidden_redirect_uri_patterns.includes("javascript:*"));
 assert.ok(policy.allowed_token_endpoint_auth_methods.includes("none"));
 assert.equal(policy.allowed_token_endpoint_auth_methods.length, 1);
 assert.equal(policy.operator_approval_required_for_untrusted_public_clients,true);
-for(const required of ["client_name","redirect_uris","grant_types","response_types","token_endpoint_auth_method"]){assert.ok(policy.registration_metadata_requirements.includes(required),`${required} missing`);}
+for(const required of ["redirect_uris","token_endpoint_auth_method"]){assert.ok(policy.registration_metadata_requirements.includes(required),`${required} missing`);}
+assert.equal(policy.registration_metadata_requirements.length, 2);
 assert.equal(policy.guard,"_tests/smoke_oauth_dcr_policy.js");
 console.log("smoke_oauth_dcr_policy ok");

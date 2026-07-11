@@ -166,10 +166,7 @@
     ],
     "operator_approval_required_for_untrusted_public_clients": true,
     "registration_metadata_requirements": [
-      "client_name",
       "redirect_uris",
-      "grant_types",
-      "response_types",
       "token_endpoint_auth_method"
     ],
     "guard": "_tests/smoke_oauth_dcr_policy.js"
