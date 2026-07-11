@@ -8,19 +8,19 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-07-09`:
 
-- `303` JavaScript files total in `_tests`
-- `229` active scripts currently listed in `run_all_smoke_scripts.json`
+- `320` JavaScript files total in `_tests`
+- `243` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
-- `40` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, and review debt
+- `41` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, and review debt
 
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
 - last confirmed result from `2026-07-09`: `ok=true`
 - last confirmed section counts from that full run: `7` public scripts and `221` authenticated scripts
-- current manifest file contains `229` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `228` sectioned scripts, not all `229` manifest entries
+- current manifest file contains `243` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `242` sectioned scripts, not all `243` manifest entries
 
 ## Orientation
 
@@ -74,10 +74,10 @@ These are not all equivalent and should not be assumed current just because they
 Current top-level non-`run_all` inventory:
 
 - Historical audit from `2026-06-29` classified `32` files.
-- Current mechanical count is `40`, so the older classification is still useful but not complete for every newly renamed or added file.
+- Current mechanical count is `41`, so the older classification is still useful but not complete for every newly renamed or added file.
 
 - Helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
-- Current targeted guards include: `smoke_audit_redaction_integration_plan.js`, `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
+- Current targeted guards include: `smoke_audit_redaction_integration_plan.js`, `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_discovery_compat_empty_lists.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
 - Meta guard: `smoke_harness_no_pollution_guard.js`
 - Historical workflow wrappers: `smoke_decision_runtime_integration_plan.js`, `smoke_decision_runtime_interface_contract_readiness_gate.js`, `smoke_decision_runtime_operator_gate.js`, `smoke_logs_migration.js`, `smoke_debt_reduction_guard.js`, `smoke_project_debt_review_guard.js`, `smoke_repo_layout_contract.js`, `smoke_runtime_apply_package_preparation_no_apply.js`, `smoke_runtime_execution_package_no_apply.js`, `smoke_runtime_execution_package_operator_approval.js`, `smoke_runtime_implementation_plan_no_code.js`, `smoke_runtime_implementation_plan_operator_approval.js`, `smoke_runtime_scope_approval_package.js`, `smoke_runtime_scope_operator_decision.js`
 - The old transitional SSE/list-changed debt guards were retired after their unreachable helper files were removed from the active repo. `run_all_targeted_debt_smoke_scripts.json` now contains only the remaining workflow/control-plane review subset.

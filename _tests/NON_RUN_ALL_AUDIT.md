@@ -16,7 +16,7 @@ Audit date: `2026-07-01`
 
 Post-audit drift now visible from the current tree:
 
-- current mechanical non-`run_all` count is `40`
+- current mechanical non-`run_all` count is `41`
 - the former transitional SSE/list-changed debt guards were later removed entirely after their unreachable helper files were retired from the active repo
 - all seven `stress_*.js` files were rechecked directly in source on `2026-06-30`
 - each stress file posts directly to `process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3009/mcp"` and therefore requires a separately running MCP server
@@ -61,6 +61,9 @@ Helper execution slices now available:
   Recommendation: keep.
 - `smoke_canary_naming_guard.js`
   Reason: current naming guard for TEST MCP health canary identifiers.
+  Recommendation: keep.
+- `smoke_discovery_compat_empty_lists.js`
+  Reason: current focused compatibility guard for empty-list behavior on `resources/list`, `resources/templates/list`, and `prompts/list`.
   Recommendation: keep.
 - `smoke_list_changed_readiness_contract.js`
   Reason: current readiness-only contract guard for `list_changed` staying disabled.

@@ -116,6 +116,13 @@ function validate(bundle) {
   return errors;
 }
 
+function getPolicyRuntimeSurfaceNames(bundle) {
+  const tools = bundle?.tools || {};
+  const publicTools = (((tools.surface_classes || {}).public_mcp_tools || {}).tools) || [];
+  const authorizedTools = (((tools.surface_classes || {}).authorized_mcp_tools || {}).tools) || [];
+  return [...publicTools, ...authorizedTools];
+}
+
 function assertValid(bundle) {
   assert.deepEqual(validate(bundle), []);
 }
@@ -129,6 +136,8 @@ function assertInvalid(base, name, mutate, expectedCode) {
 
 const base = loadBundle();
 assertValid(base);
+const policyRuntimeSurfaceNames = getPolicyRuntimeSurfaceNames(base);
+assert.equal(policyRuntimeSurfaceNames.some((name) => name.startsWith("plugin_")), false);
 
 assertInvalid(base, "runtime enforcement flag", (s) => { s.runtime.runtime_enforced = false; }, "runtime_enforced_must_be_true");
 assertInvalid(base, "connector visible flag", (s) => { s.runtime.connector_visible = true; }, "connector_visible_must_stay_false");
@@ -141,7 +150,6 @@ assertInvalid(base, "unknown operation class", (s) => { s.tools.tool_catalog.fet
 assertInvalid(base, "missing resource policy ref", (s) => { s.tools.tool_catalog.fetch.resource_policy_refs = []; }, "missing_resource_policy_denied");
 assertInvalid(base, "memory ref", (s) => { delete s.tools.tool_catalog.memory_save.memory_policy_ref; }, "specific_policy_ref_missing");
 assertInvalid(base, "network ref", (s) => { delete s.tools.tool_catalog.net_http_get_allowlisted.network_policy_ref; }, "specific_policy_ref_missing");
-assertInvalid(base, "plugin ref", (s) => { delete s.tools.tool_catalog.plugin_registry_get.plugin_visibility_policy_ref; }, "specific_policy_ref_missing");
 assertInvalid(base, "removed legacy auth tool injected into public surface", (s) => { s.tools.surface_classes.public_mcp_tools.tools.push("auth_transition_status"); }, "missing_tool_catalog_entry_denied");
 assertInvalid(base, "output field", (s) => { s.runtime.output_contract.required_fields = s.runtime.output_contract.required_fields.filter((field) => field !== "audit_receipt"); }, "output_contract_field_missing");
 assertInvalid(base, "fail closed", (s) => { s.runtime.fail_closed_rules.unknown_tool_denied = false; }, "fail_closed_rule_missing");

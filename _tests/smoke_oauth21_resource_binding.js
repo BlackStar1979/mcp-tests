@@ -23,6 +23,7 @@ const missingResourceAuthorize=server.authorize({
   response_type:"code",
   code_challenge_method:"S256",
   code_challenge:sha256Base64Url(verifier),
+  state:"resource-missing",
 });
 assert.equal(missingResourceAuthorize.status,400);
 assert.equal(missingResourceAuthorize.body.error,"invalid_target");
@@ -34,6 +35,7 @@ const authorize=server.authorize({
   response_type:"code",
   code_challenge_method:"S256",
   code_challenge:sha256Base64Url(verifier),
+  state:"resource-good-1",
   resource:issuer,
 });
 assert.equal(authorize.status,302);
@@ -68,6 +70,7 @@ const authorized=server.authorize({
   response_type:"code",
   code_challenge_method:"S256",
   code_challenge:sha256Base64Url(verifier),
+  state:"resource-good-2",
   resource:issuer,
 });
 const pid2=new URL(authorized.location).searchParams.get("pid");

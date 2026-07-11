@@ -21,8 +21,10 @@ function setupServer(options={}) {
     response_type:"code",
     code_challenge_method:"S256",
     code_challenge:sha256Base64Url("abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz"),
+    state:"login-throttle-smoke",
     resource:"https://example.test",
   });
+  assert.equal(auth.status,302);
   return {
     server,
     pid:new URL(auth.location).searchParams.get("pid"),

@@ -12,7 +12,19 @@
       "status": "active_code_event"
     },
     {
+      "name": "prompts_list_served",
+      "status": "active_code_event"
+    },
+    {
       "name": "request_cancelled_by_client",
+      "status": "active_code_event"
+    },
+    {
+      "name": "resource_templates_list_served",
+      "status": "active_code_event"
+    },
+    {
+      "name": "resources_list_served",
       "status": "active_code_event"
     },
     {
