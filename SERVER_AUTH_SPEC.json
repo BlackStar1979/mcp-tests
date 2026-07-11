@@ -162,9 +162,7 @@
       "javascript:*"
     ],
     "allowed_token_endpoint_auth_methods": [
-      "none",
-      "client_secret_basic",
-      "private_key_jwt"
+      "none"
     ],
     "operator_approval_required_for_untrusted_public_clients": true,
     "registration_metadata_requirements": [
