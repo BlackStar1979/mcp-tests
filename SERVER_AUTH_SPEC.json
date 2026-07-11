@@ -178,6 +178,8 @@
     "pkce_required_for_public_clients": true,
     "code_challenge_method_required": "S256",
     "plain_code_challenge_forbidden": true,
+    "code_challenge_syntax": "43*128unreserved",
+    "code_verifier_syntax": "43*128unreserved",
     "authorization_request_requirements": [
       "response_type=code",
       "client_id",

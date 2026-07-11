@@ -24,6 +24,7 @@ const PENDING_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_LOGIN_LIMIT = 10;
 const DEFAULT_LOGIN_WINDOW_MS = 60 * 1000;
 const SUPPORTED_SCOPES = new Set(["mcp:tools"]);
+const PKCE_RE = /^[A-Za-z0-9._~-]{43,128}$/;
 
 function escapeHtml(value) {
   return String(value || "")
@@ -131,6 +132,10 @@ function hasOnlySupportedScopes(scopes = []) {
   return Array.isArray(scopes)
     && scopes.length > 0
     && scopes.every((scope) => SUPPORTED_SCOPES.has(String(scope || "").trim()));
+}
+
+function isValidPkceValue(value) {
+  return PKCE_RE.test(String(value || ""));
 }
 
 function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
@@ -325,6 +330,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
     if (!query.code_challenge) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
+    if (!isValidPkceValue(query.code_challenge)) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_invalid" } };
     if (!state) return { status: 400, body: { error: "invalid_request", error_description: "state_required" } };
     if (!resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
     if (!matchesResource(resource, issuer)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
@@ -404,6 +410,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       if (String(body.redirect_uri || "") !== code.redirectUri) return { status: 400, body: { error: "invalid_grant", error_description: "redirect_uri_mismatch" } };
       if (!body.resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
       if (!matchesResource(body.resource, code.resource)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
+      if (!isValidPkceValue(body.code_verifier)) return { status: 400, body: { error: "invalid_grant", error_description: "code_verifier_invalid" } };
       if (sha256Base64Url(body.code_verifier || "") !== code.codeChallenge) return { status: 400, body: { error: "invalid_grant", error_description: "pkce_verification_failed" } };
       code.used = true;
       const issued = issue(client.client_id, code.scope, code.resource);

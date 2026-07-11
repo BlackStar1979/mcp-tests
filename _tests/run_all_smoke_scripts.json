@@ -189,6 +189,7 @@
   "_tests/smoke_oauth21_login_throttle_proxy_hardening.js",
   "_tests/smoke_oauth21_operator_login_context.js",
   "_tests/smoke_oauth21_local_as_flow.js",
+  "_tests/smoke_oauth21_pkce_input_validation.js",
   "_tests/smoke_oauth21_resource_binding.js",
   "_tests/smoke_oauth21_revocation_binding.js",
   "_tests/smoke_oauth21_scope_validation.js",
