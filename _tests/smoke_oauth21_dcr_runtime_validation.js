@@ -29,6 +29,7 @@ for (const [uri, reason] of [
   ["file:///tmp/callback","redirect_uri_file_forbidden"],
   ["javascript:alert(1)","redirect_uri_javascript_forbidden"],
   ["http://evil.example/callback","redirect_uri_scheme_not_allowed"],
+  ["https://client.example/callback#frag","redirect_uri_fragment_forbidden"],
   ["https://client.example/*","redirect_uri_wildcard_forbidden"],
 ]) {
   const result=server.registerClient({

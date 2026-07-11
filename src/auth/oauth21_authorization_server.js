@@ -65,6 +65,7 @@ function validateRedirectUri(value) {
   const protocol = String(parsed.protocol || "").toLowerCase();
   if (protocol === "javascript:") return { ok: false, reason: "redirect_uri_javascript_forbidden" };
   if (protocol === "file:") return { ok: false, reason: "redirect_uri_file_forbidden" };
+  if (parsed.hash) return { ok: false, reason: "redirect_uri_fragment_forbidden" };
 
   if (protocol === "https:") {
     return { ok: true, value: parsed.toString() };
