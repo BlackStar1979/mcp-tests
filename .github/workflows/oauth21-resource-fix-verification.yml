@@ -1,9 +1,6 @@
 name: OAuth21 Resource Fix Verification
 
 on:
-  push:
-    branches:
-      - fix/oauth21-mcp-resource
   pull_request:
     branches:
       - main
@@ -12,12 +9,14 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  focused:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          show-progress: false
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -26,7 +25,7 @@ jobs:
           cache: npm
 
       - name: Install dependencies
-        run: npm ci
+        run: npm ci --silent
 
       - name: Check changed JavaScript syntax
         run: |
@@ -45,5 +44,23 @@ jobs:
           node _tests/smoke_oauth21_local_as_flow.js
           node _tests/smoke_oauth21_runtime_status_response.js
 
+  full-suite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: Install dependencies
+        run: npm ci --silent
+
       - name: Run full offline smoke suite
-        run: npm test
+        shell: bash
+        run: |
+          set +e
+          npm test > full-suite.log 2>&1
+          status=$?
+          tail -n 40 full-suite.log
+          exit $status
