@@ -3,6 +3,8 @@
 const crypto = require("node:crypto");
 const { URLSearchParams } = require("node:url");
 
+const OAUTH_REPEATABLE_PARAMS = new Set(["resource"]);
+
 function randomToken(bytes = 32) {
   return crypto.randomBytes(bytes).toString("base64url");
 }
@@ -15,10 +17,30 @@ function sha256Base64Url(value) {
   return crypto.createHash("sha256").update(String(value)).digest("base64url");
 }
 
-function parseForm(raw) {
+function parseParams(entries, options = {}) {
   const out = {};
-  for (const [key, value] of new URLSearchParams(String(raw || ""))) out[key] = value;
+  const allowRepeatedKeys = options.allowRepeatedKeys instanceof Set
+    ? options.allowRepeatedKeys
+    : OAUTH_REPEATABLE_PARAMS;
+  for (const [key, value] of entries) {
+    const textKey = String(key || "");
+    const textValue = String(value || "");
+    if (!Object.prototype.hasOwnProperty.call(out, textKey)) {
+      out[textKey] = textValue;
+      continue;
+    }
+    if (!allowRepeatedKeys.has(textKey)) throw invalidRequestError();
+    if (out[textKey] !== textValue) throw invalidRequestError();
+  }
   return out;
+}
+
+function parseForm(raw, options = {}) {
+  return parseParams(new URLSearchParams(String(raw || "")), options);
+}
+
+function parseSearchParams(searchParams, options = {}) {
+  return parseParams(searchParams, options);
 }
 
 function invalidRequestError() {
@@ -108,6 +130,7 @@ module.exports = {
   readJsonBody,
   jsonResponse,
   parseForm,
+  parseSearchParams,
   randomToken,
   readBody,
   redirectResponse,

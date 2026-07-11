@@ -8,6 +8,7 @@ const {
   clientIp,
   htmlResponse,
   jsonResponse,
+  parseSearchParams,
   randomToken,
   readBody,
   readFormBody,
@@ -541,7 +542,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       return jsonResponse(res, result.status, result.body);
     }
     if (url.pathname === "/authorize" && req.method === "GET") {
-      const result = authorize(Object.fromEntries(url.searchParams));
+      const result = authorize(parseSearchParams(url.searchParams));
       if (result.status === 302) return redirectResponse(res, result.location);
       return jsonResponse(res, result.status, result.body);
     }

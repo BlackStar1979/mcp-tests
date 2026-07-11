@@ -195,6 +195,7 @@
   "_tests/smoke_oauth21_scope_validation.js",
   "_tests/smoke_oauth21_state_required.js",
   "_tests/smoke_oauth21_body_guard.js",
+  "_tests/smoke_oauth21_duplicate_params.js",
   "_tests/smoke_oauth21_runtime_status_response.js",
   "_tests/smoke_docs_malformed_uri.js",
   "_tests/smoke_sampling_capability_gate.js",
