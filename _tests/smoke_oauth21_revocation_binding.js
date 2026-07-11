@@ -235,6 +235,28 @@ async function toolsListStatus(issuer, accessToken) {
     assert.equal(revokedRefreshUse.status, 400);
     assert.deepEqual(revokedRefreshUse.body, { error: "invalid_grant" });
 
+    const staleFlow = await issueToken(issuer, clientA, operatorSecret);
+    const staleRefresh = await json(`${issuer}/token`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({
+        grant_type: "refresh_token",
+        client_id: clientA,
+        refresh_token: staleFlow.refresh_token,
+        resource: issuer,
+      }),
+    });
+    assert.equal(staleRefresh.status, 200);
+    const revokeUsedRefresh = await json(`${issuer}/revoke`, {
+      method: "POST",
+      headers: { "content-type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ token: staleFlow.refresh_token, client_id: clientA }),
+    });
+    assert.equal(revokeUsedRefresh.status, 200);
+    assert.deepEqual(revokeUsedRefresh.body, {});
+    assert.equal(await toolsListStatus(issuer, staleFlow.access_token), 401);
+    assert.equal(await toolsListStatus(issuer, staleRefresh.body.access_token), 401);
+
     console.log("smoke_oauth21_revocation_binding ok");
   } finally {
     child.kill();
