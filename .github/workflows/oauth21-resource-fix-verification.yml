@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - fix/oauth21-mcp-resource
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
