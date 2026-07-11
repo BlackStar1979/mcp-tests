@@ -65,7 +65,11 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   if (bootstrapConfig.authMode === "oauth21") {
     const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
     oauth21Issuer = secretConfig.issuer;
-    oauth21AuthorizationServer = createOAuth21AuthorizationServer({ issuer: oauth21Issuer, operatorSecret: secretConfig.operatorSecret });
+    oauth21AuthorizationServer = createOAuth21AuthorizationServer({
+      issuer: oauth21Issuer,
+      operatorSecret: secretConfig.operatorSecret,
+      trustedProxyHeaders: bootstrapConfig.trustedProxy === true,
+    });
   }
 
   const authPolicy = createAuthPolicy({

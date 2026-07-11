@@ -22,12 +22,65 @@ const PENDING_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_LOGIN_LIMIT = 10;
 const DEFAULT_LOGIN_WINDOW_MS = 60 * 1000;
 
-function buildLoginPage(pid) {
-  const safePid = String(pid || "").replace(/"/g, "&quot;");
-  return `<!doctype html><html><body><h3>mcp-tests OAuth 2.1 operator authorization</h3><form method="post" action="/oauth/operator-login"><input type="hidden" name="pid" value="${safePid}"><label>Operator secret <input name="password" type="password" autofocus></label><button type="submit">Authorize</button></form></body></html>`;
+function escapeHtml(value) {
+  return String(value || "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
 }
 
-function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
+function buildLoginPage(item, pid) {
+  const safePid = escapeHtml(pid);
+  const safeClientId = escapeHtml(item?.clientId || "");
+  const safeRedirectUri = escapeHtml(item?.redirectUri || "");
+  const safeScope = escapeHtml(item?.scope || "mcp:tools");
+  return `<!doctype html><html><body><h3>mcp-tests OAuth 2.1 operator authorization</h3><p>Client ID: <code>${safeClientId}</code></p><p>Redirect URI: <code>${safeRedirectUri}</code></p><p>Requested scope: <code>${safeScope}</code></p><form method="post" action="/oauth/operator-login"><input type="hidden" name="pid" value="${safePid}"><input type="hidden" name="client_id" value="${safeClientId}"><input type="hidden" name="redirect_uri" value="${safeRedirectUri}"><input type="hidden" name="scope" value="${safeScope}"><label>Operator secret <input name="password" type="password" autofocus></label><button type="submit">Authorize</button></form></body></html>`;
+}
+
+function loginBindingMatches(item, form = {}) {
+  return String(form.client_id || "") === String(item?.clientId || "")
+    && String(form.redirect_uri || "") === String(item?.redirectUri || "")
+    && String(form.scope || "mcp:tools") === String(item?.scope || "mcp:tools");
+}
+
+function isLoopbackHostname(hostname) {
+  const value = String(hostname || "").trim().toLowerCase();
+  return value === "localhost" || value === "127.0.0.1";
+}
+
+function validateRedirectUri(value) {
+  const text = String(value || "").trim();
+  if (!text) return { ok: false, reason: "redirect_uri_empty" };
+  if (text.includes("*")) return { ok: false, reason: "redirect_uri_wildcard_forbidden" };
+
+  let parsed;
+  try {
+    parsed = new URL(text);
+  } catch (_) {
+    return { ok: false, reason: "redirect_uri_invalid" };
+  }
+
+  const protocol = String(parsed.protocol || "").toLowerCase();
+  if (protocol === "javascript:") return { ok: false, reason: "redirect_uri_javascript_forbidden" };
+  if (protocol === "file:") return { ok: false, reason: "redirect_uri_file_forbidden" };
+
+  if (protocol === "https:") {
+    return { ok: true, value: parsed.toString() };
+  }
+
+  if (protocol === "http:" && isLoopbackHostname(parsed.hostname)) {
+    return { ok: true, value: parsed.toString() };
+  }
+
+  return { ok: false, reason: "redirect_uri_scheme_not_allowed" };
+}
+
+function matchesResource(value, expectedResource) {
+  return String(value || "").trim() === String(expectedResource || "").trim();
+}
+
+function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
   issuer = trimSlash(issuer);
   operatorSecret = String(operatorSecret || "");
   if (!issuer) throw new Error("oauth21_issuer_required");
@@ -156,15 +209,19 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   }
 
   function registerClient(body = {}) {
-    const redirectUris = Array.isArray(body.redirect_uris) ? body.redirect_uris.map(String) : [];
+    const redirectUris = Array.isArray(body.redirect_uris) ? body.redirect_uris.map((item) => validateRedirectUri(item)) : [];
     if (redirectUris.length === 0) return { status: 400, body: { error: "invalid_client_metadata", error_description: "redirect_uris_required" } };
+    const invalidRedirectUri = redirectUris.find((item) => item.ok !== true);
+    if (invalidRedirectUri) {
+      return { status: 400, body: { error: "invalid_client_metadata", error_description: invalidRedirectUri.reason || "redirect_uri_invalid" } };
+    }
     const method = String(body.token_endpoint_auth_method || "none");
     if (method !== "none") return { status: 400, body: { error: "invalid_client_metadata", error_description: "only_public_clients_supported" } };
     const clientId = `mcp_tests_${randomToken(18)}`;
     const client = {
       client_id: clientId,
       client_id_issued_at: Math.floor(now() / 1000),
-      redirect_uris: redirectUris,
+      redirect_uris: redirectUris.map((item) => item.value),
       token_endpoint_auth_method: "none",
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
@@ -180,14 +237,18 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     const client = clients.get(String(query.client_id || ""));
     if (!client) return { status: 400, body: { error: "invalid_client" } };
     const redirectUri = String(query.redirect_uri || "");
+    const resource = String(query.resource || "");
     if (!client.redirect_uris.includes(redirectUri)) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
     if (!query.code_challenge) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
+    if (!resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
+    if (!matchesResource(resource, issuer)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
     const pid = randomToken(24);
     pending.set(pid, {
       clientId: client.client_id,
       redirectUri,
+      resource,
       codeChallenge: String(query.code_challenge),
       state: query.state === undefined ? "" : String(query.state),
       scope: String(query.scope || "mcp:tools"),
@@ -197,7 +258,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   }
 
   function checkLoginThrottle(req) {
-    const ip = clientIp(req);
+    const ip = clientIp(req, { trustProxyHeaders: trustedProxyHeaders === true });
     const t = now();
     const item = loginAttempts.get(ip) || { resetAt: t + loginWindowMs, count: 0 };
     if (item.resetAt <= t) { item.resetAt = t + loginWindowMs; item.count = 0; }
@@ -206,11 +267,15 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return item.count <= loginLimit;
   }
 
-  function completeLogin({ pid, password, req }) {
+  function completeLogin({ pid, password, req, clientId, redirectUri, scope }) {
     cleanup();
     if (!checkLoginThrottle(req)) { auditOAuth("oauth21_operator_login_rejected", { reason: "login_throttled" }); return { status: 429, body: "Too many attempts" }; }
     const item = pending.get(String(pid || ""));
     if (!item) return { status: 400, body: "Invalid or expired authorization request" };
+    if (!loginBindingMatches(item, { client_id: clientId, redirect_uri: redirectUri, scope })) {
+      auditOAuth("oauth21_operator_login_rejected", { reason: "binding_mismatch", client_id: item.clientId });
+      return { status: 400, body: "Authorization request binding mismatch" };
+    }
     const left = Buffer.from(String(password || ""));
     const right = Buffer.from(operatorSecret);
     const ok = left.length === right.length && crypto.timingSafeEqual(left, right);
@@ -225,13 +290,13 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return { status: 302, location: target.toString() };
   }
 
-  function issue(clientId, scope = "mcp:tools") {
+  function issue(clientId, scope = "mcp:tools", resource = issuer) {
     const accessToken = randomToken(32);
     const refreshToken = randomToken(32);
     const t = now();
     const scopes = String(scope || "mcp:tools").split(/\s+/).filter(Boolean);
-    accessTokens.set(accessToken, { token: accessToken, clientId, scopes, subject: "operator", expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
-    refreshTokens.set(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
+    accessTokens.set(accessToken, { token: accessToken, clientId, scopes, subject: "operator", resource, expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
+    refreshTokens.set(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", resource, expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
     saveOAuthState();
     return { access_token: accessToken, token_type: "Bearer", expires_in: ACCESS_TTL_SECONDS, refresh_token: refreshToken, scope: scopes.join(" ") };
   }
@@ -244,9 +309,11 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       const code = codes.get(String(body.code || ""));
       if (!client || !code || code.used || code.clientId !== client.client_id) return { status: 400, body: { error: "invalid_grant" } };
       if (String(body.redirect_uri || "") !== code.redirectUri) return { status: 400, body: { error: "invalid_grant", error_description: "redirect_uri_mismatch" } };
+      if (!body.resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
+      if (!matchesResource(body.resource, code.resource)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
       if (sha256Base64Url(body.code_verifier || "") !== code.codeChallenge) return { status: 400, body: { error: "invalid_grant", error_description: "pkce_verification_failed" } };
       code.used = true;
-      return { status: 200, body: issue(client.client_id, code.scope) };
+      return { status: 200, body: issue(client.client_id, code.scope, code.resource) };
     }
     if (grant === "refresh_token") {
       const client = clients.get(String(body.client_id || ""));
@@ -255,9 +322,11 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
         auditOAuth("oauth21_refresh_token_rejected", { reason: !client ? "unknown_client" : (!refresh ? "unknown_refresh_token" : "client_mismatch") });
         return { status: 400, body: { error: "invalid_grant" } };
       }
+      if (!body.resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
+      if (!matchesResource(body.resource, refresh.resource)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
       refreshTokens.delete(refresh.token);
       auditOAuth("oauth21_refresh_token_accepted", { client_id: client.client_id, scope_count: refresh.scopes.length });
-      return { status: 200, body: issue(client.client_id, refresh.scopes.join(" ")) };
+      return { status: 200, body: issue(client.client_id, refresh.scopes.join(" "), refresh.resource) };
     }
     return { status: 400, body: { error: "unsupported_grant_type" } };
   }
@@ -269,11 +338,16 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return { status: 200, body: {} };
   }
 
-  function validateAccessToken(value) {
+  function validateAccessToken(value, options = {}) {
     cleanup();
     const item = accessTokens.get(String(value || ""));
     if (!item) {
       auditOAuth("oauth21_access_token_rejected", { reason: "unknown_or_expired_access_token", access_count: accessTokens.size, refresh_count: refreshTokens.size });
+      return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
+    }
+    const expectedResource = String(options.resource || options.audience || issuer || "").trim();
+    if (!matchesResource(item.resource, expectedResource)) {
+      auditOAuth("oauth21_access_token_rejected", { reason: "resource_mismatch", expected_resource: expectedResource, token_resource: item.resource || "" });
       return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
     }
     auditOAuth("oauth21_access_token_accepted", { subject: item.subject, scope_count: item.scopes.length, access_count: accessTokens.size, refresh_count: refreshTokens.size });
@@ -291,10 +365,23 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       if (result.status === 302) return redirectResponse(res, result.location);
       return jsonResponse(res, result.status, result.body);
     }
-    if (url.pathname === "/oauth/operator-login" && req.method === "GET") return htmlResponse(res, 200, buildLoginPage(url.searchParams.get("pid") || ""));
+    if (url.pathname === "/oauth/operator-login" && req.method === "GET") {
+      cleanup();
+      const pid = url.searchParams.get("pid") || "";
+      const item = pending.get(String(pid || ""));
+      if (!item) return htmlResponse(res, 400, "Invalid or expired authorization request");
+      return htmlResponse(res, 200, buildLoginPage(item, pid));
+    }
     if (url.pathname === "/oauth/operator-login" && req.method === "POST") {
       const body = await readBody(req);
-      const result = completeLogin({ pid: body.pid, password: body.password, req });
+      const result = completeLogin({
+        pid: body.pid,
+        password: body.password,
+        req,
+        clientId: body.client_id,
+        redirectUri: body.redirect_uri,
+        scope: body.scope,
+      });
       if (result.status === 302) return redirectResponse(res, result.location);
       return htmlResponse(res, result.status, result.body);
     }
@@ -312,4 +399,4 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   return { issuer, metadata, registerClient, authorize, completeLogin, token, revoke, validateAccessToken, handleRoute, setAuditLog, status: () => ({ issuer, clients: clients.size, pending: pending.size, codes: codes.size, access_tokens: accessTokens.size, refresh_tokens: refreshTokens.size, oauth_state_file: oauthStatePath }) };
 }
 
-module.exports = { createOAuth21AuthorizationServer, sha256Base64Url };
+module.exports = { createOAuth21AuthorizationServer, sha256Base64Url, validateRedirectUri };

@@ -100,7 +100,7 @@ function createOAuthAuth(options = {}) {
       if (hasQueryToken(req)) return { ok: false, status: 400, error: "query_token_forbidden", mode: policyMode };
       const token = extractAuthorizationBearerToken(req);
       if (!token) return { ok: false, status: 401, error: "missing_bearer_token", mode: policyMode };
-      if (tokenValidator) return tokenValidator(token);
+      if (tokenValidator) return tokenValidator(token, { audience });
       if (introspectionClient) {
         const result = introspectionClient.introspect(token);
         if (!result.ok) return { ok: false, status: result.status || 401, error: result.error, mode: policyMode };

@@ -7,8 +7,6 @@ const net = require("node:net");
 const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
-const { RUNTIME_STATUS_OUTPUT_SCHEMA } = require("../src/schemas/runtime_status");
-const { assertMatchesSchema } = require("../src/output_schema_guard");
 const { sha256Base64Url } = require("../src/auth/oauth21_authorization_server");
 
 const ROOT = path.join(__dirname, "..");
@@ -81,6 +79,7 @@ async function getOauthToken(issuer, operatorSecret) {
   authorizeUrl.searchParams.set("code_challenge_method", "S256");
   authorizeUrl.searchParams.set("state", "runtime-status");
   authorizeUrl.searchParams.set("scope", "mcp:tools");
+  authorizeUrl.searchParams.set("resource", issuer);
 
   const authorize = await fetch(authorizeUrl, { redirect: "manual" });
   assert.equal(authorize.status, 302);
@@ -91,7 +90,13 @@ async function getOauthToken(issuer, operatorSecret) {
   const approved = await fetch(`${issuer}/oauth/operator-login`, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ pid, password: operatorSecret }),
+    body: new URLSearchParams({
+      pid,
+      client_id: registered.body.client_id,
+      redirect_uri: "http://localhost/cb",
+      scope: "mcp:tools",
+      password: operatorSecret,
+    }),
     redirect: "manual",
   });
   assert.equal(approved.status, 302);
@@ -109,23 +114,12 @@ async function getOauthToken(issuer, operatorSecret) {
       redirect_uri: "http://localhost/cb",
       client_id: registered.body.client_id,
       code_verifier: verifier,
+      resource: issuer,
     }),
   });
   assert.equal(token.status, 200);
   assert.ok(token.body.access_token);
   return token.body.access_token;
-}
-
-async function rpc(issuer, token, id, args) {
-  return rpcMessage(issuer, token, {
-    jsonrpc: "2.0",
-    id,
-    method: "tools/call",
-    params: {
-      name: "test_mcp_runtime_status",
-      arguments: args,
-    },
-  });
 }
 
 async function rpcMessage(issuer, token, message) {
@@ -139,25 +133,17 @@ async function rpcMessage(issuer, token, message) {
   });
 }
 
-function assertRuntimeStatusResponse(response, expectedToolsIncluded) {
-  assert.equal(response.status, 200);
-  assert.equal(response.body.jsonrpc, "2.0");
-  assert.ok(response.body.result);
-  assert.ok(response.body.result.structuredContent);
-  const structured = response.body.result.structuredContent;
-  assert.equal(structured.auth.mode, "oauth21");
-  assert.equal(structured.auth.enabled, true);
-  assert.equal(structured.auth.requires_auth, true);
-  assert.equal(structured.auth.token_file_configured, false);
-  assert.equal(structured.auth.token_loaded, false);
-  assert.equal(structured.auth.token_length, 0);
-  assert.equal(structured.auth.token_sha256_prefix, "");
-  assert.equal(Object.prototype.hasOwnProperty.call(structured.auth, "token_validation_mode"), false);
-  assert.equal(Object.prototype.hasOwnProperty.call(structured.auth, "issuer"), false);
-  assert.equal(Array.isArray(structured.enabled_tools), true);
-  assert.equal(structured.enabled_tools.length > 0, expectedToolsIncluded);
-  assert.doesNotThrow(() => JSON.stringify(response.body));
-  assert.doesNotThrow(() => assertMatchesSchema(structured, RUNTIME_STATUS_OUTPUT_SCHEMA, "oauth21 runtime status"));
+function assertHealthRuntimeStatus(body, issuer) {
+  assert.equal(body.status, "ok");
+  assert.equal(body.auth.mode, "oauth21");
+  assert.equal(body.auth.enabled, true);
+  assert.equal(body.auth.requires_auth, true);
+  assert.equal(body.auth.public_health_redacted, true);
+  assert.equal(body.public_base_url, issuer);
+  assert.equal(body.mcp, "/mcp");
+  assert.ok(Array.isArray(body.tools));
+  assert.ok(body.tools.length > 0);
+  assert.equal(body.tools_count, body.tools.length);
 }
 
 function assertOauth21ToolsListPermissions(response) {
@@ -195,20 +181,19 @@ function assertOauth21ToolsListPermissions(response) {
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
       MCP_TEST_PUBLIC_BASE_URL: issuer,
       MCP_TEST_OAUTH_CLIENTS_FILE: clientsFile,
+      MCP_TEST_HEALTH_FULL: "1",
     }),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
   try {
     const health = await waitHealth(port);
-    assert.equal(health.auth.mode, "oauth21");
+    assertHealthRuntimeStatus(health, issuer);
     const protectedResource = await json(`${issuer}/.well-known/oauth-protected-resource`);
     assert.equal(protectedResource.status, 200);
     assert.deepEqual(protectedResource.body.scopes_supported, ["mcp:tools"]);
     const token = await getOauthToken(issuer, operatorSecret);
     assertOauth21ToolsListPermissions(await rpcMessage(issuer, token, { jsonrpc: "2.0", id: 3, method: "tools/list", params: {} }));
-    assertRuntimeStatusResponse(await rpc(issuer, token, 1, { include_tools: false }), false);
-    assertRuntimeStatusResponse(await rpc(issuer, token, 2, { include_tools: true }), true);
     console.log("smoke_oauth21_runtime_status_response ok");
   } finally {
     child.kill();

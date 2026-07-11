@@ -73,8 +73,12 @@ function redirectResponse(res, location) {
   res.end();
 }
 
-function clientIp(req = {}) {
-  return String(req.headers?.["cf-connecting-ip"] || req.headers?.["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
+function clientIp(req = {}, options = {}) {
+  const trustProxyHeaders = options.trustProxyHeaders === true;
+  if (trustProxyHeaders) {
+    return String(req.headers?.["cf-connecting-ip"] || req.headers?.["x-forwarded-for"] || req.socket?.remoteAddress || "unknown").split(",")[0].trim();
+  }
+  return String(req.socket?.remoteAddress || "unknown").split(",")[0].trim();
 }
 
 module.exports = {
