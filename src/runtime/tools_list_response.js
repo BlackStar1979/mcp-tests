@@ -26,7 +26,7 @@ function withSecuritySchemes(tool, authMode) {
 
 function buildToolsListResponse(tools, options = {}) {
   const sourceTools = Array.isArray(tools) ? tools : [];
-  const toolSurface = buildToolSurfaceFingerprint(sourceTools);
+  const toolSurface = options.toolIntrospection?.toolSurface || buildToolSurfaceFingerprint(sourceTools);
   const serverStartId = typeof options.serverStartId === "string" ? options.serverStartId : "";
   return {
     tools: sourceTools.map((tool) => withSecuritySchemes(tool, options.authMode)),

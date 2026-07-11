@@ -20,6 +20,7 @@ async function dispatchRpcMessage({
   authMode,
   profile,
   tools,
+  toolIntrospection,
   toolsList,
   documentRuntimeContext,
   auditLog,
@@ -29,7 +30,19 @@ async function dispatchRpcMessage({
   disableLegacyInitialize,
 }) {
   const { id, method, params } = prelude;
-  const getTools = typeof toolsList === "function" ? toolsList : () => tools;
+  let resolvedTools = null;
+  const getTools = () => {
+    if (resolvedTools) return resolvedTools;
+    resolvedTools = typeof toolsList === "function" ? toolsList() : tools;
+    return resolvedTools;
+  };
+  const getToolIntrospection = typeof toolIntrospection === "function"
+    ? toolIntrospection
+    : () => ({
+      tools: getTools(),
+      toolSurface: undefined,
+      schemaCompatibility: undefined,
+    });
 
   switch (method) {
     case "initialize": {
@@ -46,6 +59,7 @@ async function dispatchRpcMessage({
         authMode,
         profile,
         tools: getTools(),
+        toolIntrospection: getToolIntrospection(),
         serverStartId,
         auditLog,
         requestId: context.requestId,
@@ -69,6 +83,7 @@ async function dispatchRpcMessage({
         authMode,
         profile,
         tools: getTools(),
+        toolIntrospection: getToolIntrospection(),
         serverStartId,
         disableLegacyInitialize,
         auditLog,
@@ -78,7 +93,14 @@ async function dispatchRpcMessage({
     }
 
     case "tools/list": {
-      return handleToolsListMessage(id, getTools(), { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId, serverStartId });
+      return handleToolsListMessage(id, getTools(), {
+        authMode,
+        auditLog,
+        requestId: context.requestId,
+        sessionId: context.sessionId,
+        serverStartId,
+        toolIntrospection: getToolIntrospection(),
+      });
     }
 
     case "resources/list": {

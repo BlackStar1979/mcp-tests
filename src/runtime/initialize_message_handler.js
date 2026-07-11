@@ -13,6 +13,7 @@ function handleInitializeMessage({
   authMode,
   profile,
   tools,
+  toolIntrospection,
   serverStartId,
   listChangedEnabled,
   auditLog,
@@ -41,6 +42,7 @@ function handleInitializeMessage({
     authMode,
     profile,
     tools,
+    toolIntrospection,
     serverStartId,
     listChangedEnabled,
   }));

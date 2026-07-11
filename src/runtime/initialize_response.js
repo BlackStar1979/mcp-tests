@@ -12,9 +12,14 @@ function buildInitializeResponse({
   authMode,
   profile,
   tools,
+  toolIntrospection,
   serverStartId,
 }) {
   const negotiated = negotiateInitializeProtocolVersion(protocolVersion);
+  const introspection = toolIntrospection && typeof toolIntrospection === "object"
+    ? toolIntrospection
+    : null;
+  const sourceTools = Array.isArray(introspection?.tools) ? introspection.tools : tools;
   return {
     protocolVersion: negotiated.protocolVersion,
     capabilities: {
@@ -30,9 +35,9 @@ function buildInitializeResponse({
       authMode,
       profile,
       serverStartId: typeof serverStartId === "string" ? serverStartId : "",
-      enabledTools: tools.map((tool) => tool.name),
-      toolSurface: buildToolSurfaceFingerprint(tools),
-      schemaCompatibility: assertToolSchemas(tools),
+      enabledTools: sourceTools.map((tool) => tool.name),
+      toolSurface: introspection?.toolSurface || buildToolSurfaceFingerprint(sourceTools),
+      schemaCompatibility: introspection?.schemaCompatibility || assertToolSchemas(sourceTools),
     },
     instructions:
       `TEST MCP workbench server for connector compatibility, bounded code sampling, and controlled network tools. ` +

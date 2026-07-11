@@ -1,5 +1,6 @@
 "use strict";
 
+const { assertToolSchemas, buildToolSurfaceFingerprint } = require("../schema_compat");
 const { createAuditLogger } = require("./audit_log");
 const { createDocumentRuntimeContext } = require("./document_runtime_context");
 const { createRuntimeRegistryContextFactory } = require("./registry_context_assembly");
@@ -47,20 +48,39 @@ function createRuntimeSupportAssembly({
 
   let cachedToolsSignature = "";
   let cachedToolsDescriptors = null;
+  let cachedToolIntrospection = null;
 
   function toolsList() {
     const signature = optionalToolsSignature(optionalTools);
     if (!cachedToolsDescriptors || cachedToolsSignature !== signature) {
       cachedToolsDescriptors = Object.freeze(registryContext({ label: "runtime-tools-list" }).descriptors().slice());
       cachedToolsSignature = signature;
+      cachedToolIntrospection = null;
     }
     return cachedToolsDescriptors.slice();
+  }
+
+  function toolIntrospection() {
+    const tools = toolsList();
+    if (!cachedToolIntrospection) {
+      cachedToolIntrospection = {
+        tools,
+        toolSurface: buildToolSurfaceFingerprint(tools),
+        schemaCompatibility: assertToolSchemas(tools),
+      };
+    }
+    return {
+      tools: cachedToolIntrospection.tools.slice(),
+      toolSurface: cachedToolIntrospection.toolSurface,
+      schemaCompatibility: cachedToolIntrospection.schemaCompatibility,
+    };
   }
 
   return {
     auditLog,
     documentRuntimeContext,
     registryContext,
+    toolIntrospection,
     toolsList,
   };
 }

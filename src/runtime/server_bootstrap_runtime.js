@@ -24,7 +24,6 @@ const { loadServerProfileConfig } = require("../server_profile_loader");
 const { createRestartController } = require("./restart_controller");
 const { createRuntimeRateLimiter } = require("./rate_limit_policy");
 const { DOCS } = require("./static_docs");
-const { buildToolSurfaceFingerprint } = require("../schema_compat");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
 
 const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
@@ -95,7 +94,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const stageStatus = CURRENT_STAGE_STATUS;
   const securityBoundary = assertSecurityBoundary({ profile: runtimeProfile, authPolicy, stageStatus });
 
-  const { auditLog, documentRuntimeContext, toolsList, registryContext } = createRuntimeSupportAssembly({
+  const { auditLog, documentRuntimeContext, toolIntrospection, toolsList, registryContext } = createRuntimeSupportAssembly({
     auditLogPath,
     auditVersion: AUDIT_VERSION,
     serverName: SERVER_NAME,
@@ -149,7 +148,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const toolSurfaceStateFile = env.MCP_TEST_TOOL_SURFACE_STATE_FILE || defaultToolSurfaceStateFile(rootDir);
   evaluateToolSurfaceState({
     stateFile: toolSurfaceStateFile,
-    currentSurface: buildToolSurfaceFingerprint(toolsList()),
+    currentSurface: toolIntrospection().toolSurface,
     serverStartId,
     auditLog,
   });
@@ -189,6 +188,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     stageStatus,
     securityBoundary,
     publicBaseUrl,
+    toolIntrospection,
     toolsList,
     authorizationServerMetadataProvider,
     oauth21AuthorizationServer,

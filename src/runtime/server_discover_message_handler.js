@@ -15,14 +15,20 @@ function handleServerDiscoverMessage({
   authMode,
   profile,
   tools,
+  toolIntrospection,
   serverStartId,
   disableLegacyInitialize,
   auditLog,
   requestId,
   sessionId,
 } = {}) {
-  const sourceTools = Array.isArray(tools) ? tools : [];
-  const toolSurface = buildToolSurfaceFingerprint(sourceTools);
+  const introspection = toolIntrospection && typeof toolIntrospection === "object"
+    ? toolIntrospection
+    : null;
+  const sourceTools = Array.isArray(introspection?.tools)
+    ? introspection.tools
+    : Array.isArray(tools) ? tools : [];
+  const toolSurface = introspection?.toolSurface || buildToolSurfaceFingerprint(sourceTools);
   const resolvedProtocolVersion = typeof protocolVersion === "string" && protocolVersion
     ? protocolVersion
     : SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS[0];
@@ -64,7 +70,7 @@ function handleServerDiscoverMessage({
       serverStartId: typeof serverStartId === "string" ? serverStartId : "",
       enabledTools: sourceTools.map((tool) => tool.name),
       toolSurface,
-      schemaCompatibility: assertToolSchemas(sourceTools),
+      schemaCompatibility: introspection?.schemaCompatibility || assertToolSchemas(sourceTools),
     },
     server: {
       name: serverName,
