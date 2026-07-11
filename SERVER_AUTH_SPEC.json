@@ -142,7 +142,7 @@
   "dynamic_client_registration_policy": {
     "status": "implemented_h4_policy",
     "dcr_mode": "supported",
-    "runtime_registration_endpoint_implemented_by_mcp_tests": false,
+    "runtime_registration_endpoint_implemented_by_mcp_tests": true,
     "authorization_server_registration_endpoint_required_when_dcr_enabled": true,
     "manual_registration_fallback_allowed": true,
     "wildcard_redirect_uris_forbidden": true,

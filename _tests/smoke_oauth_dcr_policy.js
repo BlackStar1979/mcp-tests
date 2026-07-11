@@ -4,7 +4,7 @@ const spec=require("../SERVER_AUTH_SPEC.json");
 const policy=spec.dynamic_client_registration_policy;
 assert.equal(policy.status,"implemented_h4_policy");
 assert.equal(policy.dcr_mode,"supported");
-assert.equal(policy.runtime_registration_endpoint_implemented_by_mcp_tests,false);
+assert.equal(policy.runtime_registration_endpoint_implemented_by_mcp_tests,true);
 assert.equal(policy.authorization_server_registration_endpoint_required_when_dcr_enabled,true);
 assert.equal(policy.manual_registration_fallback_allowed,true);
 assert.equal(policy.wildcard_redirect_uris_forbidden,true);
