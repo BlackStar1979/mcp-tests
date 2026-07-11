@@ -9,6 +9,7 @@
     "src/runtime/create_server_route_dispatcher.js",
     "src/runtime/mcp_entry_dispatcher.js",
     "src/auth/oauth21_authorization_server.js",
+    "src/auth/oauth21_mcp_authorization_server.js",
     "src/tool_loader.js",
     "src/runtime_status.js",
     "src/observability_status.js",
@@ -247,6 +248,9 @@
     ]
   },
   "oauth21_runtime": {
+    "authorization_server_issuer": "<public_base_url>",
+    "canonical_protected_resource": "<public_base_url>/mcp",
+    "legacy_root_audience_is_canonicalized": true,
     "durable_state": {
       "env": "MCP_TEST_OAUTH_STATE_FILE",
       "default": "~/.romion/tests_oauth_state.json",
