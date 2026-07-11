@@ -7,6 +7,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   focused:
@@ -58,9 +59,22 @@ jobs:
 
       - name: Run full offline smoke suite
         shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
           set +e
           npm test > full-suite.log 2>&1
           status=$?
           tail -n 40 full-suite.log
+          if [ "$status" -ne 0 ]; then
+            {
+              echo "Full offline smoke suite failed on commit $GITHUB_SHA."
+              echo
+              echo '```text'
+              tail -n 80 full-suite.log
+              echo '```'
+            } > failure-comment.md
+            gh pr comment "$PR_NUMBER" --body-file failure-comment.md
+          fi
           exit $status
