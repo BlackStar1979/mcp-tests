@@ -27,6 +27,10 @@ function invalidRequestError() {
   return error;
 }
 
+function normalizedContentType(req) {
+  return String(req.headers?.["content-type"] || "").toLowerCase().split(";")[0].trim();
+}
+
 function readRequestBody(req, maxBytes = 65536) {
   return new Promise((resolve, reject) => {
     let raw = "";
@@ -41,8 +45,7 @@ function readRequestBody(req, maxBytes = 65536) {
 
 async function readBody(req) {
   const raw = await readRequestBody(req);
-  const contentType = String(req.headers?.["content-type"] || "").toLowerCase();
-  if (contentType.includes("application/json")) {
+  if (normalizedContentType(req) === "application/json") {
     try {
       return JSON.parse(raw || "{}");
     } catch (_) {
@@ -53,14 +56,12 @@ async function readBody(req) {
 }
 
 async function readJsonBody(req) {
-  const contentType = String(req.headers?.["content-type"] || "").toLowerCase();
-  if (!contentType.includes("application/json")) throw invalidRequestError();
+  if (normalizedContentType(req) !== "application/json") throw invalidRequestError();
   return readBody(req);
 }
 
 async function readFormBody(req) {
-  const contentType = String(req.headers?.["content-type"] || "").toLowerCase();
-  if (!contentType.includes("application/x-www-form-urlencoded")) throw invalidRequestError();
+  if (normalizedContentType(req) !== "application/x-www-form-urlencoded") throw invalidRequestError();
   const raw = await readRequestBody(req);
   return parseForm(raw);
 }
