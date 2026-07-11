@@ -20,6 +20,9 @@ function buildInitializeResponse({
     ? toolIntrospection
     : null;
   const sourceTools = Array.isArray(introspection?.tools) ? introspection.tools : tools;
+  const enabledTools = Array.isArray(introspection?.toolNames)
+    ? introspection.toolNames.slice()
+    : sourceTools.map((tool) => tool.name);
   return {
     protocolVersion: negotiated.protocolVersion,
     capabilities: {
@@ -35,7 +38,7 @@ function buildInitializeResponse({
       authMode,
       profile,
       serverStartId: typeof serverStartId === "string" ? serverStartId : "",
-      enabledTools: sourceTools.map((tool) => tool.name),
+      enabledTools,
       toolSurface: introspection?.toolSurface || buildToolSurfaceFingerprint(sourceTools),
       schemaCompatibility: introspection?.schemaCompatibility || assertToolSchemas(sourceTools),
     },

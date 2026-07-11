@@ -28,6 +28,9 @@ function handleServerDiscoverMessage({
   const sourceTools = Array.isArray(introspection?.tools)
     ? introspection.tools
     : Array.isArray(tools) ? tools : [];
+  const enabledTools = Array.isArray(introspection?.toolNames)
+    ? introspection.toolNames.slice()
+    : sourceTools.map((tool) => tool.name);
   const toolSurface = introspection?.toolSurface || buildToolSurfaceFingerprint(sourceTools);
   const resolvedProtocolVersion = typeof protocolVersion === "string" && protocolVersion
     ? protocolVersion
@@ -68,7 +71,7 @@ function handleServerDiscoverMessage({
       authMode,
       profile,
       serverStartId: typeof serverStartId === "string" ? serverStartId : "",
-      enabledTools: sourceTools.map((tool) => tool.name),
+      enabledTools,
       toolSurface,
       schemaCompatibility: introspection?.schemaCompatibility || assertToolSchemas(sourceTools),
     },
