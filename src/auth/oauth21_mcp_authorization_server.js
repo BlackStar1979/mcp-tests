@@ -30,56 +30,24 @@ function createOAuth21McpAuthorizationServer({
     ...options,
   });
 
-  function acceptsRequestedResource(value) {
-    if (matchesResource(value, normalizedResource)) return true;
-    return allowIssuerResourceAlias === true && matchesResource(value, normalizedIssuer);
-  }
-
-  function canonicalizeResourceInput(input = {}) {
-    const requestedResource = String(input.resource || "");
-    if (!requestedResource) {
-      return {
-        ok: false,
-        result: {
-          status: 400,
-          body: {
-            error: "invalid_target",
-            error_description: "resource_required",
-          },
-        },
-      };
-    }
-    if (!acceptsRequestedResource(requestedResource)) {
-      return {
-        ok: false,
-        result: {
-          status: 400,
-          body: {
-            error: "invalid_target",
-            error_description: "resource_mismatch",
-          },
-        },
-      };
-    }
-    return {
-      ok: true,
-      input: {
-        ...input,
-        resource: normalizedIssuer,
-      },
-    };
+  function mapRequestedResource(value) {
+    if (matchesResource(value, normalizedResource)) return normalizedIssuer;
+    if (allowIssuerResourceAlias === true && matchesResource(value, normalizedIssuer)) return normalizedIssuer;
+    return value;
   }
 
   function authorize(query = {}) {
-    const mapped = canonicalizeResourceInput(query);
-    if (!mapped.ok) return mapped.result;
-    return inner.authorize(mapped.input);
+    return inner.authorize({
+      ...query,
+      resource: mapRequestedResource(query.resource),
+    });
   }
 
   function token(body = {}) {
-    const mapped = canonicalizeResourceInput(body);
-    if (!mapped.ok) return mapped.result;
-    return inner.token(mapped.input);
+    return inner.token({
+      ...body,
+      resource: mapRequestedResource(body.resource),
+    });
   }
 
   function validateAccessToken(value, options = {}) {
