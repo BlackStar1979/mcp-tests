@@ -19,6 +19,7 @@ const { resolveAuthBootstrapConfig } = require("./auth_bootstrap_config_resolver
 const { createAuthorizationServerMetadataProvider } = require("../auth/oauth_authorization_server_metadata");
 const { createOAuth21AuthorizationServer } = require("../auth/oauth21_authorization_server");
 const { loadOAuth21SecretConfig } = require("./oauth21_secret_config");
+const { canonicalResource } = require("./oauth_metadata");
 const { parseServerCliArgs } = require("./server_cli_args");
 const { loadServerProfileConfig } = require("../server_profile_loader");
 const { createRestartController } = require("./restart_controller");
@@ -48,6 +49,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const host = bootstrapConfig.host;
   const port = bootstrapConfig.port;
   const publicBaseUrl = bootstrapConfig.publicBaseUrl;
+  const mcpResourceUrl = canonicalResource(publicBaseUrl);
 
   const outputMode = String(env.MCP_TEST_OUTPUT_MODE || "structured")
     .trim()
@@ -67,6 +69,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     oauth21Issuer = secretConfig.issuer;
     oauth21AuthorizationServer = createOAuth21AuthorizationServer({
       issuer: oauth21Issuer,
+      resource: mcpResourceUrl,
       operatorSecret: secretConfig.operatorSecret,
       trustedProxyHeaders: bootstrapConfig.trustedProxy === true,
     });
@@ -79,7 +82,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     trustedProxy: bootstrapConfig.trustedProxy,
     publicBaseUrl,
     oauthIssuer: oauth21Issuer || env.MCP_TEST_OAUTH_ISSUER,
-    oauthAudience: env.MCP_TEST_OAUTH_AUDIENCE || publicBaseUrl,
+    oauthAudience: env.MCP_TEST_OAUTH_AUDIENCE || mcpResourceUrl,
     oauthHmacSecretFile: env.MCP_TEST_OAUTH_HS256_SECRET_FILE,
     oauthJwksFile: env.MCP_TEST_OAUTH_JWKS_FILE,
     tokenValidator: oauth21AuthorizationServer ? oauth21AuthorizationServer.validateAccessToken : undefined,

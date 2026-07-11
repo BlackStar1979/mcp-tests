@@ -251,6 +251,7 @@
   "oauth21_local_authorization_server": {
     "status": "implemented_h10",
     "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+    "oauth_resource": "https://mcp-tests-oauth21.romionologic.dev/mcp",
     "mcp_path": "/mcp",
     "port": 3008,
     "cloudflare_access_required": false,
@@ -263,9 +264,14 @@
       "/revoke"
     ],
     "protected_resource_metadata": "/.well-known/oauth-protected-resource",
+    "protected_resource_metadata_resource_value": "https://mcp-tests-oauth21.romionologic.dev/mcp",
     "dcr_public": true,
     "pkce_required": true,
     "pkce_method": "S256",
+    "resource_parameter_canonical_value": "https://mcp-tests-oauth21.romionologic.dev/mcp",
+    "resource_parameter_legacy_aliases": [
+      "https://mcp-tests-oauth21.romionologic.dev"
+    ],
     "operator_secret_source_order": [
       "cli_file",
       "env_fallback"

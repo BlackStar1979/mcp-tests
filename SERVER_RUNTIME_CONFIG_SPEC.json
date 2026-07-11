@@ -247,6 +247,12 @@
     ]
   },
   "oauth21_runtime": {
+    "oauth_resource_binding": {
+      "canonical_value": "public_base_url + /mcp",
+      "legacy_accepted_aliases": [
+        "public_base_url"
+      ]
+    },
     "durable_state": {
       "env": "MCP_TEST_OAUTH_STATE_FILE",
       "default": "~/.romion/tests_oauth_state.json",

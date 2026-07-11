@@ -3,10 +3,12 @@ const assert=require("node:assert/strict");
 const {createOAuth21AuthorizationServer,sha256Base64Url}=require("../src/auth/oauth21_authorization_server");
 
 const issuer="https://example.test";
+const resource=`${issuer}/mcp`;
 const redirectUri="https://client.example/callback";
 const verifier="abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz";
 const server=createOAuth21AuthorizationServer({
   issuer,
+  resource,
   operatorSecret:"stage12-oauth21-operator-secret",
 });
 
@@ -36,7 +38,7 @@ const authorize=server.authorize({
   code_challenge_method:"S256",
   code_challenge:sha256Base64Url(verifier),
   state:"resource-good-1",
-  resource:issuer,
+  resource,
 });
 assert.equal(authorize.status,302);
 
@@ -58,7 +60,7 @@ const wrongResourceToken=server.token({
   redirect_uri:redirectUri,
   client_id:clientId,
   code_verifier:verifier,
-  resource:"https://other.example",
+  resource:"https://other.example/mcp",
 });
 assert.equal(wrongResourceToken.status,400);
 assert.equal(wrongResourceToken.body.error,"invalid_target");
@@ -71,7 +73,7 @@ const authorized=server.authorize({
   code_challenge_method:"S256",
   code_challenge:sha256Base64Url(verifier),
   state:"resource-good-2",
-  resource:issuer,
+  resource,
 });
 const pid2=new URL(authorized.location).searchParams.get("pid");
 const approved2=server.completeLogin({
@@ -89,17 +91,18 @@ const token=server.token({
   redirect_uri:redirectUri,
   client_id:clientId,
   code_verifier:verifier,
-  resource:issuer,
+  resource,
 });
 assert.equal(token.status,200);
+assert.equal(server.validateAccessToken(token.body.access_token,{audience:resource}).ok,true);
 assert.equal(server.validateAccessToken(token.body.access_token,{audience:issuer}).ok,true);
-assert.equal(server.validateAccessToken(token.body.access_token,{audience:"https://other.example"}).ok,false);
+assert.equal(server.validateAccessToken(token.body.access_token,{audience:"https://other.example/mcp"}).ok,false);
 
 const refreshed=server.token({
   grant_type:"refresh_token",
   client_id:clientId,
   refresh_token:token.body.refresh_token,
-  resource:issuer,
+  resource,
 });
 assert.equal(refreshed.status,200);
 
@@ -107,7 +110,7 @@ const badRefresh=server.token({
   grant_type:"refresh_token",
   client_id:clientId,
   refresh_token:refreshed.body.refresh_token,
-  resource:"https://other.example",
+  resource:"https://other.example/mcp",
 });
 assert.equal(badRefresh.status,400);
 assert.equal(badRefresh.body.error,"invalid_target");
@@ -125,8 +128,19 @@ const loopbackAuthorize=server.authorize({
   code_challenge_method:"S256",
   code_challenge:sha256Base64Url(verifier),
   state:"loopback-port-flex",
-  resource:issuer,
+  resource,
 });
 assert.equal(loopbackAuthorize.status,302);
+
+const backwardCompatibleAuthorize=server.authorize({
+  client_id:clientId,
+  redirect_uri:redirectUri,
+  response_type:"code",
+  code_challenge_method:"S256",
+  code_challenge:sha256Base64Url(verifier),
+  state:"resource-root-compat",
+  resource:issuer,
+});
+assert.equal(backwardCompatibleAuthorize.status,302);
 
 console.log("smoke_oauth21_resource_binding ok");

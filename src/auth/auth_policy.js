@@ -45,7 +45,7 @@ function authResponseHeaders(policy) {
   if (!policy) return {};
   if (policy.mode === "oauth" || policy.mode === "oauth21") {
     return {
-      "www-authenticate": buildWwwAuthenticateHeader({ publicBaseUrl: policy.audience, error: "invalid_token", scope: "mcp:tools" }),
+      "www-authenticate": buildWwwAuthenticateHeader({ publicBaseUrl: policy.publicBaseUrl || policy.audience, error: "invalid_token", scope: "mcp:tools" }),
     };
   }
   if (policy.mode !== "bearer") {

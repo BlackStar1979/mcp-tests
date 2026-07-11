@@ -10,12 +10,13 @@ const stateFile = path.join(tmp, "state.json");
 process.env.MCP_TEST_OAUTH_STATE_FILE = stateFile;
 
 const issuer = "http://127.0.0.1:3008";
+const resource = `${issuer}/mcp`;
 const operatorSecret = "operator-secret";
 const redirectUri = "https://chat.openai.com/aip/callback";
 const verifier = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz";
 
 const events1 = [];
-const server1 = createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile });
+const server1 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile });
 server1.setAuditLog((event, data) => events1.push({ event, data }));
 assert.ok(events1.some((x) => x.event === "oauth21_state_missing"));
 const registration = server1.registerClient({ redirect_uris: [redirectUri], token_endpoint_auth_method: "none" });
@@ -28,14 +29,14 @@ const auth = server1.authorize({
   code_challenge_method: "S256",
   code_challenge: sha256Base64Url(verifier),
   state: "abc",
-  resource: issuer,
+  resource,
 });
 assert.equal(auth.status, 302);
 const pid = new URL(auth.location).searchParams.get("pid");
 const login = server1.completeLogin({ pid, password: operatorSecret, clientId, redirectUri, scope: "mcp:tools", req: { socket: { remoteAddress: "127.0.0.1" }, headers: {} } });
 assert.equal(login.status, 302);
 const code = new URL(login.location).searchParams.get("code");
-const issued = server1.token({ grant_type: "authorization_code", client_id: clientId, code, redirect_uri: redirectUri, code_verifier: verifier, resource: issuer });
+const issued = server1.token({ grant_type: "authorization_code", client_id: clientId, code, redirect_uri: redirectUri, code_verifier: verifier, resource });
 assert.equal(issued.status, 200);
 assert.ok(issued.body.access_token);
 assert.ok(issued.body.refresh_token);
@@ -43,30 +44,31 @@ assert.ok(fs.existsSync(stateFile));
 assert.ok(events1.some((x) => x.event === "oauth21_state_saved"));
 
 const events2 = [];
-const server2 = createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile });
+const server2 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile });
 server2.setAuditLog((event, data) => events2.push({ event, data }));
 assert.ok(events2.some((x) => x.event === "oauth21_state_loaded"));
+assert.equal(server2.validateAccessToken(issued.body.access_token, { audience: resource }).ok, true);
 assert.equal(server2.validateAccessToken(issued.body.access_token, { audience: issuer }).ok, true);
 assert.ok(events2.some((x) => x.event === "oauth21_access_token_accepted"));
-const refreshed = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource: issuer });
+const refreshed = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource });
 assert.equal(refreshed.status, 200);
 assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_accepted"));
 assert.ok(refreshed.body.access_token);
 assert.notEqual(refreshed.body.refresh_token, issued.body.refresh_token);
 
-const replay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource: issuer });
+const replay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource });
 assert.equal(replay.status, 400);
 assert.equal(replay.body.error, "invalid_grant");
 assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_rejected" && x.data.reason === "refresh_token_reuse_detected"));
 
-const revokedByReplay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: refreshed.body.refresh_token, resource: issuer });
+const revokedByReplay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: refreshed.body.refresh_token, resource });
 assert.equal(revokedByReplay.status, 400);
 assert.equal(revokedByReplay.body.error, "invalid_grant");
 
 const events3 = [];
-const server3 = createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile });
+const server3 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile });
 server3.setAuditLog((event, data) => events3.push({ event, data }));
-const replayAfterRestart = server3.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource: issuer });
+const replayAfterRestart = server3.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource });
 assert.equal(replayAfterRestart.status, 400);
 assert.equal(replayAfterRestart.body.error, "invalid_grant");
 assert.ok(events3.some((x) => x.event === "oauth21_refresh_token_rejected" && x.data.reason === "refresh_token_reuse_detected"));

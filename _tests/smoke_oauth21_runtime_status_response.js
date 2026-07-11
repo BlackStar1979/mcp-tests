@@ -57,6 +57,7 @@ async function json(url, options = {}) {
 }
 
 async function getOauthToken(issuer, operatorSecret) {
+  const resource = `${issuer}/mcp`;
   const registered = await json(`${issuer}/register`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -79,7 +80,7 @@ async function getOauthToken(issuer, operatorSecret) {
   authorizeUrl.searchParams.set("code_challenge_method", "S256");
   authorizeUrl.searchParams.set("state", "runtime-status");
   authorizeUrl.searchParams.set("scope", "mcp:tools");
-  authorizeUrl.searchParams.set("resource", issuer);
+  authorizeUrl.searchParams.set("resource", resource);
 
   const authorize = await fetch(authorizeUrl, { redirect: "manual" });
   assert.equal(authorize.status, 302);
@@ -115,7 +116,7 @@ async function getOauthToken(issuer, operatorSecret) {
       redirect_uri: "http://localhost/cb",
       client_id: registered.body.client_id,
       code_verifier: verifier,
-      resource: issuer,
+      resource,
     }),
   });
   assert.equal(token.status, 200);
@@ -192,6 +193,7 @@ function assertOauth21ToolsListPermissions(response) {
     assertHealthRuntimeStatus(health, issuer);
     const protectedResource = await json(`${issuer}/.well-known/oauth-protected-resource`);
     assert.equal(protectedResource.status, 200);
+    assert.equal(protectedResource.body.resource, `${issuer}/mcp`);
     assert.deepEqual(protectedResource.body.scopes_supported, ["mcp:tools"]);
     const token = await getOauthToken(issuer, operatorSecret);
     assertOauth21ToolsListPermissions(await rpcMessage(issuer, token, { jsonrpc: "2.0", id: 3, method: "tools/list", params: {} }));

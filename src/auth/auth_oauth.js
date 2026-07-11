@@ -69,6 +69,7 @@ function createOAuthAuth(options = {}) {
   const policyMode = String(options.mode || "oauth").trim().toLowerCase();
   const tokenValidator = typeof options.tokenValidator === "function" ? options.tokenValidator : null;
   const issuer = String(options.issuer || process.env.MCP_TEST_OAUTH_ISSUER || "").trim();
+  const publicBaseUrl = String(options.publicBaseUrl || "").replace(/\/+$/, "");
   const audience = String(options.audience || process.env.MCP_TEST_OAUTH_AUDIENCE || options.publicBaseUrl || "").replace(/\/+$/, "");
   const jwksFile = String(options.jwksFile || process.env.MCP_TEST_OAUTH_JWKS_FILE || "").trim();
   const secretFile = String(options.hmacSecretFile || process.env.MCP_TEST_OAUTH_HS256_SECRET_FILE || "").trim();
@@ -95,6 +96,7 @@ function createOAuthAuth(options = {}) {
     enabled: true,
     requiresAuth: true,
     issuer,
+    publicBaseUrl,
     audience,
     authenticate(req = {}) {
       if (hasQueryToken(req)) return { ok: false, status: 400, error: "query_token_forbidden", mode: policyMode };
@@ -136,6 +138,7 @@ function createOAuthAuth(options = {}) {
         accepted_token_source: "authorization_header_only",
         query_token_forbidden: true,
         issuer,
+        public_base_url: publicBaseUrl,
         audience,
         token_validation_mode: tokenValidator ? "local_oauth21_as" : (jwksCache ? "jwks_rs256" : (introspectionClient ? "introspection" : "hs256_test")),
         jwks_configured: Boolean(jwksCache),
