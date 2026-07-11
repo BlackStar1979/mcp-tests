@@ -10,7 +10,9 @@
     "query_token_forbidden": true,
     "token_passthrough_forbidden": true,
     "audience_binding_required": true,
-    "canonical_resource_from_public_base_url": true
+    "canonical_resource_from_public_base_url": true,
+    "canonical_mcp_resource_suffix": "/mcp",
+    "authorization_server_issuer_and_mcp_resource_are_distinct": true
   },
   "authorization_server": {
     "implemented_by_mcp_tests": true,
@@ -41,7 +43,11 @@
       ]
     },
     "oauth21": {
-      "status": "implemented_local_oauth21_authorization_server_primary_authenticated_instance"
+      "status": "implemented_local_oauth21_authorization_server_primary_authenticated_instance",
+      "authorization_server_issuer": "<public_base_url>",
+      "canonical_protected_resource": "<public_base_url>/mcp",
+      "issuer_root_input_alias_temporarily_accepted": true,
+      "issuer_root_alias_must_not_be_advertised_as_canonical_resource": true
     }
   },
   "scope_matrix": {
@@ -206,7 +212,8 @@
     "resource_parameter_must_match_protected_resource_metadata_resource": true,
     "server_role": "resource_server_validates_access_tokens_only",
     "server_must_not_issue_authorization_codes": false,
-    "guard": "_tests/smoke_oauth_pkce_policy.js"
+    "guard": "_tests/smoke_oauth_pkce_policy.js",
+    "mcp_resource_integration_guard": "_tests/smoke_oauth21_local_as_flow.js"
   },
   "jwks_key_rotation": {
     "status": "implemented_h6",
@@ -251,6 +258,8 @@
   "oauth21_local_authorization_server": {
     "status": "implemented_h10",
     "public_base_url": "https://mcp-tests-oauth21.romionologic.dev",
+    "authorization_server_issuer": "https://mcp-tests-oauth21.romionologic.dev",
+    "canonical_protected_resource": "https://mcp-tests-oauth21.romionologic.dev/mcp",
     "mcp_path": "/mcp",
     "port": 3008,
     "cloudflare_access_required": false,
@@ -279,7 +288,8 @@
     "guards": [
       "_tests/smoke_oauth21_bootstrap_config.js",
       "_tests/smoke_oauth21_host_header.js",
-      "_tests/smoke_oauth21_local_as_flow.js"
+      "_tests/smoke_oauth21_local_as_flow.js",
+      "_tests/smoke_oauth21_resource_binding.js"
     ],
     "target_runtime_role": "primary_authenticated_oauth21_test_server",
     "paired_public_instance": {
@@ -353,6 +363,7 @@
     "source_files": [
       "src/runtime/auth_bootstrap_config_resolver.js",
       "src/auth/auth_policy.js",
+      "src/auth/oauth21_mcp_authorization_server.js",
       "server.js"
     ]
   },
