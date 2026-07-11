@@ -1,0 +1,46 @@
+name: OAuth21 Resource Fix Verification
+
+on:
+  push:
+    branches:
+      - fix/oauth21-mcp-resource
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Check changed JavaScript syntax
+        run: |
+          node --check src/auth/auth_oauth.js
+          node --check src/auth/auth_policy.js
+          node --check src/auth/oauth21_mcp_authorization_server.js
+          node --check src/runtime/create_server_route_dispatcher.js
+          node --check src/runtime/oauth_metadata.js
+          node --check src/runtime/server_bootstrap_runtime.js
+          node --check _tests/smoke_oauth21_resource_binding.js
+          node --check _tests/smoke_oauth21_local_as_flow.js
+
+      - name: Run focused OAuth21 resource tests
+        run: |
+          node _tests/smoke_oauth21_resource_binding.js
+          node _tests/smoke_oauth21_local_as_flow.js
+          node _tests/smoke_oauth21_runtime_status_response.js
+
+      - name: Run full offline smoke suite
+        run: npm test
