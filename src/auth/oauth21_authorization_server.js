@@ -47,7 +47,7 @@ function loginBindingMatches(item, form = {}) {
 
 function isLoopbackHostname(hostname) {
   const value = String(hostname || "").trim().toLowerCase();
-  return value === "localhost" || value === "127.0.0.1";
+  return value === "localhost" || value === "127.0.0.1" || value === "[::1]";
 }
 
 function validateRedirectUri(value) {

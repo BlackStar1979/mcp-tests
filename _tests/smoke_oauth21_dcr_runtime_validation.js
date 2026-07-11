@@ -19,6 +19,12 @@ const goodLoopback=server.registerClient({
 });
 assert.equal(goodLoopback.status,201);
 
+const goodLoopbackIpv6=server.registerClient({
+  redirect_uris:["http://[::1]:43121/cb"],
+  token_endpoint_auth_method:"none",
+});
+assert.equal(goodLoopbackIpv6.status,201);
+
 const goodHttps=server.registerClient({
   redirect_uris:["https://client.example/callback"],
   token_endpoint_auth_method:"none",
