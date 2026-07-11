@@ -5,6 +5,8 @@ const TOOL_LABELS_VERSION = "test-mcp-labels-v1";
 const PLUGINS_ROOT = path.resolve(__dirname, "..", "plugins");
 
 const BASE_PUBLIC_TOOLS = new Set(["search", "fetch"]);
+let cachedPluginLabelsSignature = "";
+let cachedPluginLabels = null;
 
 function normalizeStatus(enabled) {
   return enabled ? "enabled" : "disabled";
@@ -44,11 +46,26 @@ function classifyPluginToolRisk(tool) {
 }
 
 function buildPluginLabelsSync() {
+  if (!fs.existsSync(PLUGINS_ROOT)) return [];
+  const entries = fs.readdirSync(PLUGINS_ROOT, { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && !entry.name.startsWith(".") && !entry.name.startsWith("_"));
+  const signatureParts = [];
+  for (const entry of entries) {
+    const manifestPath = path.join(PLUGINS_ROOT, entry.name, "plugin.manifest.json");
+    if (!fs.existsSync(manifestPath)) {
+      signatureParts.push(`${entry.name}:missing`);
+      continue;
+    }
+    const stats = fs.statSync(manifestPath);
+    signatureParts.push(`${entry.name}:${stats.mtimeMs}:${stats.size}`);
+  }
+  const signature = signatureParts.join("|");
+  if (cachedPluginLabels && cachedPluginLabelsSignature === signature) {
+    return cachedPluginLabels.slice();
+  }
+
   const labels = [];
-  if (!fs.existsSync(PLUGINS_ROOT)) return labels;
-  for (const entry of fs.readdirSync(PLUGINS_ROOT, { withFileTypes: true })) {
-    if (!entry.isDirectory()) continue;
-    if (entry.name.startsWith(".") || entry.name.startsWith("_")) continue;
+  for (const entry of entries) {
     const manifestPath = path.join(PLUGINS_ROOT, entry.name, "plugin.manifest.json");
     if (!fs.existsSync(manifestPath)) continue;
     try {
@@ -87,7 +104,9 @@ function buildPluginLabelsSync() {
       });
     }
   }
-  return labels;
+  cachedPluginLabelsSignature = signature;
+  cachedPluginLabels = Object.freeze(labels.slice());
+  return cachedPluginLabels.slice();
 }
 
 function buildToolLabelsSync(tools) {
