@@ -21,6 +21,12 @@ function parseForm(raw) {
   return out;
 }
 
+function invalidRequestError() {
+  const error = new Error("invalid_request");
+  error.statusCode = 400;
+  return error;
+}
+
 function readRequestBody(req, maxBytes = 65536) {
   return new Promise((resolve, reject) => {
     let raw = "";
@@ -40,11 +46,22 @@ async function readBody(req) {
     try {
       return JSON.parse(raw || "{}");
     } catch (_) {
-      const error = new Error("invalid_request");
-      error.statusCode = 400;
-      throw error;
+      throw invalidRequestError();
     }
   }
+  return parseForm(raw);
+}
+
+async function readJsonBody(req) {
+  const contentType = String(req.headers?.["content-type"] || "").toLowerCase();
+  if (!contentType.includes("application/json")) throw invalidRequestError();
+  return readBody(req);
+}
+
+async function readFormBody(req) {
+  const contentType = String(req.headers?.["content-type"] || "").toLowerCase();
+  if (!contentType.includes("application/x-www-form-urlencoded")) throw invalidRequestError();
+  const raw = await readRequestBody(req);
   return parseForm(raw);
 }
 
@@ -84,6 +101,8 @@ function clientIp(req = {}, options = {}) {
 module.exports = {
   clientIp,
   htmlResponse,
+  readFormBody,
+  readJsonBody,
   jsonResponse,
   parseForm,
   randomToken,

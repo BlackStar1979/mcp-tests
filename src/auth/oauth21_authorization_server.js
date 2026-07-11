@@ -10,6 +10,8 @@ const {
   jsonResponse,
   randomToken,
   readBody,
+  readFormBody,
+  readJsonBody,
   redirectResponse,
   sha256Base64Url,
   trimSlash,
@@ -511,7 +513,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   async function handleRoute({ req, res, url }) {
     if (url.pathname === "/.well-known/oauth-authorization-server") return jsonResponse(res, 200, metadata());
     if (url.pathname === "/register" && req.method === "POST") {
-      const result = registerClient(await readBody(req));
+      const result = registerClient(await readJsonBody(req));
       return jsonResponse(res, result.status, result.body);
     }
     if (url.pathname === "/authorize" && req.method === "GET") {
@@ -527,7 +529,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       return htmlResponse(res, 200, buildLoginPage(item, pid));
     }
     if (url.pathname === "/oauth/operator-login" && req.method === "POST") {
-      const body = await readBody(req);
+      const body = await readFormBody(req);
       const result = completeLogin({
         pid: body.pid,
         password: body.password,
@@ -540,11 +542,11 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       return htmlResponse(res, result.status, result.body);
     }
     if (url.pathname === "/token" && req.method === "POST") {
-      const result = token(await readBody(req));
+      const result = token(await readFormBody(req));
       return jsonResponse(res, result.status, result.body);
     }
     if (url.pathname === "/revoke" && req.method === "POST") {
-      const result = revoke(await readBody(req));
+      const result = revoke(await readFormBody(req));
       return jsonResponse(res, result.status, result.body);
     }
     return false;
