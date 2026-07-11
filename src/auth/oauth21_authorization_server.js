@@ -21,6 +21,7 @@ const CODE_TTL_MS = 10 * 60 * 1000;
 const PENDING_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_LOGIN_LIMIT = 10;
 const DEFAULT_LOGIN_WINDOW_MS = 60 * 1000;
+const SUPPORTED_SCOPES = new Set(["mcp:tools"]);
 
 function escapeHtml(value) {
   return String(value || "")
@@ -78,6 +79,17 @@ function validateRedirectUri(value) {
 
 function matchesResource(value, expectedResource) {
   return String(value || "").trim() === String(expectedResource || "").trim();
+}
+
+function normalizeScopeTokens(value, fallback = "mcp:tools") {
+  const raw = String(value || fallback || "mcp:tools");
+  return raw.split(/\s+/).map((item) => item.trim()).filter(Boolean);
+}
+
+function hasOnlySupportedScopes(scopes = []) {
+  return Array.isArray(scopes)
+    && scopes.length > 0
+    && scopes.every((scope) => SUPPORTED_SCOPES.has(String(scope || "").trim()));
 }
 
 function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
@@ -238,12 +250,14 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     if (!client) return { status: 400, body: { error: "invalid_client" } };
     const redirectUri = String(query.redirect_uri || "");
     const resource = String(query.resource || "");
+    const scopes = normalizeScopeTokens(query.scope || "mcp:tools");
     if (!client.redirect_uris.includes(redirectUri)) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
     if (!query.code_challenge) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
     if (!resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
     if (!matchesResource(resource, issuer)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
+    if (!hasOnlySupportedScopes(scopes)) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
     const pid = randomToken(24);
     pending.set(pid, {
       clientId: client.client_id,
@@ -251,7 +265,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       resource,
       codeChallenge: String(query.code_challenge),
       state: query.state === undefined ? "" : String(query.state),
-      scope: String(query.scope || "mcp:tools"),
+      scope: scopes.join(" "),
       expiresAt: now() + PENDING_TTL_MS,
     });
     return { status: 302, location: `${issuer}/oauth/operator-login?pid=${encodeURIComponent(pid)}` };
@@ -272,6 +286,11 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     if (!checkLoginThrottle(req)) { auditOAuth("oauth21_operator_login_rejected", { reason: "login_throttled" }); return { status: 429, body: "Too many attempts" }; }
     const item = pending.get(String(pid || ""));
     if (!item) return { status: 400, body: "Invalid or expired authorization request" };
+    if (!hasOnlySupportedScopes(normalizeScopeTokens(item.scope))) {
+      auditOAuth("oauth21_operator_login_rejected", { reason: "unsupported_scope", client_id: item.clientId, scope: item.scope || "" });
+      pending.delete(String(pid || ""));
+      return { status: 400, body: "Unsupported scope" };
+    }
     if (!loginBindingMatches(item, { client_id: clientId, redirect_uri: redirectUri, scope })) {
       auditOAuth("oauth21_operator_login_rejected", { reason: "binding_mismatch", client_id: item.clientId });
       return { status: 400, body: "Authorization request binding mismatch" };
@@ -294,7 +313,8 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     const accessToken = randomToken(32);
     const refreshToken = randomToken(32);
     const t = now();
-    const scopes = String(scope || "mcp:tools").split(/\s+/).filter(Boolean);
+    const scopes = normalizeScopeTokens(scope || "mcp:tools");
+    if (!hasOnlySupportedScopes(scopes)) return null;
     accessTokens.set(accessToken, { token: accessToken, clientId, scopes, subject: "operator", resource, expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
     refreshTokens.set(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", resource, expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
     saveOAuthState();
@@ -313,7 +333,9 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       if (!matchesResource(body.resource, code.resource)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
       if (sha256Base64Url(body.code_verifier || "") !== code.codeChallenge) return { status: 400, body: { error: "invalid_grant", error_description: "pkce_verification_failed" } };
       code.used = true;
-      return { status: 200, body: issue(client.client_id, code.scope, code.resource) };
+      const issued = issue(client.client_id, code.scope, code.resource);
+      if (!issued) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
+      return { status: 200, body: issued };
     }
     if (grant === "refresh_token") {
       const client = clients.get(String(body.client_id || ""));
@@ -326,7 +348,9 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       if (!matchesResource(body.resource, refresh.resource)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
       refreshTokens.delete(refresh.token);
       auditOAuth("oauth21_refresh_token_accepted", { client_id: client.client_id, scope_count: refresh.scopes.length });
-      return { status: 200, body: issue(client.client_id, refresh.scopes.join(" "), refresh.resource) };
+      const issued = issue(client.client_id, refresh.scopes.join(" "), refresh.resource);
+      if (!issued) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
+      return { status: 200, body: issued };
     }
     return { status: 400, body: { error: "unsupported_grant_type" } };
   }
@@ -343,6 +367,10 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     const item = accessTokens.get(String(value || ""));
     if (!item) {
       auditOAuth("oauth21_access_token_rejected", { reason: "unknown_or_expired_access_token", access_count: accessTokens.size, refresh_count: refreshTokens.size });
+      return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
+    }
+    if (!hasOnlySupportedScopes(item.scopes)) {
+      auditOAuth("oauth21_access_token_rejected", { reason: "unsupported_scope", scopes: item.scopes });
       return { ok: false, status: 401, error: "invalid_token", mode: "oauth21" };
     }
     const expectedResource = String(options.resource || options.audience || issuer || "").trim();
