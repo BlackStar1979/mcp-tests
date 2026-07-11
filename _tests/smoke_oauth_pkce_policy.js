@@ -2,6 +2,12 @@
 const assert=require("node:assert/strict");
 const spec=require("../SERVER_AUTH_SPEC.json");
 const policy=spec.pkce_client_flow_policy;
+assert.equal(spec.resource_server.canonical_mcp_resource_suffix,"/mcp");
+assert.equal(spec.resource_server.authorization_server_issuer_and_mcp_resource_are_distinct,true);
+assert.equal(spec.oauth_runtime_modes.oauth21.authorization_server_issuer,"<public_base_url>");
+assert.equal(spec.oauth_runtime_modes.oauth21.canonical_protected_resource,"<public_base_url>/mcp");
+assert.equal(spec.oauth_runtime_modes.oauth21.issuer_root_input_alias_temporarily_accepted,true);
+assert.equal(spec.oauth_runtime_modes.oauth21.issuer_root_alias_must_not_be_advertised_as_canonical_resource,true);
 assert.equal(policy.status,"implemented_h5_policy");
 assert.equal(policy.authorization_server_implemented_by_mcp_tests,true);
 assert.equal(policy.grant_type,"authorization_code");
@@ -21,4 +27,5 @@ assert.equal(policy.resource_parameter_must_match_protected_resource_metadata_re
 assert.equal(policy.server_role,"resource_server_validates_access_tokens_only");
 assert.equal(policy.server_must_not_issue_authorization_codes,false);
 assert.equal(policy.guard,"_tests/smoke_oauth_pkce_policy.js");
+assert.equal(policy.mcp_resource_integration_guard,"_tests/smoke_oauth21_local_as_flow.js");
 console.log("smoke_oauth_pkce_policy ok");
