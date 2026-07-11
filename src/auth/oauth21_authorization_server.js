@@ -215,6 +215,7 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       response_types_supported: ["code"],
       grant_types_supported: ["authorization_code", "refresh_token"],
       token_endpoint_auth_methods_supported: ["none"],
+      revocation_endpoint_auth_methods_supported: ["none"],
       code_challenge_methods_supported: ["S256"],
       scopes_supported: ["mcp:tools"],
     };
@@ -360,6 +361,13 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
 
   function revoke(body = {}) {
     const value = String(body.token || "");
+    const clientId = String(body.client_id || "");
+    const client = clients.get(clientId);
+    if (!client) return { status: 400, body: { error: "invalid_client" } };
+    const access = accessTokens.get(value);
+    const refresh = refreshTokens.get(value);
+    const item = access || refresh;
+    if (!item || item.clientId !== client.client_id) return { status: 200, body: {} };
     const changed = accessTokens.delete(value) || refreshTokens.delete(value);
     if (changed) saveOAuthState();
     return { status: 200, body: {} };
