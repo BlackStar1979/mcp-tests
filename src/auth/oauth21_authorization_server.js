@@ -150,6 +150,8 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   const codes = new Map();
   const accessTokens = new Map();
   const refreshTokens = new Map();
+  const usedRefreshTokens = new Map();
+  const activeRefreshTokensByGrant = new Map();
   const loginAttempts = new Map();
   let auditLog = null;
   const deferredAuditEvents = [];
@@ -196,9 +198,13 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
   function saveOAuthState() {
     try {
       fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
-      const body = { access: [...accessTokens.values()], refresh: [...refreshTokens.values()] };
+      const body = {
+        access: [...accessTokens.values()],
+        refresh: [...refreshTokens.values()],
+        used_refresh: [...usedRefreshTokens.values()],
+      };
       fs.writeFileSync(oauthStatePath, JSON.stringify(body, null, 2), { encoding: "utf8", mode: 0o600 });
-      auditOAuth("oauth21_state_saved", { state_file: oauthStatePath, access_count: accessTokens.size, refresh_count: refreshTokens.size });
+      auditOAuth("oauth21_state_saved", { state_file: oauthStatePath, access_count: accessTokens.size, refresh_count: refreshTokens.size, used_refresh_count: usedRefreshTokens.size });
     } catch (e) {
       auditOAuth("oauth21_state_save_failed", { state_file: oauthStatePath, error_message: e.message });
       console.error(`[oauth21] could not save oauth state: ${e.message}`);
@@ -215,15 +221,31 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       const t = now();
       let expiredAccess = 0;
       let expiredRefresh = 0;
+      let expiredUsedRefresh = 0;
       for (const item of Array.isArray(body.access) ? body.access : []) {
         if (item && item.token && item.expiresAt > t) accessTokens.set(String(item.token), item);
         else expiredAccess += 1;
       }
       for (const item of Array.isArray(body.refresh) ? body.refresh : []) {
-        if (item && item.token && item.expiresAt > t) refreshTokens.set(String(item.token), item);
+        if (item && item.token && item.expiresAt > t) {
+          refreshTokens.set(String(item.token), item);
+          if (item.grantId) activeRefreshTokensByGrant.set(String(item.grantId), String(item.token));
+        }
         else expiredRefresh += 1;
       }
-      auditOAuth("oauth21_state_loaded", { state_file: oauthStatePath, access_count: accessTokens.size, refresh_count: refreshTokens.size, expired_access_count: expiredAccess, expired_refresh_count: expiredRefresh });
+      for (const item of Array.isArray(body.used_refresh) ? body.used_refresh : []) {
+        if (item && item.token && item.expiresAt > t && item.grantId) usedRefreshTokens.set(String(item.token), item);
+        else expiredUsedRefresh += 1;
+      }
+      auditOAuth("oauth21_state_loaded", {
+        state_file: oauthStatePath,
+        access_count: accessTokens.size,
+        refresh_count: refreshTokens.size,
+        used_refresh_count: usedRefreshTokens.size,
+        expired_access_count: expiredAccess,
+        expired_refresh_count: expiredRefresh,
+        expired_used_refresh_count: expiredUsedRefresh,
+      });
     } catch (e) {
       auditOAuth("oauth21_state_load_failed", { state_file: oauthStatePath, error_message: e.message });
       console.error(`[oauth21] could not load oauth state: ${e.message}`);
@@ -239,7 +261,12 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     for (const [pid, item] of pending) if (item.expiresAt <= t) pending.delete(pid);
     for (const [code, item] of codes) if (item.expiresAt <= t || item.used) codes.delete(code);
     for (const [key, item] of accessTokens) if (item.expiresAt <= t) { accessTokens.delete(key); oauthStateChanged = true; }
-    for (const [key, item] of refreshTokens) if (item.expiresAt <= t) { refreshTokens.delete(key); oauthStateChanged = true; }
+    for (const [key, item] of refreshTokens) if (item.expiresAt <= t) {
+      refreshTokens.delete(key);
+      if (item.grantId && activeRefreshTokensByGrant.get(String(item.grantId)) === key) activeRefreshTokensByGrant.delete(String(item.grantId));
+      oauthStateChanged = true;
+    }
+    for (const [key, item] of usedRefreshTokens) if (item.expiresAt <= t) { usedRefreshTokens.delete(key); oauthStateChanged = true; }
     if (oauthStateChanged) saveOAuthState();
   }
 
@@ -351,14 +378,15 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
     return { status: 302, location: target.toString() };
   }
 
-  function issue(clientId, scope = "mcp:tools", resource = issuer) {
+  function issue(clientId, scope = "mcp:tools", resource = issuer, grantId = randomToken(16)) {
     const accessToken = randomToken(32);
     const refreshToken = randomToken(32);
     const t = now();
     const scopes = normalizeScopeTokens(scope || "mcp:tools");
     if (!hasOnlySupportedScopes(scopes)) return null;
-    accessTokens.set(accessToken, { token: accessToken, clientId, scopes, subject: "operator", resource, expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
-    refreshTokens.set(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", resource, expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
+    accessTokens.set(accessToken, { token: accessToken, clientId, scopes, subject: "operator", resource, grantId, expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
+    refreshTokens.set(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", resource, grantId, expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
+    activeRefreshTokensByGrant.set(String(grantId), refreshToken);
     saveOAuthState();
     return { access_token: accessToken, token_type: "Bearer", expires_in: ACCESS_TTL_SECONDS, refresh_token: refreshToken, scope: scopes.join(" ") };
   }
@@ -383,14 +411,36 @@ function createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile,
       const client = clients.get(String(body.client_id || ""));
       const refresh = refreshTokens.get(String(body.refresh_token || ""));
       if (!client || !refresh || refresh.clientId !== client.client_id) {
-        auditOAuth("oauth21_refresh_token_rejected", { reason: !client ? "unknown_client" : (!refresh ? "unknown_refresh_token" : "client_mismatch") });
+        const replay = client ? usedRefreshTokens.get(String(body.refresh_token || "")) : null;
+        if (client && replay && replay.clientId === client.client_id) {
+          const active = activeRefreshTokensByGrant.get(String(replay.grantId || ""));
+          if (active) {
+            refreshTokens.delete(active);
+            activeRefreshTokensByGrant.delete(String(replay.grantId || ""));
+            saveOAuthState();
+          }
+          auditOAuth("oauth21_refresh_token_rejected", {
+            reason: "refresh_token_reuse_detected",
+            client_id: client.client_id,
+            active_refresh_revoked: Boolean(active),
+          });
+        } else {
+          auditOAuth("oauth21_refresh_token_rejected", { reason: !client ? "unknown_client" : (!refresh ? "unknown_refresh_token" : "client_mismatch") });
+        }
         return { status: 400, body: { error: "invalid_grant" } };
       }
       if (!body.resource) return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
       if (!matchesResource(body.resource, refresh.resource)) return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
       refreshTokens.delete(refresh.token);
+      if (refresh.grantId) activeRefreshTokensByGrant.delete(String(refresh.grantId));
+      usedRefreshTokens.set(String(refresh.token), {
+        token: String(refresh.token),
+        clientId: refresh.clientId,
+        grantId: String(refresh.grantId || ""),
+        expiresAt: refresh.expiresAt,
+      });
       auditOAuth("oauth21_refresh_token_accepted", { client_id: client.client_id, scope_count: refresh.scopes.length });
-      const issued = issue(client.client_id, refresh.scopes.join(" "), refresh.resource);
+      const issued = issue(client.client_id, refresh.scopes.join(" "), refresh.resource, refresh.grantId || randomToken(16));
       if (!issued) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
       return { status: 200, body: issued };
     }

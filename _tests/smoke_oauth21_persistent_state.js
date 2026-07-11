@@ -53,4 +53,22 @@ assert.equal(refreshed.status, 200);
 assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_accepted"));
 assert.ok(refreshed.body.access_token);
 assert.notEqual(refreshed.body.refresh_token, issued.body.refresh_token);
-console.log("smoke_oauth21_persistent_state ok");
+
+const replay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource: issuer });
+assert.equal(replay.status, 400);
+assert.equal(replay.body.error, "invalid_grant");
+assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_rejected" && x.data.reason === "refresh_token_reuse_detected"));
+
+const revokedByReplay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: refreshed.body.refresh_token, resource: issuer });
+assert.equal(revokedByReplay.status, 400);
+assert.equal(revokedByReplay.body.error, "invalid_grant");
+
+const events3 = [];
+const server3 = createOAuth21AuthorizationServer({ issuer, operatorSecret, clientsFile });
+server3.setAuditLog((event, data) => events3.push({ event, data }));
+const replayAfterRestart = server3.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.body.refresh_token, resource: issuer });
+assert.equal(replayAfterRestart.status, 400);
+assert.equal(replayAfterRestart.body.error, "invalid_grant");
+assert.ok(events3.some((x) => x.event === "oauth21_refresh_token_rejected" && x.data.reason === "refresh_token_reuse_detected"));
+
+  console.log("smoke_oauth21_persistent_state ok");
