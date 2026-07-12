@@ -14,8 +14,8 @@ It records what kinds of checks are currently inside the active `run_all` surfac
 - Latest confirmed full-manifest verification result: `ok: true`
 - Active manifest counts:
   - `7` public scripts
-- `229` total active scripts currently listed in `run_all_smoke_scripts.json`
-- `221` authenticated scripts confirmed green by the latest `--skip-network` full run
+- `245` total active scripts currently listed in `run_all_smoke_scripts.json`
+- `237` authenticated scripts confirmed green by the latest `--skip-network` full run
   - `_tests/smoke_network.js` remains the one manifest entry intentionally excluded by `--skip-network`
 
 ## Classification Method
@@ -40,8 +40,8 @@ These classes overlap. They are not a partition.
 
 Operational conclusion:
 
-- The active manifest currently contains `229` scripts.
-- The latest confirmed `--skip-network` full run validates `7` public scripts and `221` authenticated scripts.
+- The active manifest currently contains `245` scripts.
+- The latest confirmed `--skip-network` full run validates `7` public scripts and `237` authenticated scripts.
 - Not all active manifest scripts should be interpreted as "current runtime behavior" coverage.
 - At least `47` active scripts belong to a mixed review bucket of workflow-record guards, workflow-script guards, or readiness/planning checks.
 

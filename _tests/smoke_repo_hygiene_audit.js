@@ -6,6 +6,18 @@ const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
+function listJsFilesRecursive(dir) {
+  const results = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...listJsFilesRecursive(fullPath));
+      continue;
+    }
+    if (entry.name.endsWith(".js")) results.push(fullPath);
+  }
+  return results;
+}
 
 const audit = read("_workflow", "operator_decisions", "post_stage13_repo_hygiene_audit.md");
 const canon = read("_workflow", "WORKFLOW_CANON.md");
@@ -39,10 +51,12 @@ assert.equal(state.status, "compact_orientation_map_not_progress_log");
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 
 const topLevelTests = fs.readdirSync(path.join(ROOT, "_tests")).filter((name) => name.endsWith(".js")).map((name) => path.normalize(`_tests/${name}`));
+const totalJsFiles = listJsFilesRecursive(path.join(ROOT, "_tests"));
 const activeManifest = new Set(smokeScripts.map((name) => path.normalize(name)));
 const nonRunAll = topLevelTests.filter((name) => !activeManifest.has(name));
 const undocumentedNonRunAll = nonRunAll.filter((name) => !nonRunAllAudit.includes(`\`${path.basename(name)}\``));
 
+assert.equal(totalJsFiles.length, 323);
 assert.equal(smokeScripts.length, 245);
 assert.equal(nonRunAll.length, 41);
 assert.equal(workflowHelperManifest.length, 25);
@@ -50,6 +64,7 @@ assert.equal(readinessHelperManifest.length, 45);
 assert.equal(targetedDebtHelperManifest.length, 6);
 assert.deepEqual(undocumentedNonRunAll, []);
 
+assert.ok(testsReadme.includes("`323` JavaScript files total in `_tests`"));
 assert.ok(testsReadme.includes("`245` active scripts currently listed in `run_all_smoke_scripts.json`"));
 assert.ok(testsReadme.includes("`41` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `25` scripts"));

@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { assertCanonCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
 
 const root = path.resolve(__dirname, "..");
 function read(rel) {
@@ -21,7 +22,7 @@ assert.ok(canon.includes("Restart requires explicit operator intent"));
 assert.ok(canon.includes("Connector refresh requires explicit operator intent"));
 assert.ok(canon.includes("mechanism endurance"));
 assert.ok(canon.includes("Required now: none"));
-assert.ok(canon.includes("Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_221`"));
+assertCanonCurrentSmokeBaseline(canon);
 assert.ok(smokeScripts.includes("_tests/smoke_decision_runtime_p1_coverage.js"));
 
 console.log("smoke_workstream_boundary_control_review ok");
