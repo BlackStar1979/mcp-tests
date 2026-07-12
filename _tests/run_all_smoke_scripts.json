@@ -163,6 +163,7 @@
   "_tests/smoke_keep_mcp_post_accept_json_only_cleanup.js",
   "_tests/smoke_keep_mcp_get_sse_teardown.js",
   "_tests/smoke_keep_mcp_request_contract_bridge.js",
+  "_tests/smoke_keep_mcp_session_bound_outbound_sampling_scope.js",
   "_tests/smoke_server_discover_audit.js",
   "_tests/smoke_post_sse_response.js",
   "_tests/smoke_batch_sse_unsupported_guard.js",

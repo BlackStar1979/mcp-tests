@@ -244,6 +244,7 @@
     "residual_session_sse_cleanup_package_record": "_workflow/operator_decisions/keep_mcp_residual_session_sse_cleanup_package.md",
     "sampling_runtime_detachment_package_record": "_workflow/operator_decisions/keep_mcp_sampling_runtime_detachment_package.md",
     "local_session_helper_classification_record": "_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md",
+    "session_bound_outbound_sampling_scope_record": "_workflow/operator_decisions/keep_mcp_session_bound_outbound_sampling_scope.md",
     "sessionless_replacement_coverage_scoping_record": "_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md",
     "subscriptions_listen_pull_only_contract_record": "_workflow/operator_decisions/keep_mcp_subscriptions_listen_pull_only_contract.md",
     "pull_only_tool_surface_freshness_runtime_package_record": "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md",

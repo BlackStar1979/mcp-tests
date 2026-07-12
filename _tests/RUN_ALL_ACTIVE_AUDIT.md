@@ -14,8 +14,8 @@ It records what kinds of checks are currently inside the active `run_all` surfac
 - Latest confirmed full-manifest verification result: `ok: true`
 - Active manifest counts:
   - `7` public scripts
-- `245` total active scripts currently listed in `run_all_smoke_scripts.json`
-- `237` authenticated scripts confirmed green by the latest `--skip-network` full run
+- `246` total active scripts currently listed in `run_all_smoke_scripts.json`
+- `238` authenticated scripts confirmed green by the latest `--skip-network` full run
   - `_tests/smoke_network.js` remains the one manifest entry intentionally excluded by `--skip-network`
 
 ## Classification Method
@@ -33,17 +33,17 @@ These classes overlap. They are not a partition.
 
 - `7` public-surface scripts
 - `42` scripts that directly guard root spec truth
-- `22` scripts that directly guard workflow records or compact workflow truth
+- `23` scripts that directly guard workflow records or compact workflow truth
 - `14` scripts that directly guard `_workflow/scripts` or control-plane PowerShell scripts
 - `25` scripts with explicit readiness / planning / dry-run naming
 - `133` scripts that did not match any of the workflow/spec/readiness heuristics above and look like runtime/protocol behavior checks in this first pass
 
 Operational conclusion:
 
-- The active manifest currently contains `245` scripts.
-- The latest confirmed `--skip-network` full run validates `7` public scripts and `237` authenticated scripts.
+- The active manifest currently contains `246` scripts.
+- The latest confirmed `--skip-network` full run validates `7` public scripts and `238` authenticated scripts.
 - Not all active manifest scripts should be interpreted as "current runtime behavior" coverage.
-- At least `47` active scripts belong to a mixed review bucket of workflow-record guards, workflow-script guards, or readiness/planning checks.
+- At least `48` active scripts belong to a mixed review bucket of workflow-record guards, workflow-script guards, or readiness/planning checks.
 
 ## Public Surface
 
@@ -59,7 +59,7 @@ These `7` scripts are the explicit public-profile surface used by `run_all_smoke
 
 ## Mixed Review Bucket
 
-These `47` active scripts are not obviously dead, but they are not pure runtime/protocol coverage either. They actively validate workflow truth, control-plane scripts, migration records, dry-run packages, or readiness artifacts.
+These `48` active scripts are not obviously dead, but they are not pure runtime/protocol coverage either. They actively validate workflow truth, control-plane scripts, migration records, dry-run packages, or readiness artifacts.
 
 - `_tests/smoke_connector_migration_dry_run_harness.js`
 - `_tests/smoke_connector_migration_dry_run_plan.js`
@@ -75,6 +75,7 @@ These `47` active scripts are not obviously dead, but they are not pure runtime/
 - `_tests/smoke_enforcement_apply_readiness_report.js`
 - `_tests/smoke_enforcement_wiring_plan_no_apply.js`
 - `_tests/smoke_explicit_state_handle_design_rules.js`
+- `_tests/smoke_keep_mcp_session_bound_outbound_sampling_scope.js`
 - `_tests/smoke_io_safety_active_controls.js`
 - `_tests/smoke_io_safety_policy.js`
 - `_tests/smoke_isolated_sessionless_activation_regression.js`

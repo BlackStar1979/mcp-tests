@@ -31,9 +31,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_237`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok_0_40_0_7_238`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `237`.
+- Latest validated authenticated smoke count: `238`.
 - Repo current connector-visible authenticated tool target is `69` (`13 public + 56 authorized-visible`), with `26` server-internal helpers intentionally hidden from MCP schema/tools-list.
 - Live OAuth21 `3008` is aligned with the authenticated `/mcp` connector-visible tool count `69`; the hidden-internal surface split is now live-loaded after a controlled restart. Current live proof is server_start_id `2026-07-10T11:14:38.432Z`.
 - Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current live `69` proof is runtime/MCP truth only, not a fresh UI inventory proof.
@@ -99,6 +99,8 @@ Initialize-retirement boundary clarification: `_workflow/operator_decisions/keep
 Transport-session retirement package clarification: `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` records the repo-applied runtime step that removes active transport-session dependence from surviving `/mcp`. Stable `initialize` no longer creates `Mcp-Session-Id`, stable POST `/mcp` ignores session headers instead of treating them as active protocol state, and `server/discover` now reports `protocol_sessions: false`. Residual session/SSE helper code that is no longer reachable from active `/mcp` remains a separate bounded cleanup task.
 
 MCP-Session-Id header closeout clarification: `_workflow/operator_decisions/mcp_session_id_header_closeout.md` closes the transport-header ledger item for the active stable `/mcp` contract. Remaining helper debt in `session.js` or outbound compatibility code must not be used to reopen the header dependency itself.
+
+Session-bound outbound/sampling scoping clarification: `_workflow/operator_decisions/keep_mcp_session_bound_outbound_sampling_scope.md` closes the remaining workflow scoping step referenced by the initialize-retirement boundary. `session.js`, helper-only `sendSessionRequest(...)`, and helper-level sampling remain bounded compatibility fixtures, while only fail-closed JSON-RPC response-envelope handling stays contract-relevant for the active surviving `/mcp` route.
 
 Replacement-coverage clarification: `_workflow/operator_decisions/keep_mcp_sessionless_replacement_coverage_scoping.md` records the exact surviving-route replacement scope that must exist before hidden `/mcp/sessionless` can be retired. In particular, the final no-SSE `subscriptions/listen` contract, the `state/handle/*` fate, and bounded `/mcp` replacement coverage remain open.
 

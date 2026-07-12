@@ -57,9 +57,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_237`.
+- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_238`.
 - Public section count: `7`.
-- Authenticated smoke count: `237`.
+- Authenticated smoke count: `238`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -210,6 +210,9 @@ Current records:
 
 - `keep_mcp_local_session_helper_classification.md`
   - Classifies the remaining `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` path as bounded local compatibility fixtures rather than active surviving-route runtime wiring.
+
+- `keep_mcp_session_bound_outbound_sampling_scope.md`
+  - Closes the workflow scoping step for the remaining session-bound outbound/sampling internals and records that only fail-closed response-envelope handling remains contract-relevant on the active route.
 
 - `roots_sampling_logging_deprecation_inventory.md`
   - Finishes the missing roots/sampling/protocol-logging inventory so this deprecated bucket no longer stays in `unknown_needs_inventory` after sampling was detached from active `/mcp`.
