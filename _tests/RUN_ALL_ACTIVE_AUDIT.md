@@ -6,7 +6,7 @@ First-pass classification of the active default smoke manifest `run_all_smoke_sc
 
 This document answers a narrower question than "does the suite pass?".
 
-It records what kinds of checks are currently inside the active `run_all` surface, based on observable file content and references on `2026-07-09`.
+It records what kinds of checks are currently inside the active `run_all` surface, based on observable file content and references on `2026-07-13`.
 
 ## Verified Baseline
 
@@ -14,8 +14,8 @@ It records what kinds of checks are currently inside the active `run_all` surfac
 - Latest confirmed full-manifest verification result: `ok: true`
 - Active manifest counts:
   - `7` public scripts
-- `246` total active scripts currently listed in `run_all_smoke_scripts.json`
-- `238` authenticated scripts confirmed green by the latest `--skip-network` full run
+- `253` total active scripts currently listed in `run_all_smoke_scripts.json`
+- `245` authenticated scripts confirmed green by the latest `--skip-network` full run
   - `_tests/smoke_network.js` remains the one manifest entry intentionally excluded by `--skip-network`
 
 ## Classification Method
@@ -40,8 +40,8 @@ These classes overlap. They are not a partition.
 
 Operational conclusion:
 
-- The active manifest currently contains `246` scripts.
-- The latest confirmed `--skip-network` full run validates `7` public scripts and `238` authenticated scripts.
+- The active manifest currently contains `253` scripts.
+- The latest confirmed `--skip-network` full run validates `7` public scripts and `245` authenticated scripts.
 - Not all active manifest scripts should be interpreted as "current runtime behavior" coverage.
 - At least `48` active scripts belong to a mixed review bucket of workflow-record guards, workflow-script guards, or readiness/planning checks.
 
@@ -125,7 +125,7 @@ Not yet confirmed:
 
 ## Recommended Next Step
 
-Before removing anything from `run_all`, do one more explicit pass over the `47` mixed-review scripts and classify each into one of:
+Before removing anything from `run_all`, do one more explicit pass over the `48` mixed-review scripts and classify each into one of:
 
 - keep in default `run_all`
 - move to a dedicated workflow/control-plane manifest
