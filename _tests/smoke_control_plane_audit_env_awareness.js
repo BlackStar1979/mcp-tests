@@ -10,6 +10,7 @@ const SCRIPTS = [
   "_workflow/scripts/test_mcp_backup.ps1",
   "_workflow/scripts/test_mcp_restart.ps1",
   "_workflow/scripts/test_mcp_oauth21_prune.js",
+  "_workflow/scripts/client_entry_path_report.js",
 ];
 
 function read(relPath) {

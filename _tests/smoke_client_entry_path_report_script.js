@@ -1,0 +1,66 @@
+"use strict";
+
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const os = require("node:os");
+const path = require("node:path");
+const cp = require("node:child_process");
+
+const ROOT = path.resolve(__dirname, "..");
+const SCRIPT = path.join(ROOT, "_workflow", "scripts", "client_entry_path_report.js");
+const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "client-entry-path-report-"));
+const auditLog = path.join(tempRoot, "audit.jsonl");
+
+const fixture = [
+  { ts: "2026-07-13T17:41:59.000Z", event: "server_start", server_start_id: "old-start" },
+  { ts: "2026-07-13T17:42:00.000Z", event: "initialize_received", server_start_id: "old-start", request_id: "old-1", client_name: "codex-mcp-client", client_version: "0.144.1", protocol_version: "2025-06-18" },
+  { ts: "2026-07-13T17:42:01.000Z", event: "server_start", server_start_id: "current-start" },
+  { ts: "2026-07-13T17:42:02.000Z", event: "rpc_received", server_start_id: "current-start", method: "initialize" },
+  { ts: "2026-07-13T17:42:02.100Z", event: "initialize_received", server_start_id: "current-start", request_id: "r1", client_name: "codex-mcp-client", client_version: "0.144.2", protocol_version: "2025-06-18" },
+  { ts: "2026-07-13T17:42:02.200Z", event: "rpc_response_sent", server_start_id: "current-start", request_id: "r1", status_code: 200, response_mode: "json", phase: "single_json_response", has_result: true, has_error: false, response_bytes: 123 },
+  { ts: "2026-07-13T17:42:03.000Z", event: "rpc_received", server_start_id: "current-start", method: "notifications/initialized" },
+  { ts: "2026-07-13T17:42:04.000Z", event: "rpc_received", server_start_id: "current-start", method: "tools/list" },
+  { ts: "2026-07-13T17:42:05.000Z", event: "rpc_received", server_start_id: "current-start", method: "tools/call" },
+  { ts: "2026-07-13T17:42:06.000Z", event: "server_discover_received", server_start_id: "current-start", request_id: "r2", client_name: "claude", client_version: "1.0.0", protocol_version: "2025-06-18" },
+  { ts: "2026-07-13T17:42:06.100Z", event: "rpc_response_sent", server_start_id: "current-start", request_id: "r2", status_code: 200, response_mode: "json", phase: "single_json_response", has_result: true, has_error: false, response_bytes: 321 },
+  { ts: "2026-07-13T17:42:07.000Z", event: "rpc_received", server_start_id: "current-start", method: "server/discover" }
+];
+
+fs.writeFileSync(auditLog, fixture.map((entry) => JSON.stringify(entry)).join("\n") + "\n", "utf8");
+
+const report = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(report.success, true);
+assert.equal(report.mode, "client-entry-path-report");
+assert.equal(report.audit_log.exists, true);
+assert.equal(report.current_server_start_id, "current-start");
+assert.equal(report.current_window_rpc_counts.initialize, 1);
+assert.equal(report.current_window_rpc_counts.server_discover, 1);
+assert.equal(report.current_window_rpc_counts.notifications_initialized, 1);
+assert.equal(report.current_window_rpc_counts.tools_list, 1);
+assert.equal(report.current_window_rpc_counts.tools_call, 1);
+assert.equal(report.diagnostics.status, "mixed_initialize_and_server_discover");
+assert.equal(report.diagnostics.current_window_counts.initialize_received, 1);
+assert.equal(report.diagnostics.current_window_counts.server_discover_received, 1);
+assert.equal(report.matching_clients[0].client_name, "claude");
+assert.equal(report.matching_clients[0].status, "server_discover_only");
+assert.equal(report.matching_clients[1].client_name, "codex-mcp-client");
+assert.equal(report.matching_clients[1].client_version, "0.144.2");
+assert.equal(report.matching_clients[1].status, "initialize_only");
+
+const filtered = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--client-name=codex-mcp-client"], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(filtered.matching_clients.length, 1);
+assert.equal(filtered.matching_clients[0].client_name, "codex-mcp-client");
+assert.equal(filtered.matching_clients[0].client_version, "0.144.2");
+
+fs.rmSync(tempRoot, { recursive: true, force: true });
+console.log("smoke_client_entry_path_report_script ok");
