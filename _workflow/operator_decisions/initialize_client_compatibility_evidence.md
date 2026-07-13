@@ -1,7 +1,7 @@
 # Initialize Client Compatibility Evidence
 
 Status: GREEN / CLIENT EVIDENCE REFRESHED / WORKFLOW-ONLY
-Date: 2026-07-12
+Date: 2026-07-13
 
 ## Purpose
 
@@ -46,19 +46,21 @@ This means:
 - at least one real client/connector still depends on legacy `initialize` after OAuth succeeds
 - repo-side no-handshake support is not enough to remove legacy `initialize` from the compatibility surface today
 
-## Fresh evidence refresh on 2026-07-12
+## Fresh evidence refresh on 2026-07-13
 
 Current authenticated audit evidence continues to confirm the same compatibility blocker on the surviving `/mcp` route:
 
 - observed authenticated `POST /mcp` requests with `method: "initialize"`
 - observed authenticated `initialize_received` events for:
   - `client_name: "codex-mcp-client"`
-  - `client_version: "0.144.1"`
+  - `client_version: "0.144.2"`
 - observed follow-up authenticated traffic on the same route for the same real client family:
   - `notifications/initialized`
   - `tools/list`
   - `tools/call`
-- no observed authenticated `server/discover` entries in the same current audit window
+- no observed authenticated `server/discover` entries in the same fresh real-client audit window for that Codex client family
+
+The broader retained audit file still contains historical authenticated `server/discover` requests on `/mcp`, but they are older evidence and not part of the current real Codex client entry window. They therefore do not weaken the current blocker interpretation.
 
 This refresh matters because it removes ambiguity about drift since the earlier 2026-07-03 record:
 

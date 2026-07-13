@@ -33,7 +33,7 @@ Track the distance between current state and the NorthStar target without mixing
 
 1. Fresh connector/UI truth can still drift from repo/runtime truth.
 2. Legacy `initialize` removal is still blocked by client compatibility evidence, not by repo request-flow capability.
-3. Real Codex/OpenAI client-path comparison is still narrower than repo/runtime request-path coverage because the new live trail is confirmed for local authenticated probes, but not yet paired against a fresh real client request window in this package.
+3. Fresh real Codex client evidence now confirms the live `initialize -> notifications/initialized -> tools/list -> tools/call` path, but the same current client family still does not provide matching fresh `server/discover` entry evidence in that window.
 4. Operator-facing `DIRECTORY` coverage is still partial outside the currently normalized operational directories.
 
 ## Current readiness rule
