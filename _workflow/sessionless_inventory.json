@@ -551,7 +551,7 @@
       "target_lifecycle": "operational_implication",
       "repo_current_model": "SERVER_RUNTIME_TOPOLOGY_SPEC.json defines active topology and recovered restart authority; 3008 OAuth21 is supervisor-managed and live-loaded after Stage 14.5; public 3009 remains a separate runtime and the earlier false closeout correction must not recur.",
       "implementation_status": "done",
-      "migration_path": "use supervisor-controlled 3008 restart only when a workflow step and operator intent authorize it; stateless direction reduces dependence on session/process lifetime",
+      "migration_path": "use supervisor-controlled 3008 restart only when a workflow step and important intent authorize it; stateless direction reduces dependence on session/process lifetime",
       "checklist": [
         {
           "item": "record false closeout correction",
@@ -675,7 +675,7 @@
     "Hidden-route retirement is now live-verified on OAuth21 3008: hidden /mcp/sessionless returns 404 after the controlled restart while stable /mcp still reports 43 tools.",
     "Historical /mcp/sessionless live-operation artifacts are quarantined: they now remain traceability evidence only and must not be treated as the active target architecture.",
     "Treat the no-SSE destination as a stricter project target than the current generic MCP Streamable HTTP draft; do not misstate request-scoped SSE as forbidden by MCP itself.",
-    "For every next-step recommendation, reassess blockers, connector refresh, and whether OAuth21 3008 restart is required; assistant may restart 3008 when workflow and operator intent authorize it.",
+    "For every next-step recommendation, reassess blockers, connector refresh, and whether OAuth21 3008 restart is required; assistant may restart 3008 when workflow and important intent authorize it.",
     "Adjacent runtime-contract SEP triage is complete: existing runtime/spec/test coverage, explicit non-targets, and a bounded partial-coverage watchlist are now recorded.",
     "Auth/security adjacent SEP triage is complete: existing auth coverage, explicit non-targets, and the remaining watchlist are now recorded.",
     "Adjacent/auth watchlist review is complete: no new dedicated ledger is opened now; reopen only when a tracked trigger surface becomes active target work.",

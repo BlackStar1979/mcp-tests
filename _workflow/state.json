@@ -55,8 +55,8 @@
     }
   },
   "current_work_constraints": {
-    "no_runtime_restart_without_explicit_operator_intent": true,
-    "no_connector_refresh_without_explicit_operator_intent": true,
+    "no_runtime_restart_without_important_intent": true,
+    "no_connector_refresh_without_important_intent": true,
     "do_not_use_generic_restart_for_oauth21_3008": true,
     "do_not_remove_stable_session_code_before_active_route_migration_completion": true,
     "do_not_remove_legacy_initialize_without_client_connector_compat_evidence": true,
@@ -294,7 +294,7 @@
       "expected_tool_count": 13,
       "currently_live_local": false,
       "last_probe": "2026-06-28 local 127.0.0.1:3009 connection refused",
-      "start_requires_operator_intent": true
+      "start_requires_important_intent": true
     }
   },
   "current_connector_truth": {

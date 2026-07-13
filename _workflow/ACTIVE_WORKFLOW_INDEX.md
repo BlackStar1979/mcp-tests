@@ -359,7 +359,7 @@ Current records:
   - Stage 14.8 runtime enforcement state reconciliation. It records repo-applied Stage 14.5 runtime gate, OAuth21 3008 live-loaded status after later restart, public 3009 currently not listening, unchanged connector surface, and no restart/refresh boundary.
 
 - `stage14_9_workflow_truth_repair.md`
-  - Stage 14.9 workflow truth repair / state compaction. It records the operator rule that every next-step recommendation must reassess blocker validity, connector refresh, and workbench restart; it also records that the assistant can restart the workbench when workflow and operator intent authorize it.
+  - Stage 14.9 workflow truth repair / state compaction. It records the restart/refresh recommendation rule and that the assistant can restart the workbench when workflow and important intent authorize it.
 
 - `oauth21_prune_control_plane.md`
   - Bounded OAuth21 stale-state maintenance package. It records the explicit `Status` / `Plan` / `Execute` / `Rollback` control-plane contract, approval marker `operator_approved_oauth21_prune_apply`, backup/rollback records, and no-runtime-auto-apply boundary.

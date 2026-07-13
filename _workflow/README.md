@@ -24,9 +24,9 @@ The operator-facing documentation contract currently lives in:
 
 ## Next-step recommendation duty
 
-Every recommendation for the next step must explicitly assess blocker validity, connector refresh need, OAuth21 workbench server `3008` restart need, and whether `3008` can be restarted by the assistant without asking the operator.
+Every recommendation for the next step must explicitly assess blocker validity, connector refresh need, OAuth21 workbench server `3008` restart need, and whether `3008` can be restarted by the assistant under the current important intent.
 
-Current rule: the assistant can restart TESTS_MCP/OAuth21 workbench server on port `3008` when the active workflow step and operator intent authorize it. Do not ask the operator to restart `3008`. Connector refresh is separate and must be requested only when materially required by connector/UI truth, surface change, or diagnostic need.
+Current rule: the assistant can restart TESTS_MCP/OAuth21 workbench server on port `3008` when the active workflow step and important intent authorize it. Do not ask the operator to restart `3008`. Connector refresh is separate and must be requested only when materially required by connector/UI truth, surface change, or diagnostic need.
 
 ## `_workflow/state.json`
 

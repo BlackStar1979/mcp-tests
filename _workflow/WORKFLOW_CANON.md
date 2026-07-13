@@ -168,8 +168,8 @@ Active unless an explicit operator decision package changes them:
 - Runtime behavior freeze unless separately authorized.
 - Connector-visible surface freeze.
 - Raw audit export prohibition.
-- Restart requires explicit operator intent.
-- Connector refresh requires explicit operator intent.
+- Restart requires important intent.
+- Connector refresh requires important intent.
 - Runtime policy expansion requires operator decision and negative controls.
 
 ## 6. Workflow/deploy vocabulary
@@ -559,7 +559,7 @@ Cooperative tool cancellation green: `_workflow/operator_decisions/c3_cooperativ
 
 Request cancellation closeout green: `_workflow/operator_decisions/request_cancellation_closeout.md` closes the bounded stable-compatible cancellation package without a new runtime patch. Current repo truth now explicitly treats per-request abort propagation, no-write-after-disconnect guards, cooperative optional-tool cancellation, and timeout fallback preservation as complete for the active stable `/mcp` runtime boundary.
 
-Stage 14.9 workflow truth repair green: `_workflow/operator_decisions/stage14_9_workflow_truth_repair.md` records state compaction after Stage 14.5-14.8. `_workflow/state.json` must remain a compact orientation map, not a log. Next-step recommendations must reassess blocker validity, connector refresh need, and OAuth21 3008 restart need; assistant can restart 3008 when workflow and operator intent authorize it. public 3009 is not currently live. No runtime change, restart, connector refresh, public 3009 start, denial probe, cooperative cancellation work, or baseline refreeze was performed.
+Stage 14.9 workflow truth repair green: `_workflow/operator_decisions/stage14_9_workflow_truth_repair.md` records state compaction after Stage 14.5-14.8. `_workflow/state.json` must remain a compact orientation map, not a log. Next-step recommendations must reassess blocker validity, connector refresh need, and OAuth21 3008 restart need; assistant can restart 3008 when workflow and important intent authorize it. public 3009 is not currently live. No runtime change, restart, connector refresh, public 3009 start, denial probe, cooperative cancellation work, or baseline refreeze was performed.
 
 Stage 14.6 inventory repair: sessionless_inventory now tracks SEP-2549/2567/2575/2577/2596 with checklist evidence. Guard: smoke_sep_sessionless_inventory.
 

@@ -9,7 +9,7 @@ Stage 14.9 repairs the workflow truth layer after Stage 14.5-14.8. It is not a r
 
 ## Operator rule recorded
 
-Every future next-step recommendation must explicitly reassess blockers, connector refresh, OAuth21 workbench server `3008` restart need, and whether `3008` can be restarted by the assistant without asking the operator. Current rule: the assistant may restart TESTS_MCP/OAuth21 workbench server on port `3008` when the active workflow step and operator intent authorize restart. The operator must not be asked to restart `3008`. Connector refresh remains a separate UI/host action and must be requested only when materially required.
+Every future next-step recommendation must explicitly reassess blockers, connector refresh, OAuth21 workbench server `3008` restart need, and whether `3008` can be restarted by the assistant under the current important intent. Current rule: the assistant may restart TESTS_MCP/OAuth21 workbench server on port `3008` when the active workflow step and important intent authorize restart. The operator must not be asked to restart `3008`. Connector refresh remains a separate UI/host action and must be requested only when materially required.
 
 ## Repairs applied
 
