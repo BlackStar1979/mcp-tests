@@ -1,6 +1,7 @@
 "use strict";
 
-const { methodNotAllowed } = require("./http_responses");
+const { jsonResponse } = require("./http_responses");
+const { auditJsonRpcResponseSent } = require("./rpc_response_audit");
 
 function handleMethodNotAllowed({ res, auditLog, requestId, httpMethod }) {
   auditLog("rpc_received", {
@@ -11,7 +12,16 @@ function handleMethodNotAllowed({ res, auditLog, requestId, httpMethod }) {
     raw_bytes: 0,
   });
 
-  methodNotAllowed(res);
+  const response = {
+    jsonrpc: "2.0",
+    error: {
+      code: -32000,
+      message: "Method not allowed. Use POST /mcp.",
+    },
+    id: null,
+  };
+  auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 405, response, phase: "method_not_allowed" });
+  jsonResponse(res, 405, response);
 }
 
 module.exports = {

@@ -195,6 +195,12 @@ const RUNTIME_STATUS_OUTPUT_SCHEMA = {
       type: "object",
       additionalProperties: true,
     },
+    oauth21_runtime: {
+      anyOf: [
+        { type: "null" },
+        { type: "object", additionalProperties: true },
+      ],
+    },
     enabled_tools: { type: "array", items: { type: "string" } },
     tool_surface: { type: "object", additionalProperties: true },
     schema_compatibility: { type: "object", additionalProperties: true },

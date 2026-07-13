@@ -2,6 +2,7 @@
 
 const { authResponseHeaders, summarizeAuthFailure } = require("../auth/auth_policy");
 const { jsonResponse } = require("./http_responses");
+const { auditJsonRpcResponseSent } = require("./rpc_response_audit");
 const { rpcError } = require("./rpc_responses");
 
 function handleAuthRejection({
@@ -21,13 +22,16 @@ function handleAuthRejection({
     ...summarizeAuthFailure(authResult),
   });
 
+  const statusCode = authResult.status || 401;
+  const response = rpcError(null, -32001, "Unauthorized", {
+    auth_mode: authResult.mode,
+    auth_error: authResult.error,
+  });
+  auditJsonRpcResponseSent(auditLog, { requestId, statusCode, response, phase: "auth_rejected" });
   jsonResponse(
     res,
-    authResult.status || 401,
-    rpcError(null, -32001, "Unauthorized", {
-      auth_mode: authResult.mode,
-      auth_error: authResult.error,
-    }),
+    statusCode,
+    response,
     authResponseHeaders(authPolicy)
   );
 }

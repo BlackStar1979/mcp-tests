@@ -1,6 +1,7 @@
 "use strict";
 
 const { corsHeadersForRequest } = require("./cors_policy");
+const { auditEmptyRpcResponseSent } = require("./rpc_response_audit");
 
 function handleCorsPreflight({ req, res, auditLog, requestId, httpMethod, authPolicy, publicBaseUrl }) {
   auditLog("rpc_received", {
@@ -19,6 +20,7 @@ function handleCorsPreflight({ req, res, auditLog, requestId, httpMethod, authPo
     "access-control-max-age": "3600",
     "cache-control": "no-store",
   });
+  auditEmptyRpcResponseSent(auditLog, { requestId, statusCode: 204, phase: "cors_preflight" });
   res.end();
 }
 

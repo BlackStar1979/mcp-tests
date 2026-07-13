@@ -1,6 +1,7 @@
 "use strict";
 
 const { jsonResponse } = require("./http_responses");
+const { auditJsonRpcResponseSent } = require("./rpc_response_audit");
 const { rpcError } = require("./rpc_responses");
 const { skipResponseWriteIfNeeded } = require("./response_write_guard");
 
@@ -19,11 +20,9 @@ function handleRpcHandlerException({
   });
 
   if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "rpc_handler_exception" })) {
-    jsonResponse(
-      res,
-      500,
-      rpcError(payload?.id, -32603, error.message || "Internal server error")
-    );
+    const response = rpcError(payload?.id, -32603, error.message || "Internal server error");
+    auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 500, response, phase: "rpc_handler_exception" });
+    jsonResponse(res, 500, response);
   }
 }
 

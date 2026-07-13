@@ -2,6 +2,7 @@
 
 const { byteLength } = require("./runtime_helpers");
 const { jsonResponse } = require("./http_responses");
+const { auditJsonRpcResponseSent } = require("./rpc_response_audit");
 const { rpcError } = require("./rpc_responses");
 const { readRequestBody } = require("./request_body");
 
@@ -31,7 +32,9 @@ async function parseRpcRequestBodyOrHandleError({
       error_message: error?.message || String(error),
     });
 
-    jsonResponse(res, 400, rpcError(null, -32700, "Parse error"));
+    const response = rpcError(null, -32700, "Parse error");
+    auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, phase: "parse_error" });
+    jsonResponse(res, 400, response);
 
     return {
       ok: false,

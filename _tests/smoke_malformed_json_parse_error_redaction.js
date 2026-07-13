@@ -47,10 +47,16 @@ function makeRes() {
   assert.equal(payload.error.message, "Parse error");
   assert.doesNotMatch(payload.error.message, /Unexpected|position|JSON/i);
 
-  assert.equal(auditEvents.length, 1);
+  assert.equal(auditEvents.length, 2);
   assert.equal(auditEvents[0].event, "rpc_received");
   assert.equal(auditEvents[0].payload.kind, "parse_error");
   assert.match(auditEvents[0].payload.error_message, /Unexpected|JSON|position/i);
+  assert.equal(auditEvents[1].event, "rpc_response_sent");
+  assert.equal(auditEvents[1].payload.phase, "parse_error");
+  assert.equal(auditEvents[1].payload.status_code, 400);
+  assert.equal(auditEvents[1].payload.response_mode, "json");
+  assert.equal(auditEvents[1].payload.has_error, true);
+  assert.equal(auditEvents[1].payload.error_code, -32700);
 
   console.log("smoke_malformed_json_parse_error_redaction ok");
 })().catch((error) => {

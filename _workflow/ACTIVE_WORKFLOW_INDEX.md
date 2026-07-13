@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-10
+Date: 2026-07-12
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` was restarted and `healthz` plus the supervisor startup inventory confirm `69` live tools on server_start_id `2026-07-10T11:14:38.432Z`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` currently reports `69` tools on server_start_id `2026-07-12T16:24:00.291Z`, and fresh real-client Codex traffic in this runtime window is now observed end-to-end through `initialize`, `notifications/initialized`, `tools/list`, and `tools/call`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
@@ -50,6 +50,13 @@ Read these first, in this order:
 6. Current run-all manifest:
    - `_tests/run_all_smoke_scripts.json`
 
+7. Operator-facing documentation contract:
+   - `_workflow/NORTHSTAR.md`
+   - `_workflow/STATE.md`
+   - `_workflow/READINESS.md`
+   - `_workflow/ROADMAP.md`
+   - `DIRECTORY.md`
+
 Do not infer active work from historical plan files unless `_workflow/state.json` or this index names it as active.
 
 ## Current validated baseline
@@ -64,17 +71,19 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
 - Earlier checkpoint-specific implementation approvals do not roll forward automatically; only explicitly named records govern their own scope.
+- The bounded `/mcp` response-side observability package is now live-loaded on OAuth21 `3008`; bounded live probes confirm `rpc_response_sent` on active `method_not_allowed`, `auth_rejected`, and authenticated local `initialize` paths, with server_start_id `2026-07-12T14:48:47.370Z`.
 
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / live runtime `healthz` plus startup inventory now confirm 69 tools on server_start_id `2026-07-10T11:14:38.432Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / live runtime `healthz` and fresh audit evidence now confirm 69 tools on server_start_id `2026-07-12T16:24:00.291Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
 - Live authenticated `/mcp` is now aligned with the repo `69`-tool connector-visible surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
+- Operator-facing documentation contract is now explicit, but `DIRECTORY` coverage is still being rolled out beyond the initial operational directories.
 
 Recent committed checkpoints:
 
@@ -207,6 +216,9 @@ Current records:
 
 - `keep_mcp_sampling_runtime_detachment_package.md`
   - Removes inactive sampling-context injection from active `/mcp` request handling after confirming there is no active request-session wiring left on the surviving route.
+
+- `keep_mcp_rpc_response_observability_package.md`
+  - Adds bounded server-side `rpc_response_sent` audit coverage for active `/mcp` request/response paths so runtime evidence can compare request interpretation with emitted responses by `request_id`.
 
 - `keep_mcp_local_session_helper_classification.md`
   - Classifies the remaining `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` path as bounded local compatibility fixtures rather than active surviving-route runtime wiring.
@@ -349,6 +361,9 @@ Current records:
 - `stage14_9_workflow_truth_repair.md`
   - Stage 14.9 workflow truth repair / state compaction. It records the operator rule that every next-step recommendation must reassess blocker validity, connector refresh, and workbench restart; it also records that the assistant can restart the workbench when workflow and operator intent authorize it.
 
+- `oauth21_prune_control_plane.md`
+  - Bounded OAuth21 stale-state maintenance package. It records the explicit `Status` / `Plan` / `Execute` / `Rollback` control-plane contract, approval marker `operator_approved_oauth21_prune_apply`, backup/rollback records, and no-runtime-auto-apply boundary.
+
 ## Active remaining work queue
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
@@ -383,6 +398,8 @@ Recently completed:
 - Added explicit archive-boundary README files for `_workflow/historical/`, `_tests/archive/`, and `_tests/archive/legacy_retired_auth/`, then extended `smoke_state_and_snapshot_hygiene.js` so archived evidence is less likely to be mistaken for active workflow truth.
 
 - Added an archival-quarantine README for `_workflow/control_plane/retired_root_backups/` and extended `smoke_state_and_snapshot_hygiene.js` so legacy moved root backups are not misread as active route/test/workflow authority.
+
+- Added the bounded OAuth21 prune control-plane package for stale durable OAuth state maintenance, including preview/receipt/gate/apply helpers, an explicit operator-run script, execute/rollback records, and regression coverage without wiring automatic runtime apply.
 
 - Reviewed the adjacent/auth watchlist and intentionally avoided opening speculative new ledgers; recorded future trigger conditions instead.
 

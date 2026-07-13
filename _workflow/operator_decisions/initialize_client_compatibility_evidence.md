@@ -1,7 +1,7 @@
 # Initialize Client Compatibility Evidence
 
-Status: GREEN / CLIENT EVIDENCE RECORDED / WORKFLOW-ONLY
-Date: 2026-07-03
+Status: GREEN / CLIENT EVIDENCE REFRESHED / WORKFLOW-ONLY
+Date: 2026-07-12
 
 ## Purpose
 
@@ -32,16 +32,40 @@ The tested Codex desktop connector now provides two distinct evidence points:
    - `oauth21_state_saved`
    - `oauth21_access_token_accepted`
 
-2. After successful authorization, the tested client still calls legacy `initialize`.
+2. After successful authorization, the tested client still enters through legacy `initialize`.
    - observed authenticated `POST /mcp` requests with `method: "initialize"`
    - no observed authenticated `server/discover`
-   - no observed authenticated `tools/list`
+   - later observed normal follow-up traffic on the same surviving route:
+     - `notifications/initialized`
+     - `tools/list`
+     - `tools/call`
 
 This means:
 
 - auth success alone does not imply migration to the no-handshake request contract
 - at least one real client/connector still depends on legacy `initialize` after OAuth succeeds
 - repo-side no-handshake support is not enough to remove legacy `initialize` from the compatibility surface today
+
+## Fresh evidence refresh on 2026-07-12
+
+Current authenticated audit evidence continues to confirm the same compatibility blocker on the surviving `/mcp` route:
+
+- observed authenticated `POST /mcp` requests with `method: "initialize"`
+- observed authenticated `initialize_received` events for:
+  - `client_name: "codex-mcp-client"`
+  - `client_version: "0.144.1"`
+- observed follow-up authenticated traffic on the same route for the same real client family:
+  - `notifications/initialized`
+  - `tools/list`
+  - `tools/call`
+- no observed authenticated `server/discover` entries in the same current audit window
+
+This refresh matters because it removes ambiguity about drift since the earlier 2026-07-03 record:
+
+- the blocker is still present on a newer Codex desktop client line
+- the real client can still operate normally after legacy `initialize`, so the compatibility blocker is now specifically about the entry path rather than a broader post-auth runtime failure
+- the current compatibility interpretation remains justified
+- initialize retirement on the surviving route is still blocked by real client behavior, not by missing repo support
 
 ## Compatibility interpretation
 
@@ -86,6 +110,7 @@ But:
 - `src/runtime/rpc_message_dispatcher.js`
 - `src/runtime/server_discover_message_handler.js`
 - `C:\\Users\\mczyz\\AppData\\Local\\Temp\\mcp-tests-fork-audit-3022.jsonl`
+- `_logs/.mcp-tests-audit.jsonl`
 
 ## Declarations
 

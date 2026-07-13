@@ -1,0 +1,66 @@
+# State
+
+Status: active as-is summary
+Updated: 2026-07-12
+
+## Purpose
+
+Summarize the current validated product state in one operator-facing place without replacing the canonical specs or workflow canon.
+
+## Current as-is state
+
+- Repository: `C:\Work\mcp-tests`
+- Branch expectation: `main`
+- Runtime entrypoint: `server.js`
+- Server identity: `mcp-tests-response-shape`
+- Server version: `0.40.0`
+- Connector shape version: `2025-05-strict-v1`
+- Output mode: `structured`
+
+## Runtime topology
+
+- Public runtime
+  - port `3009`
+  - auth mode `none`
+  - target connector-visible tools `13`
+
+- Authorized runtime
+  - port `3008`
+  - auth mode `oauth21`
+  - profile `tests/internal`
+  - target connector-visible tools `69`
+
+## Surface model
+
+- Public MCP-visible tools: `13`
+- Authorized MCP-visible tools: `56`
+- Authenticated total on authorized runtime: `69`
+- Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
+
+## Current workflow track
+
+- `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
+- `next_primary = post_53d-connector-visible-surface-revalidation`
+- `next_secondary = post_53d-bounded-initialize-retirement-decision-prep`
+
+## Verified documentation authorities
+
+- Canonical workflow truth:
+  - `_workflow/WORKFLOW_CANON.md`
+  - `_workflow/ACTIVE_WORKFLOW_INDEX.md`
+  - `_workflow/state.json`
+
+- Canonical server truth:
+  - `SERVER_SPEC.json`
+  - `SERVER_AUTH_SPEC.json`
+  - `SERVER_CONNECTOR_SURFACE_SPEC.json`
+  - `SERVER_TOOLS_SPEC.json`
+  - related `SERVER_*_SPEC.json` policy/runtime documents
+
+## Current operational caveats
+
+- Workflow truth and runtime truth must stay separated.
+- Connector/UI truth may drift from repo/runtime truth and requires live verification.
+- `state.json` is an orientation map, not a progress log.
+- Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.
+- OAuth21 durable-state hygiene now has an explicit control-plane path with bounded records/backups and approval-gated apply; it is not a connector-visible runtime tool.

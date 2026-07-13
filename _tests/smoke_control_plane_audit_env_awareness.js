@@ -9,6 +9,7 @@ const SCRIPTS = [
   "_workflow/scripts/test_mcp_rollback.ps1",
   "_workflow/scripts/test_mcp_backup.ps1",
   "_workflow/scripts/test_mcp_restart.ps1",
+  "_workflow/scripts/test_mcp_oauth21_prune.js",
 ];
 
 function read(relPath) {
@@ -19,13 +20,26 @@ function assertEnvAwareAuditLog(relPath) {
   const source = read(relPath);
 
   assert.match(source, /MCP_TEST_AUDIT_LOG/, `${relPath} must reference MCP_TEST_AUDIT_LOG`);
-  assert.match(source, /\$AuditLog\s*=\s*if\s*\(\s*\$env:MCP_TEST_AUDIT_LOG\s*\)/s, `${relPath} must select $AuditLog from env when set`);
-  assert.match(source, /\$env:MCP_TEST_AUDIT_LOG/s, `${relPath} must use the env audit path`);
-  assert.match(source, /Join-Path\s+\$Repo\s+["']_logs\\.mcp-tests-audit\.jsonl["']/s, `${relPath} must keep the default repo audit fallback`);
+  if (relPath.endsWith(".ps1")) {
+    assert.match(source, /\$AuditLog\s*=\s*if\s*\(\s*\$env:MCP_TEST_AUDIT_LOG\s*\)/s, `${relPath} must select $AuditLog from env when set`);
+    assert.match(source, /\$env:MCP_TEST_AUDIT_LOG/s, `${relPath} must use the env audit path`);
+    assert.match(source, /Join-Path\s+\$Repo\s+["']_logs\\.mcp-tests-audit\.jsonl["']/s, `${relPath} must keep the default repo audit fallback`);
 
-  const hardCodedOnly = /^\s*\$AuditLog\s*=\s*Join-Path\s+\$Repo\s+["']_logs\\.mcp-tests-audit\.jsonl["']\s*$/m.test(source)
-    && !/\$AuditLog\s*=\s*if\s*\(\s*\$env:MCP_TEST_AUDIT_LOG\s*\)/s.test(source);
-  assert.equal(hardCodedOnly, false, `${relPath} must not use only a hard-coded audit path`);
+    const hardCodedOnly = /^\s*\$AuditLog\s*=\s*Join-Path\s+\$Repo\s+["']_logs\\.mcp-tests-audit\.jsonl["']\s*$/m.test(source)
+      && !/\$AuditLog\s*=\s*if\s*\(\s*\$env:MCP_TEST_AUDIT_LOG\s*\)/s.test(source);
+    assert.equal(hardCodedOnly, false, `${relPath} must not use only a hard-coded audit path`);
+    return;
+  }
+
+  if (relPath.endsWith(".js")) {
+    assert.match(source, /const\s+AuditLog\s*=\s*process\.env\.MCP_TEST_AUDIT_LOG\s*\|\|\s*path\.join\(Repo,\s*"_logs",\s*"\.mcp-tests-audit\.jsonl"\)/s, `${relPath} must select AuditLog from env with repo fallback`);
+    const hardCodedOnly = /const\s+AuditLog\s*=\s*path\.join\(Repo,\s*"_logs",\s*"\.mcp-tests-audit\.jsonl"\)/s.test(source)
+      && !/process\.env\.MCP_TEST_AUDIT_LOG/s.test(source);
+    assert.equal(hardCodedOnly, false, `${relPath} must not use only a hard-coded audit path`);
+    return;
+  }
+
+  assert.fail(`Unsupported script type for audit log awareness check: ${relPath}`);
 }
 
 for (const relPath of SCRIPTS) {

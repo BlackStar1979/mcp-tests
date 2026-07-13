@@ -6,7 +6,21 @@ Start every repo/workflow session with this sequence:
 2. `_workflow/ACTIVE_WORKFLOW_INDEX.md`
 3. `_workflow/state.json`
 4. `_workflow/WORKFLOW_CANON.md`
-5. Any referenced operator decision or machine-readable inventory file.
+5. `_workflow/NORTHSTAR.md`
+6. `_workflow/STATE.md`
+7. `_workflow/READINESS.md`
+8. `_workflow/ROADMAP.md`
+9. Any referenced operator decision or machine-readable inventory file.
+
+## Operator-facing documentation
+
+The operator-facing documentation contract currently lives in:
+
+- `_workflow/NORTHSTAR.md`
+- `_workflow/STATE.md`
+- `_workflow/READINESS.md`
+- `_workflow/ROADMAP.md`
+- `DIRECTORY.md` at repo root plus bounded `DIRECTORY.md` files in selected operational subdirectories
 
 ## Next-step recommendation duty
 

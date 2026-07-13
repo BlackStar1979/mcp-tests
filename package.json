@@ -12,6 +12,7 @@
     "ssh2-sftp-client": "^12.0.1"
   },
   "scripts": {
+    "docs:directory": "node scripts/generate_directory_docs.js",
     "start": "node server.js",
     "self-test": "node server.js --self-test",
     "test": "node _tests/run_all_smokes.js --skip-network",

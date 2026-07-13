@@ -28,6 +28,7 @@ function createRuntimeStatusProvider({
   network,
   fs,
   serverStartId,
+  oauth21RuntimeStatus,
 }) {
   return function getRuntimeStatus(options = {}) {
     return buildRuntimeStatus({
@@ -56,6 +57,7 @@ function createRuntimeStatusProvider({
       network,
       fs,
       serverStartId,
+      oauth21RuntimeStatus,
     });
   };
 }

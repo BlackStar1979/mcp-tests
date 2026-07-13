@@ -4,6 +4,7 @@ const { emptyResponse, jsonResponse } = require("./http_responses");
 const { sseResponse } = require("./sse_response");
 const { isJsonRpcResponse, resolvePendingResponse } = require("./outbound_request_manager");
 const { rpcMethodSummary } = require("./rpc_audit_summary");
+const { auditJsonRpcResponseSent, auditEmptyRpcResponseSent } = require("./rpc_response_audit");
 const { byteLength } = require("./runtime_helpers");
 const { skipResponseWriteIfNeeded } = require("./response_write_guard");
 
@@ -37,12 +38,15 @@ async function handleSinglePayload({
     if (!resolved.ok) {
       auditLog("pending_response_rejected", { request_id: requestId, reason: resolved.reason, rpc_id: resolved.id });
       if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_pending_rejected" })) {
-        jsonResponse(res, 400, { jsonrpc: "2.0", id: payload.id, error: { code: -32000, message: "Pending response rejected", data: { reason: resolved.reason } } });
+        const response = { jsonrpc: "2.0", id: payload.id, error: { code: -32000, message: "Pending response rejected", data: { reason: resolved.reason } } };
+        auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, phase: "single_pending_rejected" });
+        jsonResponse(res, 400, response);
       }
       return;
     }
     auditLog("pending_response_resolved", { request_id: requestId, rpc_id: resolved.id, method: resolved.method, has_error: resolved.hasError });
     if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_pending_resolved" })) {
+      auditEmptyRpcResponseSent(auditLog, { requestId, statusCode: 202, phase: "single_pending_resolved" });
       emptyResponse(res, 202);
     }
     return;
@@ -52,6 +56,7 @@ async function handleSinglePayload({
 
   if (response === undefined) {
     if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_no_response" })) {
+      auditEmptyRpcResponseSent(auditLog, { requestId, statusCode: 204, phase: "single_no_response" });
       emptyResponse(res, 204);
     }
     return;
@@ -65,6 +70,7 @@ async function handleSinglePayload({
   }
 
   if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_json_response" })) {
+    auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 200, response, phase: "single_json_response" });
     jsonResponse(res, 200, response);
   }
 }

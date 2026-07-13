@@ -2,11 +2,11 @@
 
 ## Purpose
 
-Reserved target for the upcoming server.js runtime-container extraction. This directory will hold HTTP transport, RPC handling, tool dispatch, audit logging, connector-shape assertions, and self-test modules after point 12 begins.
+Active runtime implementation modules for HTTP transport, RPC handling, tool dispatch, audit logging, runtime status assembly, connector-shape assertions, and server bootstrap support.
 
 ## Files
 
-- `README.md` — directory orientation and extraction target definition.
+- `README.md` — Directory orientation for the runtime module area.
 
 ## Subdirectories
 

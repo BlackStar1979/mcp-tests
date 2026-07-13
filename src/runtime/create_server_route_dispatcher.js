@@ -63,6 +63,9 @@ async function dispatchCreateServerRoute({
       publicBaseUrl,
       toolIntrospection,
       toolsList,
+      oauth21RuntimeStatus: oauth21AuthorizationServer && typeof oauth21AuthorizationServer.status === "function"
+        ? () => oauth21AuthorizationServer.status()
+        : undefined,
     });
     return;
   }

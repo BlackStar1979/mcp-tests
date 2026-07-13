@@ -35,6 +35,7 @@ function createRuntimeStatusAssembly({
   toolsList,
   serverStartId,
   disableLegacyInitialize,
+  oauth21RuntimeStatus,
 }) {
   let cachedToolRefs = null;
   let cachedToolData = null;
@@ -88,6 +89,7 @@ function createRuntimeStatusAssembly({
     schemaCompatibility: () => getCachedToolData().schemaCompatibility,
     runtimeIdentity: () => buildRuntimeIdentity(),
     toolLabels: () => getCachedToolData().toolLabels,
+    oauth21RuntimeStatus,
     requestContract: () => ({
       route: "/mcp",
       post_only: true,

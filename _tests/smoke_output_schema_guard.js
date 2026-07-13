@@ -104,6 +104,7 @@ function baseRuntimeStatus() {
       enabled: true,
       root: "redacted",
     },
+    oauth21_runtime: null,
     enabled_tools: ["a", "b"],
     tool_surface: {
       tool_count: 2,

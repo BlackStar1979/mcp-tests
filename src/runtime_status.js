@@ -61,6 +61,7 @@ function buildRuntimeStatus(context) {
     fs,
     serverStartId,
     includeTools = true,
+    oauth21RuntimeStatus,
   } = context;
 
   const includeVerboseTools = includeTools !== false;
@@ -135,6 +136,7 @@ function buildRuntimeStatus(context) {
       max_list_entries: fs.getPublicFsMaxListEntries(),
       profile: "public-fs-sandbox-only",
     },
+    oauth21_runtime: typeof oauth21RuntimeStatus === "function" ? oauth21RuntimeStatus() : null,
     enabled_tools: includeVerboseTools ? enabledTools() : [],
     tool_surface: includeVerboseTools
       ? (typeof toolSurfaceFingerprint === "function" ? toolSurfaceFingerprint() : null)

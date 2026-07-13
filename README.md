@@ -55,6 +55,16 @@ profiles/                Runtime profile configs
 docker/                  Docker/devcontainer scaffolding
 ```
 
+## Operator-Facing Documentation
+
+The operator-facing documentation contract lives in:
+
+- `_workflow/NORTHSTAR.md`
+- `_workflow/STATE.md`
+- `_workflow/READINESS.md`
+- `_workflow/ROADMAP.md`
+- `DIRECTORY.md`
+
 ## Workspace Roots
 
 Authorized workspace-readonly filesystem tools resolve bare paths under `C:\Work` on Windows by default. Extra explicit roots can be added with `MCP_TEST_EXTRA_ROOTS` using `alias=path;alias2=path2`, then addressed as `@alias/...`.

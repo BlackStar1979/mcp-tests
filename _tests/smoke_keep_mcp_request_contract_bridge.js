@@ -97,12 +97,30 @@ function discoverBody(version = "2025-06-18") {
   assert.equal(goodBody.result.protocolVersion, "2025-06-18");
   assert.equal(goodBody.result.transport.route, "/mcp");
   assert.equal(goodBody.result.transport.legacy_initialize_supported, true);
+  assert.ok(audits.some((item) =>
+    item.event === "rpc_response_sent" &&
+    item.data.status_code === 200 &&
+    item.data.response_mode === "json" &&
+    item.data.has_result === true &&
+    item.data.has_error === false &&
+    item.data.has_rpc_id === true &&
+    item.data.rpc_id_type === "number" &&
+    item.data.response_bytes > 0
+  ));
 
   const bad = res();
   await runtimeHandlers.handleMcp(req(discoverBody()), bad);
   assert.equal(bad.statusCode, 400);
   assert.equal(JSON.parse(bad.body()).error.data.reason, "protocol_version_header_required");
   assert.ok(audits.some((item) => item.event === "rpc_protocol_error" && item.data.reason === "protocol_version_header_required"));
+  assert.ok(audits.some((item) =>
+    item.event === "rpc_response_sent" &&
+    item.data.status_code === 400 &&
+    item.data.response_mode === "json" &&
+    item.data.has_result === false &&
+    item.data.has_error === true &&
+    item.data.error_code === -32600
+  ));
   assert.ok(canon.includes("Request-contract bridge clarification"));
   assert.equal(canon.includes("Next recommended action: prepare the bounded request-contract migration package"), false);
   assert.ok(canon.includes("Next recommended action: use `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md`"));

@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-07-12`:
 
-- `324` JavaScript files total in `_tests`
-- `246` active scripts currently listed in `run_all_smoke_scripts.json`
+- `329` JavaScript files total in `_tests`
+- `251` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
@@ -20,11 +20,12 @@ Latest full active validation:
 - `node _tests/run_all_smokes.js --skip-network`
 - last confirmed result from `2026-07-12`: `ok=true`
 - last confirmed section counts from that full run: `7` public scripts and `238` authenticated scripts
-- current manifest file contains `246` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `245` sectioned scripts, not all `246` manifest entries
+- current manifest file contains `251` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `250` sectioned scripts, not all `251` manifest entries
 
 ## Orientation
 
 - Active smoke entrypoint: `run_all_smokes.js`
+- `run_all_smokes.js` must isolate OAuth state/client storage per run and must not reuse the default `~/.romion/tests_oauth_*.json` files
 - Active manifest: `run_all_smoke_scripts.json`
 - Active manifest audit: `RUN_ALL_ACTIVE_AUDIT.md`
 - Mixed-review split: `RUN_ALL_MIXED_REVIEW_CLASSIFICATION.md`
@@ -43,7 +44,7 @@ Latest full active validation:
 
 - Public profile surface: descriptor audit, profile audit, public FS surface, and profile schema checks
 - Core authenticated surface: policy, routing, schema, MCP dispatch, repo/runtime topology, and enforcement guards
-- OAuth and OAuth21: AS metadata, JWKS/introspection, DCR, PKCE, rotation, state, and route contract checks
+- OAuth and OAuth21: AS metadata, JWKS/introspection, DCR, PKCE, rotation, state, prune preview/receipt/gate/apply-package draft/apply helper/control-plane script, and route contract checks
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
 - Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks
 - Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, and snapshot/state consistency

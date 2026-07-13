@@ -140,6 +140,9 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     toolsList,
     serverStartId,
     disableLegacyInitialize: bootstrapConfig.disableLegacyInitialize === true,
+    oauth21RuntimeStatus: oauth21AuthorizationServer && typeof oauth21AuthorizationServer.status === "function"
+      ? () => oauth21AuthorizationServer.status()
+      : undefined,
   });
 
   const { getOptionalTool } = configureOptionalToolsAssembly({

@@ -31,7 +31,26 @@ function rpcMethodSummary(message) {
   };
 }
 
+function rpcResponseSummary(message) {
+  const id = Object.prototype.hasOwnProperty.call(message || {}, "id")
+    ? message.id
+    : undefined;
+  const hasResult = Object.prototype.hasOwnProperty.call(message || {}, "result");
+  const hasError = message?.error && typeof message.error === "object";
+  const errorCode = typeof message?.error?.code === "number"
+    ? message.error.code
+    : null;
+
+  return {
+    ...rpcIdSummary(id),
+    has_result: hasResult,
+    has_error: Boolean(hasError),
+    error_code: errorCode,
+  };
+}
+
 module.exports = {
   rpcIdSummary,
   rpcMethodSummary,
+  rpcResponseSummary,
 };

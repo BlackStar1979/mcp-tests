@@ -40,6 +40,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "rpc_response_sent",
+      "status": "active_code_event"
+    },
+    {
       "name": "sampling_request_denied",
       "status": "active_code_event"
     },
@@ -128,6 +132,42 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_clients_missing",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_clients_loaded",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_clients_saved",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_clients_load_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_clients_save_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_atomic_replace_fallback",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_state_lock_stale_recovered",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_clients_atomic_replace_fallback",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_clients_lock_stale_recovered",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_access_token_accepted",
       "status": "active_code_event"
     },
@@ -140,6 +180,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_refresh_token_replayed",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_refresh_token_rejected",
       "status": "active_code_event"
     },
@@ -149,6 +193,14 @@
     },
     {
       "name": "oauth21_operator_login_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_authorize_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_token_rejected",
       "status": "active_code_event"
     },
     {

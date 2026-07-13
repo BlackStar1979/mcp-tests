@@ -18,6 +18,7 @@ function handleHealthRoute({
   publicBaseUrl,
   toolIntrospection,
   toolsList,
+  oauth21RuntimeStatus,
 }) {
   const full = ["1", "true", "yes", "on"].includes(String(process.env.MCP_TEST_HEALTH_FULL || "").trim().toLowerCase());
   const introspection = typeof toolIntrospection === "function" ? toolIntrospection() : null;
@@ -47,6 +48,7 @@ function handleHealthRoute({
       security_boundary: securityBoundary,
       public_base_url: publicBaseUrl,
       tools,
+      oauth21_runtime: typeof oauth21RuntimeStatus === "function" ? oauth21RuntimeStatus() : null,
     });
   }
   jsonResponse(res, 200, body);

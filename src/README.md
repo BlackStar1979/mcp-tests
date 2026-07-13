@@ -49,6 +49,6 @@ Active TEST MCP source modules. Runtime code and policy helpers live here; root-
 - `auth` — Authentication modes, transition guards, and auth policy helpers.
 - `exec` — Reserved target for future execution wrapper internals.
 - `plugin` — Reserved target for future plugin subsystem implementation split.
-- `runtime` — Reserved target for future server.js container extraction.
+- `runtime` — Active runtime HTTP/RPC/request-handling modules and server bootstrap support.
 - `schemas` — Shared JSON-schema and output-shape contracts.
 - `util` — Shared policy, path, network, and code-workspace utilities.
