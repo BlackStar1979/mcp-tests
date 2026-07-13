@@ -169,6 +169,9 @@ Current records:
 - `initialize_client_compatibility_evidence.md`
   - Real client compatibility evidence for `initialize` retirement scoping. Confirms a freshly re-added Codex desktop Streamable HTTP connector can complete OAuth and still call legacy `initialize`, so bounded single-route dual recognition remains temporary compatibility debt rather than destination architecture.
 
+- `initialize_retirement_decision_prep.md`
+  - Bounded decision-prep package for eventual `initialize` retirement. Confirms the remaining blocker is current real client entry behavior plus later explicit authorization, not missing repo/runtime no-handshake support.
+
 - `subscriptions_listen_compatibility_matrix.md`
   - Design-only compatibility matrix between stable `GET /mcp` SSE, future sessionless `subscriptions/listen`, and existing `tools/list_changed` dry-run work. No runtime change, restart, or connector refresh.
 

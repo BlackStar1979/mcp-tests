@@ -96,6 +96,8 @@ Prototype-route retirement clarification: `_workflow/operator_decisions/sessionl
 
 Initialize-retirement boundary clarification: `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md` records that legacy `initialize` on surviving `/mcp` is now bounded as temporary compatibility only. New target-facing protocol migration must not expand `initialize`; it must attach to `server/discover` and per-request metadata instead.
 
+Initialize-retirement decision-prep clarification: `_workflow/operator_decisions/initialize_retirement_decision_prep.md` records the bounded prerequisites for any future retirement decision. The current blocker is fresh real client entry behavior plus later explicit authorization, not missing repo/runtime support for useful no-handshake flow on the surviving route.
+
 Transport-session retirement package clarification: `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` records the repo-applied runtime step that removes active transport-session dependence from surviving `/mcp`. Stable `initialize` no longer creates `Mcp-Session-Id`, stable POST `/mcp` ignores session headers instead of treating them as active protocol state, and `server/discover` now reports `protocol_sessions: false`. Residual session/SSE helper code that is no longer reachable from active `/mcp` remains a separate bounded cleanup task.
 
 MCP-Session-Id header closeout clarification: `_workflow/operator_decisions/mcp_session_id_header_closeout.md` closes the transport-header ledger item for the active stable `/mcp` contract. Remaining helper debt in `session.js` or outbound compatibility code must not be used to reopen the header dependency itself.
