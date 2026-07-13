@@ -4,16 +4,17 @@ const { codePatchPlanTool } = require("../tools/code_patch_plan");
 const { codeScenarioTool } = require("../tools/code_scenario");
 
 (async () => {
+  const target = "src/auth/oauth21_authorization_server.js";
   const graph = await buildDependencyGraph("src", { recursive: true, maxFiles: 200 });
 
-  const scenario = scenarioPlan(graph, "src/tool_loader.js", "internal_refactor", "both", 5);
+  const scenario = scenarioPlan(graph, target, "internal_refactor", "both", 5);
   assert.equal(scenario.found, true);
-  assert.equal(scenario.target, "src/tool_loader.js");
+  assert.equal(scenario.target, target);
   assert.ok(["low", "medium", "high"].includes(scenario.risk.level));
   assert.ok(Array.isArray(scenario.context_files));
   assert.ok(Array.isArray(scenario.recommended_checks));
 
-  const plan = patchPlan(graph, "src/tool_loader.js", "refactor", "Add bounded read-only planning tools.", "both", 5);
+  const plan = patchPlan(graph, target, "refactor", "Add bounded read-only planning tools.", "both", 5);
   assert.equal(plan.scenario.found, true);
   assert.equal(plan.decision.status, "patch_plan_only");
   assert.ok(plan.plan.length >= 2);
@@ -22,7 +23,7 @@ const { codeScenarioTool } = require("../tools/code_scenario");
 
   const scenarioToolResult = await codeScenarioTool.execute({
     path: "src",
-    target: "src/tool_loader.js",
+    target,
     change_type: "internal_refactor",
     recursive: true,
     max_files: 200,
@@ -30,12 +31,12 @@ const { codeScenarioTool } = require("../tools/code_scenario");
     direction: "both",
   });
   assert.equal(scenarioToolResult.success, true);
-  assert.equal(scenarioToolResult.target, "src/tool_loader.js");
+  assert.equal(scenarioToolResult.target, target);
   assert.ok(Array.isArray(scenarioToolResult.context_files));
 
   const patchToolResult = await codePatchPlanTool.execute({
     path: "src",
-    target: "src/tool_loader.js",
+    target,
     intent: "refactor",
     objective: "Extend dev planning surface.",
     recursive: true,
@@ -44,7 +45,7 @@ const { codeScenarioTool } = require("../tools/code_scenario");
     direction: "both",
   });
   assert.equal(patchToolResult.success, true);
-  assert.equal(patchToolResult.scenario.target, "src/tool_loader.js");
+  assert.equal(patchToolResult.scenario.target, target);
   assert.equal(patchToolResult.decision.status, "patch_plan_only");
 
   const badScenario = await codeScenarioTool.execute({ path: "src", target: "missing_file.js" });
