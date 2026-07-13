@@ -24,6 +24,7 @@ const DENY_DIRS = new Set([
 ]);
 
 const CODE_EXTENSIONS = new Set([".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".py"]);
+const IMPORTABLE_NON_CODE_EXTENSIONS = new Set([".json"]);
 const JS_CHECK_EXTENSIONS = new Set([".js", ".mjs", ".cjs"]);
 const PY_CHECK_EXTENSIONS = new Set([".py"]);
 
@@ -292,7 +293,7 @@ function localImportCandidates(fileRel, language, source) {
   if (language === "javascript") {
     if (!clean.startsWith(".")) return out;
     const base = path.posix.normalize(path.posix.join(dir, clean));
-    for (const ext of ["", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx"]) out.push(base + ext);
+    for (const ext of ["", ".js", ".mjs", ".cjs", ".ts", ".tsx", ".jsx", ".json"]) out.push(base + ext);
     for (const ext of [".js", ".ts", ".tsx", ".jsx"]) out.push(path.posix.join(base, "index" + ext));
   }
   if (language === "python") {
@@ -316,9 +317,10 @@ function resolveCandidate(candidates, existing) {
 async function resolveWorkspaceCandidate(candidates) {
   for (const candidate of candidates) {
     try {
-      const resolved = resolveWorkspacePath(candidate, { allowDirectory: false });
+      const resolved = resolveWorkspacePath(candidate);
       const stat = await fsp.stat(resolved.absolute_path);
-      if (stat.isFile() && CODE_EXTENSIONS.has(path.extname(resolved.relative_path).toLowerCase())) {
+      const ext = path.extname(resolved.relative_path).toLowerCase();
+      if (stat.isFile() && (CODE_EXTENSIONS.has(ext) || IMPORTABLE_NON_CODE_EXTENSIONS.has(ext))) {
         return resolved.relative_path;
       }
     } catch {}

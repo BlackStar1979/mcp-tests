@@ -38,6 +38,12 @@ async function callTool(name, args) {
   assert.equal(audit.success, true);
   assert.ok(audit.summary.nodes > 0);
 
+  const runtimeAudit = await callTool("dev_code_audit", { path: "src/runtime/tools_call_handler.js", recursive: false, max_files: 10, top_n: 20 });
+  assert.equal(runtimeAudit.success, true);
+  assert.equal(runtimeAudit.summary.unresolved, 0);
+  assert.ok(runtimeAudit.external_workspace_edges.some((edge) => edge.to === "SERVER_TOOLS_SPEC.json"));
+  assert.ok(runtimeAudit.external_workspace_edges.some((edge) => edge.to === "SERVER_RESOURCE_POLICY_SPEC.json"));
+
   const impact = await callTool("dev_code_impact", {
     path: "tools",
     target: "tools/dev_code_symbols.js",
