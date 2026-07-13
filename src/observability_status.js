@@ -281,7 +281,9 @@ function buildRecommendedActions({ connectorComparison, parseErrors, toolCallErr
 function buildObservabilityStatus(options = {}) {
   const args = options.args || {};
   const runtimeStatusProvider = options.runtimeStatusProvider;
-  const auditLogPath = options.auditLogPath || path.join(__dirname, "..", ".mcp-tests-audit.jsonl");
+  const auditLogPath = options.auditLogPath
+    || process.env.MCP_TEST_AUDIT_LOG
+    || path.join(__dirname, "..", "_logs", ".mcp-tests-audit.jsonl");
   const windowSize = clampInteger(args.window_size, DEFAULT_WINDOW_SIZE, 1, MAX_WINDOW_SIZE);
   const slowMs = clampInteger(args.slow_ms, DEFAULT_SLOW_MS, 1, 600000);
   const topN = clampInteger(args.top_n, DEFAULT_TOP_N, 1, 50);

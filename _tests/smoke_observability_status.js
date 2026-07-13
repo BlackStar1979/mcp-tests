@@ -4,7 +4,7 @@ const path = require("node:path");
 const { buildObservabilityStatus } = require("../src/observability_status");
 const { createObservabilityStatusTool } = require("../tools/observability_status");
 
-const auditLogPath = path.join(__dirname, "..", ".mcp-tests-audit.jsonl");
+const auditLogPath = path.join(__dirname, "..", "_logs", ".mcp-tests-audit.jsonl");
 
 const runtimeStatus = {
   server_version: "0.40.0",

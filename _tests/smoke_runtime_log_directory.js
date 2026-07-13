@@ -4,11 +4,19 @@ const path = require("node:path");
 
 const serverSource = fs.readFileSync(path.resolve(__dirname, "..", "server.js"), "utf8");
 const bootstrapSource = fs.readFileSync(path.resolve(__dirname, "..", "src", "runtime", "server_bootstrap_runtime.js"), "utf8");
+const observabilitySource = fs.readFileSync(path.resolve(__dirname, "..", "src", "observability_status.js"), "utf8");
+const toolUsageSnapshotSource = fs.readFileSync(path.resolve(__dirname, "..", "src", "truth", "tool_usage_snapshot.js"), "utf8");
 
 assert.ok(bootstrapSource.includes('path.join(rootDir, "_logs")'), "default audit log directory must be mcp-tests/_logs");
 assert.ok(bootstrapSource.includes('path.join(auditLogDir, ".mcp-tests-audit.jsonl")'), "default audit log file must be inside auditLogDir");
 assert.ok(bootstrapSource.includes("env.MCP_TEST_AUDIT_LOG"), "explicit MCP_TEST_AUDIT_LOG override must remain supported");
 assert.ok(bootstrapSource.includes("env.MCP_TEST_LOG_DIR"), "MCP_TEST_LOG_DIR override must be supported");
+assert.ok(observabilitySource.includes('path.join(__dirname, "..", "_logs", ".mcp-tests-audit.jsonl")'), "observability_status must default to _logs audit path");
+assert.ok(observabilitySource.includes("process.env.MCP_TEST_AUDIT_LOG"), "observability_status must honor MCP_TEST_AUDIT_LOG override");
+assert.ok(!observabilitySource.includes('path.join(__dirname, "..", ".mcp-tests-audit.jsonl")'), "observability_status must not fall back to repo-root audit path");
+assert.ok(toolUsageSnapshotSource.includes('path.resolve(__dirname, "..", "..", "_logs", ".mcp-tests-audit.jsonl")'), "tool_usage_snapshot must default to _logs audit path");
+assert.ok(toolUsageSnapshotSource.includes("process.env.MCP_TEST_AUDIT_LOG"), "tool_usage_snapshot must honor MCP_TEST_AUDIT_LOG override");
+assert.ok(!toolUsageSnapshotSource.includes('path.resolve(__dirname, "..", "..", ".mcp-tests-audit.jsonl")'), "tool_usage_snapshot must not fall back to repo-root audit path");
 assert.ok(!serverSource.includes('path.join(__dirname, ".mcp-tests-audit.jsonl")'), "root-level default audit log path must not return");
 assert.ok(serverSource.includes("C:\\Work\\mcp-tests\\_logs\\.mcp-tests-audit.jsonl"), "header comment must document _logs directory path");
 

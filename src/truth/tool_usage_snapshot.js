@@ -1,7 +1,8 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const DEFAULT_AUDIT_LOG_PATH = path.resolve(__dirname, "..", "..", ".mcp-tests-audit.jsonl");
+const DEFAULT_AUDIT_LOG_PATH = process.env.MCP_TEST_AUDIT_LOG
+  || path.resolve(__dirname, "..", "..", "_logs", ".mcp-tests-audit.jsonl");
 const WEB_TOOLS = new Set([
   "net_http_get_allowlisted",
   "net_fetch_text_allowlisted",
