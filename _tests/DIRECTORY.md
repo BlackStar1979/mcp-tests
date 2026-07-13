@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active tests directory map
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 - `archive/`
   Archived legacy and stale smoke material retained for traceability only.

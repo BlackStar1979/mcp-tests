@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
-const TODAY = "2026-07-12";
+const TODAY = "2026-07-13";
 
 const CONFIG = {
   ".": {
@@ -72,7 +72,7 @@ const CONFIG = {
     entries: {
       "_diagnostics/": "Workflow-specific diagnostic records and derived analysis artifacts.",
       "baselines/": "Baseline records used for workflow and runtime comparison.",
-      "control_plane/": "Control-plane scripts, manifests, and archival snapshots for operational procedures.",
+      "control_plane/": "Control-plane scripts, manifests, archival snapshots, and bounded OAuth21 prune records/backups for operational procedures.",
       "historical/": "Historical workflow evidence retained for traceability, not current authority.",
       "inventories/": "Structured inventories that support migration and parity work.",
       "operator_decisions/": "Binding decision records and bounded work-package evidence.",
@@ -180,8 +180,42 @@ function render(cfg) {
   return lines.join("\n") + "\n";
 }
 
+function writeFile(target, body) {
+  fs.mkdirSync(path.dirname(target), { recursive: true });
+  fs.writeFileSync(target, body, "utf8");
+  console.log(`wrote ${path.relative(ROOT, target)}`);
+}
+
+function renderSnapshotDirectory(relPath, name) {
+  const lines = [
+    "# DIRECTORY",
+    "",
+    "Status: archived snapshot directory map",
+    `Updated: ${TODAY}`,
+    "",
+    `- \`_tests/\``,
+    `  Snapshot copy of test-surface files for archive \`${name}\`, when present.`,
+    `- \`_workflow/\``,
+    `  Snapshot copy of workflow files for archive \`${name}\`, when present.`,
+    `- \`src/\``,
+    `  Snapshot copy of source files for archive \`${name}\`, when present.`,
+    "",
+    "This directory is archival evidence only, not active workflow authority.",
+    "",
+  ];
+  return lines.join("\n");
+}
+
 for (const [relPath, cfg] of Object.entries(CONFIG)) {
   const target = path.join(ROOT, relPath, "DIRECTORY.md");
-  fs.writeFileSync(target, render(cfg), "utf8");
-  console.log(`wrote ${path.relative(ROOT, target)}`);
+  writeFile(target, render(cfg));
+}
+
+const snapshotRoot = path.join(ROOT, "_workflow", "control_plane", "snapshots");
+if (fs.existsSync(snapshotRoot)) {
+  for (const entry of fs.readdirSync(snapshotRoot, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const relPath = path.join("_workflow", "control_plane", "snapshots", entry.name);
+    writeFile(path.join(ROOT, relPath, "DIRECTORY.md"), renderSnapshotDirectory(relPath, entry.name));
+  }
 }

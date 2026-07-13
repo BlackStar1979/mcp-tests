@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active profiles directory map
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 - `public.json`
   Runtime profile for the public unauthenticated surface.

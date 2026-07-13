@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active workflow directory map
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 - `_diagnostics/`
   Workflow-specific diagnostic records and derived analysis artifacts.

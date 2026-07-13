@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active top-level directory map
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 - `_control/`
   Local runtime/control-plane state and generated operational state files for the repo.

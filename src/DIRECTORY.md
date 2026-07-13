@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active src directory map
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 - `auth/`
   OAuth/OAuth21, legacy auth, and authorization-server implementation modules.

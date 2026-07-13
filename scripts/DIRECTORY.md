@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active scripts directory map
-Updated: 2026-07-12
+Updated: 2026-07-13
 
 - `request-restart.js`
   Writes a bounded restart request for the supervisor-managed runtime path.
