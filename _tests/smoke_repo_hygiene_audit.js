@@ -57,20 +57,20 @@ const nonRunAll = topLevelTests.filter((name) => !activeManifest.has(name));
 const undocumentedNonRunAll = nonRunAll.filter((name) => !nonRunAllAudit.includes(`\`${path.basename(name)}\``));
 
 assert.equal(totalJsFiles.length, 331);
-assert.equal(smokeScripts.length, 253);
-assert.equal(nonRunAll.length, 41);
+assert.equal(smokeScripts.length, 254);
+assert.equal(nonRunAll.length, 40);
 assert.equal(workflowHelperManifest.length, 25);
 assert.equal(readinessHelperManifest.length, 45);
 assert.equal(targetedDebtHelperManifest.length, 6);
 assert.deepEqual(undocumentedNonRunAll, []);
 
 assert.ok(testsReadme.includes("`331` JavaScript files total in `_tests`"));
-assert.ok(testsReadme.includes("`253` active scripts currently listed in `run_all_smoke_scripts.json`"));
-assert.ok(testsReadme.includes("`41` top-level `_tests/*.js` files currently outside default `run_all`"));
+assert.ok(testsReadme.includes("`254` active scripts currently listed in `run_all_smoke_scripts.json`"));
+assert.ok(testsReadme.includes("`40` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `25` scripts"));
 assert.ok(testsReadme.includes("Current readiness helper manifest size: `45` scripts"));
 assert.ok(testsReadme.includes("Current targeted/debt helper manifest size: `6` scripts"));
-assert.ok(nonRunAllAudit.includes("current mechanical non-`run_all` count is `41`"));
+assert.ok(nonRunAllAudit.includes("current mechanical non-`run_all` count is `40`"));
 assert.ok(nonRunAllAudit.includes("run_all_targeted_debt_smoke_scripts.json"));
 
 console.log("smoke_repo_hygiene_audit ok");

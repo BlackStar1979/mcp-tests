@@ -107,6 +107,7 @@
   "_tests/smoke_plugin_visibility_state_store_receipt.js",
   "_tests/smoke_plugin_visibility_state_store_pipeline.js",
   "_tests/smoke_observability_redaction_summary.js",
+  "_tests/smoke_audit_redaction_integration_plan.js",
   "_tests/smoke_security_first_preflight.js",
   "_tests/smoke_tool_labels_cache.js",
   "_tests/smoke_runtime_log_directory.js",

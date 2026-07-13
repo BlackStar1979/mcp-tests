@@ -16,7 +16,7 @@ Audit date: `2026-07-01`
 
 Post-audit drift now visible from the current tree:
 
-- current mechanical non-`run_all` count is `41`
+- current mechanical non-`run_all` count is `40`
 - the former transitional SSE/list-changed debt guards were later removed entirely after their unreachable helper files were retired from the active repo
 - all seven `stress_*.js` files were rechecked directly in source on `2026-06-30`
 - each stress file posts directly to `process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3009/mcp"` and therefore requires a separately running MCP server
@@ -50,9 +50,6 @@ Helper execution slices now available:
 
 ### `current_targeted_guard`
 
-- `smoke_audit_redaction_integration_plan.js`
-  Reason: current targeted guard for redaction planning module.
-  Recommendation: keep outside default `run_all` unless this planning-only surface becomes part of required baseline.
 - `smoke_auth_bootstrap_config_resolver.js`
   Reason: current focused unit-style guard for bootstrap auth config resolution.
   Recommendation: keep; candidate for promotion only if bootstrap regressions become common.
