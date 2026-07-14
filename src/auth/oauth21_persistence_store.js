@@ -55,7 +55,15 @@ function readJsonObject(filePath) {
   return { exists: true, body: JSON.parse(raw) };
 }
 
-function createOAuth21PersistenceStore({ storageFile, clientsPath, oauthStatePath, now = () => Date.now() } = {}) {
+function createOAuth21PersistenceStore({
+  storageFile,
+  clientsPath,
+  oauthStatePath,
+  canonicalResource = "",
+  resourceAliases = [],
+  now = () => Date.now(),
+  onAudit,
+} = {}) {
   const backend = "sqlite";
   const resolvedStorageFile = path.resolve(String(storageFile || ""));
   if (!resolvedStorageFile) throw new Error("oauth21_storage_file_required");
@@ -151,28 +159,85 @@ function createOAuth21PersistenceStore({ storageFile, clientsPath, oauthStatePat
     };
   }
 
+  function auditLog(name, payload = {}) {
+    if (typeof onAudit !== "function") return;
+    try { onAudit(name, payload); } catch (_) {}
+  }
+
+  function matchesImportedResource(item) {
+    const expected = String(canonicalResource || "").trim();
+    if (!expected) return true;
+    const actual = String(item?.resource || "").trim();
+    if (!actual) return false;
+    if (actual === expected) return true;
+    return resourceAliases.some((alias) => String(alias || "").trim() === actual);
+  }
+
+  function retireLegacyFile(filePath, retiredAtMs) {
+    if (!filePath || !fs.existsSync(filePath)) return null;
+    const suffix = new Date(retiredAtMs).toISOString().replace(/[:.]/g, "-");
+    const target = `${filePath}.migrated-${suffix}`;
+    fs.renameSync(filePath, target);
+    return target;
+  }
+
   function bootstrapFromLegacyIfEmpty(nowMs = now()) {
-    return withTransaction(() => {
+    const bootstrapResult = withTransaction(() => {
       const counts = tableCounts();
       if (counts.clients > 0 || counts.access > 0 || counts.refresh > 0 || counts.usedRefresh > 0) {
-        return false;
+        return { imported: false };
       }
       const legacyClients = readJsonArray(clientsPath);
       const legacyState = readJsonObject(oauthStatePath);
       const parsedState = parseOAuthStateBody(legacyState.body, nowMs);
-      if (!legacyClients.exists && !legacyState.exists) return false;
+      if (!legacyClients.exists && !legacyState.exists) return { imported: false };
       const t = nowMs;
+      const importedClientIds = new Set();
+      let importedClients = 0;
+      let importedAccess = 0;
+      let importedRefresh = 0;
+      let importedUsedRefresh = 0;
+      let prunedResourceMismatch = 0;
+      let prunedMissingClient = 0;
       for (const client of legacyClients.items) {
         if (!client?.client_id) continue;
         insertClientStmt.run(String(client.client_id), JSON.stringify(client), t);
+        importedClientIds.add(String(client.client_id));
+        importedClients += 1;
       }
       for (const item of parsedState.access.values()) {
+        if (!matchesImportedResource(item)) {
+          prunedResourceMismatch += 1;
+          continue;
+        }
+        if (!importedClientIds.has(String(item.clientId || ""))) {
+          prunedMissingClient += 1;
+          continue;
+        }
         insertAccessStmt.run(String(item.token), JSON.stringify(item), Number(item.expiresAt || 0), String(item.clientId || ""), String(item.grantId || ""));
+        importedAccess += 1;
       }
       for (const item of parsedState.refresh.values()) {
+        if (!matchesImportedResource(item)) {
+          prunedResourceMismatch += 1;
+          continue;
+        }
+        if (!importedClientIds.has(String(item.clientId || ""))) {
+          prunedMissingClient += 1;
+          continue;
+        }
         insertRefreshStmt.run(String(item.token), JSON.stringify(item), Number(item.expiresAt || 0), String(item.clientId || ""), String(item.grantId || ""));
+        importedRefresh += 1;
       }
       for (const item of parsedState.usedRefresh.values()) {
+        if (!matchesImportedResource(item)) {
+          prunedResourceMismatch += 1;
+          continue;
+        }
+        if (!importedClientIds.has(String(item.clientId || ""))) {
+          prunedMissingClient += 1;
+          continue;
+        }
         insertUsedRefreshStmt.run(
           String(item.token),
           JSON.stringify(item),
@@ -181,9 +246,52 @@ function createOAuth21PersistenceStore({ storageFile, clientsPath, oauthStatePat
           String(item.grantId || ""),
           Number(item.replayUntil || 0),
         );
+        importedUsedRefresh += 1;
       }
-      return true;
+      return {
+        imported: true,
+        importedClients,
+        importedAccess,
+        importedRefresh,
+        importedUsedRefresh,
+        prunedResourceMismatch,
+        prunedMissingClient,
+        legacyClientsPath: legacyClients.exists ? clientsPath : null,
+        legacyStatePath: legacyState.exists ? oauthStatePath : null,
+      };
     });
+
+    if (!bootstrapResult.imported) return bootstrapResult;
+
+    auditLog("oauth21_legacy_state_bootstrapped", {
+      storage_file: resolvedStorageFile,
+      clients_file: bootstrapResult.legacyClientsPath || "",
+      state_file: bootstrapResult.legacyStatePath || "",
+      imported_clients: bootstrapResult.importedClients,
+      imported_access_tokens: bootstrapResult.importedAccess,
+      imported_refresh_tokens: bootstrapResult.importedRefresh,
+      imported_used_refresh_tokens: bootstrapResult.importedUsedRefresh,
+      pruned_resource_mismatch: bootstrapResult.prunedResourceMismatch,
+      pruned_missing_client: bootstrapResult.prunedMissingClient,
+    });
+
+    try {
+      const retiredAtMs = now();
+      const retiredClientsPath = retireLegacyFile(bootstrapResult.legacyClientsPath, retiredAtMs);
+      const retiredStatePath = retireLegacyFile(bootstrapResult.legacyStatePath, retiredAtMs);
+      auditLog("oauth21_legacy_state_retired", {
+        storage_file: resolvedStorageFile,
+        retired_clients_file: retiredClientsPath || "",
+        retired_state_file: retiredStatePath || "",
+      });
+    } catch (error) {
+      auditLog("oauth21_legacy_state_retire_failed", {
+        storage_file: resolvedStorageFile,
+        error_message: error.message,
+      });
+    }
+
+    return bootstrapResult;
   }
 
   function loadClients() {

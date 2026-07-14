@@ -11,6 +11,12 @@ const { sha256Base64Url } = require("../src/auth/oauth21_authorization_server");
 
 const ROOT = path.join(__dirname, "..");
 
+async function stopChild(child) {
+  if (!child || child.exitCode !== null || child.killed) return;
+  child.kill();
+  await new Promise((resolve) => child.once("exit", resolve));
+}
+
 function freePort() {
   return new Promise((resolve, reject) => {
     const server = net.createServer();
@@ -60,7 +66,7 @@ async function json(url, options = {}) {
   const port = await freePort();
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-oauth21-state-required-"));
   const secretFile = path.join(tempDir, "oauth.json");
-  const clientsFile = path.join(tempDir, "clients.json");
+  const storageFile = path.join(tempDir, "oauth.sqlite");
   const issuer = `http://127.0.0.1:${port}`;
   fs.writeFileSync(secretFile, JSON.stringify({
     operator_secret: "stage12-oauth21-state-required-secret",
@@ -82,7 +88,7 @@ async function json(url, options = {}) {
     env: cleanEnv({
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
       MCP_TEST_PUBLIC_BASE_URL: issuer,
-      MCP_TEST_OAUTH_CLIENTS_FILE: clientsFile,
+      MCP_TEST_OAUTH_STORAGE_FILE: storageFile,
     }),
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -120,7 +126,7 @@ async function json(url, options = {}) {
 
     console.log("smoke_oauth21_state_required ok");
   } finally {
-    child.kill();
+    await stopChild(child);
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 })().catch((error) => {

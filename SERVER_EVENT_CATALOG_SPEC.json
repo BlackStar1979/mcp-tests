@@ -172,6 +172,18 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_legacy_state_bootstrapped",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_legacy_state_retired",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_legacy_state_retire_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_access_token_accepted",
       "status": "active_code_event"
     },

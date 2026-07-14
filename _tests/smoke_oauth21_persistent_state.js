@@ -9,10 +9,17 @@ const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-oauth-state-"));
 const clientsFile = path.join(tmp, "clients.json");
 const stateFile = path.join(tmp, "state.json");
 const sqliteStorageFile = path.join(tmp, "oauth.sqlite");
+delete process.env.MCP_TEST_OAUTH_STORAGE_FILE;
 process.env.MCP_TEST_OAUTH_STATE_FILE = stateFile;
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function listMigratedFiles(filePath) {
+  const dir = path.dirname(filePath);
+  const prefix = `${path.basename(filePath)}.migrated-`;
+  return fs.readdirSync(dir).filter((entry) => entry.startsWith(prefix));
 }
 
 function readSqliteCount(filePath, tableName) {
@@ -363,6 +370,8 @@ assert.equal(sqliteServer.status().oauth_storage_file, sqliteStorageFile);
 assert.equal(fs.existsSync(sqliteStorageFile), true);
 assert.ok(sqliteAudit.some((x) => x.event === "oauth21_clients_loaded" && x.data.backend === "sqlite"));
 assert.ok(sqliteAudit.some((x) => x.event === "oauth21_state_loaded" && x.data.backend === "sqlite"));
+assert.ok(sqliteAudit.some((x) => x.event === "oauth21_legacy_state_bootstrapped"));
+assert.ok(sqliteAudit.some((x) => x.event === "oauth21_legacy_state_retired"));
 assert.equal(sqliteServer.validateAccessToken(issued.access_token, { audience: resource }).ok, true);
 const sqliteRotated = sqliteServer.token({
   grant_type: "refresh_token",
@@ -373,6 +382,10 @@ const sqliteRotated = sqliteServer.token({
 assert.equal(sqliteRotated.status, 200);
 assert.equal(readSqliteCount(sqliteStorageFile, "oauth21_clients") >= 2, true);
 assert.equal(readSqliteCount(sqliteStorageFile, "oauth21_refresh_tokens") >= 1, true);
+assert.equal(fs.existsSync(clientsFile), false);
+assert.equal(fs.existsSync(stateFile), false);
+assert.equal(listMigratedFiles(clientsFile).length, 1);
+assert.equal(listMigratedFiles(stateFile).length, 1);
 const sqliteRestartServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, storageFile: sqliteStorageFile, now });
 assert.equal(sqliteRestartServer.validateAccessToken(sqliteRotated.body.access_token, { audience: resource }).ok, true);
 

@@ -11,6 +11,12 @@ const { sha256Base64Url } = require("../src/auth/oauth21_authorization_server");
 
 const ROOT = path.join(__dirname, "..");
 
+async function stopChild(child) {
+  if (!child || child.exitCode !== null || child.killed) return;
+  child.kill();
+  await new Promise((resolve) => child.once("exit", resolve));
+}
+
 function freePort() {
   return new Promise((resolve, reject) => {
     const server = net.createServer();
@@ -172,7 +178,7 @@ function assertOauth21ToolsListPermissions(response) {
   const port = await freePort();
   const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-oauth21-runtime-status-"));
   const secretFile = path.join(tempDir, "oauth.json");
-  const clientsFile = path.join(tempDir, "clients.json");
+  const storageFile = path.join(tempDir, "oauth.sqlite");
   const operatorSecret = "stage12-oauth21-runtime-status-operator-secret";
   const issuer = `http://127.0.0.1:${port}`;
   fs.writeFileSync(secretFile, JSON.stringify({ operator_secret: operatorSecret, issuer }), "utf8");
@@ -192,7 +198,7 @@ function assertOauth21ToolsListPermissions(response) {
     env: cleanEnv({
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
       MCP_TEST_PUBLIC_BASE_URL: issuer,
-      MCP_TEST_OAUTH_CLIENTS_FILE: clientsFile,
+      MCP_TEST_OAUTH_STORAGE_FILE: storageFile,
       MCP_TEST_HEALTH_FULL: "1",
     }),
     stdio: ["ignore", "pipe", "pipe"],
@@ -209,7 +215,7 @@ function assertOauth21ToolsListPermissions(response) {
     assertOauth21ToolsListPermissions(await rpcMessage(issuer, token, { jsonrpc: "2.0", id: 3, method: "tools/list", params: {} }));
     console.log("smoke_oauth21_runtime_status_response ok");
   } finally {
-    child.kill();
+    await stopChild(child);
     fs.rmSync(tempDir, { recursive: true, force: true });
   }
 })().catch((error) => {

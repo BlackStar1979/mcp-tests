@@ -434,7 +434,10 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       storageFile: oauthStorageFile,
       clientsPath,
       oauthStatePath,
+      canonicalResource: resource,
+      resourceAliases,
       now,
+      onAudit: (name, payload) => auditOAuth(name, payload),
     })
     : null;
 
