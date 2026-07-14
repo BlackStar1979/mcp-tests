@@ -19,9 +19,9 @@ const {
 } = require("./oauth21_utils");
 const { buildOAuth21PrunePreview } = require("./oauth21_prune_preview");
 
-const ACCESS_TTL_SECONDS = 3600;
+const ACCESS_TTL_SECONDS = 12 * 3600;
 const REFRESH_TTL_SECONDS = 30 * 86400;
-const REFRESH_REPLAY_GRACE_MS = 60 * 1000;
+const REFRESH_REPLAY_GRACE_MS = 15 * 60 * 1000;
 const CLIENT_PRUNE_RETENTION_MS = 14 * 86400 * 1000;
 const CODE_TTL_MS = 10 * 60 * 1000;
 const PENDING_TTL_MS = 10 * 60 * 1000;
@@ -460,7 +460,12 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
 
   function loadClients() {
     try {
-      const state = readClientsFile();
+      fs.mkdirSync(path.dirname(clientsPath), { recursive: true });
+      const state = withFileLock(
+        clientsPath,
+        (lockAgeMs) => auditOAuth("oauth21_clients_lock_stale_recovered", { clients_file: clientsPath, lock_age_ms: lockAgeMs }),
+        () => readClientsFile(),
+      );
       if (!state.exists) {
         auditOAuth("oauth21_clients_missing", { clients_file: clientsPath });
         return;
@@ -517,7 +522,12 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
 
   function loadOAuthState() {
     try {
-      const body = readOAuthStateFile(now());
+      fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
+      const body = withFileLock(
+        oauthStatePath,
+        (lockAgeMs) => auditOAuth("oauth21_state_lock_stale_recovered", { state_file: oauthStatePath, lock_age_ms: lockAgeMs }),
+        () => readOAuthStateFile(now()),
+      );
       if (!body.exists) {
         auditOAuth("oauth21_state_missing", { state_file: oauthStatePath });
         return;

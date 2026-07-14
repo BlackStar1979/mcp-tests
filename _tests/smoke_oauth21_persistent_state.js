@@ -91,7 +91,7 @@ const badRefreshResource = server2.token({ grant_type: "refresh_token", client_i
 assert.deepEqual(badRefreshResource, { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } });
 assert.ok(events2.some((x) => x.event === "oauth21_token_rejected" && x.data.reason === "resource_mismatch" && x.data.grant_type === "refresh_token"));
 
-fakeNow += 61 * 1000;
+fakeNow += 16 * 60 * 1000;
 const replay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.refresh_token, resource });
 assert.equal(replay.status, 400);
 assert.equal(replay.body.error, "invalid_grant");
@@ -293,7 +293,7 @@ try {
     resource,
   });
   assert.equal(rotatedReplayGrant.status, 200);
-  fakeNow += 61 * 1000;
+  fakeNow += 16 * 60 * 1000;
   fs.renameSync = (fromPath, toPath) => {
     if (String(toPath) === stateFile) {
       const error = new Error("rename blocked");
