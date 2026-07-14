@@ -64,9 +64,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok_0_40_0_7_245`.
+- Latest full smoke after historical-next-step quarantine guard: `ok=true, version=0.40.0, public=7, tests_authenticated=246`.
 - Public section count: `7`.
-- Authenticated smoke count: `245`.
+- Authenticated smoke count: `246`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.

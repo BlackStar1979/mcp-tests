@@ -255,9 +255,17 @@
       ]
     },
     "durable_state": {
-      "env": "MCP_TEST_OAUTH_STATE_FILE",
-      "default": "~/.romion/tests_oauth_state.json",
-      "purpose": "preserve connector authorization across controlled process restarts"
+      "env": "MCP_TEST_OAUTH_STORAGE_FILE",
+      "default": "~/.romion/tests_oauth.sqlite",
+      "legacy_override_envs": [
+        "MCP_TEST_OAUTH_STATE_FILE",
+        "MCP_TEST_OAUTH_CLIENTS_FILE"
+      ],
+      "legacy_default_files": [
+        "~/.romion/tests_oauth_state.json",
+        "~/.romion/tests_oauth_clients.json"
+      ],
+      "purpose": "preserve connector authorization across controlled process restarts while allowing explicit legacy JSON override for isolated tests and maintenance flows"
     }
   },
   "tool_surface_state_runtime": {

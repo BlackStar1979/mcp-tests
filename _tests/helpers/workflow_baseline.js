@@ -2,8 +2,8 @@
 
 const assert = require("node:assert/strict");
 
-const latestFullSmokeToken = "ok_0_40_0_7_245";
-const latestAuthenticatedSmokeCount = 245;
+const latestFullSmokeToken = "ok=true, version=0.40.0, public=7, tests_authenticated=246";
+const latestAuthenticatedSmokeCount = 246;
 
 const latestCanonFullSmokeLine = `Latest known full smoke: \`node ./_tests/run_all_smokes.js --skip-network = ${latestFullSmokeToken}\``;
 const latestCanonAuthenticatedCountLine = `Latest validated authenticated smoke count: \`${latestAuthenticatedSmokeCount}\``;
