@@ -104,6 +104,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "runtime_restart_trigger_file_delete_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "tool_call_rate_limited",
       "status": "active_code_event"
     },

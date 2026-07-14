@@ -37,5 +37,34 @@ const { createRestartController } = require("../src/runtime/restart_controller")
   fileController.stop();
   assert.deepEqual(fileExits, [43]);
   assert.equal(fs.existsSync(triggerFile), false);
+
+  const deleteFailEvents = [];
+  const originalUnlinkSync = fs.unlinkSync;
+  try {
+    fs.unlinkSync = (targetPath) => {
+      if (targetPath === triggerFile) {
+        const error = new Error("locked");
+        error.code = "EPERM";
+        throw error;
+      }
+      return originalUnlinkSync(targetPath);
+    };
+    fs.writeFileSync(triggerFile, JSON.stringify({ code: 44, reason: "delete_fail_smoke", request_id: "delete-fail" }));
+    const deleteFailExits = [];
+    const deleteFailController = createRestartController({
+      env: { MCP_TEST_ENABLE_RESTART_TRIGGER: "1", MCP_TEST_RESTART_TRIGGER_FILE: triggerFile, MCP_TEST_RESTART_EXIT_DELAY_MS: "50" },
+      auditLog: (event, data) => deleteFailEvents.push({ event, data }),
+      exit: (code) => deleteFailExits.push(code),
+      logger: () => {},
+    });
+    deleteFailController.start();
+    await new Promise((resolve) => setTimeout(resolve, 700));
+    deleteFailController.stop();
+    assert.deepEqual(deleteFailExits, [44]);
+    assert.ok(deleteFailEvents.some((x) => x.event === "runtime_restart_trigger_file_delete_failed"));
+  } finally {
+    fs.unlinkSync = originalUnlinkSync;
+    try { fs.rmSync(triggerFile, { force: true }); } catch {}
+  }
   console.log("smoke_restart_controller ok");
 })();

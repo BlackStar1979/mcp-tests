@@ -44,7 +44,13 @@ function createRestartController(opts = {}) {
     let data;
     try { data = JSON.parse(fs.readFileSync(triggerFile, "utf8")); }
     catch (error) { audit("runtime_restart_trigger_file_ignored", { reason: "malformed_json", trigger_file: triggerFile, error_message: error?.message || String(error) }); return; }
-    try { fs.unlinkSync(triggerFile); } catch (_) {}
+    try { fs.unlinkSync(triggerFile); }
+    catch (error) {
+      audit("runtime_restart_trigger_file_delete_failed", {
+        trigger_file: triggerFile,
+        error_message: error?.message || String(error),
+      });
+    }
     requestRestart({ code: data.code, reason: data.reason || "file_trigger", source: "file_trigger", requestId: data.request_id || null });
   }
   function start() {
