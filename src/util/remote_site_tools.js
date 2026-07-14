@@ -87,10 +87,14 @@ async function loadSftpClient() {
   return mod.default || mod;
 }
 
-async function withSftp(configRef, fn) {
-  const config = await loadRemoteConfig(configRef);
-  const SftpClient = await loadSftpClient();
+async function withSftp(configRef, fn, deps = {}) {
+  const loadRemoteConfigImpl = typeof deps.loadRemoteConfig === "function" ? deps.loadRemoteConfig : loadRemoteConfig;
+  const loadSftpClientImpl = typeof deps.loadSftpClient === "function" ? deps.loadSftpClient : loadSftpClient;
+  const config = await loadRemoteConfigImpl(configRef);
+  const SftpClient = await loadSftpClientImpl();
   const client = new SftpClient();
+  let result;
+  let operationError = null;
   try {
     await client.connect({
       host: config.host,
@@ -101,10 +105,22 @@ async function withSftp(configRef, fn) {
       readyTimeout: 15000,
     });
     await ensureRemoteSiteOpsDirs(client, config);
-    return await fn(client, config);
-  } finally {
-    try { await client.end(); } catch {}
+    result = await fn(client, config);
+  } catch (error) {
+    operationError = error;
   }
+  try {
+    await client.end();
+  } catch (cleanupError) {
+    const cleanupMessage = cleanupError?.message || String(cleanupError);
+    if (operationError) {
+      operationError.message = `${operationError.message} [cleanup failed: ${cleanupMessage}]`;
+    } else {
+      throw cleanupError;
+    }
+  }
+  if (operationError) throw operationError;
+  return result;
 }
 
 function timestamp() {
@@ -976,5 +992,6 @@ module.exports = {
   remoteSiteRuntimeStatus,
   restoreRemoteSiteFile,
   summarizeRemoteSiteArgs,
+  withSftp,
   writeRemoteSiteFile,
 };

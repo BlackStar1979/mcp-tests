@@ -20,6 +20,7 @@
   "_tests/smoke_fs_streaming.js",
   "_tests/smoke_workspace_fs_tools.js",
   "_tests/smoke_science_tools.js",
+  "_tests/smoke_remote_site_lifecycle.js",
   "_tests/smoke_workspace_mutation_tools.js",
   "_tests/smoke_truth_tools.js",
   "_tests/smoke_devtools.js",
