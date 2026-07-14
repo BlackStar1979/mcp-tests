@@ -152,6 +152,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_client_registration_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_state_atomic_replace_fallback",
       "status": "active_code_event"
     },
@@ -201,6 +205,10 @@
     },
     {
       "name": "oauth21_token_rejected",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_issue_failed",
       "status": "active_code_event"
     },
     {

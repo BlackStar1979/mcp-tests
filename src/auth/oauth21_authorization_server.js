@@ -364,8 +364,8 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       fs.renameSync(tmpPath, targetPath);
     } catch (renameError) {
       try {
-        if (fs.existsSync(targetPath)) fs.rmSync(targetPath, { force: true });
-        fs.renameSync(tmpPath, targetPath);
+        fs.copyFileSync(tmpPath, targetPath);
+        fs.rmSync(tmpPath, { force: true });
       } catch (fallbackError) {
         try { if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true }); } catch (_) {}
         throw fallbackError;
@@ -427,27 +427,34 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     }
   }
 
-  function persistClients() {
+  function persistClients(options = {}) {
+    const shouldThrow = options.throwOnError === true;
     try {
       fs.mkdirSync(path.dirname(clientsPath), { recursive: true });
       const mergedClients = withFileLock(
         clientsPath,
         (lockAgeMs) => auditOAuth("oauth21_clients_lock_stale_recovered", { clients_file: clientsPath, lock_age_ms: lockAgeMs }),
-        () => buildMergedClientsSnapshot(),
-      );
-      writeJsonFileAtomic(
-        mergedClients.clientsList,
-        clientsPath,
-        (errorMessage) => auditOAuth("oauth21_clients_atomic_replace_fallback", { clients_file: clientsPath, error_message: errorMessage }),
+        () => {
+          const snapshot = buildMergedClientsSnapshot();
+          writeJsonFileAtomic(
+            snapshot.clientsList,
+            clientsPath,
+            (errorMessage) => auditOAuth("oauth21_clients_atomic_replace_fallback", { clients_file: clientsPath, error_message: errorMessage }),
+          );
+          return snapshot;
+        },
       );
       auditOAuth("oauth21_clients_saved", {
         clients_file: clientsPath,
         client_count: mergedClients.clientsList.length,
         merge_mode: "locked_union_by_client_id",
       });
+      return true;
     } catch (e) {
       auditOAuth("oauth21_clients_save_failed", { clients_file: clientsPath, error_message: e.message });
       console.error(`[oauth21] could not persist DCR clients: ${e.message}`);
+      if (shouldThrow) throw e;
+      return false;
     }
   }
 
@@ -466,24 +473,29 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     }
   }
 
-  function saveOAuthState() {
+  function saveOAuthState(options = {}) {
+    const shouldThrow = options.throwOnError === true;
     try {
       fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
       const mergedState = withFileLock(
         oauthStatePath,
         (lockAgeMs) => auditOAuth("oauth21_state_lock_stale_recovered", { state_file: oauthStatePath, lock_age_ms: lockAgeMs }),
-        () => buildMergedOAuthState(now()),
+        () => {
+          const snapshot = buildMergedOAuthState(now());
+          const body = {
+            access: [...snapshot.access.values()],
+            refresh: [...snapshot.refresh.values()],
+            used_refresh: [...snapshot.usedRefresh.values()],
+          };
+          writeJsonFileAtomic(
+            body,
+            oauthStatePath,
+            (errorMessage) => auditOAuth("oauth21_state_atomic_replace_fallback", { state_file: oauthStatePath, error_message: errorMessage }),
+          );
+          return { snapshot, body };
+        },
       );
-      const body = {
-        access: [...mergedState.access.values()],
-        refresh: [...mergedState.refresh.values()],
-        used_refresh: [...mergedState.usedRefresh.values()],
-      };
-      writeJsonFileAtomic(
-        body,
-        oauthStatePath,
-        (errorMessage) => auditOAuth("oauth21_state_atomic_replace_fallback", { state_file: oauthStatePath, error_message: errorMessage }),
-      );
+      const body = mergedState.body;
       deletedAccessTokens.clear();
       deletedRefreshTokens.clear();
       deletedUsedRefreshTokens.clear();
@@ -494,9 +506,12 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
         used_refresh_count: body.used_refresh.length,
         merge_mode: "locked_union_with_grant_resolution",
       });
+      return true;
     } catch (e) {
       auditOAuth("oauth21_state_save_failed", { state_file: oauthStatePath, error_message: e.message });
       console.error(`[oauth21] could not save oauth state: ${e.message}`);
+      if (shouldThrow) throw e;
+      return false;
     }
   }
 
@@ -578,7 +593,13 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       scope: "mcp:tools",
     };
     clients.set(clientId, client);
-    persistClients();
+    try {
+      persistClients({ throwOnError: true });
+    } catch (error) {
+      clients.delete(clientId);
+      auditOAuth("oauth21_client_registration_failed", { client_id: clientId, reason: "client_persistence_failed", error_message: error.message });
+      return { status: 500, body: { error: "server_error", error_description: "client_persistence_failed" } };
+    }
     return { status: 201, body: client };
   }
 
@@ -665,7 +686,14 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     if (!hasOnlySupportedScopes(scopes)) return null;
     setAccessTokenRecord(accessToken, { token: accessToken, clientId, scopes, subject: "operator", resource: tokenResource, grantId, expiresAt: t + ACCESS_TTL_SECONDS * 1000 });
     setRefreshTokenRecord(refreshToken, { token: refreshToken, clientId, scopes, subject: "operator", resource: tokenResource, grantId, expiresAt: t + REFRESH_TTL_SECONDS * 1000 });
-    if (options.persist !== false) saveOAuthState();
+    try {
+      if (options.persist !== false) saveOAuthState({ throwOnError: true });
+    } catch (error) {
+      deleteAccessTokenRecord(accessToken);
+      deleteRefreshTokenRecord(refreshToken);
+      auditOAuth("oauth21_issue_failed", { client_id: clientId, reason: "state_persistence_failed", error_message: error.message });
+      return { error: "server_error", error_description: "state_persistence_failed" };
+    }
     return { access_token: accessToken, token_type: "Bearer", expires_in: ACCESS_TTL_SECONDS, refresh_token: refreshToken, scope: scopes.join(" ") };
   }
 
@@ -690,6 +718,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       if (sha256Base64Url(body.code_verifier || "") !== code.codeChallenge) return { status: 400, body: { error: "invalid_grant", error_description: "pkce_verification_failed" } };
       code.used = true;
       const issued = issue(client.client_id, code.scope, code.resource);
+      if (issued?.error) return { status: 500, body: issued };
       if (!issued) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
       return { status: 200, body: issued };
     }
@@ -725,8 +754,9 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
         }
         return { status: 400, body: { error: "invalid_grant" } };
       }
-      const requestedResource = canonicalizeResource(body.resource, resource, resourceAliases);
-      if (!body.resource) {
+      const resourceInput = String(body.resource || refresh.resource || "").trim();
+      const requestedResource = canonicalizeResource(resourceInput, resource, resourceAliases);
+      if (!resourceInput) {
         auditOAuth("oauth21_token_rejected", { reason: "resource_required", grant_type: "refresh_token", client_id: client.client_id });
         return { status: 400, body: { error: "invalid_target", error_description: "resource_required" } };
       }
@@ -745,13 +775,31 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       setUsedRefreshTokenRecord(String(refresh.token), usedRefreshRecord);
       auditOAuth("oauth21_refresh_token_accepted", { client_id: client.client_id, scope_count: refresh.scopes.length });
       const issued = issue(client.client_id, refresh.scopes.join(" "), refresh.resource, refresh.grantId || randomToken(16), { persist: false });
+      if (issued?.error) {
+        deleteUsedRefreshTokenRecord(String(refresh.token));
+        setRefreshTokenRecord(refresh.token, refresh);
+        return { status: 500, body: issued };
+      }
       if (!issued) return { status: 400, body: { error: "invalid_scope", error_description: "unsupported_scope" } };
       setUsedRefreshTokenRecord(String(refresh.token), {
         ...usedRefreshRecord,
         replayUntil: now() + REFRESH_REPLAY_GRACE_MS,
         issuedResponse: issued,
       });
-      saveOAuthState();
+      try {
+        saveOAuthState({ throwOnError: true });
+      } catch (error) {
+        deleteAccessTokenRecord(String(issued.access_token || ""));
+        deleteRefreshTokenRecord(String(issued.refresh_token || ""));
+        deleteUsedRefreshTokenRecord(String(refresh.token));
+        setRefreshTokenRecord(refresh.token, refresh);
+        auditOAuth("oauth21_refresh_token_rejected", {
+          reason: "state_persistence_failed",
+          client_id: client.client_id,
+          error_message: error.message,
+        });
+        return { status: 500, body: { error: "server_error", error_description: "state_persistence_failed" } };
+      }
       return { status: 200, body: issued };
     }
     return { status: 400, body: { error: "unsupported_grant_type" } };

@@ -79,11 +79,15 @@ assert.equal(refreshed.status, 200);
 assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_accepted"));
 assert.ok(refreshed.body.access_token);
 assert.notEqual(refreshed.body.refresh_token, issued.refresh_token);
+const refreshedWithoutResource = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: refreshed.body.refresh_token });
+assert.equal(refreshedWithoutResource.status, 200);
+assert.ok(refreshedWithoutResource.body.access_token);
+assert.notEqual(refreshedWithoutResource.body.refresh_token, refreshed.body.refresh_token);
 const refreshReplay = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: issued.refresh_token, resource });
 assert.equal(refreshReplay.status, 200);
 assert.deepEqual(refreshReplay.body, refreshed.body);
 assert.ok(events2.some((x) => x.event === "oauth21_refresh_token_replayed"));
-const badRefreshResource = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: refreshed.body.refresh_token, resource: "https://example.test/mcp" });
+const badRefreshResource = server2.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: refreshedWithoutResource.body.refresh_token, resource: "https://example.test/mcp" });
 assert.deepEqual(badRefreshResource, { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } });
 assert.ok(events2.some((x) => x.event === "oauth21_token_rejected" && x.data.reason === "resource_mismatch" && x.data.grant_type === "refresh_token"));
 
@@ -115,6 +119,80 @@ assert.ok(staleSnapshotWrite.access_token);
 const server6 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
 const rotatedAfterConcurrentSave = server6.token({ grant_type: "refresh_token", client_id: clientId, refresh_token: rotatedFromFreshInstance.body.refresh_token, resource });
 assert.equal(rotatedAfterConcurrentSave.status, 200);
+
+const failureStateFile = path.join(tmp, "state-save-failure.json");
+const failureClientsFile = path.join(tmp, "clients-save-failure.json");
+process.env.MCP_TEST_OAUTH_STATE_FILE = failureStateFile;
+const originalRenameSync = fs.renameSync;
+const originalCopyFileSync = fs.copyFileSync;
+fs.renameSync = (fromPath, toPath) => {
+  if (String(toPath) === failureStateFile || String(toPath) === failureClientsFile) {
+    const error = new Error("rename blocked");
+    error.code = "EPERM";
+    throw error;
+  }
+  return originalRenameSync(fromPath, toPath);
+};
+fs.copyFileSync = (fromPath, toPath) => {
+  if (String(toPath) === failureStateFile || String(toPath) === failureClientsFile) {
+    const error = new Error("copy blocked");
+    error.code = "EPERM";
+    throw error;
+  }
+  return originalCopyFileSync(fromPath, toPath);
+};
+
+try {
+  const failureAudit = [];
+  const failingServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
+  failingServer.setAuditLog((event, data) => failureAudit.push({ event, data }));
+  const failingRegistration = failingServer.registerClient({ redirect_uris: ["https://failure.example/callback"], token_endpoint_auth_method: "none" });
+  assert.equal(failingRegistration.status, 201);
+  const failureAuthorize = failingServer.authorize({
+    client_id: failingRegistration.body.client_id,
+    redirect_uri: "https://failure.example/callback",
+    response_type: "code",
+    code_challenge_method: "S256",
+    code_challenge: sha256Base64Url(verifier),
+    state: "state-save-failure",
+    resource,
+  });
+  assert.equal(failureAuthorize.status, 302);
+  const failurePid = new URL(failureAuthorize.location).searchParams.get("pid");
+  const failureLogin = failingServer.completeLogin({
+    pid: failurePid,
+    password: operatorSecret,
+    clientId: failingRegistration.body.client_id,
+    redirectUri: "https://failure.example/callback",
+    scope: "mcp:tools",
+    req: { socket: { remoteAddress: "127.0.0.1" }, headers: {} },
+  });
+  assert.equal(failureLogin.status, 302);
+  const failureCode = new URL(failureLogin.location).searchParams.get("code");
+  const failingToken = failingServer.token({
+    grant_type: "authorization_code",
+    client_id: failingRegistration.body.client_id,
+    code: failureCode,
+    redirect_uri: "https://failure.example/callback",
+    code_verifier: verifier,
+    resource,
+  });
+  assert.deepEqual(failingToken, { status: 500, body: { error: "server_error", error_description: "state_persistence_failed" } });
+  assert.ok(failureAudit.some((x) => x.event === "oauth21_issue_failed" && x.data.reason === "state_persistence_failed"));
+  assert.equal(fs.existsSync(failureStateFile), false);
+
+  const failingClientAudit = [];
+  const failingClientServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile: failureClientsFile, now });
+  failingClientServer.setAuditLog((event, data) => failingClientAudit.push({ event, data }));
+  const failingClientRegistration = failingClientServer.registerClient({ redirect_uris: ["https://client-failure.example/callback"], token_endpoint_auth_method: "none" });
+  assert.deepEqual(failingClientRegistration, { status: 500, body: { error: "server_error", error_description: "client_persistence_failed" } });
+  assert.ok(failingClientAudit.some((x) => x.event === "oauth21_client_registration_failed" && x.data.reason === "client_persistence_failed"));
+  assert.equal(fs.existsSync(failureClientsFile), false);
+} finally {
+  fs.renameSync = originalRenameSync;
+  fs.copyFileSync = originalCopyFileSync;
+  process.env.MCP_TEST_OAUTH_STATE_FILE = stateFile;
+}
 
 const clientsServerA = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
 const clientsServerB = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
