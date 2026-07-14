@@ -1,6 +1,7 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const { EventEmitter } = require("node:events");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
@@ -8,6 +9,7 @@ const { inventoryTreeTool } = require("../tools/inventory_tree");
 const { tableProfileTool } = require("../tools/table_profile");
 const { fitsInfoTool } = require("../tools/fits_info");
 const { hdf5InfoTool } = require("../tools/hdf5_info");
+const { runPythonCandidate } = require("../src/util/science_tools");
 
 const ROOT = path.resolve(__dirname, "..");
 const TMP_ROOT = path.join(ROOT, "_control", "smoke_science_tools");
@@ -61,6 +63,25 @@ async function main() {
   });
   assert.equal(hdf5.success, false);
   assert.match(hdf5.error, /hdf5|python|h5py|unable|invalid|error/i);
+
+  const fakeProc = new EventEmitter();
+  fakeProc.stdout = new EventEmitter();
+  fakeProc.stderr = new EventEmitter();
+  fakeProc.stdin = {
+    write() {},
+    end() {},
+  };
+  fakeProc.kill = () => {
+    throw new Error("kill blocked");
+  };
+  const fakeSpawn = () => {
+    setTimeout(() => fakeProc.emit("close", null), 180);
+    return fakeProc;
+  };
+  await assert.rejects(
+    () => runPythonCandidate("python", [], "table_profile.py", { path: "x" }, 100, fakeSpawn),
+    /Timeout after 100 ms while running table_profile\.py\. kill\(\) failed: kill blocked\./
+  );
 
   await fs.rm(TMP_ROOT, { recursive: true, force: true });
   console.log("smoke_science_tools ok");

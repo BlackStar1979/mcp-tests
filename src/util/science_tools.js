@@ -118,9 +118,9 @@ function normalizeTableRows(rows = []) {
     : [];
 }
 
-async function runPythonCandidate(executable, leadingArgs, script, payload, timeoutMs) {
+async function runPythonCandidate(executable, leadingArgs, script, payload, timeoutMs, spawnImpl = spawn) {
   return new Promise((resolve, reject) => {
-    const proc = spawn(executable, [...leadingArgs, scriptPath(script)], {
+    const proc = spawnImpl(executable, [...leadingArgs, scriptPath(script)], {
       stdio: ["pipe", "pipe", "pipe"],
       windowsHide: true,
       env: { ...process.env },
@@ -129,11 +129,17 @@ async function runPythonCandidate(executable, leadingArgs, script, payload, time
     let stdout = "";
     let stderr = "";
     let finished = false;
+    let timeoutKillError = "";
     const timer = setTimeout(() => {
       if (finished) return;
       finished = true;
-      try { proc.kill(); } catch {}
-      reject(new Error(`Timeout after ${timeoutMs} ms while running ${script}`));
+      try {
+        const killed = proc.kill();
+        if (killed === false) timeoutKillError = " kill() returned false.";
+      } catch (error) {
+        timeoutKillError = ` kill() failed: ${error?.message || String(error)}.`;
+      }
+      reject(new Error(`Timeout after ${timeoutMs} ms while running ${script}.${timeoutKillError}`));
     }, timeoutMs);
 
     proc.stdout.on("data", (buf) => {
@@ -333,5 +339,6 @@ module.exports = {
   inspectHdf5,
   inventoryTree,
   profileTable,
+  runPythonCandidate,
   summarizeSciencePath,
 };
