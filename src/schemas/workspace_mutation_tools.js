@@ -150,11 +150,15 @@ const DELETE_PATH_OUTPUT_SCHEMA = {
 const RESTORE_PATH_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["status", "from", "to"],
+  required: ["status", "from", "to", "warnings"],
   properties: {
     status: { type: "string", enum: ["restored"] },
     from: { type: "string" },
     to: { type: "string" },
+    warnings: {
+      type: "array",
+      items: { type: "string" },
+    },
   },
 };
 

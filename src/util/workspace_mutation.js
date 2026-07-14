@@ -47,9 +47,9 @@ function stamp() {
   return new Date().toISOString().replace(/[:.]/g, "-");
 }
 
-async function pathExists(absolutePath) {
+async function pathExists(absolutePath, fsImpl = fs) {
   try {
-    await fs.stat(absolutePath);
+    await fsImpl.stat(absolutePath);
     return true;
   } catch (error) {
     if (error?.code === "ENOENT") return false;
@@ -174,7 +174,7 @@ async function deletePath(relativePath, { allowProtected = false } = {}) {
   };
 }
 
-async function restorePath(trashPath, { destination, overwrite = false, allowProtected = false } = {}) {
+async function restorePath(trashPath, { destination, overwrite = false, allowProtected = false } = {}, { fsImpl = fs } = {}) {
   const trashResolved = safeWorkspacePath(trashPath);
   const trashRelative = toPosix(trashResolved.rootRelativePath || ".");
   if (!trashRelative.startsWith(".mcp_trash/")) {
@@ -186,7 +186,7 @@ async function restorePath(trashPath, { destination, overwrite = false, allowPro
   if (!destinationPath) {
     let metadata;
     try {
-      metadata = JSON.parse(await fs.readFile(metadataAbsolute, "utf8"));
+      metadata = JSON.parse(await fsImpl.readFile(metadataAbsolute, "utf8"));
     } catch {
       throw new Error("Destination omitted and restore metadata was not found.");
     }
@@ -194,24 +194,28 @@ async function restorePath(trashPath, { destination, overwrite = false, allowPro
   }
 
   const destResolved = resolveWritableWorkspacePath(destinationPath, { allowProtected });
-  if (await pathExists(destResolved.absolutePath)) {
+  if (await pathExists(destResolved.absolutePath, fsImpl)) {
     if (!overwrite) {
       throw new Error("Destination already exists. Set overwrite=true to replace it.");
     }
     await createBackupIfExists(destResolved);
-    await fs.rm(destResolved.absolutePath, { recursive: true, force: true });
+    await fsImpl.rm(destResolved.absolutePath, { recursive: true, force: true });
   }
 
-  await fs.mkdir(path.dirname(destResolved.absolutePath), { recursive: true });
-  await fs.rename(trashResolved.absolutePath, destResolved.absolutePath);
+  await fsImpl.mkdir(path.dirname(destResolved.absolutePath), { recursive: true });
+  await fsImpl.rename(trashResolved.absolutePath, destResolved.absolutePath);
+  const warnings = [];
   try {
-    await fs.rm(metadataAbsolute, { force: true });
-  } catch {}
+    await fsImpl.rm(metadataAbsolute, { force: true });
+  } catch (error) {
+    warnings.push(`restore metadata cleanup failed: ${error?.message || String(error)}`);
+  }
 
   return {
     status: "restored",
     from: trashResolved.displayPath,
     to: destResolved.displayPath,
+    warnings,
   };
 }
 

@@ -12,6 +12,7 @@ const { movePathTool } = require("../tools/move_path");
 const { restorePathTool } = require("../tools/restore_path");
 const { writeFileTool } = require("../tools/write_file");
 const { safeWorkspacePath } = require("../src/util/workspace_roots");
+const { restorePath } = require("../src/util/workspace_mutation");
 
 const WORK_ROOT = safeWorkspacePath(".").absolutePath;
 const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tools");
@@ -65,6 +66,33 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
     const restoreResult = await restorePathTool.execute({ trash_path: deleteResult.to });
     assert.equal(restoreResult.status, "restored");
     assert.equal(restoreResult.to, moved);
+    assert.deepEqual(restoreResult.warnings, []);
+
+    const warningFile = "_control/smoke_workspace_mutation_tools/warning.txt";
+    const warningMoved = "_control/smoke_workspace_mutation_tools/warning-restored.txt";
+    await writeFileTool.execute({ path: warningFile, content: "warning\n" });
+    const warningDeleteResult = await deletePathTool.execute({ path: warningFile });
+    const warningMetadataAbsolute = path.join(WORK_ROOT, `${warningDeleteResult.to}.json`);
+    const warningRestoreResult = await restorePath(
+      warningDeleteResult.to,
+      { destination: warningMoved },
+      {
+        fsImpl: {
+          ...fs,
+          async rm(targetPath, options) {
+            if (targetPath === warningMetadataAbsolute) {
+              throw new Error("metadata delete blocked");
+            }
+            return fs.rm(targetPath, options);
+          },
+        },
+      }
+    );
+    assert.equal(warningRestoreResult.status, "restored");
+    assert.equal(warningRestoreResult.to, warningMoved);
+    assert.deepEqual(warningRestoreResult.warnings, ["restore metadata cleanup failed: metadata delete blocked"]);
+    await fs.access(path.join(WORK_ROOT, warningMoved));
+    await fs.access(warningMetadataAbsolute);
 
     const finalText = await fs.readFile(path.join(WORK_ROOT, moved), "utf8");
     assert.match(finalText, /PATCHED/);
