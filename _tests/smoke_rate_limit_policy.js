@@ -27,6 +27,18 @@ const fileLimiter = createSlidingWindowLimiter({ store: fileStore, clock: () => 
 assert.equal(fileLimiter.checkAndRecord({ key: "restart:file:42", limit: 1, windowMs: 10000 }).allow, true);
 assert.equal(fileLimiter.checkAndRecord({ key: "restart:file:42", limit: 1, windowMs: 10000 }).allow, false);
 assert.ok(fs.existsSync(stateFile));
+assert.doesNotThrow(() => JSON.parse(fs.readFileSync(stateFile, "utf8")));
+
+const corruptStateFile = path.join(tmp, "corrupt-state.json");
+fs.writeFileSync(corruptStateFile, "{not-json");
+const corruptLimiter = createSlidingWindowLimiter({
+  store: createJsonFileRateLimitStore(corruptStateFile),
+  clock: () => 6000,
+});
+const corruptDecision = corruptLimiter.checkAndRecord({ key: "restart:file:43", limit: 1, windowMs: 10000 });
+assert.equal(corruptDecision.allow, false);
+assert.equal(corruptDecision.reason, "state_store_error");
+assert.equal(corruptDecision.error_code, "rate_limit_state_read_failed");
 
 const runtimeLimiter = createRuntimeRateLimiter({
   rootDir: tmp,

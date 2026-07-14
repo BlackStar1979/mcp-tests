@@ -4,6 +4,21 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 function nowMs() { return Date.now(); }
+function atomicWriteJsonFile(filePath, value) {
+  fs.mkdirSync(path.dirname(filePath), { recursive: true });
+  const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
+  fs.writeFileSync(tmpPath, JSON.stringify(value, null, 2) + "\n");
+  fs.renameSync(tmpPath, filePath);
+}
+
+function buildStoreError(code, filePath, cause) {
+  const error = new Error(code);
+  error.code = code;
+  error.filePath = filePath;
+  error.cause = cause;
+  error.message = cause?.message ? `${code}: ${cause.message}` : code;
+  return error;
+}
 
 function createMemoryRateLimitStore() {
   const data = new Map();
@@ -16,17 +31,20 @@ function createMemoryRateLimitStore() {
 
 function createJsonFileRateLimitStore(filePath) {
   function readAll() {
+    if (!fs.existsSync(filePath)) return {};
     try {
-      if (!fs.existsSync(filePath)) return {};
       const parsed = JSON.parse(fs.readFileSync(filePath, "utf8"));
       return parsed && typeof parsed === "object" ? parsed : {};
-    } catch (_) {
-      return {};
+    } catch (error) {
+      throw buildStoreError("rate_limit_state_read_failed", filePath, error);
     }
   }
   function writeAll(all) {
-    fs.mkdirSync(path.dirname(filePath), { recursive: true });
-    fs.writeFileSync(filePath, JSON.stringify(all, null, 2) + "\n");
+    try {
+      atomicWriteJsonFile(filePath, all);
+    } catch (error) {
+      throw buildStoreError("rate_limit_state_write_failed", filePath, error);
+    }
   }
   return {
     get(key) {
@@ -51,7 +69,20 @@ function createSlidingWindowLimiter({ store = createMemoryRateLimitStore(), cloc
     if (!Number.isInteger(safeLimit) || safeLimit < 1) return { allow: true, disabled: true, reason: "invalid_limit_disabled" };
     if (!Number.isInteger(safeWindow) || safeWindow < 1) return { allow: true, disabled: true, reason: "invalid_window_disabled" };
     const cutoff = now - safeWindow;
-    const current = store.get(key).filter((entry) => Number(entry) > cutoff);
+    let current;
+    try {
+      current = store.get(key).filter((entry) => Number(entry) > cutoff);
+    } catch (error) {
+      return {
+        allow: false,
+        key,
+        limit: safeLimit,
+        window_ms: safeWindow,
+        reason: "state_store_error",
+        error_code: error?.code || "rate_limit_state_store_failed",
+        error_message: error?.message || String(error),
+      };
+    }
     if (current.length + safeCost > safeLimit) {
       const oldest = current.length ? Math.min(...current) : now;
       return {
@@ -64,7 +95,19 @@ function createSlidingWindowLimiter({ store = createMemoryRateLimitStore(), cloc
       };
     }
     for (let i = 0; i < safeCost; i += 1) current.push(now);
-    store.set(key, current);
+    try {
+      store.set(key, current);
+    } catch (error) {
+      return {
+        allow: false,
+        key,
+        limit: safeLimit,
+        window_ms: safeWindow,
+        reason: "state_store_error",
+        error_code: error?.code || "rate_limit_state_store_failed",
+        error_message: error?.message || String(error),
+      };
+    }
     return { allow: true, key, limit: safeLimit, window_ms: safeWindow, remaining: Math.max(0, safeLimit - current.length) };
   }
   return { checkAndRecord, store };
