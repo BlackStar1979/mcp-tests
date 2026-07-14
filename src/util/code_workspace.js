@@ -314,6 +314,22 @@ function resolveCandidate(candidates, existing) {
   return null;
 }
 
+function shouldIgnoreWorkspaceCandidateError(error) {
+  const code = String(error?.code || "").toUpperCase();
+  if (code === "ENOENT" || code === "ENOTDIR") return true;
+
+  const message = String(error?.message || "");
+  return [
+    "Path traversal is not allowed.",
+    "Denied workspace segment:",
+    "Dot path segments are not allowed.",
+    "Absolute paths are not allowed.",
+    "Drive-letter paths are not allowed.",
+    "Resolved path escapes workspace root.",
+    "Unsupported code file extension.",
+  ].some((fragment) => message.includes(fragment));
+}
+
 async function resolveWorkspaceCandidate(candidates) {
   for (const candidate of candidates) {
     try {
@@ -323,7 +339,9 @@ async function resolveWorkspaceCandidate(candidates) {
       if (stat.isFile() && (CODE_EXTENSIONS.has(ext) || IMPORTABLE_NON_CODE_EXTENSIONS.has(ext))) {
         return resolved.relative_path;
       }
-    } catch {}
+    } catch (error) {
+      if (!shouldIgnoreWorkspaceCandidateError(error)) throw error;
+    }
   }
   return null;
 }
@@ -780,6 +798,8 @@ module.exports = {
   orchestrationPlan,
   patchPlan,
   resolveWorkspacePath,
+  resolveWorkspaceCandidate,
   scenarioPlan,
+  shouldIgnoreWorkspaceCandidateError,
   syntaxCheck,
 };

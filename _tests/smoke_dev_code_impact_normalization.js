@@ -1,5 +1,6 @@
 const assert = require("node:assert/strict");
-const { buildDependencyGraph, impactGraph } = require("../src/util/code_workspace");
+const fsp = require("node:fs/promises");
+const { buildDependencyGraph, impactGraph, resolveWorkspaceCandidate } = require("../src/util/code_workspace");
 
 (async () => {
   const graph = await buildDependencyGraph("src", true, 200);
@@ -29,6 +30,24 @@ const { buildDependencyGraph, impactGraph } = require("../src/util/code_workspac
   assert.ok(missing.attempted_targets.some((item) => item.target === "not_real_file.js"));
   assert.ok(missing.attempted_targets.some((item) => item.target === "src/not_real_file.js"));
   assert.deepEqual(missing.suggested_targets, []);
+
+  const ignoredMissing = await resolveWorkspaceCandidate(["src/not-real-file.js"]);
+  assert.equal(ignoredMissing, null);
+
+  const originalStat = fsp.stat;
+  try {
+    fsp.stat = async () => {
+      const error = new Error("permission denied");
+      error.code = "EACCES";
+      throw error;
+    };
+    await assert.rejects(
+      () => resolveWorkspaceCandidate(["src/observability_status.js"]),
+      /permission denied/
+    );
+  } finally {
+    fsp.stat = originalStat;
+  }
 
   console.log("smoke_dev_code_impact_normalization ok");
 })().catch((error) => {
