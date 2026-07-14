@@ -1,5 +1,6 @@
 "use strict";
 
+const os = require("node:os");
 const path = require("node:path");
 const { createAuthPolicy } = require("../auth/auth_policy");
 const { assertSecurityBoundary } = require("../security_boundary");
@@ -67,10 +68,15 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   if (bootstrapConfig.authMode === "oauth21") {
     const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
     oauth21Issuer = secretConfig.issuer;
+    const oauth21StorageFile = env.MCP_TEST_OAUTH_STORAGE_FILE
+      || ((!env.MCP_TEST_OAUTH_STATE_FILE && !env.MCP_TEST_OAUTH_CLIENTS_FILE)
+        ? path.join(os.homedir(), ".romion", "tests_oauth.sqlite")
+        : "");
     oauth21AuthorizationServer = createOAuth21AuthorizationServer({
       issuer: oauth21Issuer,
       resource: mcpResourceUrl,
       operatorSecret: secretConfig.operatorSecret,
+      storageFile: oauth21StorageFile || undefined,
       trustedProxyHeaders: bootstrapConfig.trustedProxy === true,
     });
   }

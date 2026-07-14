@@ -18,6 +18,7 @@ const {
   trimSlash,
 } = require("./oauth21_utils");
 const { buildOAuth21PrunePreview } = require("./oauth21_prune_preview");
+const { createOAuth21PersistenceStore } = require("./oauth21_persistence_store");
 
 const ACCESS_TTL_SECONDS = 12 * 3600;
 const REFRESH_TTL_SECONDS = 30 * 86400;
@@ -156,7 +157,7 @@ function isValidPkceValue(value) {
   return PKCE_RE.test(String(value || ""));
 }
 
-function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
+function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
   issuer = trimSlash(issuer);
   resource = trimSlash(resource || `${issuer}/mcp`);
   operatorSecret = String(operatorSecret || "");
@@ -173,6 +174,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     || path.join(os.homedir(), ".romion", "tests_oauth_clients.json");
   const oauthStatePath = process.env.MCP_TEST_OAUTH_STATE_FILE
     || path.join(os.homedir(), ".romion", "tests_oauth_state.json");
+  const oauthStorageFile = storageFile || process.env.MCP_TEST_OAUTH_STORAGE_FILE || "";
 
   const clients = new Map();
   const pending = new Map();
@@ -427,9 +429,28 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     }
   }
 
+  const persistenceStore = oauthStorageFile
+    ? createOAuth21PersistenceStore({
+      storageFile: oauthStorageFile,
+      clientsPath,
+      oauthStatePath,
+      now,
+    })
+    : null;
+
   function persistClients(options = {}) {
     const shouldThrow = options.throwOnError === true;
     try {
+      if (persistenceStore) {
+        const saved = persistenceStore.saveClients([...clients.values()]);
+        auditOAuth("oauth21_clients_saved", {
+          clients_file: persistenceStore.clientsPath,
+          client_count: saved.clientCount,
+          merge_mode: saved.mergeMode,
+          backend: saved.backend,
+        });
+        return true;
+      }
       fs.mkdirSync(path.dirname(clientsPath), { recursive: true });
       const mergedClients = withFileLock(
         clientsPath,
@@ -460,6 +481,20 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
 
   function loadClients() {
     try {
+      if (persistenceStore) {
+        const state = persistenceStore.loadClients();
+        if (!state.exists) {
+          auditOAuth("oauth21_clients_missing", { clients_file: persistenceStore.clientsPath, backend: state.backend });
+          return;
+        }
+        for (const c of state.clientsList) if (c && c.client_id) clients.set(String(c.client_id), c);
+        auditOAuth("oauth21_clients_loaded", {
+          clients_file: persistenceStore.clientsPath,
+          client_count: clients.size,
+          backend: state.backend,
+        });
+        return;
+      }
       fs.mkdirSync(path.dirname(clientsPath), { recursive: true });
       const state = withFileLock(
         clientsPath,
@@ -481,6 +516,29 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   function saveOAuthState(options = {}) {
     const shouldThrow = options.throwOnError === true;
     try {
+      if (persistenceStore) {
+        const saved = persistenceStore.saveOAuthState({
+          nowMs: now(),
+          accessTokens,
+          refreshTokens,
+          usedRefreshTokens,
+          deletedAccessTokens,
+          deletedRefreshTokens,
+          deletedUsedRefreshTokens,
+        });
+        deletedAccessTokens.clear();
+        deletedRefreshTokens.clear();
+        deletedUsedRefreshTokens.clear();
+        auditOAuth("oauth21_state_saved", {
+          state_file: persistenceStore.oauthStatePath,
+          access_count: saved.accessCount,
+          refresh_count: saved.refreshCount,
+          used_refresh_count: saved.usedRefreshCount,
+          merge_mode: saved.mergeMode,
+          backend: saved.backend,
+        });
+        return true;
+      }
       fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
       const mergedState = withFileLock(
         oauthStatePath,
@@ -522,6 +580,27 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
 
   function loadOAuthState() {
     try {
+      if (persistenceStore) {
+        const body = persistenceStore.loadOAuthState({ nowMs: now() });
+        if (!body.exists) {
+          auditOAuth("oauth21_state_missing", { state_file: persistenceStore.oauthStatePath, backend: body.backend });
+          return;
+        }
+        for (const item of body.access.values()) setAccessTokenRecord(item.token, item);
+        for (const item of body.refresh.values()) setRefreshTokenRecord(item.token, item);
+        for (const item of body.usedRefresh.values()) setUsedRefreshTokenRecord(item.token, item);
+        auditOAuth("oauth21_state_loaded", {
+          state_file: persistenceStore.oauthStatePath,
+          access_count: accessTokens.size,
+          refresh_count: refreshTokens.size,
+          used_refresh_count: usedRefreshTokens.size,
+          expired_access_count: body.expiredAccess,
+          expired_refresh_count: body.expiredRefresh,
+          expired_used_refresh_count: body.expiredUsedRefresh,
+          backend: body.backend,
+        });
+        return;
+      }
       fs.mkdirSync(path.dirname(oauthStatePath), { recursive: true });
       const body = withFileLock(
         oauthStatePath,
@@ -1030,8 +1109,10 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       access_tokens: accessTokens.size,
       refresh_tokens: refreshTokens.size,
       used_refresh_tokens: usedRefreshTokens.size,
-      oauth_state_file: oauthStatePath,
-      oauth_clients_file: clientsPath,
+      oauth_storage_backend: persistenceStore ? persistenceStore.backend : "json",
+      oauth_storage_file: persistenceStore ? persistenceStore.storageFile : null,
+      oauth_state_file: persistenceStore ? persistenceStore.oauthStatePath : oauthStatePath,
+      oauth_clients_file: persistenceStore ? persistenceStore.clientsPath : clientsPath,
       active_grants: activeGrantCount,
       dead_clients: deadClientCount,
       orphan_access_tokens: orphanAccessTokens,
@@ -1047,8 +1128,8 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
         codes,
         nowMs,
         deadClientMinAgeMs: CLIENT_PRUNE_RETENTION_MS,
-        oauthStatePath,
-        clientsPath,
+        oauthStatePath: persistenceStore ? persistenceStore.oauthStatePath : oauthStatePath,
+        clientsPath: persistenceStore ? persistenceStore.clientsPath : clientsPath,
       }),
     };
   }

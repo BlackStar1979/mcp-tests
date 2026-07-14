@@ -2,15 +2,26 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { DatabaseSync } = require("node:sqlite");
 const { createOAuth21AuthorizationServer, sha256Base64Url } = require("../src/auth/oauth21_authorization_server");
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-oauth-state-"));
 const clientsFile = path.join(tmp, "clients.json");
 const stateFile = path.join(tmp, "state.json");
+const sqliteStorageFile = path.join(tmp, "oauth.sqlite");
 process.env.MCP_TEST_OAUTH_STATE_FILE = stateFile;
 
 function readJson(filePath) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
+}
+
+function readSqliteCount(filePath, tableName) {
+  const db = new DatabaseSync(filePath);
+  try {
+    return Number(db.prepare(`SELECT COUNT(*) AS count FROM ${tableName}`).get().count || 0);
+  } finally {
+    db.close();
+  }
 }
 
 const issuer = "http://127.0.0.1:3008";
@@ -343,6 +354,28 @@ const persistedClients = readJson(clientsFile);
 assert.ok(Array.isArray(persistedClients));
 assert.ok(persistedClients.some((entry) => entry.client_id === clientA.body.client_id));
 assert.ok(persistedClients.some((entry) => entry.client_id === clientB.body.client_id));
+
+const sqliteAudit = [];
+const sqliteServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, storageFile: sqliteStorageFile, now });
+sqliteServer.setAuditLog((event, data) => sqliteAudit.push({ event, data }));
+assert.equal(sqliteServer.status().oauth_storage_backend, "sqlite");
+assert.equal(sqliteServer.status().oauth_storage_file, sqliteStorageFile);
+assert.equal(fs.existsSync(sqliteStorageFile), true);
+assert.ok(sqliteAudit.some((x) => x.event === "oauth21_clients_loaded" && x.data.backend === "sqlite"));
+assert.ok(sqliteAudit.some((x) => x.event === "oauth21_state_loaded" && x.data.backend === "sqlite"));
+assert.equal(sqliteServer.validateAccessToken(issued.access_token, { audience: resource }).ok, true);
+const sqliteRotated = sqliteServer.token({
+  grant_type: "refresh_token",
+  client_id: clientId,
+  refresh_token: rotatedAfterConcurrentSave.body.refresh_token,
+  resource,
+});
+assert.equal(sqliteRotated.status, 200);
+assert.equal(readSqliteCount(sqliteStorageFile, "oauth21_clients") >= 2, true);
+assert.equal(readSqliteCount(sqliteStorageFile, "oauth21_refresh_tokens") >= 1, true);
+const sqliteRestartServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, storageFile: sqliteStorageFile, now });
+assert.equal(sqliteRestartServer.validateAccessToken(sqliteRotated.body.access_token, { audience: resource }).ok, true);
+
 fakeNow += 15 * 86400 * 1000;
 const prunePreview = clientsServerA.status().prune_preview;
 assert.equal(prunePreview.success, true);
