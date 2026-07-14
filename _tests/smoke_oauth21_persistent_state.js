@@ -188,6 +188,65 @@ try {
   assert.deepEqual(failingClientRegistration, { status: 500, body: { error: "server_error", error_description: "client_persistence_failed" } });
   assert.ok(failingClientAudit.some((x) => x.event === "oauth21_client_registration_failed" && x.data.reason === "client_persistence_failed"));
   assert.equal(fs.existsSync(failureClientsFile), false);
+
+  fs.renameSync = originalRenameSync;
+  fs.copyFileSync = originalCopyFileSync;
+  process.env.MCP_TEST_OAUTH_STATE_FILE = stateFile;
+  const revokeAudit = [];
+  const revokeServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
+  revokeServer.setAuditLog((event, data) => revokeAudit.push({ event, data }));
+  const revokeRegistration = revokeServer.registerClient({ redirect_uris: ["https://revoke-failure.example/callback"], token_endpoint_auth_method: "none" });
+  assert.equal(revokeRegistration.status, 201);
+  const revokeAuthorize = revokeServer.authorize({
+    client_id: revokeRegistration.body.client_id,
+    redirect_uri: "https://revoke-failure.example/callback",
+    response_type: "code",
+    code_challenge_method: "S256",
+    code_challenge: sha256Base64Url(verifier),
+    state: "revoke-failure",
+    resource,
+  });
+  assert.equal(revokeAuthorize.status, 302);
+  const revokePid = new URL(revokeAuthorize.location).searchParams.get("pid");
+  const revokeLogin = revokeServer.completeLogin({
+    pid: revokePid,
+    password: operatorSecret,
+    clientId: revokeRegistration.body.client_id,
+    redirectUri: "https://revoke-failure.example/callback",
+    scope: "mcp:tools",
+    req: { socket: { remoteAddress: "127.0.0.1" }, headers: {} },
+  });
+  assert.equal(revokeLogin.status, 302);
+  const revokeCode = new URL(revokeLogin.location).searchParams.get("code");
+  const revokeToken = revokeServer.token({
+    grant_type: "authorization_code",
+    client_id: revokeRegistration.body.client_id,
+    code: revokeCode,
+    redirect_uri: "https://revoke-failure.example/callback",
+    code_verifier: verifier,
+    resource,
+  });
+  assert.equal(revokeToken.status, 200);
+  fs.renameSync = (fromPath, toPath) => {
+    if (String(toPath) === stateFile) {
+      const error = new Error("rename blocked");
+      error.code = "EPERM";
+      throw error;
+    }
+    return originalRenameSync(fromPath, toPath);
+  };
+  fs.copyFileSync = (fromPath, toPath) => {
+    if (String(toPath) === stateFile) {
+      const error = new Error("copy blocked");
+      error.code = "EPERM";
+      throw error;
+    }
+    return originalCopyFileSync(fromPath, toPath);
+  };
+  const revokeFailure = revokeServer.revoke({ token: revokeToken.body.access_token, client_id: revokeRegistration.body.client_id });
+  assert.deepEqual(revokeFailure, { status: 500, body: { error: "server_error", error_description: "state_persistence_failed" } });
+  assert.equal(revokeServer.validateAccessToken(revokeToken.body.access_token, { audience: resource }).ok, true);
+  assert.ok(revokeAudit.some((x) => x.event === "oauth21_revoke_failed" && x.data.reason === "state_persistence_failed"));
 } finally {
   fs.renameSync = originalRenameSync;
   fs.copyFileSync = originalCopyFileSync;

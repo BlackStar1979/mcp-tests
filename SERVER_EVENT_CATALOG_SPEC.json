@@ -212,6 +212,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_revoke_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "initialize_received",
       "status": "active_code_event"
     },

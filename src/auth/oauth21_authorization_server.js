@@ -831,6 +831,31 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     return changed;
   }
 
+  function snapshotGrantRecords(grantId) {
+    const grantKey = String(grantId || "");
+    return {
+      grantId: grantKey,
+      access: [...accessTokens.values()].filter((item) => String(item?.grantId || "") === grantKey),
+      refresh: [...refreshTokens.values()].filter((item) => String(item?.grantId || "") === grantKey),
+      usedRefresh: [...usedRefreshTokens.values()].filter((item) => String(item?.grantId || "") === grantKey),
+    };
+  }
+
+  function restoreGrantRecords(snapshot = {}) {
+    const grantKey = String(snapshot.grantId || "");
+    if (!grantKey) return;
+    revokeGrant(grantKey);
+    for (const item of Array.isArray(snapshot.access) ? snapshot.access : []) {
+      if (item?.token) setAccessTokenRecord(item.token, item);
+    }
+    for (const item of Array.isArray(snapshot.refresh) ? snapshot.refresh : []) {
+      if (item?.token) setRefreshTokenRecord(item.token, item);
+    }
+    for (const item of Array.isArray(snapshot.usedRefresh) ? snapshot.usedRefresh : []) {
+      if (item?.token) setUsedRefreshTokenRecord(item.token, item);
+    }
+  }
+
   function revoke(body = {}) {
     const value = String(body.token || "");
     const clientId = String(body.client_id || "");
@@ -841,8 +866,31 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     const usedRefresh = usedRefreshTokens.get(value);
     const item = access || refresh || usedRefresh;
     if (!item || item.clientId !== client.client_id) return { status: 200, body: {} };
-    const changed = item.grantId ? revokeGrant(item.grantId) : (deleteAccessTokenRecord(value) || deleteRefreshTokenRecord(value) || deleteUsedRefreshTokenRecord(value));
-    if (changed) saveOAuthState();
+    let changed = false;
+    let rollback = () => {};
+    if (item.grantId) {
+      const snapshot = snapshotGrantRecords(item.grantId);
+      rollback = () => restoreGrantRecords(snapshot);
+      changed = revokeGrant(item.grantId);
+    } else if (access) {
+      rollback = () => setAccessTokenRecord(access.token, access);
+      changed = deleteAccessTokenRecord(value);
+    } else if (refresh) {
+      rollback = () => setRefreshTokenRecord(refresh.token, refresh);
+      changed = deleteRefreshTokenRecord(value);
+    } else if (usedRefresh) {
+      rollback = () => setUsedRefreshTokenRecord(usedRefresh.token, usedRefresh);
+      changed = deleteUsedRefreshTokenRecord(value);
+    }
+    if (changed) {
+      try {
+        saveOAuthState({ throwOnError: true });
+      } catch (error) {
+        rollback();
+        auditOAuth("oauth21_revoke_failed", { client_id: client.client_id, reason: "state_persistence_failed", error_message: error.message });
+        return { status: 500, body: { error: "server_error", error_description: "state_persistence_failed" } };
+      }
+    }
     return { status: 200, body: {} };
   }
 
