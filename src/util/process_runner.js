@@ -1,7 +1,7 @@
 "use strict";
 
 const path = require("node:path");
-const { spawn } = require("node:child_process");
+const childProcess = require("node:child_process");
 
 const { listWorkspaceRoots, safeWorkspacePath } = require("./workspace_roots");
 
@@ -169,7 +169,7 @@ function powershellPolicy(command, args) {
   }
 }
 
-async function runProcess(options = {}) {
+async function runProcessWithSpawn(options = {}, spawnImpl = childProcess.spawn) {
   const exe = normalizeCommand(options.command);
   const args = normalizeArgs(options.args);
   powershellPolicy(exe, args);
@@ -183,10 +183,11 @@ async function runProcess(options = {}) {
   let stdoutTruncated = false;
   let stderrTruncated = false;
   let timedOut = false;
+  let timeoutKillError = null;
   const started = Date.now();
 
   const result = await new Promise((resolve) => {
-    const child = spawn(exe, args, {
+    const child = spawnImpl(exe, args, {
       cwd: cwdInfo.absolutePath,
       shell: false,
       windowsHide: true,
@@ -197,12 +198,18 @@ async function runProcess(options = {}) {
     const timer = setTimeout(() => {
       timedOut = true;
       try {
-        child.kill("SIGTERM");
-      } catch {}
+        const killed = child.kill("SIGTERM");
+        if (killed === false && !timeoutKillError) timeoutKillError = "kill(SIGTERM) returned false";
+      } catch (error) {
+        if (!timeoutKillError) timeoutKillError = `kill(SIGTERM) failed: ${error?.message || String(error)}`;
+      }
       setTimeout(() => {
         try {
-          child.kill("SIGKILL");
-        } catch {}
+          const killed = child.kill("SIGKILL");
+          if (killed === false && !timeoutKillError) timeoutKillError = "kill(SIGKILL) returned false";
+        } catch (error) {
+          if (!timeoutKillError) timeoutKillError = `kill(SIGKILL) failed: ${error?.message || String(error)}`;
+        }
       }, 1500).unref?.();
     }, timeoutMs);
 
@@ -234,7 +241,7 @@ async function runProcess(options = {}) {
         status: timedOut ? "timeout" : (code === 0 ? "ok" : "nonzero_exit"),
         exit_code: code,
         signal: signal || null,
-        error: null,
+        error: timedOut ? timeoutKillError : null,
       });
     });
   });
@@ -257,6 +264,10 @@ async function runProcess(options = {}) {
     trace_id: options.trace_id ?? null,
     error: result.error,
   };
+}
+
+async function runProcess(options = {}) {
+  return runProcessWithSpawn(options, childProcess.spawn);
 }
 
 function processRunnerPolicySnapshot() {
@@ -292,4 +303,5 @@ module.exports = {
   parseCommandAllowlist,
   processRunnerPolicySnapshot,
   runProcess,
+  runProcessWithSpawn,
 };

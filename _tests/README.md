@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-07-12`:
 
-- `331` JavaScript files total in `_tests`
-- `254` active scripts currently listed in `run_all_smoke_scripts.json`
+- `332` JavaScript files total in `_tests`
+- `255` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
@@ -19,8 +19,8 @@ Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
 - last confirmed result from `2026-07-12`: `ok=true`
-- last confirmed section counts from that full run: `7` public scripts and `245` authenticated scripts
-- current manifest file contains `254` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `253` sectioned scripts, not all `254` manifest entries
+- last confirmed section counts from that full run: `7` public scripts and `247` authenticated scripts
+- current manifest file contains `255` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `254` sectioned scripts, not all `255` manifest entries
 
 ## Orientation
 
@@ -75,7 +75,7 @@ These are not all equivalent and should not be assumed current just because they
 Current top-level non-`run_all` inventory:
 
 - Historical audit from `2026-06-29` classified `32` files.
-- Current mechanical count is `41`, so the older classification is still useful but not complete for every newly renamed or added file.
+- Current mechanical count is `40`, so the older classification is still useful but not complete for every newly renamed or added file.
 
 - Helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
 - Current targeted guards include: `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_discovery_compat_empty_lists.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
