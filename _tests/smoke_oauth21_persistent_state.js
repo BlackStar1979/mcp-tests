@@ -247,6 +247,86 @@ try {
   assert.deepEqual(revokeFailure, { status: 500, body: { error: "server_error", error_description: "state_persistence_failed" } });
   assert.equal(revokeServer.validateAccessToken(revokeToken.body.access_token, { audience: resource }).ok, true);
   assert.ok(revokeAudit.some((x) => x.event === "oauth21_revoke_failed" && x.data.reason === "state_persistence_failed"));
+
+  fs.renameSync = originalRenameSync;
+  fs.copyFileSync = originalCopyFileSync;
+  fakeNow += 1;
+  const replayFailureAudit = [];
+  const replayFailureServer = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
+  replayFailureServer.setAuditLog((event, data) => replayFailureAudit.push({ event, data }));
+  const replayRegistration = replayFailureServer.registerClient({ redirect_uris: ["https://replay-failure.example/callback"], token_endpoint_auth_method: "none" });
+  assert.equal(replayRegistration.status, 201);
+  const replayAuthorize = replayFailureServer.authorize({
+    client_id: replayRegistration.body.client_id,
+    redirect_uri: "https://replay-failure.example/callback",
+    response_type: "code",
+    code_challenge_method: "S256",
+    code_challenge: sha256Base64Url(verifier),
+    state: "replay-failure",
+    resource,
+  });
+  assert.equal(replayAuthorize.status, 302);
+  const replayPid = new URL(replayAuthorize.location).searchParams.get("pid");
+  const replayLogin = replayFailureServer.completeLogin({
+    pid: replayPid,
+    password: operatorSecret,
+    clientId: replayRegistration.body.client_id,
+    redirectUri: "https://replay-failure.example/callback",
+    scope: "mcp:tools",
+    req: { socket: { remoteAddress: "127.0.0.1" }, headers: {} },
+  });
+  assert.equal(replayLogin.status, 302);
+  const replayCode = new URL(replayLogin.location).searchParams.get("code");
+  const replayGrant = replayFailureServer.token({
+    grant_type: "authorization_code",
+    client_id: replayRegistration.body.client_id,
+    code: replayCode,
+    redirect_uri: "https://replay-failure.example/callback",
+    code_verifier: verifier,
+    resource,
+  });
+  assert.equal(replayGrant.status, 200);
+  const rotatedReplayGrant = replayFailureServer.token({
+    grant_type: "refresh_token",
+    client_id: replayRegistration.body.client_id,
+    refresh_token: replayGrant.body.refresh_token,
+    resource,
+  });
+  assert.equal(rotatedReplayGrant.status, 200);
+  fakeNow += 61 * 1000;
+  fs.renameSync = (fromPath, toPath) => {
+    if (String(toPath) === stateFile) {
+      const error = new Error("rename blocked");
+      error.code = "EPERM";
+      throw error;
+    }
+    return originalRenameSync(fromPath, toPath);
+  };
+  fs.copyFileSync = (fromPath, toPath) => {
+    if (String(toPath) === stateFile) {
+      const error = new Error("copy blocked");
+      error.code = "EPERM";
+      throw error;
+    }
+    return originalCopyFileSync(fromPath, toPath);
+  };
+  const replayReuse = replayFailureServer.token({
+    grant_type: "refresh_token",
+    client_id: replayRegistration.body.client_id,
+    refresh_token: replayGrant.body.refresh_token,
+    resource,
+  });
+  assert.deepEqual(replayReuse, { status: 400, body: { error: "invalid_grant" } });
+  fs.renameSync = originalRenameSync;
+  fs.copyFileSync = originalCopyFileSync;
+  const activeAfterFailedReplayRevocation = replayFailureServer.token({
+    grant_type: "refresh_token",
+    client_id: replayRegistration.body.client_id,
+    refresh_token: rotatedReplayGrant.body.refresh_token,
+    resource,
+  });
+  assert.equal(activeAfterFailedReplayRevocation.status, 200);
+  assert.ok(replayFailureAudit.some((x) => x.event === "oauth21_refresh_token_rejected" && x.data.reason === "state_persistence_failed"));
 } finally {
   fs.renameSync = originalRenameSync;
   fs.copyFileSync = originalCopyFileSync;

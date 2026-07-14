@@ -741,8 +741,19 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
           }
           const active = activeRefreshTokensByGrant.get(String(replay.grantId || ""));
           if (active) {
+            const activeRefresh = refreshTokens.get(String(active));
             deleteRefreshTokenRecord(active);
-            saveOAuthState();
+            try {
+              saveOAuthState({ throwOnError: true });
+            } catch (error) {
+              if (activeRefresh?.token) setRefreshTokenRecord(activeRefresh.token, activeRefresh);
+              auditOAuth("oauth21_refresh_token_rejected", {
+                reason: "state_persistence_failed",
+                client_id: client.client_id,
+                active_refresh_revoked: false,
+                error_message: error.message,
+              });
+            }
           }
           auditOAuth("oauth21_refresh_token_rejected", {
             reason: "refresh_token_reuse_detected",
