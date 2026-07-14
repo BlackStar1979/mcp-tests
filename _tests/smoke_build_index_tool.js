@@ -16,6 +16,10 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
   await fs.rm(INDEX_FILE, { force: true });
 
   try {
+    const missing = await indexStatusTool.execute();
+    assert.equal(missing.status, "missing");
+    assert.equal(missing.success, true);
+
     const build = await buildIndexTool.execute({ max_files: 200, max_dirs: 200 });
     assert.equal(build.status, "built");
     assert.equal(build.success, true);
@@ -25,6 +29,12 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     assert.equal(status.status, "ok");
     assert.equal(status.success, true);
     assert.ok(status.count > 0);
+
+    await fs.writeFile(INDEX_FILE, "{not-json", "utf8");
+    const corrupt = await indexStatusTool.execute();
+    assert.equal(corrupt.status, "error");
+    assert.equal(corrupt.success, false);
+    assert.match(corrupt.error, /json|unexpected token|expected property name/i);
     console.log("smoke_build_index_tool ok");
   } finally {
     if (previous === undefined) delete process.env.MCP_TEST_WORKSPACE_INDEX_FILE;

@@ -234,7 +234,19 @@ async function indexStatus(options = {}) {
       version: Number(index.version || 0),
       roots: Array.isArray(index.roots) ? index.roots : [],
     };
-  } catch {
+  } catch (error) {
+    if (error?.code !== "ENOENT") {
+      return {
+        success: false,
+        error: error?.message || String(error),
+        status: "error",
+        count: 0,
+        created_at: "",
+        root: ".",
+        version: 0,
+        roots: [],
+      };
+    }
     return {
       success: true,
       error: "",

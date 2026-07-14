@@ -112,7 +112,7 @@ const INDEX_STATUS_OUTPUT_SCHEMA = {
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
-    status: { type: "string", enum: ["ok", "missing"] },
+    status: { type: "string", enum: ["ok", "missing", "error"] },
     count: { type: "integer", minimum: 0 },
     created_at: { type: "string" },
     root: { type: "string" },
