@@ -38,6 +38,10 @@ The current decision-prep baseline is now explicit:
      - then `tools/call`
    - no matching fresh `server/discover` entry is observed in that same current real-client window
    - newer stale-entry windows that contain only follow-up `tools/list` / `tools/call` traffic must not be misread as fresh entry-path evidence either way
+   - latest 2026-07-15 live report further confirms:
+     - current runtime slice is a `stale_entry_window`
+     - retained broader real-client families such as `codex-mcp-client 0.144.2`, `openai-mcp 1.0.0`, and `Anthropic/ClaudeAI 1.0.0` still remain `initialize_only`
+     - observed `server_discover_only` evidence in that broader file is synthetic validation traffic rather than an operational client family
 
 ## Current blocker statement
 

@@ -1,6 +1,6 @@
 # Initialize Client Compatibility Evidence
 
-Status: GREEN / CLIENT EVIDENCE REFRESHED / WORKFLOW-ONLY
+Status: GREEN / CLIENT EVIDENCE RECORDED / WORKFLOW-ONLY
 Date: 2026-07-13
 
 ## Purpose
@@ -44,6 +44,7 @@ This means:
 
 - auth success alone does not imply migration to the no-handshake request contract
 - at least one real client/connector still depends on legacy `initialize` after OAuth succeeds
+- at least one real client/connector still calls legacy `initialize` after OAuth succeeds
 - repo-side no-handshake support is not enough to remove legacy `initialize` from the compatibility surface today
 
 ## Fresh evidence refresh on 2026-07-13
@@ -75,6 +76,36 @@ This refresh matters because it removes ambiguity about drift since the earlier 
 - stale-entry follow-up windows are now explicitly separated from fresh reconnect evidence, so "no current initialize/server_discover observed" no longer reads as protocol migration evidence by accident
 - the current compatibility interpretation remains justified
 - initialize retirement on the surviving route is still blocked by real client behavior, not by missing repo support
+
+## Live evidence refresh on 2026-07-15
+
+Current live evidence from `node _workflow/scripts/client_entry_path_report.js` against `_logs/.mcp-tests-audit.jsonl` tightens the interpretation again without weakening the blocker:
+
+- current runtime slice reports:
+  - `current_server_start_id: "2026-07-15T17:49:45.348Z"`
+  - `followup_traffic_without_fresh_entry: true`
+  - `initialize_retirement_readiness.status: "stale_entry_window"`
+- that current slice contains follow-up `tools/call` traffic only and therefore does not count as fresh entry-path evidence either way
+- the latest retained real-client family evidence across the broader audit file still shows:
+  - `client_name: "codex-mcp-client"`
+  - `client_version: "0.144.2"`
+  - status `initialize_only`
+- the same retained broader file also shows other real client families still on legacy `initialize`:
+  - `client_name: "openai-mcp"`
+  - `client_version: "1.0.0"`
+  - status `initialize_only`
+  - `client_name: "Anthropic/ClaudeAI"`
+  - `client_version: "1.0.0"`
+  - status `initialize_only`
+- the retained `server_discover_only` evidence in that broader file is currently synthetic validation traffic:
+  - `client_name: "step95-discover-smoke"`
+  - `client_version: "1"`
+
+This refresh matters because it further narrows the safe conclusion:
+
+- the current runtime window is stale for entry-path purposes and must not be overinterpreted
+- the retained broader audit evidence still does not show an operational client family migrating away from legacy `initialize`
+- initialize retirement therefore remains blocked by current real-client evidence, not by missing server capability and not by ambiguity about stale windows
 
 ## Compatibility interpretation
 
@@ -116,6 +147,7 @@ But:
 
 - `_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md`
 - `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md`
+- `_workflow/scripts/client_entry_path_report.js`
 - `src/runtime/rpc_message_dispatcher.js`
 - `src/runtime/server_discover_message_handler.js`
 - `C:\\Users\\mczyz\\AppData\\Local\\Temp\\mcp-tests-fork-audit-3022.jsonl`
