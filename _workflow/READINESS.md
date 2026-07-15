@@ -1,7 +1,7 @@
 # Readiness
 
 Status: active maturity map
-Updated: 2026-07-12
+Updated: 2026-07-15
 
 ## Purpose
 
@@ -22,7 +22,7 @@ Track the distance between current state and the NorthStar target without mixing
 | No-SSE target migration | 3/4 | POST JSON-only and GET SSE teardown are already repo-applied and workflow-tracked. | Continue bounded cleanup and compatibility evidence; do not reopen SSE target semantics. |
 | OAuth21 authorized runtime | 3/4 | Resource-server metadata, health shape, and bounded OAuth21 behavior are in place. | Preserve auth stability and keep client compatibility evidence current. |
 | Server-side request/response observability | 3/4 | Repo and live OAuth21 `3008` truth now include bounded `rpc_received` plus `rpc_response_sent` correlation on active `/mcp` paths, including a confirmed authenticated local `initialize` probe. | Use the live trail for real client compatibility diagnosis before considering any broader logging expansion. |
-| Connector-visible surface governance | 3/4 | Repo/runtime truth says `13 + 56 = 69` visible tools, with hidden helpers separated. | Revalidate connector/UI enumeration only when needed from fresh client truth. |
+| Connector-visible surface governance | 3/4 | Repo/runtime truth says `13 + 56 = 69` visible tools, with hidden helpers separated, and fresh 2026-07-15 evidence confirms that `mcp__workbench` is callable again from the Codex model runtime layer. | Revalidate full connector/UI enumeration only when needed from fresh client truth; do not collapse callability and UI visibility into one claim. |
 | OAuth21 durable-state hygiene control plane | 3/4 | Explicit preview/receipt/gate/apply/rollback helpers exist, records/backups are bounded under `_workflow/control_plane/`, and workflow docs now describe the operator-controlled path. | Keep apply explicit and control-plane-only; promote only after future runtime need is proven. |
 | Legacy `initialize` retirement readiness | 2/4 | Repo evidence already shows useful no-handshake operation on `/mcp`. | Gather/maintain explicit client compatibility evidence before any retirement decision. |
 | Session-bound outbound/sampling helper debt | 2/4 | Scope is now explicitly recorded as bounded helper debt. | Choose explicit retention, redesign, or retirement package when justified. |
@@ -31,7 +31,7 @@ Track the distance between current state and the NorthStar target without mixing
 
 ## Current readiness blockers
 
-1. Fresh connector/UI truth can still drift from repo/runtime truth.
+1. Fresh connector/UI truth can still drift from repo/runtime truth, even when the model runtime can already call the connector again.
 2. Legacy `initialize` removal is still blocked by client compatibility evidence, not by repo request-flow capability.
 3. Fresh real Codex client evidence now confirms the live `initialize -> notifications/initialized -> tools/list -> tools/call` path, but the same current client family still does not provide matching fresh `server/discover` entry evidence in that window.
 4. Operator-facing `DIRECTORY` coverage is still partial outside the currently normalized operational directories.

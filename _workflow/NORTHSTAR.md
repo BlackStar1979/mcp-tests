@@ -1,7 +1,7 @@
 # NorthStar
 
 Status: active operator-facing target definition
-Updated: 2026-07-12
+Updated: 2026-07-15
 
 ## Purpose
 

@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-07-12
+Updated: 2026-07-15
 
 ## Purpose
 
@@ -29,6 +29,13 @@ Summarize the current validated product state in one operator-facing place witho
   - auth mode `oauth21`
   - profile `tests/internal`
   - target connector-visible tools `69`
+
+## Current validation baseline
+
+- Latest full smoke baseline:
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=249`
+- Latest validated public section count: `7`
+- Latest validated authenticated smoke count: `249`
 
 ## Surface model
 
@@ -61,6 +68,8 @@ Summarize the current validated product state in one operator-facing place witho
 
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
+- Model-runtime callability is a separate layer from external UI visible-tool enumeration.
+- Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but full UI visible-tool enumeration is still not independently re-verified in the same step.
 - `state.json` is an orientation map, not a progress log.
 - Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.
 - OAuth21 durable-state hygiene now has an explicit control-plane path with bounded records/backups and approval-gated apply; it is not a connector-visible runtime tool.
