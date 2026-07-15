@@ -3,6 +3,7 @@
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { DatabaseSync } = require("node:sqlite");
 const {
   verifyOAuth21PruneReceipt,
 } = require("./oauth21_prune_receipt");
@@ -38,6 +39,137 @@ function copyFileIfExists(sourcePath, targetPath) {
   fs.mkdirSync(path.dirname(targetPath), { recursive: true });
   fs.copyFileSync(sourcePath, targetPath);
   return true;
+}
+
+function detectPruneStorageBackend({ oauthStoragePath = "", oauthStatePath = "", clientsPath = "" } = {}) {
+  const storagePath = String(oauthStoragePath || "").trim();
+  if (storagePath) return { backend: "sqlite", storagePath };
+  const statePath = String(oauthStatePath || "").trim();
+  const clientPath = String(clientsPath || "").trim();
+  if (statePath && clientPath && statePath === clientPath && /\.sqlite$/i.test(statePath)) {
+    return { backend: "sqlite", storagePath: statePath };
+  }
+  return { backend: "json", storagePath: "" };
+}
+
+function initSqliteSchema(db) {
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS oauth21_clients (
+      client_id TEXT PRIMARY KEY,
+      client_json TEXT NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS oauth21_access_tokens (
+      token TEXT PRIMARY KEY,
+      token_json TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      client_id TEXT,
+      grant_id TEXT
+    );
+    CREATE TABLE IF NOT EXISTS oauth21_refresh_tokens (
+      token TEXT PRIMARY KEY,
+      token_json TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      client_id TEXT,
+      grant_id TEXT
+    );
+    CREATE TABLE IF NOT EXISTS oauth21_used_refresh_tokens (
+      token TEXT PRIMARY KEY,
+      token_json TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      client_id TEXT,
+      grant_id TEXT,
+      replay_until INTEGER NOT NULL DEFAULT 0
+    );
+  `);
+}
+
+function readSqliteState(storagePath) {
+  if (!storagePath || !fs.existsSync(storagePath)) {
+    return { exists: false, clientsList: [], stateBody: { access: [], refresh: [], used_refresh: [] } };
+  }
+  const db = new DatabaseSync(storagePath);
+  try {
+    initSqliteSchema(db);
+    const clientsList = db.prepare("SELECT client_json FROM oauth21_clients").all().map((row) => JSON.parse(row.client_json));
+    const access = db.prepare("SELECT token_json FROM oauth21_access_tokens").all().map((row) => JSON.parse(row.token_json));
+    const refresh = db.prepare("SELECT token_json FROM oauth21_refresh_tokens").all().map((row) => JSON.parse(row.token_json));
+    const usedRefresh = db.prepare("SELECT token_json FROM oauth21_used_refresh_tokens").all().map((row) => JSON.parse(row.token_json));
+    return {
+      exists: true,
+      clientsList,
+      stateBody: {
+        access,
+        refresh,
+        used_refresh: usedRefresh,
+      },
+    };
+  } finally {
+    db.close();
+  }
+}
+
+function writeSqliteState(storagePath, { clientsList = [], stateBody = {}, nowMs = Date.now() } = {}) {
+  fs.mkdirSync(path.dirname(storagePath), { recursive: true });
+  const db = new DatabaseSync(storagePath);
+  try {
+    initSqliteSchema(db);
+    const insertClientStmt = db.prepare(`
+      INSERT INTO oauth21_clients (client_id, client_json, updated_at)
+      VALUES (?, ?, ?)
+      ON CONFLICT(client_id) DO UPDATE SET
+        client_json = excluded.client_json,
+        updated_at = excluded.updated_at
+    `);
+    const insertAccessStmt = db.prepare(`
+      INSERT INTO oauth21_access_tokens (token, token_json, expires_at, client_id, grant_id)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    const insertRefreshStmt = db.prepare(`
+      INSERT INTO oauth21_refresh_tokens (token, token_json, expires_at, client_id, grant_id)
+      VALUES (?, ?, ?, ?, ?)
+    `);
+    const insertUsedRefreshStmt = db.prepare(`
+      INSERT INTO oauth21_used_refresh_tokens (token, token_json, expires_at, client_id, grant_id, replay_until)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
+    db.exec("BEGIN IMMEDIATE");
+    try {
+      db.exec("DELETE FROM oauth21_clients");
+      db.exec("DELETE FROM oauth21_access_tokens");
+      db.exec("DELETE FROM oauth21_refresh_tokens");
+      db.exec("DELETE FROM oauth21_used_refresh_tokens");
+      for (const client of Array.isArray(clientsList) ? clientsList : []) {
+        if (!client?.client_id) continue;
+        insertClientStmt.run(String(client.client_id), JSON.stringify(client), Number(nowMs));
+      }
+      for (const item of Array.isArray(stateBody.access) ? stateBody.access : []) {
+        if (!item?.token) continue;
+        insertAccessStmt.run(String(item.token), JSON.stringify(item), Number(item.expiresAt || 0), String(item.clientId || ""), String(item.grantId || ""));
+      }
+      for (const item of Array.isArray(stateBody.refresh) ? stateBody.refresh : []) {
+        if (!item?.token) continue;
+        insertRefreshStmt.run(String(item.token), JSON.stringify(item), Number(item.expiresAt || 0), String(item.clientId || ""), String(item.grantId || ""));
+      }
+      for (const item of Array.isArray(stateBody.used_refresh) ? stateBody.used_refresh : []) {
+        if (!item?.token) continue;
+        insertUsedRefreshStmt.run(
+          String(item.token),
+          JSON.stringify(item),
+          Number(item.expiresAt || 0),
+          String(item.clientId || ""),
+          String(item.grantId || ""),
+          Number(item.replayUntil || 0),
+        );
+      }
+      db.exec("COMMIT");
+    } catch (error) {
+      try { db.exec("ROLLBACK"); } catch (_) {}
+      throw error;
+    }
+  } finally {
+    db.close();
+  }
 }
 
 function isActiveTokenItem(item, nowMs) {
@@ -128,6 +260,7 @@ function buildOAuth21PruneApplyPlan({
   approvalMarker = {},
   stateBody = {},
   clientsList = [],
+  oauthStoragePath = "",
   oauthStatePath = "",
   clientsPath = "",
   backupDir = "",
@@ -138,6 +271,7 @@ function buildOAuth21PruneApplyPlan({
   const receiptVerification = verifyOAuth21PruneReceipt(receipt);
   const gateVerification = verifyOAuth21PruneApplyReadiness(gate);
   const approvalChecks = buildApprovalChecks(approvalMarker);
+  const storage = detectPruneStorageBackend({ oauthStoragePath, oauthStatePath, clientsPath });
   const candidates = collectRawPruneCandidates({
     clientsList,
     stateBody,
@@ -182,6 +316,8 @@ function buildOAuth21PruneApplyPlan({
     gate_verified: gateVerification.success === true,
     future_ready_if_apply_enabled: gate.future_ready_if_apply_enabled === true,
     approval_checks: approvalChecks,
+    storage_backend: storage.backend,
+    oauth_storage_exists: storage.backend === "sqlite" ? Boolean(storage.storagePath && fs.existsSync(storage.storagePath)) : false,
     backup_dir_configured: Boolean(String(backupDir || "").trim()),
     oauth_state_exists: Boolean(oauthStatePath && fs.existsSync(oauthStatePath)),
     oauth_clients_exists: Boolean(clientsPath && fs.existsSync(clientsPath)),
@@ -222,6 +358,7 @@ function executeOAuth21PruneApply({
   receipt = {},
   gate = {},
   approvalMarker = {},
+  oauthStoragePath = "",
   oauthStatePath = "",
   clientsPath = "",
   backupDir = "",
@@ -229,15 +366,21 @@ function executeOAuth21PruneApply({
   deadClientMinAgeMs,
   extraReferencedClientIds = [],
 } = {}) {
-  const stateLoad = readJsonFileOrDefault(oauthStatePath, {});
-  const clientsLoad = readJsonFileOrDefault(clientsPath, []);
+  const storage = detectPruneStorageBackend({ oauthStoragePath, oauthStatePath, clientsPath });
+  const stateLoad = storage.backend === "sqlite"
+    ? readSqliteState(storage.storagePath)
+    : readJsonFileOrDefault(oauthStatePath, {});
+  const clientsLoad = storage.backend === "sqlite"
+    ? { exists: stateLoad.exists, value: stateLoad.clientsList }
+    : readJsonFileOrDefault(clientsPath, []);
   const plan = buildOAuth21PruneApplyPlan({
     preview,
     receipt,
     gate,
     approvalMarker,
-    stateBody: stateLoad.value,
+    stateBody: storage.backend === "sqlite" ? stateLoad.stateBody : stateLoad.value,
     clientsList: clientsLoad.value,
+    oauthStoragePath: storage.storagePath,
     oauthStatePath,
     clientsPath,
     backupDir,
@@ -270,17 +413,21 @@ function executeOAuth21PruneApply({
   fs.mkdirSync(backupDir, { recursive: true });
   const stateBackupPath = path.join(backupDir, `${operationId}.oauth_state.backup.json`);
   const clientsBackupPath = path.join(backupDir, `${operationId}.oauth_clients.backup.json`);
+  const storageBackupPath = path.join(backupDir, `${operationId}.oauth_storage.backup.sqlite`);
   const rollbackReceiptPath = path.join(backupDir, `${operationId}.rollback-receipt.json`);
   const applyReceiptPath = path.join(backupDir, `${operationId}.apply-receipt.json`);
 
-  const stateBackedUp = copyFileIfExists(oauthStatePath, stateBackupPath);
-  const clientsBackedUp = copyFileIfExists(clientsPath, clientsBackupPath);
+  const stateBackedUp = storage.backend === "sqlite" ? false : copyFileIfExists(oauthStatePath, stateBackupPath);
+  const clientsBackedUp = storage.backend === "sqlite" ? false : copyFileIfExists(clientsPath, clientsBackupPath);
+  const storageBackedUp = storage.backend === "sqlite" ? copyFileIfExists(storage.storagePath, storageBackupPath) : false;
 
   const rollbackReceipt = {
     version: OAUTH21_PRUNE_APPLY_VERSION,
     mode: "oauth21-prune-rollback-receipt",
     operation_id: operationId,
     created_at: new Date(nowMs).toISOString(),
+    oauth_storage_path: storage.backend === "sqlite" ? storage.storagePath : "",
+    oauth_storage_backup_path: storageBackedUp ? storageBackupPath : "",
     oauth_state_backup_path: stateBackedUp ? stateBackupPath : "",
     oauth_clients_backup_path: clientsBackedUp ? clientsBackupPath : "",
     state_before_hash: plan.state_before_hash,
@@ -291,16 +438,29 @@ function executeOAuth21PruneApply({
   };
   writeJsonFileAtomic(rollbackReceiptPath, rollbackReceipt);
 
-  writeJsonFileAtomic(oauthStatePath, plan.proposed_state_body);
-  writeJsonFileAtomic(clientsPath, plan.proposed_clients_list);
+  if (storage.backend === "sqlite") {
+    writeSqliteState(storage.storagePath, {
+      clientsList: plan.proposed_clients_list,
+      stateBody: plan.proposed_state_body,
+      nowMs,
+    });
+  } else {
+    writeJsonFileAtomic(oauthStatePath, plan.proposed_state_body);
+    writeJsonFileAtomic(clientsPath, plan.proposed_clients_list);
+  }
 
-  const stateAfter = readJsonFileOrDefault(oauthStatePath, {}).value;
-  const clientsAfter = readJsonFileOrDefault(clientsPath, []).value;
+  const stateAfterLoad = storage.backend === "sqlite"
+    ? readSqliteState(storage.storagePath)
+    : readJsonFileOrDefault(oauthStatePath, {});
+  const stateAfter = storage.backend === "sqlite" ? stateAfterLoad.stateBody : stateAfterLoad.value;
+  const clientsAfter = storage.backend === "sqlite" ? stateAfterLoad.clientsList : readJsonFileOrDefault(clientsPath, []).value;
   const applyReceipt = {
     version: OAUTH21_PRUNE_APPLY_VERSION,
     mode: "oauth21-prune-apply-receipt",
     operation_id: operationId,
     applied_at: new Date(nowMs).toISOString(),
+    oauth_storage_path: storage.backend === "sqlite" ? storage.storagePath : "",
+    oauth_storage_backup_path: storageBackedUp ? storageBackupPath : "",
     oauth_state_path: oauthStatePath,
     oauth_clients_path: clientsPath,
     rollback_receipt_path: rollbackReceiptPath,
@@ -325,6 +485,7 @@ function executeOAuth21PruneApply({
     execute_performed: true,
     operation_id: operationId,
     backup_paths: {
+      oauth_storage_backup: storageBackedUp ? storageBackupPath : "",
       oauth_state_backup: stateBackedUp ? stateBackupPath : "",
       oauth_clients_backup: clientsBackedUp ? clientsBackupPath : "",
     },

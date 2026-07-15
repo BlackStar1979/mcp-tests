@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const { DatabaseSync } = require("node:sqlite");
 const {
   buildOAuth21PrunePreview,
 } = require("../src/auth/oauth21_prune_preview");
@@ -166,6 +167,122 @@ const denied = executeOAuth21PruneApply({
 assert.equal(denied.success, false);
 assert.equal(denied.execute_performed, false);
 assert.ok(denied.missing_requirements.includes("future_ready_if_apply_enabled"));
+
+const sqliteStoragePath = path.join(tempRoot, "tests_oauth.sqlite");
+const sqliteBackupDir = path.join(tempRoot, "sqlite-backups");
+const sqliteSeedDb = new DatabaseSync(sqliteStoragePath);
+try {
+  sqliteSeedDb.exec(`
+    CREATE TABLE IF NOT EXISTS oauth21_clients (
+      client_id TEXT PRIMARY KEY,
+      client_json TEXT NOT NULL,
+      updated_at INTEGER NOT NULL
+    );
+    CREATE TABLE IF NOT EXISTS oauth21_access_tokens (
+      token TEXT PRIMARY KEY,
+      token_json TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      client_id TEXT,
+      grant_id TEXT
+    );
+    CREATE TABLE IF NOT EXISTS oauth21_refresh_tokens (
+      token TEXT PRIMARY KEY,
+      token_json TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      client_id TEXT,
+      grant_id TEXT
+    );
+    CREATE TABLE IF NOT EXISTS oauth21_used_refresh_tokens (
+      token TEXT PRIMARY KEY,
+      token_json TEXT NOT NULL,
+      expires_at INTEGER NOT NULL,
+      client_id TEXT,
+      grant_id TEXT,
+      replay_until INTEGER NOT NULL DEFAULT 0
+    );
+  `);
+  const insertClientStmt = sqliteSeedDb.prepare(`
+    INSERT INTO oauth21_clients (client_id, client_json, updated_at)
+    VALUES (?, ?, ?)
+  `);
+  const insertAccessStmt = sqliteSeedDb.prepare(`
+    INSERT INTO oauth21_access_tokens (token, token_json, expires_at, client_id, grant_id)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const insertRefreshStmt = sqliteSeedDb.prepare(`
+    INSERT INTO oauth21_refresh_tokens (token, token_json, expires_at, client_id, grant_id)
+    VALUES (?, ?, ?, ?, ?)
+  `);
+  const insertUsedRefreshStmt = sqliteSeedDb.prepare(`
+    INSERT INTO oauth21_used_refresh_tokens (token, token_json, expires_at, client_id, grant_id, replay_until)
+    VALUES (?, ?, ?, ?, ?, ?)
+  `);
+  sqliteSeedDb.exec("BEGIN IMMEDIATE");
+  try {
+    for (const client of clientsList) {
+      insertClientStmt.run(client.client_id, JSON.stringify(client), nowMs);
+    }
+    for (const item of stateBody.access) {
+      insertAccessStmt.run(item.token, JSON.stringify(item), item.expiresAt, item.clientId || "", item.grantId || "");
+    }
+    for (const item of stateBody.refresh) {
+      insertRefreshStmt.run(item.token, JSON.stringify(item), item.expiresAt, item.clientId || "", item.grantId || "");
+    }
+    for (const item of stateBody.used_refresh) {
+      insertUsedRefreshStmt.run(item.token, JSON.stringify(item), item.expiresAt, item.clientId || "", item.grantId || "", item.replayUntil || 0);
+    }
+    sqliteSeedDb.exec("COMMIT");
+  } catch (error) {
+    try { sqliteSeedDb.exec("ROLLBACK"); } catch (_) {}
+    throw error;
+  }
+} finally {
+  sqliteSeedDb.close();
+}
+
+const sqliteDryPlan = buildOAuth21PruneApplyPlan({
+  preview,
+  receipt,
+  gate,
+  approvalMarker,
+  stateBody,
+  clientsList,
+  oauthStoragePath: sqliteStoragePath,
+  oauthStatePath: sqliteStoragePath,
+  clientsPath: sqliteStoragePath,
+  backupDir: sqliteBackupDir,
+  nowMs,
+  deadClientMinAgeMs,
+});
+assert.equal(sqliteDryPlan.storage_backend, "sqlite");
+assert.equal(sqliteDryPlan.oauth_storage_exists, true);
+
+const sqliteApplied = executeOAuth21PruneApply({
+  preview,
+  receipt,
+  gate,
+  approvalMarker,
+  oauthStoragePath: sqliteStoragePath,
+  oauthStatePath: sqliteStoragePath,
+  clientsPath: sqliteStoragePath,
+  backupDir: sqliteBackupDir,
+  nowMs,
+  deadClientMinAgeMs,
+});
+assert.equal(sqliteApplied.success, true);
+assert.equal(sqliteApplied.execute_performed, true);
+assert.ok(fs.existsSync(sqliteApplied.backup_paths.oauth_storage_backup));
+const sqliteDb = new DatabaseSync(sqliteStoragePath);
+try {
+  assert.equal(sqliteDb.prepare("SELECT COUNT(*) AS count FROM oauth21_clients WHERE client_id = ?").get("dead-old").count, 0);
+  assert.equal(sqliteDb.prepare("SELECT COUNT(*) AS count FROM oauth21_clients WHERE client_id = ?").get("active-client").count, 1);
+  assert.equal(sqliteDb.prepare("SELECT COUNT(*) AS count FROM oauth21_access_tokens WHERE token = ?").get("access-orphan").count, 0);
+  assert.equal(sqliteDb.prepare("SELECT COUNT(*) AS count FROM oauth21_refresh_tokens WHERE token = ?").get("refresh-orphan").count, 0);
+  assert.equal(sqliteDb.prepare("SELECT COUNT(*) AS count FROM oauth21_used_refresh_tokens WHERE token = ?").get("used-orphan").count, 0);
+  assert.equal(sqliteDb.prepare("SELECT COUNT(*) AS count FROM oauth21_access_tokens WHERE token = ?").get("access-live").count, 1);
+} finally {
+  sqliteDb.close();
+}
 
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_oauth21_prune_apply ok");
