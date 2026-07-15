@@ -17,6 +17,7 @@
   "_tests/smoke_build_index_tool.js",
   "_tests/smoke_fs.js",
   "_tests/smoke_auth_legacy_retirement_status.js",
+  "_tests/smoke_auth_modular_parity_status.js",
   "_tests/smoke_fs_streaming.js",
   "_tests/smoke_workspace_fs_tools.js",
   "_tests/smoke_science_tools.js",

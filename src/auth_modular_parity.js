@@ -9,23 +9,33 @@ const SYNTHETIC_TOKEN = "test-mcp-modular-parity-token-0123456789abcdef";
 const WRONG_TOKEN = "test-mcp-modular-parity-wrong-0123456789abcdef";
 const SYNTHETIC_ACCESS_ASSERTION = "synthetic-cloudflare-access-assertion";
 
-function makeTempTokenFile() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-modular-parity-"));
+function makeTempTokenFile(fsImpl = fs) {
+  const dir = fsImpl.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-modular-parity-"));
   const file = path.join(dir, "token.txt");
-  fs.writeFileSync(file, SYNTHETIC_TOKEN, { encoding: "utf8", mode: 0o600 });
+  fsImpl.writeFileSync(file, SYNTHETIC_TOKEN, { encoding: "utf8", mode: 0o600 });
   return { dir, file };
 }
 
-function cleanupTemp(temp) {
-  const cleanup = { token_removed: false, dir_removed: false };
+function cleanupTemp(temp, fsImpl = fs) {
+  const cleanup = {
+    token_removed: false,
+    dir_removed: false,
+    token_remove_error: "",
+    dir_remove_error: "",
+  };
   try {
-    fs.unlinkSync(temp.file);
+    fsImpl.unlinkSync(temp.file);
     cleanup.token_removed = true;
-  } catch (_) {}
+  } catch (error) {
+    cleanup.token_remove_error = error?.message || String(error);
+  }
   try {
-    fs.rmdirSync(temp.dir);
+    fsImpl.rmdirSync(temp.dir);
     cleanup.dir_removed = true;
-  } catch (_) {}
+  } catch (error) {
+    cleanup.dir_remove_error = error?.message || String(error);
+  }
+  cleanup.ok = cleanup.token_removed === true && cleanup.dir_removed === true;
   return cleanup;
 }
 
@@ -47,8 +57,8 @@ function runAccessParityDryRun() {
   };
 }
 
-function runBearerParityDryRun() {
-  const temp = makeTempTokenFile();
+function runBearerParityDryRun({ fsImpl = fs } = {}) {
+  const temp = makeTempTokenFile(fsImpl);
   try {
     const policy = createBearerAuth({ tokenFile: temp.file });
     const missing = policy.authenticate({ headers: {}, url: "/mcp" });
@@ -57,11 +67,11 @@ function runBearerParityDryRun() {
     const header = policy.authenticate({ headers: { authorization: `Bearer ${SYNTHETIC_TOKEN}` }, url: "/mcp" });
     const query = policy.authenticate({ headers: {}, url: `/mcp?token=${encodeURIComponent(SYNTHETIC_TOKEN)}` });
     const status = policy.status();
-    const cleanup = cleanupTemp(temp);
+    const cleanup = cleanupTemp(temp, fsImpl);
 
     return {
       mode: "bearer",
-      success: missing.ok === false && invalidHeader.ok === false && invalidQuery.ok === false && header.ok === true && query.ok === false && cleanup.token_removed === true && cleanup.dir_removed === true,
+      success: missing.ok === false && invalidHeader.ok === false && invalidQuery.ok === false && header.ok === true && query.ok === false && cleanup.ok === true,
       accepts_authorization_bearer: status.accepts_authorization_bearer === true,
       accepts_query_token: status.accepts_query_token === true,
       accepts_query_token_disabled_by_default: status.accepts_query_token === false,
@@ -72,19 +82,25 @@ function runBearerParityDryRun() {
       query_rejected_401: query.ok === false && query.status === 401 && query.error === "missing_bearer_token",
       header_extractor_ok: extractHeaderBearerToken({ headers: { authorization: `Bearer ${SYNTHETIC_TOKEN}` } }) === SYNTHETIC_TOKEN,
       query_extractor_ok: extractQueryToken({ url: `/mcp?token=${encodeURIComponent(SYNTHETIC_TOKEN)}` }) === SYNTHETIC_TOKEN,
+      temp_cleanup_ok: cleanup.ok === true,
       temp_token_removed: cleanup.token_removed === true,
       temp_dir_removed: cleanup.dir_removed === true,
+      temp_token_remove_error: cleanup.token_remove_error,
+      temp_dir_remove_error: cleanup.dir_remove_error,
       token_disclosed: false,
       token_path_disclosed: false,
     };
   } catch (error) {
-    const cleanup = cleanupTemp(temp);
+    const cleanup = cleanupTemp(temp, fsImpl);
     return {
       mode: "bearer",
       success: false,
       error: error?.message || String(error),
+      temp_cleanup_ok: cleanup.ok === true,
       temp_token_removed: cleanup.token_removed,
       temp_dir_removed: cleanup.dir_removed,
+      temp_token_remove_error: cleanup.token_remove_error,
+      temp_dir_remove_error: cleanup.dir_remove_error,
       token_disclosed: false,
       token_path_disclosed: false,
     };
