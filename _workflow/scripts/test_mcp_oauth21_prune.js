@@ -2,6 +2,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { DatabaseSync } = require("node:sqlite");
 const {
   buildOAuth21PrunePreview,
 } = require("../../src/auth/oauth21_prune_preview");
@@ -54,6 +55,30 @@ function readJson(filePath, fallback) {
   return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
+function readSqliteState(storagePath) {
+  if (!storagePath || !fs.existsSync(storagePath)) {
+    return { exists: false, clientsList: [], stateBody: { access: [], refresh: [], used_refresh: [] } };
+  }
+  const db = new DatabaseSync(storagePath);
+  try {
+    const clientsList = db.prepare("SELECT client_json FROM oauth21_clients").all().map((row) => JSON.parse(row.client_json));
+    const access = db.prepare("SELECT token_json FROM oauth21_access_tokens").all().map((row) => JSON.parse(row.token_json));
+    const refresh = db.prepare("SELECT token_json FROM oauth21_refresh_tokens").all().map((row) => JSON.parse(row.token_json));
+    const usedRefresh = db.prepare("SELECT token_json FROM oauth21_used_refresh_tokens").all().map((row) => JSON.parse(row.token_json));
+    return {
+      exists: true,
+      clientsList,
+      stateBody: {
+        access,
+        refresh,
+        used_refresh: usedRefresh,
+      },
+    };
+  } finally {
+    db.close();
+  }
+}
+
 function writeJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, JSON.stringify(value, null, 2), "utf8");
@@ -94,6 +119,7 @@ function toTokenMap(items) {
 }
 
 function buildPackageFromFiles({
+  oauthStoragePath = "",
   oauthStatePath,
   clientsPath,
   backupDir,
@@ -103,8 +129,11 @@ function buildPackageFromFiles({
   deadClientMinAgeMs,
   nowMs,
 } = {}) {
-  const stateBody = readJson(oauthStatePath, {});
-  const clientsList = readJson(clientsPath, []);
+  const resolvedStoragePath = String(oauthStoragePath || "").trim() ? path.resolve(oauthStoragePath) : "";
+  const storageMode = resolvedStoragePath ? "sqlite" : "json";
+  const sqliteState = storageMode === "sqlite" ? readSqliteState(resolvedStoragePath) : null;
+  const stateBody = storageMode === "sqlite" ? sqliteState.stateBody : readJson(oauthStatePath, {});
+  const clientsList = storageMode === "sqlite" ? sqliteState.clientsList : readJson(clientsPath, []);
   const preview = buildOAuth21PrunePreview({
     clients: toClientMap(clientsList),
     accessTokens: toTokenMap(stateBody.access),
@@ -114,8 +143,8 @@ function buildPackageFromFiles({
     codes: new Map(),
     nowMs,
     deadClientMinAgeMs,
-    oauthStatePath,
-    clientsPath,
+    oauthStatePath: storageMode === "sqlite" ? resolvedStoragePath : oauthStatePath,
+    clientsPath: storageMode === "sqlite" ? resolvedStoragePath : clientsPath,
   });
   const receipt = buildOAuth21PruneReceipt({
     preview,
@@ -143,8 +172,9 @@ function buildPackageFromFiles({
     approvalMarker: approvalMarker || {},
     stateBody,
     clientsList,
-    oauthStatePath,
-    clientsPath,
+    oauthStoragePath: resolvedStoragePath,
+    oauthStatePath: storageMode === "sqlite" ? resolvedStoragePath : oauthStatePath,
+    clientsPath: storageMode === "sqlite" ? resolvedStoragePath : clientsPath,
     backupDir,
     nowMs,
     deadClientMinAgeMs,
@@ -166,8 +196,9 @@ function statusMode() {
 }
 
 function planMode(args) {
-  const oauthStatePath = requireArg(args, "oauth-state-file");
-  const clientsPath = requireArg(args, "oauth-clients-file");
+  const oauthStoragePath = String(args["oauth-storage-file"] || "").trim();
+  const oauthStatePath = oauthStoragePath ? "" : requireArg(args, "oauth-state-file");
+  const clientsPath = oauthStoragePath ? "" : requireArg(args, "oauth-clients-file");
   const operator = String(args.operator || "operator").trim() || "operator";
   const reason = String(args.reason || "manual oauth21 prune plan").trim();
   const nowMs = args["now-ms"] ? Number(args["now-ms"]) : Date.now();
@@ -177,8 +208,9 @@ function planMode(args) {
   const approvalMarker = args["approval-marker-file"] ? readJson(path.resolve(args["approval-marker-file"]), null) : null;
 
   const bundle = buildPackageFromFiles({
-    oauthStatePath: path.resolve(oauthStatePath),
-    clientsPath: path.resolve(clientsPath),
+    oauthStoragePath: oauthStoragePath ? path.resolve(oauthStoragePath) : "",
+    oauthStatePath: oauthStatePath ? path.resolve(oauthStatePath) : "",
+    clientsPath: clientsPath ? path.resolve(clientsPath) : "",
     backupDir,
     operator,
     reason,
@@ -192,8 +224,9 @@ function planMode(args) {
     mode: "plan",
     run_id: runId,
     created_at: new Date(nowMs).toISOString(),
-    oauth_state_file: path.resolve(oauthStatePath),
-    oauth_clients_file: path.resolve(clientsPath),
+    oauth_storage_file: oauthStoragePath ? path.resolve(oauthStoragePath) : "",
+    oauth_state_file: oauthStatePath ? path.resolve(oauthStatePath) : "",
+    oauth_clients_file: clientsPath ? path.resolve(clientsPath) : "",
     backup_dir: backupDir,
     operator,
     reason,
@@ -210,8 +243,9 @@ function planMode(args) {
 }
 
 function executeMode(args) {
-  const oauthStatePath = requireArg(args, "oauth-state-file");
-  const clientsPath = requireArg(args, "oauth-clients-file");
+  const oauthStoragePath = String(args["oauth-storage-file"] || "").trim();
+  const oauthStatePath = oauthStoragePath ? "" : requireArg(args, "oauth-state-file");
+  const clientsPath = oauthStoragePath ? "" : requireArg(args, "oauth-clients-file");
   const approvalMarkerFile = requireArg(args, "approval-marker-file");
   const operator = String(args.operator || "operator").trim() || "operator";
   const reason = String(args.reason || "manual oauth21 prune execute").trim();
@@ -222,8 +256,9 @@ function executeMode(args) {
   const approvalMarker = readJson(path.resolve(approvalMarkerFile), null);
 
   const bundle = buildPackageFromFiles({
-    oauthStatePath: path.resolve(oauthStatePath),
-    clientsPath: path.resolve(clientsPath),
+    oauthStoragePath: oauthStoragePath ? path.resolve(oauthStoragePath) : "",
+    oauthStatePath: oauthStatePath ? path.resolve(oauthStatePath) : "",
+    clientsPath: clientsPath ? path.resolve(clientsPath) : "",
     backupDir,
     operator,
     reason,
@@ -237,8 +272,9 @@ function executeMode(args) {
     receipt: bundle.receipt,
     gate: bundle.gate,
     approvalMarker,
-    oauthStatePath: path.resolve(oauthStatePath),
-    clientsPath: path.resolve(clientsPath),
+    oauthStoragePath: oauthStoragePath ? path.resolve(oauthStoragePath) : "",
+    oauthStatePath: oauthStatePath ? path.resolve(oauthStatePath) : "",
+    clientsPath: clientsPath ? path.resolve(clientsPath) : "",
     backupDir,
     nowMs,
     deadClientMinAgeMs,
@@ -249,8 +285,9 @@ function executeMode(args) {
     mode: "execute",
     run_id: runId,
     created_at: new Date(nowMs).toISOString(),
-    oauth_state_file: path.resolve(oauthStatePath),
-    oauth_clients_file: path.resolve(clientsPath),
+    oauth_storage_file: oauthStoragePath ? path.resolve(oauthStoragePath) : "",
+    oauth_state_file: oauthStatePath ? path.resolve(oauthStatePath) : "",
+    oauth_clients_file: clientsPath ? path.resolve(clientsPath) : "",
     backup_dir: backupDir,
     operator,
     reason,
@@ -286,12 +323,47 @@ function rollbackMode(args) {
   const rollbackReceipt = readJson(receiptPaths.rollback_receipt, null);
   if (!rollbackReceipt) throw new Error(`Rollback receipt missing: ${receiptPaths.rollback_receipt}`);
 
+  const oauthStoragePath = String(record.oauth_storage_file || "");
   const oauthStatePath = String(record.oauth_state_file || "");
   const clientsPath = String(record.oauth_clients_file || "");
+  const storageBackupPath = String(backupPaths.oauth_storage_backup || "");
   const stateBackupPath = String(backupPaths.oauth_state_backup || "");
   const clientsBackupPath = String(backupPaths.oauth_clients_backup || "");
 
   const files = [];
+  if (oauthStoragePath) {
+    if (storageBackupPath && fs.existsSync(storageBackupPath)) {
+      const before = fs.existsSync(oauthStoragePath) ? fs.readFileSync(oauthStoragePath) : null;
+      if (!whatIfOnly) fs.copyFileSync(storageBackupPath, oauthStoragePath);
+      const after = fs.existsSync(oauthStoragePath) ? fs.readFileSync(oauthStoragePath) : before;
+      const shaBefore = before ? require("node:crypto").createHash("sha256").update(before).digest("hex").slice(0, 16) : null;
+      const shaAfter = after ? require("node:crypto").createHash("sha256").update(after).digest("hex").slice(0, 16) : null;
+      files.push({
+        target: oauthStoragePath,
+        action: "restore_sqlite",
+        backup: storageBackupPath,
+        target_sha256_before: shaBefore,
+        target_sha256_after: shaAfter,
+        applied: !whatIfOnly,
+      });
+    } else {
+      const existed = fs.existsSync(oauthStoragePath);
+      const before = existed ? fs.readFileSync(oauthStoragePath) : null;
+      if (existed && !whatIfOnly) {
+        fs.rmSync(oauthStoragePath, { force: true });
+        removeEmptyParentDirs(oauthStoragePath);
+      }
+      files.push({
+        target: oauthStoragePath,
+        action: existed ? "delete_new_sqlite_file" : "already_absent",
+        backup: null,
+        target_sha256_before: before ? require("node:crypto").createHash("sha256").update(before).digest("hex").slice(0, 16) : null,
+        target_sha256_after: existed && !whatIfOnly ? null : (before ? require("node:crypto").createHash("sha256").update(before).digest("hex").slice(0, 16) : null),
+        applied: existed && !whatIfOnly,
+      });
+    }
+  }
+
   if (oauthStatePath) {
     if (stateBackupPath && fs.existsSync(stateBackupPath)) {
       const before = fs.existsSync(oauthStatePath) ? fs.readFileSync(oauthStatePath, "utf8") : "";
