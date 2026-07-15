@@ -1,5 +1,13 @@
 "use strict";
 
+function normalizeEvidenceScope(value) {
+  const normalized = String(value || "all").trim().toLowerCase();
+  if (normalized === "operational" || normalized === "synthetic" || normalized === "unknown") {
+    return normalized;
+  }
+  return "all";
+}
+
 function classifyClientFamily(clientName, clientVersion) {
   const name = String(clientName || "");
   const version = String(clientVersion || "");
@@ -90,6 +98,15 @@ function summarizeClientFamilies(entries, currentServerStartId, clientNameFilter
     });
 }
 
+function filterClientFamiliesByScope(items, evidenceScope) {
+  const scope = normalizeEvidenceScope(evidenceScope);
+  if (scope === "all") return items;
+  if (scope === "operational") return items.filter((item) => item.client_class === "operational_known");
+  if (scope === "synthetic") return items.filter((item) => item.client_class === "synthetic_validation");
+  if (scope === "unknown") return items.filter((item) => item.client_class === "unknown");
+  return items;
+}
+
 function buildRetirementEvidenceSummary(diagnostics, latestMatchingClientsAnyWindow = []) {
   const operationalClients = latestMatchingClientsAnyWindow.filter((item) => item.client_class === "operational_known");
   const syntheticClients = latestMatchingClientsAnyWindow.filter((item) => item.client_class === "synthetic_validation");
@@ -134,7 +151,9 @@ function buildRetirementEvidenceSummary(diagnostics, latestMatchingClientsAnyWin
 }
 
 module.exports = {
+  normalizeEvidenceScope,
   classifyClientFamily,
   summarizeClientFamilies,
+  filterClientFamiliesByScope,
   buildRetirementEvidenceSummary,
 };

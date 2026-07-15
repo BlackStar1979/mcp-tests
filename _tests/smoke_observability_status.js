@@ -62,6 +62,7 @@ assert.equal(typeof status.client_entry_path_diagnostics.server_discover_respons
 assert.equal(typeof status.client_entry_path_diagnostics.followup_traffic_without_fresh_entry, "boolean");
 assert.equal(typeof status.client_entry_path_diagnostics.retirement_evidence_summary.status, "string");
 assert.ok(Array.isArray(status.client_entry_path_diagnostics.latest_operational_client_families_any_window));
+assert.equal(status.client_entry_path_diagnostics.evidence_filter.evidence_scope, "all");
 assert.equal(status.connector_map.comparison_available, true);
 assert.equal(status.connector_map.status, "drift_detected");
 assert.deepEqual(status.connector_map.missing_in_connector, ["observability_status"]);
@@ -88,6 +89,19 @@ const noConnector = buildObservabilityStatus({
 });
 assert.equal(noConnector.connector_map.comparison_available, false);
 assert.equal(noConnector.connector_map.status, "external_connector_tool_map_not_provided");
+
+const scoped = buildObservabilityStatus({
+  args: { window_size: 200, client_name: "codex-mcp-client", evidence_scope: "operational" },
+  runtimeStatusProvider: () => ({
+    ...runtimeStatus,
+    server_start_id: "2026-07-15T17:49:45.348Z",
+  }),
+  auditLogPath,
+});
+assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.client_name, "codex-mcp-client");
+assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.evidence_scope, "operational");
+assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_name === "codex-mcp-client"), true);
+assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_class === "operational_known"), true);
 
 const tool = createObservabilityStatusTool({ runtimeStatusProvider: () => runtimeStatus, auditLogPath });
 assert.equal(tool.name, "observability_status");

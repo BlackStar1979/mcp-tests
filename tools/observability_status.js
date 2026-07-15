@@ -68,6 +68,8 @@ function createObservabilityStatusTool(options = {}) {
         window_size: args.window_size || null,
         slow_ms: args.slow_ms || null,
         top_n: args.top_n || null,
+        client_name: args.client_name || null,
+        evidence_scope: args.evidence_scope || "all",
         connector_visible_tool_count: Array.isArray(args.connector_visible_tools) ? args.connector_visible_tools.length : 0,
       };
     },

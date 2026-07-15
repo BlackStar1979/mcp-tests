@@ -28,6 +28,17 @@ const OBSERVABILITY_STATUS_INPUT_SCHEMA = {
       maximum: 50,
       description: "Maximum per-tool summaries to return. Defaults to 20.",
     },
+    client_name: {
+      type: "string",
+      minLength: 1,
+      maxLength: 160,
+      description: "Optional client_name filter for retained client-family evidence summaries.",
+    },
+    evidence_scope: {
+      type: "string",
+      enum: ["all", "operational", "synthetic", "unknown"],
+      description: "Optional retained-evidence scope filter for client-family summaries. Defaults to all.",
+    },
     connector_visible_tools: {
       type: "array",
       maxItems: 200,

@@ -5,7 +5,12 @@ const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("./stage_m
 const { assessAuditExportSafety } = require("./audit_export_safety");
 const { buildToolsListCacheDiagnostics } = require("./tools_list_cache_diagnostics");
 const { buildClientEntryPathDiagnostics } = require("./client_entry_path_diagnostics");
-const { summarizeClientFamilies, buildRetirementEvidenceSummary } = require("./client_entry_evidence_summary");
+const {
+  summarizeClientFamilies,
+  buildRetirementEvidenceSummary,
+  normalizeEvidenceScope,
+  filterClientFamiliesByScope,
+} = require("./client_entry_evidence_summary");
 
 const OBSERVABILITY_VERSION = "test-mcp-observability-v1";
 const DEFAULT_WINDOW_SIZE = 800;
@@ -288,6 +293,8 @@ function buildObservabilityStatus(options = {}) {
   const windowSize = clampInteger(args.window_size, DEFAULT_WINDOW_SIZE, 1, MAX_WINDOW_SIZE);
   const slowMs = clampInteger(args.slow_ms, DEFAULT_SLOW_MS, 1, 600000);
   const topN = clampInteger(args.top_n, DEFAULT_TOP_N, 1, 50);
+  const clientNameFilter = String(args.client_name || "");
+  const evidenceScope = normalizeEvidenceScope(args.evidence_scope || "all");
 
   const runtimeStatus = typeof runtimeStatusProvider === "function" ? runtimeStatusProvider() : {};
   const runtimeTools = Array.isArray(runtimeStatus.enabled_tools) ? runtimeStatus.enabled_tools : [];
@@ -494,16 +501,21 @@ function buildObservabilityStatus(options = {}) {
   const auditExportSafety = assessAuditExportSafety(parsedAuditEntries, { maxSamples: 10 });
   const toolsListCacheDiagnostics = buildToolsListCacheDiagnostics(parsedAuditEntries, runtimeStatus);
   const clientEntryPathDiagnostics = buildClientEntryPathDiagnostics(parsedAuditEntries, runtimeStatus);
-  const latestClientFamiliesAnyWindow = summarizeClientFamilies(
+  const latestClientFamiliesAnyWindow = filterClientFamiliesByScope(summarizeClientFamilies(
     parsedAuditEntries,
     String(runtimeStatus.server_start_id || ""),
-    "",
+    clientNameFilter,
     false
-  );
+  ), evidenceScope);
   clientEntryPathDiagnostics.retirement_evidence_summary = buildRetirementEvidenceSummary(
     clientEntryPathDiagnostics,
     latestClientFamiliesAnyWindow
   );
+  clientEntryPathDiagnostics.evidence_filter = {
+    client_name: clientNameFilter || null,
+    evidence_scope: evidenceScope,
+  };
+  clientEntryPathDiagnostics.latest_matching_client_families_any_window = latestClientFamiliesAnyWindow.slice(0, 10);
   clientEntryPathDiagnostics.latest_operational_client_families_any_window = latestClientFamiliesAnyWindow
     .filter((item) => item.client_class === "operational_known")
     .slice(0, 10);
