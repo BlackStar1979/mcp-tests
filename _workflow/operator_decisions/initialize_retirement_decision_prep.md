@@ -42,6 +42,10 @@ The current decision-prep baseline is now explicit:
      - current runtime slice is a `stale_entry_window`
      - retained broader real-client families such as `codex-mcp-client 0.144.2`, `openai-mcp 1.0.0`, and `Anthropic/ClaudeAI 1.0.0` still remain `initialize_only`
      - observed `server_discover_only` evidence in that broader file is synthetic validation traffic rather than an operational client family
+     - refreshed report classification now separates:
+       - `operational_known`
+       - `synthetic_validation`
+       - `unknown`
 
 ## Current blocker statement
 

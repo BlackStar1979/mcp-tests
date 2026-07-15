@@ -100,11 +100,15 @@ Current live evidence from `node _workflow/scripts/client_entry_path_report.js` 
 - the retained `server_discover_only` evidence in that broader file is currently synthetic validation traffic:
   - `client_name: "step95-discover-smoke"`
   - `client_version: "1"`
+- the refreshed report now classifies retained client families explicitly:
+  - operational known families remain `initialize_only`
+  - synthetic validation families must not be used as retirement evidence
 
 This refresh matters because it further narrows the safe conclusion:
 
 - the current runtime window is stale for entry-path purposes and must not be overinterpreted
 - the retained broader audit evidence still does not show an operational client family migrating away from legacy `initialize`
+- the retained broader `server_discover_only` evidence is synthetic validation traffic rather than an operational client family
 - initialize retirement therefore remains blocked by current real-client evidence, not by missing server capability and not by ambiguity about stale windows
 
 ## Compatibility interpretation

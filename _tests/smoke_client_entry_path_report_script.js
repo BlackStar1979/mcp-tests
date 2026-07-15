@@ -52,11 +52,16 @@ assert.equal(report.diagnostics.current_window_counts.server_discover_response_s
 assert.equal(report.diagnostics.current_window_counts.server_discover_response_error, 0);
 assert.equal(report.diagnostics.followup_traffic_without_fresh_entry, false);
 assert.equal(report.diagnostics.initialize_retirement_readiness.status, "mixed_current_window_hold");
+assert.equal(report.retirement_evidence_summary.status, "blocked_by_operational_initialize_clients");
 assert.equal(report.matching_clients[0].client_name, "claude");
 assert.equal(report.matching_clients[0].status, "server_discover_only");
+assert.equal(report.matching_clients[0].client_class, "synthetic_validation");
 assert.equal(report.matching_clients[1].client_name, "codex-mcp-client");
 assert.equal(report.matching_clients[1].client_version, "0.144.2");
 assert.equal(report.matching_clients[1].status, "initialize_only");
+assert.equal(report.matching_clients[1].client_class, "operational_known");
+assert.equal(report.retirement_evidence_summary.operational_initialize_only_clients[0], "codex-mcp-client 0.144.2");
+assert.equal(report.retirement_evidence_summary.synthetic_server_discover_only_clients[0], "claude 1.0.0");
 
 const filtered = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--client-name=codex-mcp-client"], {
   cwd: ROOT,
@@ -68,6 +73,7 @@ assert.equal(filtered.matching_clients.length, 1);
 assert.equal(filtered.matching_clients[0].client_name, "codex-mcp-client");
 assert.equal(filtered.matching_clients[0].client_version, "0.144.2");
 assert.equal(filtered.diagnostics.initialize_retirement_readiness.status, "mixed_current_window_hold");
+assert.equal(filtered.retirement_evidence_summary.status, "blocked_by_operational_initialize_clients");
 
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_client_entry_path_report_script ok");
