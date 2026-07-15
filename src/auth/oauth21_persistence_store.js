@@ -63,6 +63,7 @@ function createOAuth21PersistenceStore({
   resourceAliases = [],
   now = () => Date.now(),
   onAudit,
+  warnLogger = console.warn,
 } = {}) {
   const backend = "sqlite";
   const resolvedStorageFile = path.resolve(String(storageFile || ""));
@@ -161,7 +162,11 @@ function createOAuth21PersistenceStore({
 
   function auditLog(name, payload = {}) {
     if (typeof onAudit !== "function") return;
-    try { onAudit(name, payload); } catch (_) {}
+    try {
+      onAudit(name, payload);
+    } catch (error) {
+      warnLogger("OAUTH21_PERSISTENCE_AUDIT_LOG_FAILED:", error?.message || String(error));
+    }
   }
 
   function matchesImportedResource(item) {

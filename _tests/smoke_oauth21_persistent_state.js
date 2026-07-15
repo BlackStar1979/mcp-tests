@@ -4,6 +4,7 @@ const os = require("node:os");
 const path = require("node:path");
 const { DatabaseSync } = require("node:sqlite");
 const { createOAuth21AuthorizationServer, sha256Base64Url } = require("../src/auth/oauth21_authorization_server");
+const { createOAuth21PersistenceStore } = require("../src/auth/oauth21_persistence_store");
 
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-oauth-state-"));
 const clientsFile = path.join(tmp, "clients.json");
@@ -142,6 +143,43 @@ auditFailureServer.setAuditLog(() => {
 const auditFailureRegistration = auditFailureServer.registerClient({ redirect_uris: ["https://audit-failure.example/callback"], token_endpoint_auth_method: "none" });
 assert.equal(auditFailureRegistration.status, 201);
 assert.ok(auditFailureWarnings.some((line) => line.includes("OAUTH21_AUDIT_LOG_FAILED:") && line.includes("audit sink offline")));
+
+const persistenceWarnTmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-oauth-persistence-warn-"));
+const persistenceWarnClientsFile = path.join(persistenceWarnTmp, "clients.json");
+const persistenceWarnStateFile = path.join(persistenceWarnTmp, "state.json");
+const persistenceWarnStorageFile = path.join(persistenceWarnTmp, "oauth.sqlite");
+fs.writeFileSync(
+  persistenceWarnClientsFile,
+  JSON.stringify([{ client_id: "bootstrap-client", redirect_uris: [redirectUri], token_endpoint_auth_method: "none" }], null, 2),
+);
+fs.writeFileSync(
+  persistenceWarnStateFile,
+  JSON.stringify({
+    access: [],
+    refresh: [],
+    used_refresh: [],
+  }, null, 2),
+);
+const persistenceAuditFailureWarnings = [];
+const persistenceStore = createOAuth21PersistenceStore({
+  storageFile: persistenceWarnStorageFile,
+  clientsPath: persistenceWarnClientsFile,
+  oauthStatePath: persistenceWarnStateFile,
+  canonicalResource: resource,
+  resourceAliases: [issuer],
+  now,
+  onAudit: () => {
+    throw new Error("persistence audit sink offline");
+  },
+  warnLogger: (...parts) => persistenceAuditFailureWarnings.push(parts.join(" ")),
+});
+const persistenceLoadedClients = persistenceStore.loadClients();
+assert.equal(persistenceLoadedClients.clientCount, 1);
+assert.ok(
+  persistenceAuditFailureWarnings.some(
+    (line) => line.includes("OAUTH21_PERSISTENCE_AUDIT_LOG_FAILED:") && line.includes("persistence audit sink offline"),
+  ),
+);
 
 const server4 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
 const staleInstanceGrant = issueAuthorizationCodeGrant(server4, clientId, "stale-instance-grant");

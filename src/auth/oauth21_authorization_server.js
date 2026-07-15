@@ -446,6 +446,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       resourceAliases,
       now,
       onAudit: (name, payload) => auditOAuth(name, payload),
+      warnLogger,
     })
     : null;
 
