@@ -157,7 +157,7 @@ function isValidPkceValue(value) {
   return PKCE_RE.test(String(value || ""));
 }
 
-function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS } = {}) {
+function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, warnLogger = console.warn } = {}) {
   issuer = trimSlash(issuer);
   resource = trimSlash(resource || `${issuer}/mcp`);
   operatorSecret = String(operatorSecret || "");
@@ -414,7 +414,11 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   function auditOAuth(name, data = {}) {
     const payload = { issuer, ...data };
     if (typeof auditLog === "function") {
-      try { auditLog(name, payload); } catch (_) {}
+      try {
+        auditLog(name, payload);
+      } catch (error) {
+        warnLogger("OAUTH21_AUDIT_LOG_FAILED:", error?.message || String(error));
+      }
       return;
     }
     deferredAuditEvents.push({ name, payload });
@@ -425,7 +429,11 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     auditLog = fn;
     while (deferredAuditEvents.length) {
       const event = deferredAuditEvents.shift();
-      try { auditLog(event.name, event.payload); } catch (_) {}
+      try {
+        auditLog(event.name, event.payload);
+      } catch (error) {
+        warnLogger("OAUTH21_AUDIT_LOG_FAILED:", error?.message || String(error));
+      }
     }
   }
 

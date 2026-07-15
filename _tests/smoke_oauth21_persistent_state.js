@@ -127,6 +127,22 @@ assert.equal(replayAfterRestart.status, 400);
 assert.equal(replayAfterRestart.body.error, "invalid_grant");
 assert.ok(events3.some((x) => x.event === "oauth21_refresh_token_rejected" && x.data.reason === "refresh_token_reuse_detected"));
 
+const auditFailureWarnings = [];
+const auditFailureServer = createOAuth21AuthorizationServer({
+  issuer,
+  resource,
+  operatorSecret,
+  clientsFile,
+  now,
+  warnLogger: (...parts) => auditFailureWarnings.push(parts.join(" ")),
+});
+auditFailureServer.setAuditLog(() => {
+  throw new Error("audit sink offline");
+});
+const auditFailureRegistration = auditFailureServer.registerClient({ redirect_uris: ["https://audit-failure.example/callback"], token_endpoint_auth_method: "none" });
+assert.equal(auditFailureRegistration.status, 201);
+assert.ok(auditFailureWarnings.some((line) => line.includes("OAUTH21_AUDIT_LOG_FAILED:") && line.includes("audit sink offline")));
+
 const server4 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
 const staleInstanceGrant = issueAuthorizationCodeGrant(server4, clientId, "stale-instance-grant");
 const server5 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
