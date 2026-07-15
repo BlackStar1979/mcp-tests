@@ -54,6 +54,15 @@ function normalizeQuery(text) {
   return String(text || "").toLowerCase().trim();
 }
 
+function basenameInfo(displayPath = "") {
+  const normalized = normalizeSlashes(displayPath);
+  const base = path.posix.basename(normalized).toLowerCase();
+  const ext = path.posix.extname(base);
+  const stem = ext ? base.slice(0, -ext.length) : base;
+  const segments = normalized.toLowerCase().split("/").filter(Boolean);
+  return { base, stem, segments };
+}
+
 function shouldSkipDirectory(displayPath) {
   const normalized = normalizeSlashes(displayPath || ".");
   if (BLOCKED_TOP_LEVEL_DIRS.has(normalized)) return true;
@@ -166,16 +175,23 @@ function scoreDoc(doc, query) {
   const terms = tokenList(query);
   const p = normalizeQuery(doc.path);
   const sample = normalizeQuery(doc.sample);
+  const { base, stem, segments } = basenameInfo(doc.path);
   let score = 0;
   if (!q && terms.length === 0) return 0;
   if (q && p.includes(q)) score += 30;
   if (q && sample.includes(q)) score += 20;
   for (const term of terms) {
     if (p.includes(term)) score += 10;
+    if (segments.includes(term)) score += 16;
+    if (stem === term) score += 120;
+    else if (base === term) score += 100;
+    else if (stem.includes(term)) score += 18;
+    else if (base.includes(term)) score += 12;
     if (sample.includes(term)) score += 3;
   }
   if (p.startsWith("romionsim/")) score += 8;
   if (p.includes("readme")) score += 4;
+  if (p.startsWith("mcp-tests/src/")) score += 4;
   return score;
 }
 

@@ -59,6 +59,32 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(liveSearch.results.length >= 1, true);
       assert.equal(liveSearch.results.some((item) => item.path.includes(".archive")), false);
       assert.equal(liveSearch.results[0].path, "docs/live.md");
+
+      await fs.mkdir(path.join(tempRoot, "src"), { recursive: true });
+      await fs.writeFile(
+        path.join(tempRoot, "src", "client_entry_path_diagnostics.js"),
+        "\"use strict\";\nmodule.exports = { value: 'followup_traffic_without_fresh_entry' };\n",
+        "utf8"
+      );
+      await fs.writeFile(
+        path.join(tempRoot, "src", "initialize_response.js"),
+        "\"use strict\";\n// client entry path diagnostics initialize response correlation followup_traffic_without_fresh_entry\n",
+        "utf8"
+      );
+
+      await buildWorkspaceIndex({
+        roots: isolatedRoots,
+        indexFile: isolatedIndexFile,
+        max_files: 100,
+        max_dirs: 100,
+      });
+
+      const filenamePrioritySearch = await searchIndex("client_entry_path_diagnostics followup_traffic_without_fresh_entry initialize response correlation", {
+        limit: 10,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(filenamePrioritySearch.success, true);
+      assert.equal(filenamePrioritySearch.results[0].path, "src/client_entry_path_diagnostics.js");
     } finally {
       await fs.rm(tempRoot, { recursive: true, force: true });
     }
