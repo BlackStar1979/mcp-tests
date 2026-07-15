@@ -81,6 +81,8 @@ const execFile = execOutput.slice("EXECUTED RECORD: ".length);
 assert.equal(fs.existsSync(execFile), true);
 const execRecord = JSON.parse(fs.readFileSync(execFile, "utf8"));
 assert.equal(execRecord.mode, "execute");
+assert.equal(execRecord.plan_before_execute.execute_performed, false);
+assert.equal(execRecord.plan.execute_performed, true);
 assert.equal(execRecord.execution.success, true);
 assert.equal(fs.existsSync(execRecord.execution.receipt_paths.rollback_receipt), true);
 assert.equal(fs.existsSync(execRecord.execution.receipt_paths.apply_receipt), true);
@@ -213,6 +215,8 @@ const sqliteExecOutput = run([
 assert.ok(sqliteExecOutput.startsWith("EXECUTED RECORD: "));
 const sqliteExecFile = sqliteExecOutput.slice("EXECUTED RECORD: ".length);
 const sqliteExecRecord = JSON.parse(fs.readFileSync(sqliteExecFile, "utf8"));
+assert.equal(sqliteExecRecord.plan_before_execute.execute_performed, false);
+assert.equal(sqliteExecRecord.plan.execute_performed, true);
 assert.equal(sqliteExecRecord.execution.success, true);
 assert.ok(fs.existsSync(sqliteExecRecord.execution.backup_paths.oauth_storage_backup));
 const sqliteDbAfter = new DatabaseSync(sqliteStoragePath);

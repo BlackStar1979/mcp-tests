@@ -295,7 +295,8 @@ function executeMode(args) {
     receipt: bundle.receipt,
     gate: bundle.gate,
     draft: bundle.draft,
-    plan: bundle.plan,
+    plan_before_execute: bundle.plan,
+    plan: execution,
     execution,
   };
   const suffix = execution.success ? "executed" : "denied";
