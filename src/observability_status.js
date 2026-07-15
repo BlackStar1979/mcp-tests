@@ -512,6 +512,9 @@ function buildObservabilityStatus(options = {}) {
   if (clientEntryPathDiagnostics.status === "initialize_only") {
     recommendedActions.unshift("Client-entry diagnostic shows legacy initialize-only traffic in the current audit window; keep the bounded compatibility shim in place and do not treat initialize retirement as client-ready yet.");
   }
+  if (clientEntryPathDiagnostics.followup_traffic_without_fresh_entry) {
+    recommendedActions.unshift("Client-entry diagnostic shows follow-up tools/list or tools/call traffic without a fresh initialize/server_discover in the current window; trigger a fresh reconnect before drawing entry-path conclusions from this runtime slice.");
+  }
 
   return {
     success: !recent.read_error,

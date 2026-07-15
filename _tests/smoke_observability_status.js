@@ -59,6 +59,7 @@ assert.equal(typeof status.client_entry_path_diagnostics.current_window_counts.s
 assert.equal(typeof status.client_entry_path_diagnostics.current_window_counts.server_discover_response_error, "number");
 assert.equal(typeof status.client_entry_path_diagnostics.initialize_response_observed_for_current_start, "boolean");
 assert.equal(typeof status.client_entry_path_diagnostics.server_discover_response_observed_for_current_start, "boolean");
+assert.equal(typeof status.client_entry_path_diagnostics.followup_traffic_without_fresh_entry, "boolean");
 assert.equal(status.connector_map.comparison_available, true);
 assert.equal(status.connector_map.status, "drift_detected");
 assert.deepEqual(status.connector_map.missing_in_connector, ["observability_status"]);

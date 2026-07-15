@@ -128,6 +128,12 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
   const serverDiscoverObservedForCurrentStart = Boolean(currentServerStartId && currentServerDiscoverCount > 0);
   const initializeResponseObservedForCurrentStart = Boolean(currentServerStartId && currentInitializeResponseCount > 0);
   const serverDiscoverResponseObservedForCurrentStart = Boolean(currentServerStartId && currentServerDiscoverResponseCount > 0);
+  const followupTrafficWithoutFreshEntry = Boolean(
+    currentServerStartId
+    && !initializeObservedForCurrentStart
+    && !serverDiscoverObservedForCurrentStart
+    && (currentToolsListRpcCount > 0 || currentToolsCallStartCount > 0)
+  );
 
   const lastInitializeResponse = lastInitialize?.request_id
     ? responseByRequestId.get(responseKey(lastInitialize.server_start_id, lastInitialize.request_id)) || null
@@ -170,6 +176,7 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
     server_discover_observed_for_current_start: serverDiscoverObservedForCurrentStart,
     initialize_response_observed_for_current_start: initializeResponseObservedForCurrentStart,
     server_discover_response_observed_for_current_start: serverDiscoverResponseObservedForCurrentStart,
+    followup_traffic_without_fresh_entry: followupTrafficWithoutFreshEntry,
     last_initialize: lastInitialize || null,
     last_initialize_response: lastInitializeResponse,
     last_server_discover: lastServerDiscover || null,
@@ -178,6 +185,8 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
       ? "Recent client traffic for the current server_start_id entered only through legacy initialize even though server/discover remains available. Use the paired response summary and the success/error counts to confirm how the server interpreted and answered that entry path."
       : observedEntryPath === "server_discover_only"
         ? "Recent client traffic for the current server_start_id entered through canonical server/discover without observed legacy initialize. Use the paired response summary and the success/error counts to confirm how the server interpreted and answered that entry path."
+        : followupTrafficWithoutFreshEntry
+          ? "The current audit window shows follow-up traffic such as tools/list or tools/call, but no fresh initialize or server/discover entry event for this server_start_id. Treat this as a stale-entry window, not as evidence that the client changed entry path."
         : "Use this section to distinguish declared request-contract support from the entry path clients actually used in the inspected audit window, and correlate those entry events with bounded response-side audit summaries plus per-entry success/error counts.",
   };
 }

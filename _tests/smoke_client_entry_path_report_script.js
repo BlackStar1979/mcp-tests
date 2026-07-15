@@ -50,6 +50,7 @@ assert.equal(report.diagnostics.current_window_counts.initialize_response_succes
 assert.equal(report.diagnostics.current_window_counts.initialize_response_error, 0);
 assert.equal(report.diagnostics.current_window_counts.server_discover_response_success, 1);
 assert.equal(report.diagnostics.current_window_counts.server_discover_response_error, 0);
+assert.equal(report.diagnostics.followup_traffic_without_fresh_entry, false);
 assert.equal(report.matching_clients[0].client_name, "claude");
 assert.equal(report.matching_clients[0].status, "server_discover_only");
 assert.equal(report.matching_clients[1].client_name, "codex-mcp-client");
