@@ -19,8 +19,8 @@ function assertHttpsUrl(value, field) {
   let parsed;
   try {
     parsed = new URL(value);
-  } catch (_) {
-    throw new Error(`${field}_must_be_absolute_url`);
+  } catch (error) {
+    throw new Error(`${field}_must_be_absolute_url`, { cause: error });
   }
   if (parsed.protocol !== "https:") throw new Error(`${field}_must_use_https`);
   return parsed.toString().replace(/\/+$/, "");

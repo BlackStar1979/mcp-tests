@@ -21,6 +21,11 @@ async function waitJson(url){for(let i=0;i<50;i++){try{const r=await fetch(url);
  fs.writeFileSync(metadataFile,JSON.stringify({issuer,authorization_endpoint:`${issuer}/authorize`,token_endpoint:`${issuer}/token`,jwks_uri:`${issuer}/jwks.json`,registration_endpoint:`${issuer}/register`,code_challenge_methods_supported:["S256"],scopes_supported:["mcp:public","mcp:tools"]}));
  const metadata=validateAuthorizationServerMetadata(JSON.parse(fs.readFileSync(metadataFile,"utf8")),{expectedIssuer:issuer});
  assert.equal(metadata.issuer,issuer);assert.equal(metadata.authorization_endpoint,`${issuer}/authorize`);assert.equal(metadata.token_endpoint,`${issuer}/token`);assert.equal(metadata.jwks_uri,`${issuer}/jwks.json`);
+ let invalidUrlError=null;
+ try{validateAuthorizationServerMetadata({issuer:"not-a-url",authorization_endpoint:`${issuer}/authorize`,token_endpoint:`${issuer}/token`,jwks_uri:`${issuer}/jwks.json`},{expectedIssuer:issuer});}
+ catch(error){invalidUrlError=error;}
+ assert.equal(invalidUrlError?.message,"issuer_must_be_absolute_url");
+ assert.ok(invalidUrlError?.cause instanceof Error);
  const provider=createAuthorizationServerMetadataProvider({issuer,metadataFile});
  const pr=buildProtectedResourceMetadata({publicBaseUrl,authorizationServerMetadata:provider.get()});
  assert.equal(pr.resource,publicBaseUrl);assert.deepEqual(pr.authorization_servers,[issuer]);
