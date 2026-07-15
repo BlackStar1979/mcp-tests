@@ -42,6 +42,7 @@ assert.equal(noList.tools_list_cache_diagnostics.tools_call_after_initialize_wit
 assert.equal(noList.client_entry_path_diagnostics.status, "initialize_only");
 assert.equal(noList.client_entry_path_diagnostics.current_window_counts.server_discover_received, 0);
 assert.equal(noList.client_entry_path_diagnostics.initialize_retirement_readiness.status, "blocked_initialize_only_current_window");
+assert.equal(noList.client_entry_path_diagnostics.retirement_evidence_summary.status, "insufficient_evidence");
 assert.ok(noList.recommended_actions.some((item) => item.includes("tools-list cache diagnostic")));
 assert.ok(noList.recommended_actions.some((item) => item.includes("legacy initialize-only traffic")));
 
@@ -61,6 +62,7 @@ assert.equal(withList.tools_list_cache_diagnostics.last_tools_list_cache_directi
 assert.equal(withList.tools_list_cache_diagnostics.last_tools_list_served.fingerprint, "fp-a");
 assert.equal(withList.client_entry_path_diagnostics.status, "initialize_only");
 assert.equal(withList.client_entry_path_diagnostics.initialize_retirement_readiness.status, "blocked_initialize_only_current_window");
+assert.equal(withList.client_entry_path_diagnostics.retirement_evidence_summary.status, "insufficient_evidence");
 
 const direct = buildToolsListCacheDiagnostics([], runtimeStatus());
 assert.equal(direct.status, "no_current_session_observed");

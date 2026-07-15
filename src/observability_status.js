@@ -5,6 +5,7 @@ const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("./stage_m
 const { assessAuditExportSafety } = require("./audit_export_safety");
 const { buildToolsListCacheDiagnostics } = require("./tools_list_cache_diagnostics");
 const { buildClientEntryPathDiagnostics } = require("./client_entry_path_diagnostics");
+const { summarizeClientFamilies, buildRetirementEvidenceSummary } = require("./client_entry_evidence_summary");
 
 const OBSERVABILITY_VERSION = "test-mcp-observability-v1";
 const DEFAULT_WINDOW_SIZE = 800;
@@ -493,6 +494,19 @@ function buildObservabilityStatus(options = {}) {
   const auditExportSafety = assessAuditExportSafety(parsedAuditEntries, { maxSamples: 10 });
   const toolsListCacheDiagnostics = buildToolsListCacheDiagnostics(parsedAuditEntries, runtimeStatus);
   const clientEntryPathDiagnostics = buildClientEntryPathDiagnostics(parsedAuditEntries, runtimeStatus);
+  const latestClientFamiliesAnyWindow = summarizeClientFamilies(
+    parsedAuditEntries,
+    String(runtimeStatus.server_start_id || ""),
+    "",
+    false
+  );
+  clientEntryPathDiagnostics.retirement_evidence_summary = buildRetirementEvidenceSummary(
+    clientEntryPathDiagnostics,
+    latestClientFamiliesAnyWindow
+  );
+  clientEntryPathDiagnostics.latest_operational_client_families_any_window = latestClientFamiliesAnyWindow
+    .filter((item) => item.client_class === "operational_known")
+    .slice(0, 10);
 
   const recommendedActions = buildRecommendedActions({
     connectorComparison,
@@ -510,6 +524,7 @@ function buildObservabilityStatus(options = {}) {
     recommendedActions.unshift("tools-list cache diagnostic indicates initialize + tools/call without observed tools/list for the current server_start_id; manually refresh connector tools and re-check tools_list_served/cache_directive.");
   }
   const initializeRetirementReadiness = clientEntryPathDiagnostics.initialize_retirement_readiness || {};
+  const retirementEvidenceSummary = clientEntryPathDiagnostics.retirement_evidence_summary || {};
   if (initializeRetirementReadiness.status === "blocked_initialize_only_current_window") {
     recommendedActions.unshift("Client-entry diagnostic shows legacy initialize-only traffic in the current audit window; keep the bounded compatibility shim in place and do not treat initialize retirement as client-ready yet.");
   }
@@ -518,6 +533,12 @@ function buildObservabilityStatus(options = {}) {
   }
   if (initializeRetirementReadiness.status === "candidate_authorization_review") {
     recommendedActions.unshift("Client-entry diagnostic now shows fresh server/discover-only entry evidence for the current runtime slice; preserve the evidence and treat initialize retirement as decision-prep-ready, but not yet authorized for removal.");
+  }
+  if (retirementEvidenceSummary.status === "synthetic_server_discover_only") {
+    recommendedActions.unshift("Client-entry retirement evidence shows server/discover only for synthetic validation clients; do not treat that as operational retirement evidence.");
+  }
+  if (retirementEvidenceSummary.status === "blocked_by_operational_initialize_clients") {
+    recommendedActions.unshift("Retained client-family evidence still shows operational clients on legacy initialize; keep compatibility in place until a fresh operational server/discover reconnect is observed.");
   }
 
   return {
