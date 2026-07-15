@@ -10,9 +10,14 @@ const MAX_INDEX_TEXT_CHARS = 12000;
 const DEFAULT_MAX_FILES = 20000;
 const DEFAULT_MAX_DIRS = 5000;
 const SKIPPED_SCAN_DIRS = new Set([
+  ".archive",
   ".git",
   ".hg",
   ".svn",
+  ".github_remote_archives",
+  ".mcp_backups",
+  ".mcp_trash",
+  ".temp",
   "node_modules",
   "dist",
   "build",
