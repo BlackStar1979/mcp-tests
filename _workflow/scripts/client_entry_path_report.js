@@ -16,6 +16,14 @@ function argValue(name, fallback = "") {
   return hit ? hit.slice(prefix.length) : fallback;
 }
 
+function normalizeEvidenceScope(value) {
+  const normalized = String(value || "all").trim().toLowerCase();
+  if (normalized === "operational" || normalized === "synthetic" || normalized === "unknown") {
+    return normalized;
+  }
+  return "all";
+}
+
 function fail(code, error, extra = {}) {
   console.error(JSON.stringify({ success: false, marker: MARKER, error, ...extra }, null, 2));
   process.exit(code);
@@ -83,16 +91,31 @@ function countMethods(entries) {
   return counts;
 }
 
+function filterClientFamiliesByScope(items, evidenceScope) {
+  if (evidenceScope === "all") return items;
+  if (evidenceScope === "operational") return items.filter((item) => item.client_class === "operational_known");
+  if (evidenceScope === "synthetic") return items.filter((item) => item.client_class === "synthetic_validation");
+  if (evidenceScope === "unknown") return items.filter((item) => item.client_class === "unknown");
+  return items;
+}
+
 function main() {
   const auditLogPath = argValue("audit-log", AuditLog);
   const clientName = argValue("client-name", "");
+  const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "all"));
   const limit = Math.max(1, Number(argValue("limit", "10")) || 10);
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
   const currentServerStart = latestServerStart(entries);
   const currentServerStartId = currentServerStart.server_start_id || latestServerStartId(entries);
   const windowEntries = currentWindowEntries(entries, currentServerStart);
-  const matchingClients = summarizeClientFamilies(entries, currentServerStartId, clientName, true).slice(0, limit);
-  const latestMatchingClientsAnyWindow = summarizeClientFamilies(entries, currentServerStartId, clientName, false).slice(0, limit);
+  const matchingClients = filterClientFamiliesByScope(
+    summarizeClientFamilies(entries, currentServerStartId, clientName, true),
+    evidenceScope
+  ).slice(0, limit);
+  const latestMatchingClientsAnyWindow = filterClientFamiliesByScope(
+    summarizeClientFamilies(entries, currentServerStartId, clientName, false),
+    evidenceScope
+  ).slice(0, limit);
   const diagnostics = buildClientEntryPathDiagnostics(entries, {
     server_start_id: currentServerStartId,
     request_contract: {
@@ -124,6 +147,7 @@ function main() {
     latest_matching_clients_any_window: latestMatchingClientsAnyWindow,
     filter: {
       client_name: clientName || null,
+      evidence_scope: evidenceScope,
       limit,
     },
   }, null, 2));

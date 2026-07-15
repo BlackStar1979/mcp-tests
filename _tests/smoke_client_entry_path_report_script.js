@@ -75,5 +75,29 @@ assert.equal(filtered.matching_clients[0].client_version, "0.144.2");
 assert.equal(filtered.diagnostics.initialize_retirement_readiness.status, "mixed_current_window_hold");
 assert.equal(filtered.retirement_evidence_summary.status, "blocked_by_operational_initialize_clients");
 
+const operationalOnly = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--evidence-scope=operational"], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(operationalOnly.filter.evidence_scope, "operational");
+assert.equal(operationalOnly.matching_clients.length, 1);
+assert.equal(operationalOnly.matching_clients[0].client_name, "codex-mcp-client");
+assert.equal(operationalOnly.matching_clients[0].client_class, "operational_known");
+assert.equal(operationalOnly.latest_matching_clients_any_window.every((item) => item.client_class === "operational_known"), true);
+
+const syntheticOnly = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--evidence-scope=synthetic"], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(syntheticOnly.filter.evidence_scope, "synthetic");
+assert.equal(syntheticOnly.matching_clients.length, 1);
+assert.equal(syntheticOnly.matching_clients[0].client_name, "claude");
+assert.equal(syntheticOnly.matching_clients[0].client_class, "synthetic_validation");
+assert.equal(syntheticOnly.latest_matching_clients_any_window.every((item) => item.client_class === "synthetic_validation"), true);
+
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_client_entry_path_report_script ok");
