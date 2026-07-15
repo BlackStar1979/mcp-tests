@@ -31,6 +31,8 @@ assert.equal(initializeOnly.current_window_counts.initialize_response_success, 1
 assert.equal(initializeOnly.current_window_counts.initialize_response_error, 0);
 assert.equal(initializeOnly.last_initialize_response.status_code, 200);
 assert.equal(initializeOnly.last_initialize_response.has_result, true);
+assert.equal(initializeOnly.initialize_retirement_readiness.status, "blocked_initialize_only_current_window");
+assert.equal(initializeOnly.initialize_retirement_readiness.can_reopen_retirement_decision, false);
 
 const discoverOnly = buildClientEntryPathDiagnostics([
   { ts: "2026-07-03T10:00:00.000Z", event: "server_start", server_start_id: "start-a" },
@@ -46,6 +48,8 @@ assert.equal(discoverOnly.current_window_counts.server_discover_response_sent, 1
 assert.equal(discoverOnly.current_window_counts.server_discover_response_success, 1);
 assert.equal(discoverOnly.current_window_counts.server_discover_response_error, 0);
 assert.equal(discoverOnly.last_server_discover_response.status_code, 200);
+assert.equal(discoverOnly.initialize_retirement_readiness.status, "candidate_authorization_review");
+assert.equal(discoverOnly.initialize_retirement_readiness.can_reopen_retirement_decision, true);
 
 const mixed = buildClientEntryPathDiagnostics([
   { ts: "2026-07-03T10:00:00.000Z", event: "server_start", server_start_id: "start-a" },
@@ -66,6 +70,7 @@ assert.equal(mixed.current_window_counts.server_discover_response_error, 1);
 assert.equal(mixed.followup_traffic_without_fresh_entry, false);
 assert.equal(mixed.request_contract.server_discover_supported, true);
 assert.equal(mixed.last_server_discover_response.error_code, -32600);
+assert.equal(mixed.initialize_retirement_readiness.status, "mixed_current_window_hold");
 
 const duplicateRequestIdsAcrossRestarts = buildClientEntryPathDiagnostics([
   { ts: "2026-07-03T09:59:59.000Z", event: "server_start", server_start_id: "start-old" },
@@ -101,5 +106,6 @@ assert.equal(followupOnlyWindow.status, "no_current_entry_observed");
 assert.equal(followupOnlyWindow.followup_traffic_without_fresh_entry, true);
 assert.equal(followupOnlyWindow.current_window_counts.tools_list_rpc, 1);
 assert.equal(followupOnlyWindow.current_window_counts.tools_call_start, 1);
+assert.equal(followupOnlyWindow.initialize_retirement_readiness.status, "stale_entry_window");
 
 console.log("smoke_client_entry_path_diagnostics ok");

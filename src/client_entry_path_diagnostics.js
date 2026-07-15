@@ -1,5 +1,81 @@
 "use strict";
 
+function buildInitializeRetirementReadiness({
+  currentServerStartId = "",
+  observedEntryPath = "",
+  initializeObservedForCurrentStart = false,
+  serverDiscoverObservedForCurrentStart = false,
+  followupTrafficWithoutFreshEntry = false,
+  requestContract = {},
+  currentInitializeResponseSuccessCount = 0,
+  currentServerDiscoverResponseSuccessCount = 0,
+}) {
+  const base = {
+    status: "insufficient_runtime_context",
+    can_reopen_retirement_decision: false,
+    explicit_authorization_still_required: true,
+    evidence_freshness: currentServerStartId ? "current_server_start_window" : "unknown_current_server_start",
+    blocker: "Current runtime slice does not yet provide decisive client entry-path evidence.",
+    next_action: "Capture a fresh client reconnect on the current runtime before drawing initialize-retirement conclusions.",
+  };
+
+  if (!currentServerStartId) {
+    return {
+      ...base,
+      status: "current_server_start_unknown",
+      blocker: "Current server_start_id is missing, so the inspected audit slice cannot prove current entry behavior.",
+      next_action: "Establish current runtime identity first, then capture a fresh client reconnect.",
+    };
+  }
+
+  if (followupTrafficWithoutFreshEntry) {
+    return {
+      ...base,
+      status: "stale_entry_window",
+      blocker: "The current audit window contains follow-up traffic but no fresh initialize or server/discover entry event.",
+      next_action: "Trigger a fresh reconnect and re-check the current server_start_id before revisiting initialize retirement.",
+    };
+  }
+
+  if (observedEntryPath === "initialize_only" || (initializeObservedForCurrentStart && !serverDiscoverObservedForCurrentStart)) {
+    return {
+      ...base,
+      status: "blocked_initialize_only_current_window",
+      blocker: "Fresh current-window client traffic still enters through legacy initialize.",
+      next_action: "Keep the compatibility shim in place and gather fresh server/discover entry evidence for the same client line.",
+      initialize_response_success_count: currentInitializeResponseSuccessCount,
+      server_discover_response_success_count: currentServerDiscoverResponseSuccessCount,
+    };
+  }
+
+  if (observedEntryPath === "mixed_initialize_and_server_discover") {
+    return {
+      ...base,
+      status: "mixed_current_window_hold",
+      blocker: "The current window still includes legacy initialize traffic, even though server/discover is also observed.",
+      next_action: "Separate client families or capture a fresh reconnect window that shows operationally relevant clients entering only through server/discover.",
+      initialize_response_success_count: currentInitializeResponseSuccessCount,
+      server_discover_response_success_count: currentServerDiscoverResponseSuccessCount,
+    };
+  }
+
+  if (observedEntryPath === "server_discover_only" || (!initializeObservedForCurrentStart && serverDiscoverObservedForCurrentStart)) {
+    return {
+      ...base,
+      status: "candidate_authorization_review",
+      can_reopen_retirement_decision: true,
+      blocker: "Fresh current-window entry evidence is now compatible with initialize retirement, but explicit authorization is still required before any removal.",
+      next_action: requestContract.server_discover_supported === false
+        ? "Do not act yet; reconcile request-contract support with the observed entry path first."
+        : "Preserve this fresh server/discover-only evidence, confirm useful no-handshake flow on the same runtime, and only then prepare an authorization-backed retirement package.",
+      initialize_response_success_count: currentInitializeResponseSuccessCount,
+      server_discover_response_success_count: currentServerDiscoverResponseSuccessCount,
+    };
+  }
+
+  return base;
+}
+
 function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
   const requestContract = runtimeStatus.request_contract || {};
   const currentServerStartId = String(runtimeStatus.server_start_id || "");
@@ -148,6 +224,17 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
   else if (initializeObservedForCurrentStart) observedEntryPath = "initialize_only";
   else if (serverDiscoverObservedForCurrentStart) observedEntryPath = "server_discover_only";
 
+  const initializeRetirementReadiness = buildInitializeRetirementReadiness({
+    currentServerStartId,
+    observedEntryPath,
+    initializeObservedForCurrentStart,
+    serverDiscoverObservedForCurrentStart,
+    followupTrafficWithoutFreshEntry,
+    requestContract,
+    currentInitializeResponseSuccessCount,
+    currentServerDiscoverResponseSuccessCount,
+  });
+
   return {
     status: observedEntryPath,
     current_server_start_id: currentServerStartId,
@@ -177,6 +264,7 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
     initialize_response_observed_for_current_start: initializeResponseObservedForCurrentStart,
     server_discover_response_observed_for_current_start: serverDiscoverResponseObservedForCurrentStart,
     followup_traffic_without_fresh_entry: followupTrafficWithoutFreshEntry,
+    initialize_retirement_readiness: initializeRetirementReadiness,
     last_initialize: lastInitialize || null,
     last_initialize_response: lastInitializeResponse,
     last_server_discover: lastServerDiscover || null,

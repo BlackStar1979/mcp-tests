@@ -51,6 +51,7 @@ assert.equal(report.diagnostics.current_window_counts.initialize_response_error,
 assert.equal(report.diagnostics.current_window_counts.server_discover_response_success, 1);
 assert.equal(report.diagnostics.current_window_counts.server_discover_response_error, 0);
 assert.equal(report.diagnostics.followup_traffic_without_fresh_entry, false);
+assert.equal(report.diagnostics.initialize_retirement_readiness.status, "mixed_current_window_hold");
 assert.equal(report.matching_clients[0].client_name, "claude");
 assert.equal(report.matching_clients[0].status, "server_discover_only");
 assert.equal(report.matching_clients[1].client_name, "codex-mcp-client");
@@ -66,6 +67,7 @@ const filtered = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-
 assert.equal(filtered.matching_clients.length, 1);
 assert.equal(filtered.matching_clients[0].client_name, "codex-mcp-client");
 assert.equal(filtered.matching_clients[0].client_version, "0.144.2");
+assert.equal(filtered.diagnostics.initialize_retirement_readiness.status, "mixed_current_window_hold");
 
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_client_entry_path_report_script ok");

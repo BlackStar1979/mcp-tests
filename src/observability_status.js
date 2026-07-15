@@ -509,11 +509,15 @@ function buildObservabilityStatus(options = {}) {
   if (toolsListCacheDiagnostics.tools_call_after_initialize_without_tools_list) {
     recommendedActions.unshift("tools-list cache diagnostic indicates initialize + tools/call without observed tools/list for the current server_start_id; manually refresh connector tools and re-check tools_list_served/cache_directive.");
   }
-  if (clientEntryPathDiagnostics.status === "initialize_only") {
+  const initializeRetirementReadiness = clientEntryPathDiagnostics.initialize_retirement_readiness || {};
+  if (initializeRetirementReadiness.status === "blocked_initialize_only_current_window") {
     recommendedActions.unshift("Client-entry diagnostic shows legacy initialize-only traffic in the current audit window; keep the bounded compatibility shim in place and do not treat initialize retirement as client-ready yet.");
   }
-  if (clientEntryPathDiagnostics.followup_traffic_without_fresh_entry) {
+  if (initializeRetirementReadiness.status === "stale_entry_window" || clientEntryPathDiagnostics.followup_traffic_without_fresh_entry) {
     recommendedActions.unshift("Client-entry diagnostic shows follow-up tools/list or tools/call traffic without a fresh initialize/server_discover in the current window; trigger a fresh reconnect before drawing entry-path conclusions from this runtime slice.");
+  }
+  if (initializeRetirementReadiness.status === "candidate_authorization_review") {
+    recommendedActions.unshift("Client-entry diagnostic now shows fresh server/discover-only entry evidence for the current runtime slice; preserve the evidence and treat initialize retirement as decision-prep-ready, but not yet authorized for removal.");
   }
 
   return {
