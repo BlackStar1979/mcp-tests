@@ -21,6 +21,7 @@ assert.ok(index.includes("Historical records remain traceability evidence, not t
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
 assert.ok(index.includes("Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`."));
 assert.ok(index.includes("initialize_client_compatibility_evidence.md"));
+assert.ok(index.includes("connector_runtime_callable_surface_revalidation.md"));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
 assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
@@ -41,6 +42,7 @@ assert.ok(index.includes("Implementation scoping for replacement behavior and co
 assert.ok(index.includes("Final initialize-retirement boundary decision for the surviving `/mcp` route."));
 assert.ok(index.includes("Repo-side evidence record for `initialize` retirement scoping."));
 assert.ok(index.includes("Real client compatibility evidence for `initialize` retirement scoping."));
+assert.ok(index.includes("Revalidated that `mcp__workbench` is callable again from the current Codex model runtime session"));
 assert.ok(index.includes("Teardown package for `GET /mcp` SSE, `Last-Event-ID`, and stable stream-path replay semantics."));
 assert.ok(index.includes("single_route_no_sse_streamable_http_target_plan.md"));
 
@@ -59,6 +61,7 @@ assert.ok(canon.includes("GET teardown clarification"));
 assert.ok(canon.includes("Initialize-retirement boundary clarification"));
 assert.ok(canon.includes("Initialize-retirement evidence clarification"));
 assert.ok(canon.includes("Initialize-compatibility-shim clarification"));
+assert.ok(canon.includes("Fresh 2026-07-15 model-runtime evidence confirms that `mcp__workbench` is callable again"));
 assert.ok(canon.includes("Replacement-coverage clarification"));
 assert.ok(canon.includes("Pull-only subscriptions clarification"));
 assert.ok(canon.includes("Pull-only runtime-package clarification"));

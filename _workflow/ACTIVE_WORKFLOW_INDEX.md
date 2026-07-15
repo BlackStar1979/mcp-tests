@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-12
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` currently reports `69` tools on server_start_id `2026-07-12T16:24:00.291Z`, and fresh real-client Codex traffic in this runtime window is now observed end-to-end through `initialize`, `notifications/initialized`, `tools/list`, and `tools/call`. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` currently reports `69` tools on server_start_id `2026-07-12T16:24:00.291Z`, and fresh real-client Codex traffic in this runtime window is now observed end-to-end through `initialize`, `notifications/initialized`, `tools/list`, and `tools/call`. A fresh 2026-07-15 model-runtime probe also confirms that `mcp__workbench` is callable again from this Codex runtime session. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
@@ -64,9 +64,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok=true, version=0.40.0, public=7, tests_authenticated=246`.
+- Latest full smoke after historical-next-step quarantine guard: `ok=true, version=0.40.0, public=7, tests_authenticated=249`.
 - Public section count: `7`.
-- Authenticated smoke count: `246`.
+- Authenticated smoke count: `249`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -168,6 +168,9 @@ Current records:
 
 - `initialize_client_compatibility_evidence.md`
   - Real client compatibility evidence for `initialize` retirement scoping. Confirms a freshly re-added Codex desktop Streamable HTTP connector can complete OAuth and still call legacy `initialize`, so bounded single-route dual recognition remains temporary compatibility debt rather than destination architecture.
+
+- `connector_runtime_callable_surface_revalidation.md`
+  - Fresh model-runtime evidence that authenticated `workbench` tools are callable again from this Codex runtime session, while keeping full UI visible-tool enumeration as a separate unclaimed layer.
 
 - `initialize_retirement_decision_prep.md`
   - Bounded decision-prep package for eventual `initialize` retirement. Confirms the remaining blocker is current real client entry behavior plus later explicit authorization, not missing repo/runtime no-handshake support.
@@ -403,6 +406,8 @@ Recently completed:
 - Added an archival-quarantine README for `_workflow/control_plane/retired_root_backups/` and extended `smoke_state_and_snapshot_hygiene.js` so legacy moved root backups are not misread as active route/test/workflow authority.
 
 - Added the bounded OAuth21 prune control-plane package for stale durable OAuth state maintenance, including preview/receipt/gate/apply helpers, an explicit operator-run script, execute/rollback records, and regression coverage without wiring automatic runtime apply.
+
+- Revalidated that `mcp__workbench` is callable again from the current Codex model runtime session, without overstating that as a fresh full UI visible-tool enumeration proof.
 
 - Reviewed the adjacent/auth watchlist and intentionally avoided opening speculative new ledgers; recorded future trigger conditions instead.
 

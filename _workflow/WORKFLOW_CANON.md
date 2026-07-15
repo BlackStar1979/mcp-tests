@@ -31,12 +31,13 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=246`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=249`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `246`.
+- Latest validated authenticated smoke count: `249`.
 - Repo current connector-visible authenticated tool target is `69` (`13 public + 56 authorized-visible`), with `26` server-internal helpers intentionally hidden from MCP schema/tools-list.
 - Live OAuth21 `3008` is aligned with the authenticated `/mcp` connector-visible tool count `69`; the hidden-internal surface split is now live-loaded after a controlled restart. Current live proof is server_start_id `2026-07-10T11:14:38.432Z`.
 - Codex UI connector-side visible-tool enumeration was not independently re-verified in this turn, so current live `69` proof is runtime/MCP truth only, not a fresh UI inventory proof.
+- Fresh 2026-07-15 model-runtime evidence confirms that `mcp__workbench` is callable again in the current Codex runtime session, but this still does not upgrade the UI enumeration claim; callable runtime surface and full external visible-tool inventory remain separate truth layers.
 - Workflow progress markers: `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`; `next_primary = post_53d-connector-visible-surface-revalidation`; `next_secondary = post_53d-bounded-initialize-retirement-decision-prep`.
 - Stage marker vocabulary: `Stage 8 / Step 53b` = modular safe tool surface consolidation; `Stage 8 / Step 53c` = modular unsafe tool governance boundary; `Stage 8 / Step 53d` = live restart and connector surface reconciliation.
 - Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
