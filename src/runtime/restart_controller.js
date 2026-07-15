@@ -13,13 +13,20 @@ function createRestartController(opts = {}) {
   const auditLog = typeof opts.auditLog === "function" ? opts.auditLog : () => {};
   const endProcess = typeof opts.exit === "function" ? opts.exit : process.exit;
   const logger = typeof opts.logger === "function" ? opts.logger : console.log;
+  const warnLogger = typeof opts.warnLogger === "function" ? opts.warnLogger : console.warn;
   const rateLimiter = opts.rateLimiter || null;
   const enabled = flag(env.MCP_TEST_ENABLE_RESTART_TRIGGER);
   const triggerFile = String(env.MCP_TEST_RESTART_TRIGGER_FILE || defaultTriggerFile(rootDir));
   const delayMs = delay(env.MCP_TEST_RESTART_EXIT_DELAY_MS);
   let scheduled = false;
   let handle = null;
-  function audit(name, data) { try { auditLog(name, data); } catch (_) {} }
+  function audit(name, data) {
+    try {
+      auditLog(name, data);
+    } catch (error) {
+      warnLogger("RESTART_AUDIT_LOG_FAILED:", error?.message || String(error));
+    }
+  }
   function requestRestart(input = {}) {
     const n = normalizeRestartExitCode(input.code, 42);
     const requestId = input.requestId || null;

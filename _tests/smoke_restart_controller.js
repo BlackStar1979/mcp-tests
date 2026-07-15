@@ -21,6 +21,22 @@ const { createRestartController } = require("../src/runtime/restart_controller")
   assert.ok(events.some((x) => x.event === "runtime_restart_requested"));
   assert.ok(events.some((x) => x.event === "runtime_restart_exit_scheduled"));
 
+  const auditFailureWarnings = [];
+  const auditFailureExits = [];
+  const auditFailureController = createRestartController({
+    env: { MCP_TEST_RESTART_EXIT_DELAY_MS: "50" },
+    auditLog: () => {
+      throw new Error("audit sink offline");
+    },
+    warnLogger: (...parts) => auditFailureWarnings.push(parts.join(" ")),
+    exit: (code) => auditFailureExits.push(code),
+  });
+  const auditFailureResult = auditFailureController.requestRestart({ code: 42, reason: "audit_failure_smoke", source: "smoke" });
+  assert.equal(auditFailureResult.ok, true);
+  await new Promise((resolve) => setTimeout(resolve, 90));
+  assert.deepEqual(auditFailureExits, [42]);
+  assert.ok(auditFailureWarnings.some((line) => line.includes("RESTART_AUDIT_LOG_FAILED:") && line.includes("audit sink offline")));
+
   const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-restart-"));
   const triggerFile = path.join(tmp, "restart.json");
   const fileExits = [];
