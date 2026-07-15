@@ -37,6 +37,7 @@ The current decision-prep baseline is now explicit:
      - then `tools/list`
      - then `tools/call`
    - no matching fresh `server/discover` entry is observed in that same current real-client window
+   - newer stale-entry windows that contain only follow-up `tools/list` / `tools/call` traffic must not be misread as fresh entry-path evidence either way
 
 ## Current blocker statement
 
@@ -52,6 +53,7 @@ All of the following must be true:
 
 1. Fresh client-path evidence shows that the operationally relevant client family can enter through `server/discover` without relying on legacy `initialize`.
 2. That evidence must be fresh for the current client line, not inherited from historical audit entries or older transition routes.
+   - a stale-entry window with follow-up traffic but no fresh `initialize` / `server/discover` does not satisfy this requirement
 3. The surviving `/mcp` route must continue to prove useful no-handshake flow on the same active runtime:
    - `server/discover`
    - `tools/list`

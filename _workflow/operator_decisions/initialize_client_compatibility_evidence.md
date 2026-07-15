@@ -60,12 +60,19 @@ Current authenticated audit evidence continues to confirm the same compatibility
   - `tools/call`
 - no observed authenticated `server/discover` entries in the same fresh real-client audit window for that Codex client family
 
+Current observability interpretation is now narrower and safer than the earlier wording implied:
+
+- if the current server-start window shows only `tools/list` / `tools/call` follow-up traffic but no fresh `initialize` or `server/discover`, treat that window as `followup_traffic_without_fresh_entry`
+- do not reinterpret such a stale-entry window as evidence that the client changed entry path
+- entry-path conclusions must come from a window that actually contains the reconnect / entry event
+
 The broader retained audit file still contains historical authenticated `server/discover` requests on `/mcp`, but they are older evidence and not part of the current real Codex client entry window. They therefore do not weaken the current blocker interpretation.
 
 This refresh matters because it removes ambiguity about drift since the earlier 2026-07-03 record:
 
 - the blocker is still present on a newer Codex desktop client line
 - the real client can still operate normally after legacy `initialize`, so the compatibility blocker is now specifically about the entry path rather than a broader post-auth runtime failure
+- stale-entry follow-up windows are now explicitly separated from fresh reconnect evidence, so "no current initialize/server_discover observed" no longer reads as protocol migration evidence by accident
 - the current compatibility interpretation remains justified
 - initialize retirement on the surviving route is still blocked by real client behavior, not by missing repo support
 
