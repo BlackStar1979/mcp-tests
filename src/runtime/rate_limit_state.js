@@ -8,7 +8,19 @@ function atomicWriteJsonFile(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   const tmpPath = `${filePath}.${process.pid}.${Date.now()}.tmp`;
   fs.writeFileSync(tmpPath, JSON.stringify(value, null, 2) + "\n");
-  fs.renameSync(tmpPath, filePath);
+  try {
+    fs.renameSync(tmpPath, filePath);
+  } catch (renameError) {
+    try {
+      fs.copyFileSync(tmpPath, filePath);
+      fs.rmSync(tmpPath, { force: true });
+    } catch (copyError) {
+      try {
+        if (fs.existsSync(tmpPath)) fs.rmSync(tmpPath, { force: true });
+      } catch (_) {}
+      throw copyError;
+    }
+  }
 }
 
 function buildStoreError(code, filePath, cause) {

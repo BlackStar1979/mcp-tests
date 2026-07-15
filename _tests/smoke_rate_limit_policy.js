@@ -29,6 +29,28 @@ assert.equal(fileLimiter.checkAndRecord({ key: "restart:file:42", limit: 1, wind
 assert.ok(fs.existsSync(stateFile));
 assert.doesNotThrow(() => JSON.parse(fs.readFileSync(stateFile, "utf8")));
 
+const renameFallbackStateFile = path.join(tmp, "rename-fallback-state.json");
+const originalRenameSync = fs.renameSync;
+fs.renameSync = (fromPath, toPath) => {
+  if (String(toPath) === renameFallbackStateFile) {
+    const error = new Error("rename blocked");
+    error.code = "EPERM";
+    throw error;
+  }
+  return originalRenameSync(fromPath, toPath);
+};
+try {
+  const renameFallbackLimiter = createSlidingWindowLimiter({
+    store: createJsonFileRateLimitStore(renameFallbackStateFile),
+    clock: () => 5500,
+  });
+  assert.equal(renameFallbackLimiter.checkAndRecord({ key: "restart:file:rename-fallback", limit: 1, windowMs: 10000 }).allow, true);
+  assert.ok(fs.existsSync(renameFallbackStateFile));
+  assert.doesNotThrow(() => JSON.parse(fs.readFileSync(renameFallbackStateFile, "utf8")));
+} finally {
+  fs.renameSync = originalRenameSync;
+}
+
 const corruptStateFile = path.join(tmp, "corrupt-state.json");
 fs.writeFileSync(corruptStateFile, "{not-json");
 const corruptLimiter = createSlidingWindowLimiter({
