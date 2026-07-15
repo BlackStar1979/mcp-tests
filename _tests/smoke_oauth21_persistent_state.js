@@ -144,6 +144,43 @@ const auditFailureRegistration = auditFailureServer.registerClient({ redirect_ur
 assert.equal(auditFailureRegistration.status, 201);
 assert.ok(auditFailureWarnings.some((line) => line.includes("OAUTH21_AUDIT_LOG_FAILED:") && line.includes("audit sink offline")));
 
+const lockCleanupWarningTmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-oauth-lock-warn-"));
+const lockCleanupClientsFile = path.join(lockCleanupWarningTmp, "clients.json");
+const lockCleanupWarnings = [];
+const lockCleanupServer = createOAuth21AuthorizationServer({
+  issuer,
+  resource,
+  operatorSecret,
+  clientsFile: lockCleanupClientsFile,
+  now,
+  warnLogger: (...parts) => lockCleanupWarnings.push(parts.join(" ")),
+});
+const lockCleanupPath = `${lockCleanupClientsFile}.lock`;
+const originalRmSync = fs.rmSync;
+let lockCleanupInjected = false;
+fs.rmSync = (targetPath, options) => {
+  if (!lockCleanupInjected && String(targetPath) === lockCleanupPath) {
+    lockCleanupInjected = true;
+    const error = new Error("lock cleanup blocked");
+    error.code = "EPERM";
+    throw error;
+  }
+  return originalRmSync(targetPath, options);
+};
+try {
+  const lockCleanupRegistration = lockCleanupServer.registerClient({ redirect_uris: ["https://lock-warning.example/callback"], token_endpoint_auth_method: "none" });
+  assert.equal(lockCleanupRegistration.status, 201);
+} finally {
+  fs.rmSync = originalRmSync;
+  if (fs.existsSync(lockCleanupPath)) fs.rmSync(lockCleanupPath, { recursive: true, force: true });
+}
+assert.ok(lockCleanupInjected);
+assert.ok(
+  lockCleanupWarnings.some(
+    (line) => line.includes("OAUTH21_LOCK_CLEANUP_FAILED:") && line.includes("lock cleanup blocked"),
+  ),
+);
+
 const persistenceWarnTmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-oauth-persistence-warn-"));
 const persistenceWarnClientsFile = path.join(persistenceWarnTmp, "clients.json");
 const persistenceWarnStateFile = path.join(persistenceWarnTmp, "state.json");

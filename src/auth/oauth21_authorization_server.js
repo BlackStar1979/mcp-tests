@@ -396,7 +396,9 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
             fs.rmSync(lockPath, { recursive: true, force: true });
             if (typeof onStaleLockRecovered === "function") onStaleLockRecovered(lockAgeMs);
             continue;
-          } catch (_) {}
+          } catch (error) {
+            warnLogger("OAUTH21_LOCK_CLEANUP_FAILED:", error?.message || String(error));
+          }
         }
         if ((now() - startedAt) >= DEFAULT_STATE_LOCK_TIMEOUT_MS) {
           throw new Error("oauth21_state_lock_timeout");
@@ -407,7 +409,11 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     try {
       return fn();
     } finally {
-      try { fs.rmSync(lockPath, { recursive: true, force: true }); } catch (_) {}
+      try {
+        fs.rmSync(lockPath, { recursive: true, force: true });
+      } catch (error) {
+        warnLogger("OAUTH21_LOCK_CLEANUP_FAILED:", error?.message || String(error));
+      }
     }
   }
 
