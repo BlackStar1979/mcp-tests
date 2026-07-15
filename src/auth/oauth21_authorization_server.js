@@ -170,11 +170,16 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   // so a controlled process restart does not invalidate the connector client_id
   // or force a full operator re-authorization. Pending authorization requests
   // and one-time authorization codes remain in RAM by design.
-  const clientsPath = clientsFile || process.env.MCP_TEST_OAUTH_CLIENTS_FILE
-    || path.join(os.homedir(), ".romion", "tests_oauth_clients.json");
-  const oauthStatePath = process.env.MCP_TEST_OAUTH_STATE_FILE
-    || path.join(os.homedir(), ".romion", "tests_oauth_state.json");
-  const oauthStorageFile = storageFile || process.env.MCP_TEST_OAUTH_STORAGE_FILE || "";
+  const explicitLegacyClientsPath = String(clientsFile || process.env.MCP_TEST_OAUTH_CLIENTS_FILE || "").trim();
+  const explicitLegacyStatePath = String(process.env.MCP_TEST_OAUTH_STATE_FILE || "").trim();
+  const oauthStorageFile = String(storageFile || process.env.MCP_TEST_OAUTH_STORAGE_FILE || "").trim();
+  const hasExplicitLegacyClientsPath = Boolean(explicitLegacyClientsPath);
+  const hasExplicitLegacyStatePath = Boolean(explicitLegacyStatePath);
+  if (hasExplicitLegacyClientsPath !== hasExplicitLegacyStatePath) {
+    throw new Error("oauth21_partial_legacy_json_config");
+  }
+  const clientsPath = explicitLegacyClientsPath || path.join(os.homedir(), ".romion", "tests_oauth_clients.json");
+  const oauthStatePath = explicitLegacyStatePath || path.join(os.homedir(), ".romion", "tests_oauth_state.json");
 
   const clients = new Map();
   const pending = new Map();

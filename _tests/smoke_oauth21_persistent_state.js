@@ -37,6 +37,9 @@ const resource = `${issuer}/mcp`;
 const operatorSecret = "operator-secret";
 const redirectUri = "https://chat.openai.com/aip/callback";
 const verifier = "abcdefghijklmnopqrstuvwxyz0123456789abcdefghijklmnopqrstuvwxyz";
+const originalStateEnv = process.env.MCP_TEST_OAUTH_STATE_FILE;
+const originalClientsEnv = process.env.MCP_TEST_OAUTH_CLIENTS_FILE;
+const originalStorageEnv = process.env.MCP_TEST_OAUTH_STORAGE_FILE;
 let fakeNow = Date.UTC(2026, 0, 1, 0, 0, 0);
 
 function now() {
@@ -85,6 +88,15 @@ assert.ok(issued.access_token);
 assert.ok(issued.refresh_token);
 assert.ok(fs.existsSync(stateFile));
 assert.ok(events1.some((x) => x.event === "oauth21_state_saved"));
+
+delete process.env.MCP_TEST_OAUTH_STATE_FILE;
+delete process.env.MCP_TEST_OAUTH_CLIENTS_FILE;
+delete process.env.MCP_TEST_OAUTH_STORAGE_FILE;
+assert.throws(
+  () => createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now }),
+  /oauth21_partial_legacy_json_config/,
+);
+process.env.MCP_TEST_OAUTH_STATE_FILE = stateFile;
 
 const events2 = [];
 const server2 = createOAuth21AuthorizationServer({ issuer, resource, operatorSecret, clientsFile, now });
@@ -490,4 +502,10 @@ assert.equal(Array.isArray(prunePreview.sample_candidates.dead_clients_eligible)
 assert.equal(typeof prunePreview.sample_candidates.dead_clients_eligible[0]?.client_id_hash, "string");
 assert.equal(prunePreview.sample_candidates.dead_clients_eligible[0]?.client_id_hash.length, 12);
 
-  console.log("smoke_oauth21_persistent_state ok");
+if (originalStateEnv === undefined) delete process.env.MCP_TEST_OAUTH_STATE_FILE;
+else process.env.MCP_TEST_OAUTH_STATE_FILE = originalStateEnv;
+if (originalClientsEnv === undefined) delete process.env.MCP_TEST_OAUTH_CLIENTS_FILE;
+else process.env.MCP_TEST_OAUTH_CLIENTS_FILE = originalClientsEnv;
+if (originalStorageEnv === undefined) delete process.env.MCP_TEST_OAUTH_STORAGE_FILE;
+else process.env.MCP_TEST_OAUTH_STORAGE_FILE = originalStorageEnv;
+console.log("smoke_oauth21_persistent_state ok");
