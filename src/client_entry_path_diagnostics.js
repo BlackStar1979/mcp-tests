@@ -12,9 +12,14 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
   let currentServerDiscoverCount = 0;
   let currentInitializeResponseCount = 0;
   let currentServerDiscoverResponseCount = 0;
+  let currentInitializeResponseSuccessCount = 0;
+  let currentInitializeResponseErrorCount = 0;
+  let currentServerDiscoverResponseSuccessCount = 0;
+  let currentServerDiscoverResponseErrorCount = 0;
   let currentToolsListRpcCount = 0;
   let currentToolsCallStartCount = 0;
   const responseByRequestId = new Map();
+  const requestServerStartIdByRequestId = new Map();
   const currentInitializeRequestIds = new Set();
   const currentServerDiscoverRequestIds = new Set();
 
@@ -23,15 +28,27 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
     return serverStartId === currentServerStartId;
   }
 
+  function responseKey(serverStartId, requestId) {
+    return `${String(serverStartId || "")}\u0000${String(requestId || "")}`;
+  }
+
   for (const entry of entries || []) {
     const event = String(entry.event || "");
+    const explicitServerStartId = String(entry.server_start_id || "");
     if (event === "server_start") {
-      activeServerStartId = String(entry.server_start_id || activeServerStartId || "");
+      activeServerStartId = String(explicitServerStartId || activeServerStartId || "");
       activeServerStartTs = String(entry.ts || activeServerStartTs || "");
       lastServerStart = { ts: entry.ts || "", server_start_id: activeServerStartId };
     }
 
-    const serverStartId = String(entry.server_start_id || activeServerStartId || "");
+    if (entry.request_id && explicitServerStartId) {
+      requestServerStartIdByRequestId.set(String(entry.request_id), explicitServerStartId);
+    }
+
+    const requestScopedServerStartId = entry.request_id
+      ? String(requestServerStartIdByRequestId.get(String(entry.request_id)) || "")
+      : "";
+    const serverStartId = String(explicitServerStartId || requestScopedServerStartId || activeServerStartId || "");
     const common = {
       ts: entry.ts || "",
       request_id: entry.request_id || null,
@@ -66,7 +83,7 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
     }
 
     if (event === "rpc_response_sent" && entry.request_id) {
-      responseByRequestId.set(String(entry.request_id), {
+      responseByRequestId.set(responseKey(serverStartId, entry.request_id), {
         ts: entry.ts || "",
         request_id: entry.request_id,
         server_start_id: serverStartId,
@@ -90,11 +107,21 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
   }
 
   for (const requestId of currentInitializeRequestIds) {
-    if (responseByRequestId.has(requestId)) currentInitializeResponseCount += 1;
+    const key = responseKey(currentServerStartId, requestId);
+    if (!responseByRequestId.has(key)) continue;
+    currentInitializeResponseCount += 1;
+    const response = responseByRequestId.get(key);
+    if (response?.has_error === true) currentInitializeResponseErrorCount += 1;
+    else currentInitializeResponseSuccessCount += 1;
   }
 
   for (const requestId of currentServerDiscoverRequestIds) {
-    if (responseByRequestId.has(requestId)) currentServerDiscoverResponseCount += 1;
+    const key = responseKey(currentServerStartId, requestId);
+    if (!responseByRequestId.has(key)) continue;
+    currentServerDiscoverResponseCount += 1;
+    const response = responseByRequestId.get(key);
+    if (response?.has_error === true) currentServerDiscoverResponseErrorCount += 1;
+    else currentServerDiscoverResponseSuccessCount += 1;
   }
 
   const initializeObservedForCurrentStart = Boolean(currentServerStartId && currentInitializeCount > 0);
@@ -103,10 +130,10 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
   const serverDiscoverResponseObservedForCurrentStart = Boolean(currentServerStartId && currentServerDiscoverResponseCount > 0);
 
   const lastInitializeResponse = lastInitialize?.request_id
-    ? responseByRequestId.get(String(lastInitialize.request_id)) || null
+    ? responseByRequestId.get(responseKey(lastInitialize.server_start_id, lastInitialize.request_id)) || null
     : null;
   const lastServerDiscoverResponse = lastServerDiscover?.request_id
-    ? responseByRequestId.get(String(lastServerDiscover.request_id)) || null
+    ? responseByRequestId.get(responseKey(lastServerDiscover.server_start_id, lastServerDiscover.request_id)) || null
     : null;
 
   let observedEntryPath = "no_current_entry_observed";
@@ -123,7 +150,11 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
       initialize_received: currentInitializeCount,
       server_discover_received: currentServerDiscoverCount,
       initialize_response_sent: currentInitializeResponseCount,
+      initialize_response_success: currentInitializeResponseSuccessCount,
+      initialize_response_error: currentInitializeResponseErrorCount,
       server_discover_response_sent: currentServerDiscoverResponseCount,
+      server_discover_response_success: currentServerDiscoverResponseSuccessCount,
+      server_discover_response_error: currentServerDiscoverResponseErrorCount,
       tools_list_rpc: currentToolsListRpcCount,
       tools_call_start: currentToolsCallStartCount,
     },
@@ -144,10 +175,10 @@ function buildClientEntryPathDiagnostics(entries, runtimeStatus = {}) {
     last_server_discover: lastServerDiscover || null,
     last_server_discover_response: lastServerDiscoverResponse,
     note: observedEntryPath === "initialize_only"
-      ? "Recent client traffic for the current server_start_id entered only through legacy initialize even though server/discover remains available. Use the paired response summary to confirm whether the server emitted a successful or error response for the same request window."
+      ? "Recent client traffic for the current server_start_id entered only through legacy initialize even though server/discover remains available. Use the paired response summary and the success/error counts to confirm how the server interpreted and answered that entry path."
       : observedEntryPath === "server_discover_only"
-        ? "Recent client traffic for the current server_start_id entered through canonical server/discover without observed legacy initialize. Use the paired response summary to confirm whether the server emitted a successful or error response for the same request window."
-        : "Use this section to distinguish declared request-contract support from the entry path clients actually used in the inspected audit window, and correlate those entry events with bounded response-side audit summaries.",
+        ? "Recent client traffic for the current server_start_id entered through canonical server/discover without observed legacy initialize. Use the paired response summary and the success/error counts to confirm how the server interpreted and answered that entry path."
+        : "Use this section to distinguish declared request-contract support from the entry path clients actually used in the inspected audit window, and correlate those entry events with bounded response-side audit summaries plus per-entry success/error counts.",
   };
 }
 
