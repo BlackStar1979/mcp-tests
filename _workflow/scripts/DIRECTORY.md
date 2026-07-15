@@ -14,7 +14,7 @@ Updated: 2026-07-12
 - `sessionless_*`, `connector_migration_dry_run_harness.js`
   Historical or bounded probe helpers retained for evidence; not active target architecture by themselves.
 - `client_entry_path_report.js`
-  Audit-reading helper that summarizes current client entry-path evidence on the live authenticated route.
+  Audit-reading helper that summarizes current client entry-path evidence on the live authenticated route, including `client_name` and `evidence_scope` filters for separating operational and synthetic retained evidence.
 - `test_mcp_backup.ps1`, `test_mcp_deploy.ps1`, `test_mcp_restart.ps1`, `test_mcp_rollback.ps1`
   Operator-run control-plane scripts for backup, deploy, restart, and rollback procedures.
 - `test_mcp_oauth21_prune.js`

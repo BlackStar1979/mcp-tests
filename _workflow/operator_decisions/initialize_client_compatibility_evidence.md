@@ -103,6 +103,9 @@ Current live evidence from `node _workflow/scripts/client_entry_path_report.js` 
 - the refreshed report now classifies retained client families explicitly:
   - operational known families remain `initialize_only`
   - synthetic validation families must not be used as retirement evidence
+  - the same retained-evidence filters are now also available through runtime-facing `observability_status` using:
+    - `client_name`
+    - `evidence_scope`
 
 This refresh matters because it further narrows the safe conclusion:
 
@@ -152,6 +155,7 @@ But:
 - `_workflow/operator_decisions/initialize_no_handshake_repo_evidence.md`
 - `_workflow/operator_decisions/keep_mcp_initialize_retirement_boundary.md`
 - `_workflow/scripts/client_entry_path_report.js`
+- `observability_status`
 - `src/runtime/rpc_message_dispatcher.js`
 - `src/runtime/server_discover_message_handler.js`
 - `C:\\Users\\mczyz\\AppData\\Local\\Temp\\mcp-tests-fork-audit-3022.jsonl`
