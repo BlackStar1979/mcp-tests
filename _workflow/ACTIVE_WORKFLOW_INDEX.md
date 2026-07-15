@@ -56,6 +56,7 @@ Read these first, in this order:
    - `_workflow/READINESS.md`
    - `_workflow/ROADMAP.md`
    - `DIRECTORY.md`
+   - `READINESS.md` is the component-readiness bridge used to infer the next autonomous package when `ROADMAP.md` alone is too coarse.
 
 Do not infer active work from historical plan files unless `_workflow/state.json` or this index names it as active.
 
