@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-07-15
+Updated: 2026-07-16
 
 ## Purpose
 
@@ -20,7 +20,7 @@ This roadmap must stay downstream from `READINESS.md`.
 | P3 | Continue initialize-compatibility / retirement evidence track | P2 plus stable `/mcp` route and current auth/runtime truth | This remains the main protocol debt gate between current state and the target contract. | Preserve bounded compatibility while gathering and maintaining real client evidence; current Codex client evidence still blocks retirement at the entry path. |
 | P4 | Revalidate connector-visible authenticated surface from fresh client truth when needed | stable OAuth21 auth and callable connector | Repo/runtime truth already says `69`; model-runtime callability is confirmed again, but UI truth must still be refreshed only when materially needed. | Keep as targeted verification, not as default churn, and keep callable-runtime evidence separate from UI enumeration evidence. |
 | P5 | Expand `DIRECTORY` coverage to remaining high-churn directories | P1 | Repo orientation is still incomplete without directory-level functional maps. | Continue only for operational directories with real churn or handoff cost; avoid repo-wide documentation sprawl. |
-| P6 | Keep OAuth21 durable-state hygiene on an explicit control-plane path | stable OAuth21 auth, bounded prune package, operator-facing docs | Prevent stale durable OAuth state from drifting back into ad hoc manual handling or hidden runtime behavior. | Keep `Status/Plan/Execute/Rollback` explicit and approval-gated; do not auto-wire apply into runtime. |
+| P6 | Keep OAuth21 runtime hardening bounded and explicit | stable OAuth21 auth, bounded prune package, operator-facing docs | Prevent stale durable OAuth state or public-route abuse from drifting back into hidden runtime behavior. | Keep `Status/Plan/Execute/Rollback` explicit, keep public-route throttles and body guards covered by smoke tests, and do not auto-wire prune apply into runtime. |
 | P7 | Decide future of session-bound outbound/sampling helper layer | explicit scoped helper debt | The scope is now known; future work should be an intentional package, not rediscovery. | Hold until it becomes the highest-leverage bounded cleanup. |
 
 ## Deferred until justified

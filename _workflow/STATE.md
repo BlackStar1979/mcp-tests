@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-07-15
+Updated: 2026-07-16
 
 ## Purpose
 
@@ -74,3 +74,4 @@ Summarize the current validated product state in one operator-facing place witho
 - `state.json` is an orientation map, not a progress log.
 - Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.
 - OAuth21 durable-state hygiene now has an explicit control-plane path with bounded records/backups and approval-gated apply; it is not a connector-visible runtime tool.
+- Public unauthenticated OAuth21 routes now have bounded per-IP throttling, and oversized OAuth21 request bodies are force-aborted before they can continue streaming in-process.

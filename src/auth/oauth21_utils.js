@@ -55,13 +55,37 @@ function normalizedContentType(req) {
 
 function readRequestBody(req, maxBytes = 65536) {
   return new Promise((resolve, reject) => {
+    let settled = false;
     let raw = "";
-    req.on("data", (chunk) => {
+    const cleanup = () => {
+      req.removeListener("data", onData);
+      req.removeListener("end", onEnd);
+      req.removeListener("error", onError);
+    };
+    const fail = (error) => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      try {
+        if (typeof req.destroy === "function" && !req.destroyed) req.destroy(error);
+      } catch (_) {}
+      reject(error);
+    };
+    const onData = (chunk) => {
+      if (settled) return;
       raw += String(chunk);
-      if (Buffer.byteLength(raw) > maxBytes) reject(new Error("body_too_large"));
-    });
-    req.on("end", () => resolve(raw));
-    req.on("error", reject);
+      if (Buffer.byteLength(raw) > maxBytes) fail(new Error("body_too_large"));
+    };
+    const onEnd = () => {
+      if (settled) return;
+      settled = true;
+      cleanup();
+      resolve(raw);
+    };
+    const onError = (error) => fail(error);
+    req.on("data", onData);
+    req.on("end", onEnd);
+    req.on("error", onError);
   });
 }
 

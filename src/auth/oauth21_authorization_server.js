@@ -28,6 +28,8 @@ const CODE_TTL_MS = 10 * 60 * 1000;
 const PENDING_TTL_MS = 10 * 60 * 1000;
 const DEFAULT_LOGIN_LIMIT = 10;
 const DEFAULT_LOGIN_WINDOW_MS = 60 * 1000;
+const DEFAULT_PUBLIC_ROUTE_LIMIT = 20;
+const DEFAULT_PUBLIC_ROUTE_WINDOW_MS = 60 * 1000;
 const DEFAULT_STATE_LOCK_TIMEOUT_MS = 5000;
 const DEFAULT_STATE_LOCK_STALE_MS = 30000;
 const STATE_LOCK_RETRY_MS = 25;
@@ -157,7 +159,7 @@ function isValidPkceValue(value) {
   return PKCE_RE.test(String(value || ""));
 }
 
-function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, warnLogger = console.warn } = {}) {
+function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, warnLogger = console.warn } = {}) {
   issuer = trimSlash(issuer);
   resource = trimSlash(resource || `${issuer}/mcp`);
   operatorSecret = String(operatorSecret || "");
@@ -192,6 +194,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   const deletedRefreshTokens = new Set();
   const deletedUsedRefreshTokens = new Set();
   const loginAttempts = new Map();
+  const publicRouteAttempts = new Map();
   let auditLog = null;
   const deferredAuditEvents = [];
 
@@ -761,6 +764,32 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     return item.count <= loginLimit;
   }
 
+  function checkPublicRouteThrottle(req, routeKey) {
+    const ip = clientIp(req, { trustProxyHeaders: trustedProxyHeaders === true });
+    const bucketKey = `${String(routeKey || "unknown")}:${ip}`;
+    const t = now();
+    const item = publicRouteAttempts.get(bucketKey) || { resetAt: t + publicRouteWindowMs, count: 0 };
+    if (item.resetAt <= t) {
+      item.resetAt = t + publicRouteWindowMs;
+      item.count = 0;
+    }
+    item.count += 1;
+    publicRouteAttempts.set(bucketKey, item);
+    return item.count <= publicRouteLimit;
+  }
+
+  function rejectThrottledPublicRoute(res, routeKey, req) {
+    auditOAuth("oauth21_public_route_rejected", {
+      reason: "route_throttled",
+      route: String(routeKey || "unknown"),
+      ip: clientIp(req, { trustProxyHeaders: trustedProxyHeaders === true }),
+    });
+    return jsonResponse(res, 429, {
+      error: "slow_down",
+      error_description: "rate_limit_exceeded",
+    }, { pragma: "no-cache" });
+  }
+
   function completeLogin({ pid, password, req, clientId, redirectUri, scope }) {
     cleanup();
     if (!checkLoginThrottle(req)) { auditOAuth("oauth21_operator_login_rejected", { reason: "login_throttled" }); return { status: 429, body: "Too many attempts" }; }
@@ -1040,10 +1069,12 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   async function handleRoute({ req, res, url }) {
     if (url.pathname === "/.well-known/oauth-authorization-server") return jsonResponse(res, 200, metadata());
     if (url.pathname === "/register" && req.method === "POST") {
+      if (!checkPublicRouteThrottle(req, "register")) return rejectThrottledPublicRoute(res, "register", req);
       const result = registerClient(await readJsonBody(req));
       return jsonResponse(res, result.status, result.body);
     }
     if (url.pathname === "/authorize" && req.method === "GET") {
+      if (!checkPublicRouteThrottle(req, "authorize")) return rejectThrottledPublicRoute(res, "authorize", req);
       const result = authorize(parseSearchParams(url.searchParams));
       if (result.status === 302) return redirectResponse(res, result.location);
       return jsonResponse(res, result.status, result.body);
@@ -1074,10 +1105,12 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       return htmlResponse(res, result.status, result.body);
     }
     if (url.pathname === "/token" && req.method === "POST") {
+      if (!checkPublicRouteThrottle(req, "token")) return rejectThrottledPublicRoute(res, "token", req);
       const result = token(await readFormBody(req));
       return jsonResponse(res, result.status, result.body, { pragma: "no-cache" });
     }
     if (url.pathname === "/revoke" && req.method === "POST") {
+      if (!checkPublicRouteThrottle(req, "revoke")) return rejectThrottledPublicRoute(res, "revoke", req);
       const result = revoke(await readFormBody(req));
       return jsonResponse(res, result.status, result.body);
     }
@@ -1142,6 +1175,8 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       orphan_refresh_tokens: orphanRefreshTokens,
       orphan_used_refresh_tokens: orphanUsedRefreshTokens,
       refresh_replay_window_open: refreshReplayWindowOpenCount,
+      public_route_limit: publicRouteLimit,
+      public_route_window_ms: publicRouteWindowMs,
       prune_preview: buildOAuth21PrunePreview({
         clients,
         accessTokens,

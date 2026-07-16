@@ -1,7 +1,7 @@
 # Readiness
 
 Status: active technical component readiness report
-Updated: 2026-07-15
+Updated: 2026-07-16
 
 ## Purpose
 
@@ -39,7 +39,7 @@ Do not pick work only because it is available. Pick the next package that improv
 | --- | --- | --- | --- | --- | --- | --- |
 | Single surviving `/mcp` route | 3/4 | Final route contract | Surviving target route is selected and active repo direction is clear. | Residual compatibility debt must stay bounded until evidence closes it. | Keep stable while retiring residual compatibility debt only with evidence. | High |
 | No-SSE target migration | 3/4 | Destination transport behavior | POST JSON-only and GET SSE teardown are already repo-applied and workflow-tracked. | Remaining compatibility debt still depends on bounded evidence and replacement closeout. | Continue bounded cleanup and compatibility evidence; do not reopen SSE target semantics. | High |
-| OAuth21 authorized runtime | 3/4 | Production-grade authenticated surface | Resource-server metadata, health shape, and bounded OAuth21 behavior are in place. | Client/runtime stability must stay stronger than change pressure. | Preserve auth stability and keep client compatibility evidence current. | High |
+| OAuth21 authorized runtime | 3/4 | Production-grade authenticated surface | Resource-server metadata, health shape, durable-state protection, pre-auth public-route throttling, and bounded oversized-body handling are in place. | Client/runtime stability must stay stronger than change pressure. | Preserve auth stability, keep internet-facing OAuth guards bounded, and keep client compatibility evidence current. | High |
 | Server-side request/response observability | 3/4 | Runtime truth and diagnosis layer | Repo and live OAuth21 `3008` truth now include bounded `rpc_received` plus `rpc_response_sent` correlation on active `/mcp` paths, including a confirmed authenticated local `initialize` probe. | Fresh client-entry evidence is still narrower than full retirement confidence. | Use the live trail for real client compatibility diagnosis before considering any broader logging expansion. | High |
 | Connector-visible surface governance | 3/4 | MCP-visible contract control | Repo/runtime truth says `13 + 56 = 69` visible tools, with hidden helpers separated, and fresh 2026-07-15 evidence confirms that `mcp__workbench` is callable again from the Codex model runtime layer. | UI-visible enumeration can still drift from callable runtime truth. | Revalidate full connector/UI enumeration only when needed from fresh client truth; do not collapse callability and UI visibility into one claim. | Medium |
 | OAuth21 durable-state hygiene control plane | 3/4 | Safe state maintenance path | Explicit preview/receipt/gate/apply/rollback helpers exist, records/backups are bounded under `_workflow/control_plane/`, and workflow docs now describe the operator-controlled path. | Remaining value is operational discipline, not more runtime coupling. | Keep apply explicit and control-plane-only; promote only after future runtime need is proven. | Medium |

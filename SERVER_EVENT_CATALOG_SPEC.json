@@ -216,6 +216,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_public_route_rejected",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_authorize_rejected",
       "status": "active_code_event"
     },
