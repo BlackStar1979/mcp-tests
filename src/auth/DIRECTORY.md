@@ -10,7 +10,7 @@ Updated: 2026-07-16
 - `oauth21_persistence_store.js`
   SQLite-backed durable store for OAuth21 clients and token state, including legacy JSON bootstrap.
 - `oauth21_authorization_server.js`
-  Main OAuth21 authorization server implementation, public-route throttling, and durable-state orchestration.
+  Main OAuth21 authorization server implementation, public-route throttling, bounded DCR client-registry growth, and durable-state orchestration.
 - `oauth21_prune_preview.js`, `oauth21_prune_receipt.js`, `oauth21_prune_apply_gate.js`, `oauth21_prune_apply_package_draft.js`, `oauth21_prune_apply.js`
   Explicit OAuth21 prune preview, approval, gate, package-draft, and apply helpers.
 - `README.md`

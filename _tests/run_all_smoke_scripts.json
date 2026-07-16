@@ -196,6 +196,7 @@
   "_tests/smoke_oauth21_dcr_runtime_validation.js",
   "_tests/smoke_oauth21_login_throttle_proxy_hardening.js",
   "_tests/smoke_oauth21_public_route_throttle.js",
+  "_tests/smoke_oauth21_client_registry_capacity.js",
   "_tests/smoke_oauth21_operator_login_context.js",
   "_tests/smoke_oauth21_local_as_flow.js",
   "_tests/smoke_oauth21_pkce_input_validation.js",

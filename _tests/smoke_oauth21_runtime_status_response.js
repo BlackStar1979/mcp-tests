@@ -160,6 +160,8 @@ function assertHealthRuntimeStatus(body, issuer) {
   assert.equal(typeof body.oauth21_runtime.refresh_replay_window_open, "number");
   assert.equal(typeof body.oauth21_runtime.public_route_limit, "number");
   assert.equal(typeof body.oauth21_runtime.public_route_window_ms, "number");
+  assert.equal(typeof body.oauth21_runtime.client_registry_limit, "number");
+  assert.equal(typeof body.oauth21_runtime.client_registry_capacity_remaining, "number");
   assert.equal(body.oauth21_runtime.prune_preview.success, true);
   assert.equal(body.oauth21_runtime.prune_preview.execute_allowed_now, false);
   assert.equal(body.oauth21_runtime.prune_preview.raw_identifiers_redacted, true);

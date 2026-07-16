@@ -17,7 +17,7 @@ const {
   sha256Base64Url,
   trimSlash,
 } = require("./oauth21_utils");
-const { buildOAuth21PrunePreview } = require("./oauth21_prune_preview");
+const { buildOAuth21PrunePreview, collectReferencedClientIds } = require("./oauth21_prune_preview");
 const { createOAuth21PersistenceStore } = require("./oauth21_persistence_store");
 
 const ACCESS_TTL_SECONDS = 12 * 3600;
@@ -30,6 +30,7 @@ const DEFAULT_LOGIN_LIMIT = 10;
 const DEFAULT_LOGIN_WINDOW_MS = 60 * 1000;
 const DEFAULT_PUBLIC_ROUTE_LIMIT = 20;
 const DEFAULT_PUBLIC_ROUTE_WINDOW_MS = 60 * 1000;
+const DEFAULT_CLIENT_REGISTRY_LIMIT = 1000;
 const DEFAULT_STATE_LOCK_TIMEOUT_MS = 5000;
 const DEFAULT_STATE_LOCK_STALE_MS = 30000;
 const STATE_LOCK_RETRY_MS = 25;
@@ -159,7 +160,7 @@ function isValidPkceValue(value) {
   return PKCE_RE.test(String(value || ""));
 }
 
-function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, warnLogger = console.warn } = {}) {
+function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, clientRegistryLimit = DEFAULT_CLIENT_REGISTRY_LIMIT, warnLogger = console.warn } = {}) {
   issuer = trimSlash(issuer);
   resource = trimSlash(resource || `${issuer}/mcp`);
   operatorSecret = String(operatorSecret || "");
@@ -688,6 +689,43 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     };
   }
 
+  function collectEligibleDeadClientIds() {
+    const referencedClientIds = collectReferencedClientIds({ accessTokens, refreshTokens, usedRefreshTokens, pending, codes });
+    const eligibleClientIds = [];
+    const currentNowMs = now();
+    for (const client of clients.values()) {
+      const clientId = String(client?.client_id || "");
+      if (!clientId || referencedClientIds.has(clientId)) continue;
+      const issuedAtMs = Number(client?.client_id_issued_at || 0) * 1000;
+      const ageMs = issuedAtMs > 0 ? Math.max(0, currentNowMs - issuedAtMs) : 0;
+      if (ageMs >= CLIENT_PRUNE_RETENTION_MS) eligibleClientIds.push(clientId);
+    }
+    return eligibleClientIds;
+  }
+
+  function pruneDeadClientsForRegistration() {
+    const removedClients = [];
+    for (const clientId of collectEligibleDeadClientIds()) {
+      const client = clients.get(clientId);
+      if (!client) continue;
+      clients.delete(clientId);
+      removedClients.push(client);
+    }
+    if (removedClients.length > 0) {
+      auditOAuth("oauth21_dead_clients_pruned", {
+        reason: "registration_capacity_preflight",
+        pruned_count: removedClients.length,
+      });
+    }
+    return removedClients;
+  }
+
+  function restoreClients(clientsToRestore = []) {
+    for (const client of clientsToRestore) {
+      if (client?.client_id) clients.set(String(client.client_id), client);
+    }
+  }
+
   function registerClient(body = {}) {
     const redirectUris = Array.isArray(body.redirect_uris) ? body.redirect_uris.map((item) => validateRedirectUri(item)) : [];
     if (redirectUris.length === 0) return { status: 400, body: { error: "invalid_client_metadata", error_description: "redirect_uris_required" } };
@@ -697,6 +735,16 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     }
     const method = String(body.token_endpoint_auth_method || "none");
     if (method !== "none") return { status: 400, body: { error: "invalid_client_metadata", error_description: "only_public_clients_supported" } };
+    const prunedClients = pruneDeadClientsForRegistration();
+    if (clients.size >= clientRegistryLimit) {
+      restoreClients(prunedClients);
+      auditOAuth("oauth21_client_registration_failed", {
+        reason: "client_registry_capacity_exceeded",
+        client_registry_limit: clientRegistryLimit,
+        active_clients: clients.size,
+      });
+      return { status: 503, body: { error: "server_error", error_description: "client_registry_capacity_exceeded" } };
+    }
     const clientId = `mcp_tests_${randomToken(18)}`;
     const client = {
       client_id: clientId,
@@ -712,6 +760,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       persistClients({ throwOnError: true });
     } catch (error) {
       clients.delete(clientId);
+      restoreClients(prunedClients);
       auditOAuth("oauth21_client_registration_failed", { client_id: clientId, reason: "client_persistence_failed", error_message: error.message });
       return { status: 500, body: { error: "server_error", error_description: "client_persistence_failed" } };
     }
@@ -1177,6 +1226,8 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       refresh_replay_window_open: refreshReplayWindowOpenCount,
       public_route_limit: publicRouteLimit,
       public_route_window_ms: publicRouteWindowMs,
+      client_registry_limit: clientRegistryLimit,
+      client_registry_capacity_remaining: Math.max(0, clientRegistryLimit - clients.size),
       prune_preview: buildOAuth21PrunePreview({
         clients,
         accessTokens,

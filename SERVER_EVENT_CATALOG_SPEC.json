@@ -160,6 +160,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_dead_clients_pruned",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_state_atomic_replace_fallback",
       "status": "active_code_event"
     },
