@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-07-16
+Updated: 2026-07-17
 
 ## Purpose
 
@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=249`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=251`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `249`
+- Latest validated authenticated smoke count: `251`
 
 ## Surface model
 

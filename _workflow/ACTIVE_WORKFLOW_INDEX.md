@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-12
+Date: 2026-07-17
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` currently reports `69` tools on server_start_id `2026-07-12T16:24:00.291Z`, and retained real-client Codex evidence still shows `initialize -> notifications/initialized -> tools/list -> tools/call` rather than fresh `server/discover` entry for `codex-mcp-client 0.144.2`. New 2026-07-15 client-entry diagnostics also distinguish stale-entry windows from fresh reconnect evidence; the current runtime slice on server_start_id `2026-07-15T17:49:45.348Z` is now explicitly classified as `stale_entry_window`, so its follow-up `tools/call` traffic must not be misread as entry-path migration. The refreshed report now also classifies retained client families as `operational_known`, `synthetic_validation`, or `unknown`, and the retained `server_discover_only` evidence currently belongs only to synthetic validation traffic rather than an operational client family. The same retained-evidence filters are now available through `observability_status` via `client_name` and `evidence_scope`, so runtime-facing diagnostics and workflow script evidence no longer diverge. A fresh 2026-07-15 model-runtime probe also confirms that `mcp__workbench` is callable again from this Codex runtime session. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` currently reports `69` tools on server_start_id `2026-07-12T16:24:00.291Z`, and retained real-client Codex evidence still shows `initialize -> notifications/initialized -> tools/list -> tools/call` rather than fresh `server/discover` entry for `codex-mcp-client 0.144.2`. New 2026-07-15 client-entry diagnostics also distinguish stale-entry windows from fresh reconnect evidence; the current runtime slice on server_start_id `2026-07-15T17:49:45.348Z` is now explicitly classified as `stale_entry_window`, so its follow-up `tools/call` traffic must not be misread as entry-path migration. The refreshed report now also classifies retained client families as `operational_known`, `synthetic_validation`, or `unknown`, and the retained `server_discover_only` evidence currently belongs only to synthetic validation traffic rather than an operational client family. The same retained-evidence filters are now available through `observability_status` via `client_name` and `evidence_scope`, so runtime-facing diagnostics and workflow script evidence no longer diverge. A fresh 2026-07-15 model-runtime probe also confirms that `mcp__workbench` is callable again from this Codex runtime session. Repo-validated OAuth21 hardening from 2026-07-16 now additionally covers pre-auth public-route throttling, oversized-body aborts, and bounded DCR client-registry growth with retention-based dead-client pruning. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
@@ -65,9 +65,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok=true, version=0.40.0, public=7, tests_authenticated=249`.
+- Latest full smoke after historical-next-step quarantine guard: `ok=true, version=0.40.0, public=7, tests_authenticated=251`.
 - Public section count: `7`.
-- Authenticated smoke count: `249`.
+- Authenticated smoke count: `251`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
