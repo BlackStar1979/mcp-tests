@@ -8,8 +8,8 @@ Current repo/runtime note: repo truth now expects `69` connector-visible authent
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_primary = post_53d-connector-visible-surface-revalidation`
-- `next_secondary = post_53d-bounded-initialize-retirement-decision-prep`
+- `next_primary = post_53d-real-client-entry-evidence-refresh`
+- `next_secondary = post_53d-decision-relevant-connector-visible-surface-revalidation`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation

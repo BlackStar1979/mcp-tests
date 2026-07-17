@@ -47,8 +47,8 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current workflow track
 
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_primary = post_53d-connector-visible-surface-revalidation`
-- `next_secondary = post_53d-bounded-initialize-retirement-decision-prep`
+- `next_primary = post_53d-real-client-entry-evidence-refresh`
+- `next_secondary = post_53d-decision-relevant-connector-visible-surface-revalidation`
 
 ## Verified documentation authorities
 
