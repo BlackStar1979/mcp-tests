@@ -40,6 +40,7 @@
   "_tests/smoke_observability_status.js",
   "_tests/smoke_client_entry_path_diagnostics.js",
   "_tests/smoke_client_entry_path_report_script.js",
+  "_tests/smoke_wait_for_client_entry_path.js",
   "_tests/smoke_process_runner_observability.js",
   "_tests/smoke_process_runner_status_tool.js",
   "_tests/smoke_run_process_tool.js",
