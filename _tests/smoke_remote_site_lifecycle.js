@@ -9,7 +9,7 @@ const {
   withSftp,
 } = require("../src/util/remote_site_tools");
 
-function buildDeps({ endError = null, operationError = null, listError = null } = {}) {
+function buildDeps({ endError = null, operationError = null, listError = null, getError = null } = {}) {
   const calls = [];
   class FakeSftpClient {
     async connect(config) {
@@ -29,6 +29,10 @@ function buildDeps({ endError = null, operationError = null, listError = null } 
     }
     async get(remotePath) {
       calls.push({ type: "get", remotePath });
+      if (typeof getError === "function") {
+        const maybeError = getError(remotePath);
+        if (maybeError) throw maybeError;
+      }
       if (remotePath.endsWith("/logs/site-files.log")) {
         return Buffer.from("", "utf8");
       }
@@ -104,6 +108,21 @@ function buildDeps({ endError = null, operationError = null, listError = null } 
   }, missingOpsRootPreview.deps);
   assert.equal(previewResult.purge_count, 0);
   assert.equal(missingOpsRootPreview.calls.filter((entry) => entry.type === "mkdir").length, 0);
+
+  const logReadFailureStatus = buildDeps({
+    getError(remotePath) {
+      if (remotePath.endsWith("/logs/site-files.log")) {
+        return new Error("Permission denied");
+      }
+      return null;
+    },
+  });
+  const logReadFailureResult = await remoteSiteRuntimeStatus({
+    vps_config_ref: "ignored.json",
+  }, logReadFailureStatus.deps);
+  assert.equal(logReadFailureResult.status, "attention_required");
+  assert.ok(logReadFailureResult.warnings.some((warning) => warning.code === "log_read_failed"));
+  assert.equal(logReadFailureStatus.calls.filter((entry) => entry.type === "mkdir").length, 0);
 
   const cleanupFailure = buildDeps({ endError: new Error("disconnect blocked") });
   await assert.rejects(

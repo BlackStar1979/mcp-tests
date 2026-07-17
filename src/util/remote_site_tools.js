@@ -560,9 +560,13 @@ async function readOpsLogLines(client, opsRoot) {
   try {
     const data = await client.get(posixPath.join(opsRoot, "logs", "site-files.log"));
     const text = Buffer.isBuffer(data) ? data.toString("utf8") : String(data);
-    return text.split(/\r?\n/).filter((line) => line.trim());
-  } catch {
-    return [];
+    return { lines: text.split(/\r?\n/).filter((line) => line.trim()), read_error: null };
+  } catch (error) {
+    const message = error?.message || String(error);
+    if (/No such file|not exist|ENOENT/i.test(message)) {
+      return { lines: [], read_error: null };
+    }
+    return { lines: [], read_error: message };
   }
 }
 
@@ -742,7 +746,13 @@ function classifyRetentionArtifacts({ inventoryEntries, metadataRecords, now = n
   };
 }
 
-function buildRemoteSiteRuntimeStatus({ inventoryEntries, metadataRecords, logLines, generatedAt = new Date().toISOString() }) {
+function buildRemoteSiteRuntimeStatus({
+  inventoryEntries,
+  metadataRecords,
+  logLines,
+  logReadError = null,
+  generatedAt = new Date().toISOString(),
+}) {
   const inventory = summarizeRuntimeInventory(inventoryEntries);
   const metadata = summarizeMetadataRecords(metadataRecords);
   const logs = summarizeOpsLogLines(logLines);
@@ -752,6 +762,7 @@ function buildRemoteSiteRuntimeStatus({ inventoryEntries, metadataRecords, logLi
   if (missingAreas.length) warnings.push({ code: "lifecycle_markers_missing", areas: missingAreas });
   if (metadata.invalid_records.length) warnings.push({ code: "invalid_metadata_records", count: metadata.invalid_records.length });
   if (logs.invalid_lines.length) warnings.push({ code: "invalid_log_lines", count: logs.invalid_lines.length });
+  if (logReadError) warnings.push({ code: "log_read_failed", error: logReadError });
   return {
     status: warnings.length ? "attention_required" : "healthy",
     generated_at: generatedAt,
@@ -1020,8 +1031,8 @@ async function remoteSiteRuntimeStatus(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
     const inventoryEntries = await collectOpsRootInventory(client, config.opsRoot);
     const metadataRecords = await readOpsMetadataRecords(client, config.opsRoot, inventoryEntries);
-    const logLines = await readOpsLogLines(client, config.opsRoot);
-    const payload = buildRemoteSiteRuntimeStatus({ inventoryEntries, metadataRecords, logLines });
+    const { lines: logLines, read_error: logReadError } = await readOpsLogLines(client, config.opsRoot);
+    const payload = buildRemoteSiteRuntimeStatus({ inventoryEntries, metadataRecords, logLines, logReadError });
     return { ...payload, text: JSON.stringify(payload, null, 2) };
   }, deps, { ensureOpsDirs: false });
 }
