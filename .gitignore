@@ -19,6 +19,7 @@ id_ed25519*
 .codebase-memory/
 _logs/*
 !_logs/README.md
+!_logs/DIRECTORY.md
 logs/
 *.log
 npm-debug.log*

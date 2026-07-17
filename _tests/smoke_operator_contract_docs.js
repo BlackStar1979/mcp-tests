@@ -17,6 +17,7 @@ for (const rel of [
   ["tools", "DIRECTORY.md"],
   ["_tests", "DIRECTORY.md"],
   ["_control", "DIRECTORY.md"],
+  ["_logs", "DIRECTORY.md"],
   ["_workflow", "NORTHSTAR.md"],
   ["_workflow", "STATE.md"],
   ["_workflow", "READINESS.md"],

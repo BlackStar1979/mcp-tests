@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active tools directory map
-Updated: 2026-07-13
+Updated: 2026-07-17
 
 - `authorized/`
   Authorized/tests-surface MCP tool facade modules.
