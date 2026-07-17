@@ -1,87 +1,90 @@
 # Readiness
 
 Status: active technical component readiness report
-Updated: 2026-07-16
+Updated: 2026-07-17
 
 ## Purpose
 
-Track the distance between current state and the NorthStar target without mixing maturity assessment with raw implementation logs.
+Track the distance between the validated current state and the accepted NorthStar target in a form that is directly usable for autonomous planning.
 
-This file is also the agent-planning bridge between:
+This file is the execution bridge between:
 
 - `NORTHSTAR.md` as the target contract
 - `STATE.md` as the validated as-is picture
-- `ROADMAP.md` as the executable queue
+- `ROADMAP.md` as the ordered queue derived from readiness
 
-If autonomous planning becomes ambiguous, this file is the tie-breaker for what is mature, what is blocked, and what should move next.
+If autonomous planning becomes ambiguous, this file decides:
+
+- which component is actually closest to the target
+- which blocker has the highest downstream leverage
+- which bounded package should move next by default
 
 ## Maturity scale
 
-- `4/4` stable and governable for the current target
-- `3/4` functionally strong but still carrying bounded compatibility or verification debt
-- `2/4` partially aligned; key follow-up still open
-- `1/4` scoping/design only
+- `4/4` stable for the current target and governed by specs/tests/evidence
+- `3/4` strong and usable, but still carrying bounded debt or missing one important proof
+- `2/4` partially aligned; meaningful blocker still controls the next step
+- `1/4` scoped but not execution-ready
 
-## Planning rule
+## Autonomous planning rule
 
-When choosing work autonomously, prefer the highest-leverage item that satisfies all of the following:
+Choose the next package by walking this order:
 
-1. reduces uncertainty or operator re-orientation cost
-2. removes a blocker for a higher-target component
-3. preserves repo/runtime/client truth separation
-4. is bounded enough to guard with smoke or live evidence
-
-Do not pick work only because it is available. Pick the next package that improves target convergence for more than one downstream path.
+1. pick the highest-priority component whose blocker is still real in current evidence
+2. prefer the blocker that unlocks more than one downstream component
+3. prefer a package that can be bounded by smoke coverage, runtime evidence, or both
+4. do not jump to a lower component only because it is easier or more available
 
 ## Component maturity
 
-| Component | Maturity | Target role | Current state | Primary blocker | Next executable path | Queue weight |
-| --- | --- | --- | --- | --- | --- | --- |
-| Single surviving `/mcp` route | 3/4 | Final route contract | Surviving target route is selected and active repo direction is clear. | Residual compatibility debt must stay bounded until evidence closes it. | Keep stable while retiring residual compatibility debt only with evidence. | High |
-| No-SSE target migration | 3/4 | Destination transport behavior | POST JSON-only and GET SSE teardown are already repo-applied and workflow-tracked. | Remaining compatibility debt still depends on bounded evidence and replacement closeout. | Continue bounded cleanup and compatibility evidence; do not reopen SSE target semantics. | High |
-| OAuth21 authorized runtime | 3/4 | Production-grade authenticated surface | Resource-server metadata, health shape, durable-state protection, pre-auth public-route throttling, bounded oversized-body handling, and bounded DCR registry growth are in place. | Client/runtime stability must stay stronger than change pressure. | Preserve auth stability, keep internet-facing OAuth guards bounded, and keep client compatibility evidence current. | High |
-| Server-side request/response observability | 3/4 | Runtime truth and diagnosis layer | Repo and live OAuth21 `3008` truth now include bounded `rpc_received` plus `rpc_response_sent` correlation on active `/mcp` paths, including a confirmed authenticated local `initialize` probe. | Fresh client-entry evidence is still narrower than full retirement confidence. | Use the live trail for real client compatibility diagnosis before considering any broader logging expansion. | High |
-| Connector-visible surface governance | 3/4 | MCP-visible contract control | Repo/runtime truth says `13 + 56 = 69` visible tools, with hidden helpers separated, and fresh 2026-07-15 evidence confirms that `mcp__workbench` is callable again from the Codex model runtime layer. | UI-visible enumeration can still drift from callable runtime truth. | Revalidate full connector/UI enumeration only when needed from fresh client truth; do not collapse callability and UI visibility into one claim. | Medium |
-| OAuth21 durable-state hygiene control plane | 3/4 | Safe state maintenance path | Explicit preview/receipt/gate/apply/rollback helpers exist, records/backups are bounded under `_workflow/control_plane/`, and workflow docs now describe the operator-controlled path. | Remaining value is operational discipline, not more runtime coupling. | Keep apply explicit and control-plane-only; promote only after future runtime need is proven. | Medium |
-| Legacy `initialize` retirement readiness | 2/4 | Main protocol-debt exit gate | Repo evidence already shows useful no-handshake operation on `/mcp`. | Real client-family entry behavior still blocks retirement. | Gather and maintain explicit client compatibility evidence before any retirement decision. | Highest |
-| Session-bound outbound/sampling helper debt | 2/4 | Residual helper cleanup boundary | Scope is now explicitly recorded as bounded helper debt. | No current evidence that removal beats verification work elsewhere. | Choose explicit retention, redesign, or retirement package only when it becomes the highest-leverage bounded cleanup. | Low |
-| Operator-facing documentation contract | 3/4 | Continuity and handoff layer | Core operator docs exist, bounded `_workflow` directory maps were expanded, and the OAuth21 prune control-plane now has an explicit operator decision record. | Planning still depends too much on cross-reading several files. | Keep `READINESS` and `ROADMAP` synchronized so the next package is inferable without operator intervention. | High |
-| Workspace retrieval ergonomics | 2/4 | Agent execution efficiency | Live `workbench` callability and workspace index usefulness improved materially, but retrieval quality still depends on environment freshness and ranking heuristics. | Retrieval remains operational support, not target-defining product work. | Improve only when it materially reduces execution friction on current target work. | Medium |
+| ID | Component | Maturity | NorthStar role | Depends on | Current evidence | Main blocker | Default next bounded package | Done signal |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| DOC-1 | Operator-facing documentation contract | 3/4 | Keep the project operator-legible and handoff-safe | none | `NorthStar/State/Readiness/Roadmap` exist, core `DIRECTORY.md` coverage exists, and workflow docs are already smoke-guarded. | Planning still depends too much on reading several files together unless `READINESS` stays execution-grade. | Keep `READINESS`, `ROADMAP`, and the active index synchronized so the next package is inferable without operator intervention. | Next bounded package is obvious from docs alone, with no cross-reading required. |
+| OBS-1 | Server-side request/response observability | 3/4 | Preserve structured, auditable runtime truth | DOC-1 | Bounded `rpc_received` and `rpc_response_sent` audit coverage exists on active `/mcp` paths, including authenticated local validation. | Observability is good enough for diagnosis, but still needs disciplined use as the source for client-entry decisions. | Use live trail evidence before adding any broader logging or diagnostics churn. | Active client-entry questions can be answered from existing bounded observability without new logging work. |
+| AUTH-1 | OAuth21 authorized runtime | 3/4 | Keep the internal authorized surface production-grade and stable | DOC-1 | Resource-server identity, throttling, oversized-body aborts, bounded DCR growth, SQLite durability, and explicit prune control-plane all exist. | Stability must remain ahead of change pressure; new auth churn now has to be problem-driven. | Hold runtime auth steady and only touch auth when fresh evidence shows a real failure or gap. | Runtime auth work is driven only by a current defect or an approved target change. |
+| SURF-1 | Connector-visible surface governance | 3/4 | Keep MCP-visible tools intentionally governed | DOC-1, AUTH-1 | Repo/runtime truth says `13 + 56 = 69` visible tools, and fresh evidence shows `mcp__workbench` is callable again from the Codex model runtime layer. | UI-visible enumeration can still drift from callable/runtime truth. | Revalidate UI-visible enumeration only when it changes an active decision; do not conflate it with runtime callability. | Repo truth, runtime truth, and client-facing enumeration are explicitly separated in current evidence. |
+| COMP-1 | Legacy `initialize` retirement readiness | 2/4 | Retire the main remaining protocol-debt path safely | OBS-1, AUTH-1, SURF-1 | Repo-native no-handshake support is real, but the current `2026-07-17` client-entry report still shows an `initialize_only` window for `codex-mcp-client 0.145.0-alpha.18` with `2` successful legacy `initialize` responses and no fresh same-window `server/discover`. | Real client-family entry behavior still blocks retirement. | Gather or refresh real client compatibility evidence before any retirement decision package. | A fresh operational client family proves `server/discover` entry behavior or the remaining `initialize` dependence is explicitly accepted. |
+| CTRL-1 | OAuth21 durable-state hygiene control plane | 3/4 | Keep state maintenance explicit and auditable | AUTH-1, DOC-1 | Preview/receipt/gate/apply/rollback helpers and bounded records/backups exist under `_workflow/control_plane/`. | Remaining value is operational discipline, not more automation. | Keep apply explicit and operator-visible; do not auto-wire maintenance into runtime. | Maintenance remains control-plane-only and does not leak into runtime behavior. |
+| DEBT-1 | Session-bound outbound/sampling helper debt | 2/4 | Close residual local-helper debt without reopening target architecture | OBS-1 | Scope is explicitly recorded as bounded helper debt, not active route architecture. | No evidence yet that removing it outranks client-entry compatibility work. | Leave deferred until it blocks a higher-priority component or creates measurable execution drag. | Future work is either an intentional cleanup package or an explicit retention decision. |
+| DOC-2 | Directory-level functional orientation | 2/4 | Make every high-value area self-describing for handoff/restart continuity | DOC-1 | Core operational directories already have `DIRECTORY.md`, but coverage is still partial outside normalized areas. | Repo-wide expansion would create churn unless it targets high-change directories. | Extend `DIRECTORY` coverage only where churn or handoff cost is currently real. | Remaining high-churn directories are covered without documentation sprawl. |
+| RETR-1 | Workspace retrieval ergonomics | 2/4 | Reduce agent execution friction without changing product truth | DOC-1, SURF-1 | `workbench` callability and repository indexing are materially better than before. | Retrieval quality still depends on environment freshness and ranking heuristics. | Improve only when it materially shortens current target work or reduces evidence-gathering friction. | Retrieval issues stop being a recurring blocker on active packages. |
 
 ## Dependency spine
 
-Use this dependency spine when deciding what to do next:
+Read the queue through this dependency spine:
 
-1. Operator-facing documentation contract
-   - reduces context-loss cost
-   - makes the queue legible
-   - supports every other track
-2. Server-side request/response observability
-   - supplies trustworthy evidence
-   - unblocks compatibility diagnosis
-3. Legacy `initialize` retirement readiness
-   - remains the main protocol debt gate
-   - depends on observability and stable OAuth21 runtime
-4. Connector-visible surface governance
-   - matters only when client truth or runtime evidence requires it
-5. Session-bound outbound/sampling helper debt
-   - defer until it clearly outranks the above
+1. `DOC-1` documentation contract
+   - keeps orientation durable
+   - makes autonomous selection trustworthy
+2. `OBS-1` observability
+   - provides the truth source for runtime/client interpretation
+3. `AUTH-1` authorized runtime
+   - must stay stable while evidence is gathered
+4. `SURF-1` surface governance
+   - matters when client truth and runtime truth need reconciliation
+5. `COMP-1` initialize retirement readiness
+   - remains the main protocol-debt gate
+6. `CTRL-1`, `DEBT-1`, `DOC-2`, `RETR-1`
+   - operational support tracks; do not let them outrank the protocol gate without evidence
 
-## Current readiness blockers
+## Current blockers by leverage
 
-1. Fresh connector/UI truth can still drift from repo/runtime truth, even when the model runtime can already call the connector again.
-2. Legacy `initialize` removal is still blocked by client compatibility evidence, not by repo request-flow capability.
-3. Fresh real Codex client evidence now confirms the live `initialize -> notifications/initialized -> tools/list -> tools/call` path, and the newest `2026-07-17` repo-native report tightens that blocker on `codex-mcp-client 0.145.0-alpha.18`: the current window is `initialize_only` with `2` successful legacy `initialize` responses and no matching fresh `server/discover` entry in that same window.
-   - New client-entry observability also distinguishes stale-entry windows from fresh reconnect evidence, so a current window containing only follow-up `tools/list` / `tools/call` remains non-evidence and does not count as migration proof.
-4. Operator-facing `DIRECTORY` coverage is still partial outside the currently normalized operational directories.
+1. `COMP-1`
+   Real client-family entry behavior still blocks `initialize` retirement.
 
-## What should move next by default
+2. `SURF-1`
+   Runtime callability and UI-visible enumeration are still different evidence layers and must not be collapsed into one claim.
 
-Unless fresh live evidence changes priority, autonomous work should default to one of these:
+3. `DOC-2`
+   Directory coverage is still incomplete outside the currently normalized operational areas.
 
-1. tighten the operator-facing documentation contract so the next bounded package is obvious
-2. strengthen client-entry evidence quality for the `initialize` retirement track
-3. perform bounded connector/runtime verification only when it changes an active decision
+## Default next package
+
+Unless fresh live evidence changes the order, the next package should be:
+
+1. `COMP-1`: strengthen real client-entry evidence for the `initialize` retirement track
+2. `SURF-1`: perform bounded connector/UI verification only if it changes that decision
+3. `DOC-2`: extend `DIRECTORY` coverage only for a currently high-churn area
 
 ## Current readiness rule
 

@@ -57,6 +57,7 @@ Read these first, in this order:
    - `_workflow/ROADMAP.md`
    - `DIRECTORY.md`
    - `READINESS.md` is the component-readiness bridge used to infer the next autonomous package when `ROADMAP.md` alone is too coarse.
+   - `ROADMAP.md` must read as a downstream execution order derived from `READINESS.md`, not as an independent wish list.
 
 Do not infer active work from historical plan files unless `_workflow/state.json` or this index names it as active.
 
@@ -383,6 +384,8 @@ Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
 Next recommended action: keep the recovered supervisor-managed OAuth21 `3008` runtime stable at the repo `69`-tool connector-visible surface, then capture any client/connector evidence needed for the `initialize` retirement/debug track. Modular parity against `C:\Work\mcp` is now repo-complete; do not reopen `/mcp/sessionless` target planning.
+
+Readiness-derived default next package: strengthen real client-entry evidence for the `initialize` retirement track first; only do connector/UI revalidation if it changes that decision, and only expand `DIRECTORY` coverage for a currently high-churn area.
 
 Recently completed:
 
