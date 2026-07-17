@@ -75,12 +75,56 @@ function safeReadRecentLines(filePath, windowSize) {
   }
 
   try {
-    const text = fs.readFileSync(filePath, "utf8");
-    const lines = text.trim() ? text.trim().split(/\r?\n/) : [];
+    const stat = fs.statSync(filePath);
+    if (!stat.isFile()) {
+      return { exists: true, total_lines: 0, lines: [], read_error: "Audit log path is not a file." };
+    }
+
+    const chunkSize = 64 * 1024;
+    const tail = [];
+    let totalLines = 0;
+    let carry = "";
+    const fd = fs.openSync(filePath, "r");
+
+    try {
+      let position = stat.size;
+      while (position > 0) {
+        const readSize = Math.min(chunkSize, position);
+        position -= readSize;
+        const buffer = Buffer.allocUnsafe(readSize);
+        const bytesRead = fs.readSync(fd, buffer, 0, readSize, position);
+        if (!bytesRead) break;
+
+        const isFileEndChunk = position + bytesRead === stat.size;
+        const text = buffer.toString("utf8", 0, bytesRead);
+        const combined = text + carry;
+        const parts = combined.split(/\r?\n/);
+
+        if (isFileEndChunk && /(?:\r?\n)$/.test(combined)) {
+          parts.pop();
+        }
+
+        carry = parts.shift() || "";
+        totalLines += parts.length;
+
+        for (let index = parts.length - 1; index >= 0 && tail.length < windowSize; index -= 1) {
+          tail.push(parts[index]);
+        }
+      }
+    } finally {
+      fs.closeSync(fd);
+    }
+
+    if (carry.trim()) {
+      totalLines += 1;
+      if (tail.length < windowSize) tail.push(carry);
+    }
+
+    const lines = tail.reverse();
     return {
       exists: true,
-      total_lines: lines.length,
-      lines: lines.slice(-windowSize),
+      total_lines: totalLines,
+      lines,
       read_error: "",
     };
   } catch (error) {

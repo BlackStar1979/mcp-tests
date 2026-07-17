@@ -1,5 +1,7 @@
 const assert = require("node:assert/strict");
 const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("../src/stage_metadata");
+const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { buildObservabilityStatus } = require("../src/observability_status");
 const { createObservabilityStatusTool } = require("../tools/observability_status");
@@ -118,6 +120,33 @@ const customWindows = buildObservabilityStatus({
   auditLogPath,
 });
 assert.deepEqual(customWindows.client_entry_path_diagnostics.blocker_matrix_filter.windows.map((item) => item.label), ["2d", "all"]);
+
+const largeAuditLogPath = path.join(os.tmpdir(), `mcp-tests-observability-large-${process.pid}.jsonl`);
+try {
+  const payload = [];
+  for (let index = 0; index < 2000; index += 1) {
+    payload.push(JSON.stringify({
+      ts: `2026-07-17T12:${String(Math.floor(index / 60)).padStart(2, "0")}:${String(index % 60).padStart(2, "0")}.000Z`,
+      event: "rpc_received",
+      kind: "method_not_allowed",
+    }));
+  }
+  fs.writeFileSync(largeAuditLogPath, `${payload.join("\n")}\n`);
+  const largeStatus = buildObservabilityStatus({
+    args: { window_size: 5 },
+    runtimeStatusProvider: () => runtimeStatus,
+    auditLogPath: largeAuditLogPath,
+  });
+  assert.equal(largeStatus.audit_jsonl_health.total_lines, 2000);
+  assert.equal(largeStatus.audit_jsonl_health.window_checked, 5);
+  assert.equal(largeStatus.audit_jsonl_health.last_ts, "2026-07-17T12:33:19.000Z");
+  assert.equal(largeStatus.events.rpc_received_count, 5);
+  assert.equal(largeStatus.events.rpc_kinds.method_not_allowed, 5);
+} finally {
+  try {
+    fs.unlinkSync(largeAuditLogPath);
+  } catch (_) {}
+}
 
 const tool = createObservabilityStatusTool({ runtimeStatusProvider: () => runtimeStatus, auditLogPath });
 assert.equal(tool.name, "observability_status");
