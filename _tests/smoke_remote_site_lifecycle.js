@@ -2,7 +2,11 @@
 
 const assert = require("node:assert/strict");
 
-const { withSftp } = require("../src/util/remote_site_tools");
+const {
+  readRemoteSiteFile,
+  remoteSiteRuntimeStatus,
+  withSftp,
+} = require("../src/util/remote_site_tools");
 
 function buildDeps({ endError = null, operationError = null } = {}) {
   const calls = [];
@@ -12,6 +16,24 @@ function buildDeps({ endError = null, operationError = null } = {}) {
     }
     async mkdir(remoteDir) {
       calls.push({ type: "mkdir", remoteDir });
+    }
+    async list(remoteDir) {
+      calls.push({ type: "list", remoteDir });
+      return [];
+    }
+    async stat(remotePath) {
+      calls.push({ type: "stat", remotePath });
+      return { type: "-", size: Buffer.byteLength("hello world", "utf8") };
+    }
+    async get(remotePath) {
+      calls.push({ type: "get", remotePath });
+      if (remotePath.endsWith("/logs/site-files.log")) {
+        return Buffer.from("", "utf8");
+      }
+      if (remotePath.endsWith(".json")) {
+        return Buffer.from("{\"schema_version\":1,\"operation\":\"write\",\"operation_id\":\"op-1\"}", "utf8");
+      }
+      return Buffer.from("hello world", "utf8");
     }
     async end() {
       calls.push({ type: "end" });
@@ -50,6 +72,21 @@ function buildDeps({ endError = null, operationError = null } = {}) {
   assert.ok(success.calls.some((entry) => entry.type === "connect"));
   assert.equal(success.calls.filter((entry) => entry.type === "mkdir").length, 4);
   assert.equal(success.calls.filter((entry) => entry.type === "end").length, 1);
+
+  const readOnlyRead = buildDeps();
+  const readResult = await readRemoteSiteFile({
+    vps_config_ref: "ignored.json",
+    remote_path: "index.html",
+  }, readOnlyRead.deps);
+  assert.equal(readResult.text, "hello world");
+  assert.equal(readOnlyRead.calls.filter((entry) => entry.type === "mkdir").length, 0);
+
+  const readOnlyStatus = buildDeps();
+  const statusResult = await remoteSiteRuntimeStatus({
+    vps_config_ref: "ignored.json",
+  }, readOnlyStatus.deps);
+  assert.equal(statusResult.status, "attention_required");
+  assert.equal(readOnlyStatus.calls.filter((entry) => entry.type === "mkdir").length, 0);
 
   const cleanupFailure = buildDeps({ endError: new Error("disconnect blocked") });
   await assert.rejects(

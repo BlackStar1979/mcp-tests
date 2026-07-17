@@ -154,12 +154,13 @@ async function loadSftpClient() {
   return mod.default || mod;
 }
 
-async function withSftp(configRef, fn, deps = {}) {
+async function withSftp(configRef, fn, deps = {}, options = {}) {
   const loadRemoteConfigImpl = typeof deps.loadRemoteConfig === "function" ? deps.loadRemoteConfig : loadRemoteConfig;
   const loadSftpClientImpl = typeof deps.loadSftpClient === "function" ? deps.loadSftpClient : loadSftpClient;
   const config = validateRemoteConfigShape(await loadRemoteConfigImpl(configRef));
   const SftpClient = await loadSftpClientImpl();
   const client = new SftpClient();
+  const ensureOpsDirs = options.ensureOpsDirs !== false;
   let result;
   let operationError = null;
   try {
@@ -171,7 +172,9 @@ async function withSftp(configRef, fn, deps = {}) {
       passphrase: config.passphrase,
       readyTimeout: 15000,
     });
-    await ensureRemoteSiteOpsDirs(client, config);
+    if (ensureOpsDirs) {
+      await ensureRemoteSiteOpsDirs(client, config);
+    }
     result = await fn(client, config);
   } catch (error) {
     operationError = error;
@@ -750,7 +753,7 @@ function buildRemoteSiteRuntimeStatus({ inventoryEntries, metadataRecords, logLi
   };
 }
 
-async function listRemoteSiteFiles(args = {}) {
+async function listRemoteSiteFiles(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
     const rel = args.remote_path === "." || args.remote_path == null
       ? "."
@@ -758,17 +761,17 @@ async function listRemoteSiteFiles(args = {}) {
     const remoteDir = rel === "." ? config.siteRoot : joinRemoteUnderRoot(config.siteRoot, rel);
     const entries = await client.list(remoteDir);
     return { remote_path: rel, count: entries.length, entries };
-  });
+  }, deps, { ensureOpsDirs: false });
 }
 
-async function readRemoteSiteFile(args = {}) {
+async function readRemoteSiteFile(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
     const rel = normalizeRemoteRelativePath(args.remote_path);
     assertAllowedFileExtension(rel, config.allowedExtensions);
     const remoteFile = joinRemoteUnderRoot(config.siteRoot, rel);
     const text = await readRemoteText(client, remoteFile, config.maxFileBytes);
     return { remote_path: rel, bytes: Buffer.byteLength(text, "utf8"), text };
-  });
+  }, deps, { ensureOpsDirs: false });
 }
 
 async function writeRemoteSiteFile(args = {}) {
@@ -1004,17 +1007,17 @@ async function restoreRemoteSiteFile(args = {}) {
   });
 }
 
-async function remoteSiteRuntimeStatus(args = {}) {
+async function remoteSiteRuntimeStatus(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
     const inventoryEntries = await collectOpsRootInventory(client, config.opsRoot);
     const metadataRecords = await readOpsMetadataRecords(client, config.opsRoot, inventoryEntries);
     const logLines = await readOpsLogLines(client, config.opsRoot);
     const payload = buildRemoteSiteRuntimeStatus({ inventoryEntries, metadataRecords, logLines });
     return { ...payload, text: JSON.stringify(payload, null, 2) };
-  });
+  }, deps, { ensureOpsDirs: false });
 }
 
-async function previewRemoteSiteRetention(args = {}) {
+async function previewRemoteSiteRetention(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
     const inventoryEntries = await collectOpsRootInventory(client, config.opsRoot);
     const metadataRecords = await readOpsMetadataRecords(client, config.opsRoot, inventoryEntries);
@@ -1045,7 +1048,7 @@ async function previewRemoteSiteRetention(args = {}) {
       },
       text: JSON.stringify(payload, null, 2),
     };
-  });
+  }, deps, { ensureOpsDirs: false });
 }
 
 module.exports = {
