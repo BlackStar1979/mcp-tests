@@ -133,7 +133,7 @@ async function movePath(fromPath, toPath, { allowProtected = false } = {}) {
   };
 }
 
-async function deletePath(relativePath, { allowProtected = false } = {}) {
+async function deletePath(relativePath, { allowProtected = false } = {}, { fsImpl = fs } = {}) {
   const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected });
   if (resolved.rootRelativePath === ".") {
     throw new Error("Refusing to delete root.");
@@ -145,26 +145,36 @@ async function deletePath(relativePath, { allowProtected = false } = {}) {
     `${parsed.name}__deleted_${stamp()}${parsed.ext || ""}`
   );
   const trashAbsolute = path.resolve(resolved.rootPath, trashRelative);
-  await fs.mkdir(path.dirname(trashAbsolute), { recursive: true });
-  await fs.rename(resolved.absolutePath, trashAbsolute);
+  await fsImpl.mkdir(path.dirname(trashAbsolute), { recursive: true });
+  await fsImpl.rename(resolved.absolutePath, trashAbsolute);
 
   const metadataRelative = `${trashRelative}.json`;
   const metadataAbsolute = path.resolve(resolved.rootPath, metadataRelative);
-  await fs.writeFile(
-    metadataAbsolute,
-    JSON.stringify(
-      {
-        deleted_at: new Date().toISOString(),
-        original_path: resolved.displayPath,
-        original_root_alias: resolved.rootAlias,
-        original_root_relative_path: toPosix(resolved.rootRelativePath),
-        trash_path: makeDisplayPath(resolved.rootAlias, trashRelative),
-      },
-      null,
-      2
-    ),
-    "utf8"
-  );
+  try {
+    await fsImpl.writeFile(
+      metadataAbsolute,
+      JSON.stringify(
+        {
+          deleted_at: new Date().toISOString(),
+          original_path: resolved.displayPath,
+          original_root_alias: resolved.rootAlias,
+          original_root_relative_path: toPosix(resolved.rootRelativePath),
+          trash_path: makeDisplayPath(resolved.rootAlias, trashRelative),
+        },
+        null,
+        2
+      ),
+      "utf8"
+    );
+  } catch (error) {
+    try {
+      await fsImpl.mkdir(path.dirname(resolved.absolutePath), { recursive: true });
+      await fsImpl.rename(trashAbsolute, resolved.absolutePath);
+    } catch (rollbackError) {
+      error.message = `${error.message} [rollback failed: ${rollbackError?.message || String(rollbackError)}]`;
+    }
+    throw error;
+  }
 
   return {
     status: "moved_to_trash",

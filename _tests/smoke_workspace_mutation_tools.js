@@ -12,7 +12,7 @@ const { movePathTool } = require("../tools/move_path");
 const { restorePathTool } = require("../tools/restore_path");
 const { writeFileTool } = require("../tools/write_file");
 const { safeWorkspacePath } = require("../src/util/workspace_roots");
-const { restorePath } = require("../src/util/workspace_mutation");
+const { deletePath, restorePath } = require("../src/util/workspace_mutation");
 
 const WORK_ROOT = safeWorkspacePath(".").absolutePath;
 const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tools");
@@ -93,6 +93,44 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
     assert.deepEqual(warningRestoreResult.warnings, ["restore metadata cleanup failed: metadata delete blocked"]);
     await fs.access(path.join(WORK_ROOT, warningMoved));
     await fs.access(warningMetadataAbsolute);
+
+    const deleteFailureFile = "_control/smoke_workspace_mutation_tools/delete-failure.txt";
+    await writeFileTool.execute({ path: deleteFailureFile, content: "delete failure\n" });
+    const deleteFailureAbsolute = path.join(WORK_ROOT, deleteFailureFile);
+    const deleteFailureResolved = safeWorkspacePath(deleteFailureFile);
+    const deleteParsed = path.posix.parse(String(deleteFailureResolved.rootRelativePath).replaceAll("\\", "/"));
+    const deleteFailureTrashRelative = path.posix.join(
+      ".mcp_trash",
+      deleteParsed.dir || "",
+      `${deleteParsed.name}__deleted_`
+    );
+    await assert.rejects(
+      () => deletePath(
+        deleteFailureFile,
+        {},
+        {
+          fsImpl: {
+            ...fs,
+            async writeFile(targetPath, content, encoding) {
+              if (String(targetPath).includes(`${path.sep}.mcp_trash${path.sep}`) && String(targetPath).endsWith(".json")) {
+                throw new Error("metadata write blocked");
+              }
+              return fs.writeFile(targetPath, content, encoding);
+            },
+          },
+        }
+      ),
+      /metadata write blocked/
+    );
+    const restoredAfterFailure = await fs.readFile(deleteFailureAbsolute, "utf8");
+    assert.equal(restoredAfterFailure, "delete failure\n");
+
+    const trashRoot = path.join(WORK_ROOT, ".mcp_trash");
+    let trashEntries = [];
+    try {
+      trashEntries = await fs.readdir(trashRoot, { recursive: true });
+    } catch {}
+    assert.equal(trashEntries.some((entry) => String(entry).includes("delete-failure__deleted_")), false);
 
     const finalText = await fs.readFile(path.join(WORK_ROOT, moved), "utf8");
     assert.match(finalText, /PATCHED/);
