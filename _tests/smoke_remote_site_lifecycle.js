@@ -3,12 +3,13 @@
 const assert = require("node:assert/strict");
 
 const {
+  previewRemoteSiteRetention,
   readRemoteSiteFile,
   remoteSiteRuntimeStatus,
   withSftp,
 } = require("../src/util/remote_site_tools");
 
-function buildDeps({ endError = null, operationError = null } = {}) {
+function buildDeps({ endError = null, operationError = null, listError = null } = {}) {
   const calls = [];
   class FakeSftpClient {
     async connect(config) {
@@ -19,6 +20,7 @@ function buildDeps({ endError = null, operationError = null } = {}) {
     }
     async list(remoteDir) {
       calls.push({ type: "list", remoteDir });
+      if (listError) throw listError;
       return [];
     }
     async stat(remotePath) {
@@ -87,6 +89,21 @@ function buildDeps({ endError = null, operationError = null } = {}) {
   }, readOnlyStatus.deps);
   assert.equal(statusResult.status, "attention_required");
   assert.equal(readOnlyStatus.calls.filter((entry) => entry.type === "mkdir").length, 0);
+
+  const missingOpsRootStatus = buildDeps({ listError: new Error("No such file") });
+  const missingStatusResult = await remoteSiteRuntimeStatus({
+    vps_config_ref: "ignored.json",
+  }, missingOpsRootStatus.deps);
+  assert.equal(missingStatusResult.status, "attention_required");
+  assert.equal(missingStatusResult.inventory.total_artifacts, 0);
+  assert.equal(missingOpsRootStatus.calls.filter((entry) => entry.type === "mkdir").length, 0);
+
+  const missingOpsRootPreview = buildDeps({ listError: new Error("No such file") });
+  const previewResult = await previewRemoteSiteRetention({
+    vps_config_ref: "ignored.json",
+  }, missingOpsRootPreview.deps);
+  assert.equal(previewResult.purge_count, 0);
+  assert.equal(missingOpsRootPreview.calls.filter((entry) => entry.type === "mkdir").length, 0);
 
   const cleanupFailure = buildDeps({ endError: new Error("disconnect blocked") });
   await assert.rejects(

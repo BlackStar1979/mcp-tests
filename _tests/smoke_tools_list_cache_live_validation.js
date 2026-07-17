@@ -31,7 +31,7 @@ assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
 assert.ok(index.includes("repo truth now expects `69` connector-visible authenticated tools"));
-assert.ok(index.includes("Live OAuth21 `3008` currently reports `69` tools"));
+assert.ok(index.includes("Fresh repo-native client-entry evidence from `2026-07-17` is now anchored to current OAuth21 `3008` `server_start_id = 2026-07-17T17:38:34.244Z`"));
 assert.ok(index.includes("visible-tool enumeration is still not independently re-verified"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `69`"));
 assert.ok(canon.includes("tool count `69`"));

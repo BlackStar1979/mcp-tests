@@ -27,10 +27,14 @@ assert.match(result.stdout, /wrote DIRECTORY\.md/);
 assert.match(result.stdout, /wrote _workflow\\control_plane\\snapshots\\/);
 
 const packageJson = read("package.json");
+const scriptSource = read(path.join("scripts", "generate_directory_docs.js"));
 const rootDirectory = read("DIRECTORY.md");
 const workflowDirectory = read("_workflow/DIRECTORY.md");
+const todayMatch = scriptSource.match(/const TODAY = "([^"]+)";/);
+assert.ok(todayMatch, "generator must declare TODAY constant");
+const today = todayMatch[1];
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
-assert.ok(rootDirectory.includes("Updated: 2026-07-13"));
+assert.ok(rootDirectory.includes(`Updated: ${today}`));
 assert.ok(workflowDirectory.includes("bounded OAuth21 prune records/backups"));
 
 const snapshotDirs = fs

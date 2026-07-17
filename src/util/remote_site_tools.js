@@ -503,7 +503,16 @@ function remoteRowMode(row) {
 async function collectOpsRootInventory(client, opsRoot) {
   const inventory = [];
   async function walk(dir, prefix = "") {
-    const rows = await client.list(dir);
+    let rows;
+    try {
+      rows = await client.list(dir);
+    } catch (error) {
+      const message = error?.message || String(error);
+      if (!prefix && /No such file|not exist|ENOENT/i.test(message)) {
+        return;
+      }
+      throw error;
+    }
     for (const row of rows) {
       const rel = prefix ? `${prefix}/${row.name}` : row.name;
       const full = posixPath.join(dir, row.name);
