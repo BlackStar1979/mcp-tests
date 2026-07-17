@@ -78,13 +78,29 @@ Read the queue through this dependency spine:
 3. `DOC-2`
    Directory coverage is still incomplete outside the currently normalized operational areas.
 
+## Autonomous execution packages
+
+Use these package IDs directly when selecting work. Do not invent a parallel queue unless one of these packages is completed, blocked by external timing, or disproved by fresh evidence.
+
+| Package | Targets | Why now | Primary evidence source | Stop condition | If blocked |
+| --- | --- | --- | --- | --- | --- |
+| `COMP-1A` | `COMP-1`, `OBS-1` | Highest-leverage open gate still controls compatibility retirement. | `_logs/.mcp-tests-audit.jsonl`, `observability_status`, `_workflow/operator_decisions/initialize_client_compatibility_evidence.md` | Current operational client-family evidence is refreshed into a clear `initialize_only` or `server_discover_entry` verdict. | Hold compatibility steady and move to `DOC-2A` only if the blocker is waiting on fresh external client traffic rather than missing repo work. |
+| `COMP-1B` | `COMP-1`, `SURF-1` | Only worth doing after `COMP-1A` narrows the blocker or changes the decision boundary. | Fresh `COMP-1A` result plus `_workflow/operator_decisions/initialize_retirement_decision_prep.md` | A bounded retirement-decision delta exists or the blocker is restated with tighter current evidence. | Fall back to `SURF-1A` only if connector/UI truth is the deciding ambiguity. |
+| `SURF-1A` | `SURF-1` | Connector/UI verification matters only when it changes the protocol-debt decision. | Codex/OpenAI UI evidence, runtime callability evidence, connector-facing tool inventory evidence | UI-visible enumeration is either confirmed decision-relevant or explicitly ruled irrelevant to the current package. | Return to `COMP-1A`; do not let UI verification become autonomous churn. |
+| `DOC-2A` | `DOC-1`, `DOC-2` | Safe fallback package when higher-leverage protocol evidence is externally timing-bound. | `READINESS.md`, `ROADMAP.md`, `ACTIVE_WORKFLOW_INDEX.md`, current directory maps | One real high-churn documentation gap is closed and the next bounded package remains inferable from docs alone. | Stop if the work would become repo-wide documentation sprawl instead of a bounded orientation fix. |
+
 ## Default next package
 
 Unless fresh live evidence changes the order, the next package should be:
 
-1. `COMP-1`: strengthen real client-entry evidence for the `initialize` retirement track
-2. `SURF-1`: perform bounded connector/UI verification only if it changes that decision
-3. `DOC-2`: extend `DIRECTORY` coverage only for a currently high-churn area
+1. `COMP-1A`: refresh or restate the current operational client-entry blocker from bounded live evidence
+2. `COMP-1B`: only if `COMP-1A` changes the decision surface
+3. `SURF-1A`: only if UI-visible surface truth is what still prevents the decision
+4. `DOC-2A`: only when protocol evidence is timing-bound and a real documentation gap remains
+
+## Latest supporting package
+
+- `2026-07-17`: read-only remote-site flows (`list`, `read`, runtime status, retention preview) no longer create remote ops directories as a side effect. Guarded by `smoke_remote_site_lifecycle` and the full `run_all_smokes --skip-network` suite.
 
 ## Current readiness rule
 

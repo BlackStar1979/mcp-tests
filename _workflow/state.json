@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-17T09:30:00.000Z",
+  "updated_at": "2026-07-17T18:30:23.005Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -124,7 +124,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
-      "live_3008_server_start_id": "2026-07-10T11:14:38.432Z",
+      "live_3008_server_start_id": "2026-07-17T17:38:34.244Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -278,7 +278,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 69,
-      "server_start_id": "2026-07-10T11:14:38.432Z",
+      "server_start_id": "2026-07-17T17:38:34.244Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -305,7 +305,7 @@
       "connector_map_status": "live_healthz_and_startup_inventory_69_repo_expected_69_connector_ui_visibility_unverified",
       "repo_current_expected_tool_count": 69,
       "evidence_source": "live_healthz_plus_supervisor_startup_inventory_on_oauth21_3008_and_repo_surface_fingerprint",
-      "server_start_id": "2026-07-10T11:14:38.432Z",
+      "server_start_id": "2026-07-17T17:38:34.244Z",
       "connector_ui_visibility_verified_now": false,
       "ttl_ms": 0,
       "cache_scope": "private",

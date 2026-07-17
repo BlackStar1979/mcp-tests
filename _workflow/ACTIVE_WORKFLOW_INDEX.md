@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-07-17
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Live OAuth21 `3008` currently reports `69` tools on server_start_id `2026-07-12T16:24:00.291Z`, and retained real-client Codex evidence still shows `initialize -> notifications/initialized -> tools/list -> tools/call` rather than fresh `server/discover` entry for operational clients. A fresh repo-native client-entry report run on `2026-07-17` against `_logs/.mcp-tests-audit.jsonl` identifies the current audit window as `initialize_only` on `server_start_id 2026-07-16T17:49:38.692Z`, with `2` successful legacy `initialize` responses for `codex-mcp-client 0.145.0-alpha.18` and no matching fresh `server/discover` entry in that same current window. Earlier 2026-07-15 diagnostics still matter because they distinguish stale-entry windows from fresh reconnect evidence, so follow-up-only `tools/list` / `tools/call` traffic must not be misread as migration proof. The refreshed report also classifies retained client families as `operational_known`, `synthetic_validation`, or `unknown`, and the retained `server_discover_only` evidence currently belongs only to synthetic validation traffic rather than an operational client family. The same retained-evidence filters are available through `observability_status` via `client_name`, `evidence_scope`, and `max_age_days`, so runtime-facing diagnostics and workflow script evidence no longer diverge. The new blocker-matrix helper sharpens the interpretation further: the blocker already exists in the freshest retained operational windows (`1d` = `codex-mcp-client 0.145.0-alpha.18`, `2d` = `0.145.0-alpha.18` plus `0.144.2`), while only wider `7d+` windows add the older operational tail. A fresh 2026-07-15 model-runtime probe also confirms that `mcp__workbench` is callable again from this Codex runtime session. Repo-validated OAuth21 hardening from 2026-07-16 now additionally covers pre-auth public-route throttling, oversized-body aborts, and bounded DCR client-registry growth with retention-based dead-client pruning. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Fresh repo-native client-entry evidence from `2026-07-17` is now anchored to current OAuth21 `3008` `server_start_id = 2026-07-17T17:38:34.244Z`: the current audit window is still `initialize_only`, with `2` successful legacy `initialize` responses for `codex-mcp-client 0.145.0-alpha.18`, `2` matching `notifications/initialized`, `2` `tools/list`, `15` `tools/call`, and no fresh same-window `server/discover`. Earlier 2026-07-15 diagnostics still matter because they distinguish stale-entry windows from fresh reconnect evidence, so follow-up-only `tools/list` / `tools/call` traffic must not be misread as migration proof. The refreshed report also classifies retained client families as `operational_known`, `synthetic_validation`, or `unknown`, and the retained `server_discover_only` evidence currently belongs only to synthetic validation traffic rather than an operational client family. The same retained-evidence filters are available through `observability_status` via `client_name`, `evidence_scope`, and `max_age_days`, so runtime-facing diagnostics and workflow script evidence no longer diverge. The new blocker-matrix helper sharpens the interpretation further: the blocker already exists in the freshest retained operational windows (`1d` = `codex-mcp-client 0.145.0-alpha.18`, `2d` = `0.145.0-alpha.18` plus `0.144.2`), while only wider `7d+` windows add the older operational tail. A fresh 2026-07-15 model-runtime probe also confirms that `mcp__workbench` is callable again from this Codex runtime session. Repo-validated OAuth21 hardening from 2026-07-16 now additionally covers pre-auth public-route throttling, oversized-body aborts, and bounded DCR client-registry growth with retention-based dead-client pruning. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
@@ -78,7 +78,7 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / live runtime `healthz` and fresh audit evidence now confirm 69 tools on server_start_id `2026-07-12T16:24:00.291Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / current client-entry evidence is anchored to server_start_id `2026-07-17T17:38:34.244Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
@@ -385,7 +385,19 @@ Historical records remain traceability evidence, not the active queue.
 
 Next recommended action: keep the recovered supervisor-managed OAuth21 `3008` runtime stable at the repo `69`-tool connector-visible surface, then capture any client/connector evidence needed for the `initialize` retirement/debug track. Modular parity against `C:\Work\mcp` is now repo-complete; do not reopen `/mcp/sessionless` target planning.
 
-Readiness-derived default next package: strengthen real client-entry evidence for the `initialize` retirement track first; use current-window evidence plus blocker-matrix freshness windows together when describing the blocker; only do connector/UI revalidation if it changes that decision, and only expand `DIRECTORY` coverage for a currently high-churn area.
+Readiness-derived default next package queue:
+
+1. `COMP-1A`
+   Refresh current operational client-entry evidence for the `initialize` retirement track first, using current-window evidence plus blocker-matrix freshness windows together.
+
+2. `COMP-1B`
+   Only if `COMP-1A` changes or materially narrows the blocker.
+
+3. `SURF-1A`
+   Only if connector/UI-visible surface truth is what still prevents the decision.
+
+4. `DOC-2A`
+   Only if protocol evidence is externally timing-bound and a real documentation gap remains worth a bounded fix.
 
 Recently completed:
 
@@ -412,6 +424,8 @@ Recently completed:
 - Added the bounded OAuth21 prune control-plane package for stale durable OAuth state maintenance, including preview/receipt/gate/apply helpers, an explicit operator-run script, execute/rollback records, and regression coverage without wiring automatic runtime apply.
 
 - Revalidated that `mcp__workbench` is callable again from the current Codex model runtime session, without overstating that as a fresh full UI visible-tool enumeration proof.
+
+- Completed a bounded remote-site lifecycle hardening package on `main`: read-only remote-site flows (`list`, `read`, runtime status, retention preview) no longer create remote ops directories as a side effect. Guard coverage: `_tests/smoke_remote_site_lifecycle.js`; full suite still green via `node _tests/run_all_smokes.js --skip-network`.
 
 - Reviewed the adjacent/auth watchlist and intentionally avoided opening speculative new ledgers; recorded future trigger conditions instead.
 
