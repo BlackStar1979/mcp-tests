@@ -94,6 +94,13 @@ const CONFIG = {
       "WORKING_COURSE.md": "Compatibility pointer kept for older references; current content redirects to the canon.",
     },
   },
+  "_workflow/_diagnostics": {
+    title: "workflow diagnostics directory map",
+    entries: {
+      "DIRECTORY.md": "Functional map for the workflow diagnostics area itself.",
+    },
+    tail: "Use this directory for bounded workflow-facing diagnostic outputs and derived evidence summaries. Treat it as support material for active decisions, not as canonical workflow truth.",
+  },
   "scripts": {
     title: "scripts directory map",
     entries: {

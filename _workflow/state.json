@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-17T18:30:23.005Z",
+  "updated_at": "2026-07-17T19:10:00.000Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -65,8 +65,8 @@
   },
   "workflow_progress_markers": {
     "current_working_course": "post_53d-initialize-compatibility-debug-and-retirement-scope",
-    "next_primary": "post_53d-real-client-entry-evidence-refresh",
-    "next_secondary": "post_53d-decision-relevant-connector-visible-surface-revalidation",
+    "next_primary": "post_53d-doc-2a-diagnostics-orientation",
+    "next_secondary": "post_53d-real-client-entry-evidence-refresh",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",

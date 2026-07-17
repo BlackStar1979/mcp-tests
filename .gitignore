@@ -35,7 +35,8 @@ _stages/
 .temp/
 tmp/
 temp/
-_workflow/_diagnostics/
+_workflow/_diagnostics/*
+!_workflow/_diagnostics/DIRECTORY.md
 _workflow/experiments/
 _workflow/control_plane/deploy_records/
 _workflow/control_plane/file_backups/

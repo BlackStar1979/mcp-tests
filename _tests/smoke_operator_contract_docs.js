@@ -18,6 +18,7 @@ for (const rel of [
   ["_tests", "DIRECTORY.md"],
   ["_control", "DIRECTORY.md"],
   ["_logs", "DIRECTORY.md"],
+  ["_workflow", "_diagnostics", "DIRECTORY.md"],
   ["_workflow", "NORTHSTAR.md"],
   ["_workflow", "STATE.md"],
   ["_workflow", "READINESS.md"],
@@ -48,11 +49,11 @@ assert.ok(readiness.includes("## Component maturity"));
 assert.ok(readiness.includes("Operator-facing documentation contract"));
 assert.ok(readiness.includes("callable again from the Codex model runtime layer"));
 assert.ok(roadmap.includes("## Priority matrix"));
-assert.ok(roadmap.includes("Expand `DIRECTORY` coverage"));
+assert.ok(roadmap.includes("Close one real high-churn documentation gap"));
 assert.ok(roadmap.includes("current smoke baseline and connector/runtime truth"));
-assert.ok(roadmap.includes("Use current-window evidence plus blocker-matrix freshness windows together"));
-assert.equal(workflowState.workflow_progress_markers.next_primary, "post_53d-real-client-entry-evidence-refresh");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "post_53d-decision-relevant-connector-visible-surface-revalidation");
+assert.ok(roadmap.includes("Do not churn on the same evidence window"));
+assert.equal(workflowState.workflow_progress_markers.next_primary, "post_53d-doc-2a-diagnostics-orientation");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "post_53d-real-client-entry-evidence-refresh");
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -60,8 +61,8 @@ assert.ok(workflowReadme.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowReadme.includes("`_workflow/ROADMAP.md`"));
 assert.ok(workflowIndex.includes("Operator-facing documentation contract"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
-assert.ok(workflowIndex.includes("`next_primary = post_53d-real-client-entry-evidence-refresh`"));
-assert.ok(workflowIndex.includes("`next_secondary = post_53d-decision-relevant-connector-visible-surface-revalidation`"));
+assert.ok(workflowIndex.includes("`next_primary = post_53d-doc-2a-diagnostics-orientation`"));
+assert.ok(workflowIndex.includes("`next_secondary = post_53d-real-client-entry-evidence-refresh`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 
