@@ -15,6 +15,8 @@ Updated: 2026-07-17
   Historical or bounded probe helpers retained for evidence; not active target architecture by themselves.
 - `client_entry_path_report.js`
   Audit-reading helper that summarizes current client entry-path evidence on the live authenticated route, including `client_name`, `evidence_scope`, and optional `max_age_days` filters for separating operational/synthetic evidence and trimming stale retained client families.
+- `client_entry_blocker_matrix.js`
+  Audit-reading helper that compares initialize-retirement blocker sets across multiple retained-evidence freshness windows so current operational blockers can be separated from long-tail history.
 - `wait_for_client_entry_path.js`
   Polling helper that waits for the next fresh entry event for a named client family and returns the corresponding entry-path report once new evidence appears, with the same optional retained-evidence freshness filter.
 - `test_mcp_backup.ps1`, `test_mcp_deploy.ps1`, `test_mcp_restart.ps1`, `test_mcp_rollback.ps1`
