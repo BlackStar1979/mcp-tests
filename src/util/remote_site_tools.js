@@ -54,6 +54,76 @@ function normalizeConfigRef(configRef) {
   return resolved;
 }
 
+function isAbsolutePosixPath(value) {
+  return typeof value === "string" && posixPath.normalize(value.replaceAll("\\", "/")).startsWith("/");
+}
+
+function normalizeAllowedExtensions(value) {
+  const source = Array.isArray(value) && value.length > 0 ? value : Array.from(ALLOWED_EXTENSIONS);
+  const normalized = new Set();
+  for (const item of source) {
+    const ext = String(item || "").trim().toLowerCase();
+    if (!ext) {
+      throw new Error("allowedExtensions entries must be non-empty");
+    }
+    if (!ext.startsWith(".")) {
+      throw new Error(`allowedExtensions entry must start with '.': ${ext}`);
+    }
+    normalized.add(ext);
+  }
+  if (normalized.size === 0) {
+    throw new Error("allowedExtensions must contain at least one extension");
+  }
+  return normalized;
+}
+
+function validateRemoteConfigShape(config) {
+  if (!config || typeof config !== "object") {
+    throw new Error("remote config must be an object");
+  }
+  const host = String(config.host || "").trim();
+  const username = String(config.username || "").trim();
+  if (!host) throw new Error("remote config missing required field: host");
+  if (!username) throw new Error("remote config missing required field: username");
+
+  const port = Number(config.port);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) {
+    throw new Error("remote config port must be an integer between 1 and 65535");
+  }
+
+  const siteRoot = posixPath.normalize(String(config.siteRoot || "").replaceAll("\\", "/"));
+  if (!isAbsolutePosixPath(siteRoot)) {
+    throw new Error("remote config siteRoot must be an absolute POSIX path");
+  }
+
+  const opsRoot = posixPath.normalize(String(config.opsRoot || "").replaceAll("\\", "/"));
+  if (!isAbsolutePosixPath(opsRoot)) {
+    throw new Error("remote config opsRoot must be an absolute POSIX path");
+  }
+
+  const maxFileBytes = Number(config.maxFileBytes);
+  if (!Number.isInteger(maxFileBytes) || maxFileBytes < 1) {
+    throw new Error("remote config maxFileBytes must be a positive integer");
+  }
+
+  const privateKey = String(config.privateKey || "");
+  if (!privateKey.trim()) {
+    throw new Error("remote config privateKey must be non-empty");
+  }
+
+  return {
+    host,
+    port,
+    username,
+    privateKey,
+    passphrase: typeof config.passphrase === "string" ? config.passphrase : undefined,
+    siteRoot,
+    opsRoot,
+    maxFileBytes,
+    allowedExtensions: normalizeAllowedExtensions(config.allowedExtensions),
+  };
+}
+
 async function loadRemoteConfig(configRef) {
   const configPath = normalizeConfigRef(configRef);
   const raw = await fs.readFile(configPath, "utf8");
@@ -66,10 +136,7 @@ async function loadRemoteConfig(configRef) {
   }
   const privateKeyPath = path.resolve(String(parsed.privateKeyPath));
   const privateKey = await fs.readFile(privateKeyPath, "utf8");
-  const allowedExtensions = Array.isArray(parsed.allowedExtensions) && parsed.allowedExtensions.length > 0
-    ? new Set(parsed.allowedExtensions.map((value) => String(value).toLowerCase()))
-    : new Set(ALLOWED_EXTENSIONS);
-  return {
+  return validateRemoteConfigShape({
     host: String(parsed.host),
     port: Number.isInteger(parsed.port) ? parsed.port : 22,
     username: String(parsed.username),
@@ -78,8 +145,8 @@ async function loadRemoteConfig(configRef) {
     siteRoot: posixPath.normalize(String(parsed.siteRoot).replaceAll("\\", "/")),
     opsRoot: posixPath.normalize(String(parsed.opsRoot).replaceAll("\\", "/")),
     maxFileBytes: Number.isInteger(parsed.maxFileBytes) ? parsed.maxFileBytes : DEFAULT_MAX_FILE_BYTES,
-    allowedExtensions,
-  };
+    allowedExtensions: parsed.allowedExtensions,
+  });
 }
 
 async function loadSftpClient() {
@@ -90,7 +157,7 @@ async function loadSftpClient() {
 async function withSftp(configRef, fn, deps = {}) {
   const loadRemoteConfigImpl = typeof deps.loadRemoteConfig === "function" ? deps.loadRemoteConfig : loadRemoteConfig;
   const loadSftpClientImpl = typeof deps.loadSftpClient === "function" ? deps.loadSftpClient : loadSftpClient;
-  const config = await loadRemoteConfigImpl(configRef);
+  const config = validateRemoteConfigShape(await loadRemoteConfigImpl(configRef));
   const SftpClient = await loadSftpClientImpl();
   const client = new SftpClient();
   let result;

@@ -66,6 +66,40 @@ function buildDeps({ endError = null, operationError = null } = {}) {
     /operation failed \[cleanup failed: disconnect blocked\]/
   );
 
+  const invalidSiteRoot = buildDeps();
+  invalidSiteRoot.deps.loadRemoteConfig = async () => ({
+    host: "example.test",
+    port: 22,
+    username: "codex",
+    privateKey: "key",
+    siteRoot: "srv/site",
+    opsRoot: "/srv/ops",
+    maxFileBytes: 1024,
+    allowedExtensions: new Set([".txt"]),
+  });
+  await assert.rejects(
+    () => withSftp("ignored.json", async () => "ok", invalidSiteRoot.deps),
+    /siteRoot must be an absolute POSIX path/
+  );
+  assert.equal(invalidSiteRoot.calls.filter((entry) => entry.type === "connect").length, 0);
+
+  const invalidOpsRoot = buildDeps();
+  invalidOpsRoot.deps.loadRemoteConfig = async () => ({
+    host: "example.test",
+    port: 22,
+    username: "codex",
+    privateKey: "key",
+    siteRoot: "/srv/site",
+    opsRoot: "srv/ops",
+    maxFileBytes: 1024,
+    allowedExtensions: new Set([".txt"]),
+  });
+  await assert.rejects(
+    () => withSftp("ignored.json", async () => "ok", invalidOpsRoot.deps),
+    /opsRoot must be an absolute POSIX path/
+  );
+  assert.equal(invalidOpsRoot.calls.filter((entry) => entry.type === "connect").length, 0);
+
   console.log("smoke_remote_site_lifecycle ok");
 })().catch((error) => {
   console.error(error?.stack || error?.message || String(error));
