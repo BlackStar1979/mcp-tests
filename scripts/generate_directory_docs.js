@@ -101,6 +101,20 @@ const CONFIG = {
     },
     tail: "Use this directory for bounded workflow-facing diagnostic outputs and derived evidence summaries. Treat it as support material for active decisions, not as canonical workflow truth.",
   },
+  "_workflow/control_plane/file_backups": {
+    title: "control-plane file backups directory map",
+    entries: {
+      "DIRECTORY.md": "Functional map for the control-plane file-backup area itself.",
+    },
+    tail: "This directory stores runtime-owned backup bundles produced by bounded operational procedures. Treat the contents as support artifacts, not active workflow authority.",
+  },
+  "_workflow/control_plane/oauth21_prune_backups": {
+    title: "oauth21 prune backups directory map",
+    entries: {
+      "DIRECTORY.md": "Functional map for the OAuth21 prune backup area itself.",
+    },
+    tail: "This directory stores backup bundles emitted by explicit OAuth21 prune execute runs. Treat the contents as control-plane support artifacts, not canonical workflow truth.",
+  },
   "scripts": {
     title: "scripts directory map",
     entries: {
@@ -225,6 +239,52 @@ function renderSnapshotDirectory(relPath, name) {
   return lines.join("\n");
 }
 
+function describeArtifactEntry(entry) {
+  const name = entry.name;
+  if (entry.isDirectory()) {
+    return `Nested runtime-owned artifact bundle for \`${name}\`.`;
+  }
+  if (/\.json$/i.test(name)) {
+    return "JSON control-plane receipt, record, or metadata artifact emitted by the bounded procedure.";
+  }
+  if (/\.sqlite$/i.test(name)) {
+    return "SQLite backup artifact captured for bounded rollback or auditability.";
+  }
+  if (/\.bak($|\.)/i.test(name)) {
+    return "Legacy or bounded backup artifact retained for traceability.";
+  }
+  return "Runtime-owned support artifact retained for bounded operational procedures.";
+}
+
+function renderRuntimeOwnedDirectory({ title, intro, tail, entries }) {
+  const lines = [
+    "# DIRECTORY",
+    "",
+    `Status: active ${title}`,
+    `Updated: ${TODAY}`,
+    "",
+  ];
+  if (intro) {
+    lines.push(intro);
+    lines.push("");
+  }
+  if (!entries.length) {
+    lines.push("It is currently empty.");
+  } else {
+    for (const entry of entries) {
+      const suffix = entry.isDirectory() ? "/" : "";
+      lines.push(`- \`${entry.name}${suffix}\``);
+      lines.push(`  ${describeArtifactEntry(entry)}`);
+    }
+  }
+  if (tail) {
+    lines.push("");
+    lines.push(tail);
+  }
+  lines.push("");
+  return lines.join("\n");
+}
+
 for (const [relPath, cfg] of Object.entries(CONFIG)) {
   const target = path.join(ROOT, relPath, "DIRECTORY.md");
   writeFile(target, render(cfg));
@@ -236,5 +296,41 @@ if (fs.existsSync(snapshotRoot)) {
     if (!entry.isDirectory()) continue;
     const relPath = path.join("_workflow", "control_plane", "snapshots", entry.name);
     writeFile(path.join(ROOT, relPath, "DIRECTORY.md"), renderSnapshotDirectory(relPath, entry.name));
+  }
+}
+
+const runtimeOwnedRoots = [
+  {
+    relPath: path.join("_workflow", "control_plane", "file_backups"),
+    title: "control-plane file backups directory map",
+    intro: "This directory stores runtime-owned backup bundles produced by bounded operational procedures.",
+    tail: "Treat these backup bundles as support artifacts for rollback and auditability, not as active workflow authority.",
+  },
+  {
+    relPath: path.join("_workflow", "control_plane", "oauth21_prune_backups"),
+    title: "oauth21 prune backups directory map",
+    intro: "This directory stores backup bundles emitted by explicit OAuth21 prune execute runs.",
+    tail: "Treat these backup bundles as control-plane support artifacts, not as canonical workflow truth.",
+  },
+];
+
+for (const rootConfig of runtimeOwnedRoots) {
+  const absRoot = path.join(ROOT, rootConfig.relPath);
+  if (!fs.existsSync(absRoot)) continue;
+  const entries = fs.readdirSync(absRoot, { withFileTypes: true }).filter((entry) => entry.name !== "DIRECTORY.md");
+  writeFile(path.join(absRoot, "DIRECTORY.md"), renderRuntimeOwnedDirectory({ ...rootConfig, entries }));
+  for (const entry of entries) {
+    if (!entry.isDirectory()) continue;
+    const childAbs = path.join(absRoot, entry.name);
+    const childEntries = fs.readdirSync(childAbs, { withFileTypes: true }).filter((item) => item.name !== "DIRECTORY.md");
+    writeFile(
+      path.join(childAbs, "DIRECTORY.md"),
+      renderRuntimeOwnedDirectory({
+        title: `${path.basename(rootConfig.relPath)} bundle directory map`,
+        intro: `This bundle belongs to \`${entry.name}\` under \`${rootConfig.relPath.replaceAll("\\", "/")}\`.`,
+        tail: "This directory is runtime-owned support material for bounded control-plane procedures.",
+        entries: childEntries,
+      })
+    );
   }
 }

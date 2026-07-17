@@ -47,8 +47,8 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current workflow track
 
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_primary = post_53d-doc-2a-diagnostics-orientation`
-- `next_secondary = post_53d-real-client-entry-evidence-refresh`
+- `next_primary = post_53d-real-client-entry-evidence-refresh`
+- `next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`
 
 ## Verified documentation authorities
 
@@ -72,7 +72,8 @@ Summarize the current validated product state in one operator-facing place witho
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but full UI visible-tool enumeration is still not independently re-verified in the same step.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
 - Fresh repo-native `2026-07-17` client-entry reporting against `_logs/.mcp-tests-audit.jsonl` now shows the current window on `server_start_id 2026-07-17T17:38:34.244Z` as `initialize_only`, with `2` successful legacy `initialize` responses for `codex-mcp-client 0.145.0-alpha.18` and no matching fresh `server/discover` entry in that same window.
-- Because the July 17, 2026 `COMP-1A` refresh did not change that blocker, the current bounded fallback package is `DOC-2A` until new external client traffic creates a meaningfully new evidence window.
+- Because the July 17, 2026 `COMP-1A` refresh did not change that blocker, the next primary package is another `COMP-1A` evidence refresh only after new external client traffic creates a meaningfully new evidence window.
+- `DOC-2A` is now complete: bounded directory-map coverage now includes the runtime-owned control-plane backup roots and the live OAuth21 prune backup bundle, so that fallback no longer needs to stay active as the default queue head.
 - Live `observability_status` now exposes the same retained blocker-matrix view as the workflow helper, so current-window entry evidence and `1d`/`2d`/`7d`/`30d`/`all` blocker framing no longer depend on a script-only code path.
 - `state.json` is an orientation map, not a progress log.
 - Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.

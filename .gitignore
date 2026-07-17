@@ -39,9 +39,16 @@ _workflow/_diagnostics/*
 !_workflow/_diagnostics/DIRECTORY.md
 _workflow/experiments/
 _workflow/control_plane/deploy_records/
-_workflow/control_plane/file_backups/
+_workflow/control_plane/file_backups/*
+!_workflow/control_plane/file_backups/DIRECTORY.md
+!_workflow/control_plane/file_backups/*/
+_workflow/control_plane/file_backups/*/*
+!_workflow/control_plane/file_backups/*/DIRECTORY.md
 _workflow/control_plane/oauth21_prune_backups/*
 !_workflow/control_plane/oauth21_prune_backups/DIRECTORY.md
+!_workflow/control_plane/oauth21_prune_backups/*/
+_workflow/control_plane/oauth21_prune_backups/*/*
+!_workflow/control_plane/oauth21_prune_backups/*/DIRECTORY.md
 _workflow/control_plane/oauth21_prune_records/*
 !_workflow/control_plane/oauth21_prune_records/DIRECTORY.md
 _workflow/control_plane/retired_root_backups/

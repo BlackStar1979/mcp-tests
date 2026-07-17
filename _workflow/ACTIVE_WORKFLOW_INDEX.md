@@ -8,8 +8,8 @@ Current repo/runtime note: repo truth now expects `69` connector-visible authent
 
 Current workflow markers:
 - `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_primary = post_53d-doc-2a-diagnostics-orientation`
-- `next_secondary = post_53d-real-client-entry-evidence-refresh`
+- `next_primary = post_53d-real-client-entry-evidence-refresh`
+- `next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -387,16 +387,13 @@ Next recommended action: keep the recovered supervisor-managed OAuth21 `3008` ru
 
 Readiness-derived default next package queue:
 
-1. `DOC-2A`
-   Close one real high-churn documentation gap while protocol evidence waits on fresh external client traffic.
-
-2. `COMP-1A`
+1. `COMP-1A`
    Refresh current operational client-entry evidence for the `initialize` retirement track when a new evidence window exists.
 
-3. `COMP-1B`
+2. `COMP-1B`
    Only if the next `COMP-1A` run changes or materially narrows the blocker.
 
-4. `SURF-1A`
+3. `SURF-1A`
    Only if connector/UI-visible surface truth is what still prevents the decision.
 
 Recently completed:
@@ -410,6 +407,8 @@ Recently completed:
 - Recorded repo-side no-handshake evidence for the surviving `/mcp` route: `server/discover` plus useful `tools/list` / `tools/call` behavior no longer depend on a preceding `initialize`.
 
 - Refreshed the bounded `COMP-1A` client-entry package on July 17, 2026: the current live OAuth21 `3008` window still shows `initialize_only` for `codex-mcp-client 0.145.0-alpha.18`, and the retained blocker already exists in the freshest `1d` and `2d` operational windows, so the queue now falls back to `DOC-2A` until new external traffic appears.
+
+- Completed the bounded `DOC-2A` fallback on July 17, 2026 by extending `DIRECTORY.md` coverage into the runtime-owned control-plane backup roots and the live OAuth21 prune backup bundle, without widening that rollout into repo-wide documentation churn.
 
 - Recorded real client compatibility evidence for the surviving `/mcp` route: a freshly re-added Codex desktop Streamable HTTP connector can complete OAuth and still call legacy `initialize`, so bounded dual recognition remains temporary compatibility debt only.
 

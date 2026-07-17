@@ -87,12 +87,12 @@ for (const stale of [
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.equal(state.workflow_progress_markers.next_primary, "post_53d-doc-2a-diagnostics-orientation");
-assert.equal(state.workflow_progress_markers.next_secondary, "post_53d-real-client-entry-evidence-refresh");
-assert.ok(index.includes("`next_primary = post_53d-doc-2a-diagnostics-orientation`"));
-assert.ok(index.includes("`next_secondary = post_53d-real-client-entry-evidence-refresh`"));
-assert.ok(canon.includes("`next_primary = post_53d-doc-2a-diagnostics-orientation`"));
-assert.ok(canon.includes("`next_secondary = post_53d-real-client-entry-evidence-refresh`"));
+assert.equal(state.workflow_progress_markers.next_primary, "post_53d-real-client-entry-evidence-refresh");
+assert.equal(state.workflow_progress_markers.next_secondary, "post_53d-retirement-decision-delta-if-evidence-changes");
+assert.ok(index.includes("`next_primary = post_53d-real-client-entry-evidence-refresh`"));
+assert.ok(index.includes("`next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`"));
+assert.ok(canon.includes("`next_primary = post_53d-real-client-entry-evidence-refresh`"));
+assert.ok(canon.includes("`next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`"));
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);
 assert.equal(state.active_target_direction.sse_allowed_in_end_state, false);
