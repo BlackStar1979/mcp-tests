@@ -18,8 +18,8 @@ Audit snapshot from `2026-07-17`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- last confirmed result from `2026-07-16`: `ok=true`
-- last confirmed section counts from that full run: `7` public scripts and `250` authenticated scripts
+- last confirmed result from `2026-07-17`: `ok=true`
+- last confirmed section counts from that full run: `7` public scripts and `252` authenticated scripts
 - current manifest file contains `260` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `259` sectioned scripts, not all `260` manifest entries
 
 ## Orientation
