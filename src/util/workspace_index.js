@@ -1,6 +1,7 @@
 "use strict";
 
-const fs = require("node:fs/promises");
+const fs = require("node:fs");
+const fsp = require("node:fs/promises");
 const path = require("node:path");
 const { buildWorkRoots, listWorkspaceRoots } = require("./workspace_roots");
 
@@ -9,6 +10,7 @@ const MAX_INDEX_FILE_BYTES = 512 * 1024;
 const MAX_INDEX_TEXT_CHARS = 12000;
 const DEFAULT_MAX_FILES = 20000;
 const DEFAULT_MAX_DIRS = 5000;
+const STREAM_READ_BUFFER_BYTES = 64 * 1024;
 const SKIPPED_SCAN_DIRS = new Set([
   ".archive",
   ".git",
@@ -78,9 +80,40 @@ function displayPathForRoot(root, absolutePath) {
   return root.primary ? rel : `@${root.alias}/${rel}`;
 }
 
+function appendBoundedText(current, addition, maxChars) {
+  if (!addition) return { text: current, truncated: false };
+  if (current.length >= maxChars) return { text: current, truncated: true };
+
+  const remaining = maxChars - current.length;
+  if (addition.length > remaining) {
+    return { text: current + addition.slice(0, remaining), truncated: true };
+  }
+
+  return { text: current + addition, truncated: false };
+}
+
+async function readTextPrefixStream(absolutePath, maxChars) {
+  const limit = Math.max(0, Number(maxChars) || MAX_INDEX_TEXT_CHARS);
+  let text = "";
+  const stream = fs.createReadStream(absolutePath, {
+    encoding: "utf8",
+    highWaterMark: STREAM_READ_BUFFER_BYTES,
+  });
+
+  for await (const chunk of stream) {
+    const appended = appendBoundedText(text, chunk, limit);
+    text = appended.text;
+    if (appended.truncated) {
+      break;
+    }
+  }
+
+  return text;
+}
+
 async function loadWorkspaceIndex(options = {}) {
   const indexFile = getIndexFile(options);
-  return JSON.parse(await fs.readFile(indexFile, "utf8"));
+  return JSON.parse(await fsp.readFile(indexFile, "utf8"));
 }
 
 async function buildWorkspaceIndex(options = {}) {
@@ -102,7 +135,7 @@ async function buildWorkspaceIndex(options = {}) {
       truncated = true;
       return;
     }
-    const entries = await fs.readdir(dir, { withFileTypes: true });
+    const entries = await fsp.readdir(dir, { withFileTypes: true });
     for (const entry of entries) {
       if (truncated) return;
       const full = path.join(dir, entry.name);
@@ -126,22 +159,22 @@ async function buildWorkspaceIndex(options = {}) {
         skipped.extension += 1;
         continue;
       }
-      const stat = await fs.stat(full);
+      const stat = await fsp.stat(full);
       if (stat.size > MAX_INDEX_FILE_BYTES) {
         skipped.oversized += 1;
         continue;
       }
-      const text = await fs.readFile(full, "utf8");
+      const text = await readTextPrefixStream(full, MAX_INDEX_TEXT_CHARS);
       docs.push({
         path: displayPath,
-        sample: text.slice(0, MAX_INDEX_TEXT_CHARS),
+        sample: text,
         bytes: stat.size,
         modified: stat.mtime.toISOString(),
       });
     }
   }
 
-  await fs.mkdir(path.dirname(indexFile), { recursive: true });
+  await fsp.mkdir(path.dirname(indexFile), { recursive: true });
   for (const root of roots) {
     await walk(root, root.path);
     if (truncated) break;
@@ -166,7 +199,7 @@ async function buildWorkspaceIndex(options = {}) {
     },
   };
 
-  await fs.writeFile(indexFile, JSON.stringify(index, null, 2));
+  await fsp.writeFile(indexFile, JSON.stringify(index, null, 2));
   return index;
 }
 

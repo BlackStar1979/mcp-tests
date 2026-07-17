@@ -85,6 +85,36 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       });
       assert.equal(filenamePrioritySearch.success, true);
       assert.equal(filenamePrioritySearch.results[0].path, "src/client_entry_path_diagnostics.js");
+
+      const largeFile = path.join(tempRoot, "docs", "large.md");
+      const largeText = Array.from({ length: 4000 }, (_, index) => `line-${String(index + 1).padStart(4, "0")} ${"x".repeat(80)}`).join("\n");
+      await fs.writeFile(largeFile, largeText, "utf8");
+
+      const originalReadFile = fs.readFile;
+      let blockedReads = 0;
+      fs.readFile = async function blocked(filePath, ...rest) {
+        if (path.resolve(String(filePath)) === path.resolve(largeFile)) {
+          blockedReads += 1;
+          throw new Error(`full read blocked for ${filePath}`);
+        }
+        return originalReadFile.call(this, filePath, ...rest);
+      };
+
+      try {
+        const streamedIndex = await buildWorkspaceIndex({
+          roots: isolatedRoots,
+          indexFile: isolatedIndexFile,
+          max_files: 100,
+          max_dirs: 100,
+        });
+        const largeDoc = streamedIndex.docs.find((doc) => doc.path === "docs/large.md");
+        assert.ok(largeDoc, "large doc should be indexed");
+        assert.equal(largeDoc.sample.length, 12000);
+        assert.equal(largeDoc.sample, largeText.slice(0, 12000));
+        assert.equal(blockedReads, 0);
+      } finally {
+        fs.readFile = originalReadFile;
+      }
     } finally {
       await fs.rm(tempRoot, { recursive: true, force: true });
     }
