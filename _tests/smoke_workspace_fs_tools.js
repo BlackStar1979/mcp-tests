@@ -93,6 +93,30 @@ async function callTool(name, args) {
     assert.equal(streamed.truncated, true);
     assert.equal(streamed.text, source.slice(0, 120));
     assert.equal(blockedCalls, 0);
+
+    const streamedLines = await workspaceFs.readFileLines(tempRelative, {
+      startLine: 100,
+      endLine: 102,
+      maxChars: 1000,
+    });
+    assert.equal(streamedLines.total_lines, source.split(/\r\n|\n|\r/).length);
+    assert.equal(streamedLines.returned_lines, 3);
+    assert.equal(streamedLines.text, [
+      `L100 ${source.split("\n")[99]}`,
+      `L101 ${source.split("\n")[100]}`,
+      `L102 ${source.split("\n")[101]}`,
+    ].join("\n"));
+    assert.equal(blockedCalls, 0);
+
+    const streamedChunk = await workspaceFs.readFileChunk(tempRelative, {
+      offset: 10,
+      length: 50,
+    });
+    assert.equal(streamedChunk.chars, source.length);
+    assert.equal(streamedChunk.returned_chars, 50);
+    assert.equal(streamedChunk.text, source.slice(10, 60));
+    assert.equal(streamedChunk.has_more, true);
+    assert.equal(blockedCalls, 0);
   } finally {
     fs.readFile = originalReadFile;
     await fs.rm(tempDir, { recursive: true, force: true });

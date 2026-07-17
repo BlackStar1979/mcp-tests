@@ -31,6 +31,10 @@ function makeNumberedLines(lines, firstLine) {
   }));
 }
 
+function splitTrailingCarriageReturn(line) {
+  return line.endsWith("\r") ? line.slice(0, -1) : line;
+}
+
 async function fileInfoFor(relativePath) {
   const resolved = safeWorkspacePath(relativePath);
   const stat = await fsp.stat(resolved.absolutePath);
@@ -133,6 +137,114 @@ async function scanTextFile(absolutePath, maxChars) {
   };
 }
 
+async function scanTextLines(absolutePath, { startLine, endLine, includeLineNumbers, maxChars }) {
+  const limit = normalizePositiveInt(maxChars, MAX_READ_LINES_CHARS);
+  const stream = fs.createReadStream(absolutePath, {
+    encoding: "utf8",
+    highWaterMark: STREAM_READ_BUFFER_BYTES,
+  });
+  let renderedText = "";
+  let currentLine = 0;
+  let totalLines = 0;
+  let buffer = "";
+  let truncated = false;
+  const selected = [];
+
+  function addSelectedLine(rawLine) {
+    const clean = splitTrailingCarriageReturn(rawLine);
+    selected.push(clean);
+    const rendered = includeLineNumbers === false ? clean : `L${currentLine} ${clean}`;
+    const addition = renderedText ? `\n${rendered}` : rendered;
+    const appended = appendBoundedText(renderedText, addition, limit);
+    renderedText = appended.text;
+    if (appended.truncated) {
+      truncated = true;
+      return false;
+    }
+    return true;
+  }
+
+  outer: for await (const chunk of stream) {
+    buffer += chunk;
+    let newlineIndex = buffer.indexOf("\n");
+
+    while (newlineIndex !== -1) {
+      const line = buffer.slice(0, newlineIndex);
+      buffer = buffer.slice(newlineIndex + 1);
+      currentLine += 1;
+      totalLines = currentLine;
+
+      if (currentLine >= startLine && currentLine <= endLine) {
+        if (!truncated && !addSelectedLine(line)) {
+          truncated = true;
+        }
+      }
+
+      newlineIndex = buffer.indexOf("\n");
+    }
+  }
+
+  if (buffer.length > 0) {
+    currentLine += 1;
+    totalLines = currentLine;
+    if (!truncated && currentLine >= startLine && currentLine <= endLine) {
+      addSelectedLine(buffer);
+    }
+  }
+
+  return {
+    totalLines,
+    selected,
+    renderedText,
+    truncated,
+  };
+}
+
+async function scanTextChunk(absolutePath, { offset, length }) {
+  const safeOffset = Math.max(0, Number(offset) || 0);
+  const safeLength = Math.min(normalizePositiveInt(length, MAX_READ_CHUNK_CHARS), MAX_READ_CHUNK_CHARS);
+  const targetLength = safeLength + 1;
+  const stream = fs.createReadStream(absolutePath, {
+    encoding: "utf8",
+    highWaterMark: STREAM_READ_BUFFER_BYTES,
+  });
+  let chars = 0;
+  let collected = "";
+  let truncated = false;
+
+  for await (const chunk of stream) {
+    const chunkStart = chars;
+    const chunkEnd = chars + chunk.length;
+    chars = chunkEnd;
+
+    if (chunkEnd <= safeOffset) {
+      continue;
+    }
+
+    if (truncated) {
+      continue;
+    }
+
+    const sliceStart = Math.max(0, safeOffset - chunkStart);
+    const appended = appendBoundedText(collected, chunk.slice(sliceStart), targetLength);
+    collected = appended.text;
+
+    if (collected.length > safeLength || appended.truncated) {
+      truncated = true;
+      collected = collected.slice(0, safeLength);
+    }
+  }
+
+  return {
+    chars,
+    offset: safeOffset,
+    length: safeLength,
+    returnedText: collected,
+    hasMore: safeOffset + collected.length < chars,
+    truncated,
+  };
+}
+
 async function readFile(relativePath, { maxChars = MAX_READ_FILE_CHARS } = {}) {
   const resolved = safeWorkspacePath(relativePath);
   const stat = await fsp.stat(resolved.absolutePath);
@@ -166,21 +278,15 @@ async function readFileLines(relativePath, { startLine, endLine, includeLineNumb
     throw new Error("Not a file.");
   }
 
-  const text = await fsp.readFile(resolved.absolutePath, "utf8");
-  const allLines = text.length === 0 ? [] : text.split(/\r\n|\n|\r/);
-  const totalLines = allLines.length;
-  const fromIndex = Math.max(0, startLine - 1);
-  const toIndexExclusive = Math.min(totalLines, endLine);
-  const selected = allLines.slice(fromIndex, toIndexExclusive);
+  const scanned = await scanTextLines(resolved.absolutePath, {
+    startLine,
+    endLine,
+    includeLineNumbers,
+    maxChars,
+  });
+  const selected = scanned.selected;
+  const totalLines = scanned.totalLines;
   const effectiveStartLine = selected.length > 0 ? startLine : Math.min(startLine, totalLines + 1);
-
-  const rendered = includeLineNumbers
-    ? selected.map((line, index) => `L${effectiveStartLine + index} ${line}`).join("\n")
-    : selected.join("\n");
-
-  const limit = normalizePositiveInt(maxChars, MAX_READ_LINES_CHARS);
-  const truncated = rendered.length > limit;
-  const returnedText = truncated ? rendered.slice(0, limit) : rendered;
 
   return {
     path: resolved.displayPath,
@@ -193,9 +299,9 @@ async function readFileLines(relativePath, { startLine, endLine, includeLineNumb
     total_lines: totalLines,
     returned_lines: selected.length,
     include_line_numbers: includeLineNumbers,
-    returned_chars: returnedText.length,
-    truncated,
-    text: returnedText,
+    returned_chars: scanned.renderedText.length,
+    truncated: scanned.truncated,
+    text: scanned.renderedText,
     lines: makeNumberedLines(selected, effectiveStartLine),
   };
 }
@@ -207,22 +313,19 @@ async function readFileChunk(relativePath, { offset = 0, length = MAX_READ_CHUNK
     throw new Error("Not a file.");
   }
 
-  const text = await fsp.readFile(resolved.absolutePath, "utf8");
-  const safeOffset = Math.max(0, Number(offset) || 0);
-  const safeLength = Math.min(normalizePositiveInt(length, MAX_READ_CHUNK_CHARS), MAX_READ_CHUNK_CHARS);
-  const returnedText = text.slice(safeOffset, safeOffset + safeLength);
+  const scanned = await scanTextChunk(resolved.absolutePath, { offset, length });
 
   return {
     path: resolved.displayPath,
     root_alias: resolved.rootAlias,
     bytes: stat.size,
-    chars: text.length,
-    offset: safeOffset,
-    length: safeLength,
-    returned_chars: returnedText.length,
-    next_offset: safeOffset + returnedText.length,
-    has_more: safeOffset + returnedText.length < text.length,
-    text: returnedText,
+    chars: scanned.chars,
+    offset: scanned.offset,
+    length: scanned.length,
+    returned_chars: scanned.returnedText.length,
+    next_offset: scanned.offset + scanned.returnedText.length,
+    has_more: scanned.hasMore,
+    text: scanned.returnedText,
   };
 }
 
