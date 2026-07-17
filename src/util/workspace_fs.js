@@ -1,4 +1,5 @@
-const fs = require("node:fs/promises");
+const fs = require("node:fs");
+const fsp = require("node:fs/promises");
 const path = require("node:path");
 
 const { safeWorkspacePath } = require("./workspace_roots");
@@ -6,6 +7,7 @@ const { safeWorkspacePath } = require("./workspace_roots");
 const MAX_READ_FILE_CHARS = 30000;
 const MAX_READ_LINES_CHARS = 50000;
 const MAX_READ_CHUNK_CHARS = 50000;
+const STREAM_READ_BUFFER_BYTES = 64 * 1024;
 
 function lineCount(text) {
   if (text.length === 0) {
@@ -31,7 +33,7 @@ function makeNumberedLines(lines, firstLine) {
 
 async function fileInfoFor(relativePath) {
   const resolved = safeWorkspacePath(relativePath);
-  const stat = await fs.stat(resolved.absolutePath);
+  const stat = await fsp.stat(resolved.absolutePath);
   return {
     path: resolved.displayPath,
     type: stat.isDirectory() ? "directory" : "file",
@@ -44,12 +46,12 @@ async function fileInfoFor(relativePath) {
 
 async function listDirectory(relativePath = ".") {
   const resolved = safeWorkspacePath(relativePath);
-  const stat = await fs.stat(resolved.absolutePath);
+  const stat = await fsp.stat(resolved.absolutePath);
   if (!stat.isDirectory()) {
     throw new Error("Not a directory.");
   }
 
-  const entries = await fs.readdir(resolved.absolutePath, { withFileTypes: true });
+  const entries = await fsp.readdir(resolved.absolutePath, { withFileTypes: true });
   const results = [];
   for (const entry of entries) {
     results.push(await fileInfoFor(path.posix.join(resolved.displayPath === "." ? "" : resolved.displayPath.replace(/\\/g, "/"), entry.name)));
@@ -63,28 +65,93 @@ async function listDirectory(relativePath = ".") {
   };
 }
 
+function appendBoundedText(current, addition, maxChars) {
+  if (!addition) return { text: current, truncated: false };
+  if (current.length >= maxChars) return { text: current, truncated: true };
+
+  const remaining = maxChars - current.length;
+  if (addition.length > remaining) {
+    return { text: current + addition.slice(0, remaining), truncated: true };
+  }
+
+  return { text: current + addition, truncated: false };
+}
+
+function countLineBreaks(chunk, state) {
+  for (const char of chunk) {
+    if (char === "\n") {
+      if (state.previousWasCarriageReturn) {
+        state.previousWasCarriageReturn = false;
+        continue;
+      }
+      state.lineBreaks += 1;
+      continue;
+    }
+
+    if (char === "\r") {
+      state.lineBreaks += 1;
+      state.previousWasCarriageReturn = true;
+      continue;
+    }
+
+    state.previousWasCarriageReturn = false;
+  }
+}
+
+async function scanTextFile(absolutePath, maxChars) {
+  const limit = normalizePositiveInt(maxChars, MAX_READ_FILE_CHARS);
+  const stream = fs.createReadStream(absolutePath, {
+    encoding: "utf8",
+    highWaterMark: STREAM_READ_BUFFER_BYTES,
+  });
+  const lineState = {
+    lineBreaks: 0,
+    previousWasCarriageReturn: false,
+  };
+  let text = "";
+  let truncated = false;
+  let chars = 0;
+  let hasContent = false;
+
+  for await (const chunk of stream) {
+    if (!chunk) {
+      continue;
+    }
+    hasContent = true;
+    chars += chunk.length;
+    const appended = appendBoundedText(text, chunk, limit);
+    text = appended.text;
+    truncated ||= appended.truncated;
+    countLineBreaks(chunk, lineState);
+  }
+
+  return {
+    text,
+    truncated,
+    chars,
+    totalLines: hasContent ? lineState.lineBreaks + 1 : 0,
+  };
+}
+
 async function readFile(relativePath, { maxChars = MAX_READ_FILE_CHARS } = {}) {
   const resolved = safeWorkspacePath(relativePath);
-  const stat = await fs.stat(resolved.absolutePath);
+  const stat = await fsp.stat(resolved.absolutePath);
   if (!stat.isFile()) {
     throw new Error("Not a file.");
   }
 
-  const text = await fs.readFile(resolved.absolutePath, "utf8");
-  const limit = normalizePositiveInt(maxChars, MAX_READ_FILE_CHARS);
-  const truncated = text.length > limit;
-  const returnedText = truncated ? text.slice(0, limit) : text;
+  const scanned = await scanTextFile(resolved.absolutePath, maxChars);
 
   return {
     path: resolved.displayPath,
     root_alias: resolved.rootAlias,
     bytes: stat.size,
-    chars: text.length,
-    returned_chars: returnedText.length,
-    total_lines: lineCount(text),
-    truncated,
-    text: returnedText,
-    hint: truncated ? "Use read_file_lines or read_file_chunk for precise continuation." : undefined,
+    chars: scanned.chars,
+    returned_chars: scanned.text.length,
+    total_lines: scanned.totalLines,
+    truncated: scanned.truncated,
+    text: scanned.text,
+    hint: scanned.truncated ? "Use read_file_lines or read_file_chunk for precise continuation." : undefined,
   };
 }
 
@@ -94,12 +161,12 @@ async function readFileLines(relativePath, { startLine, endLine, includeLineNumb
   }
 
   const resolved = safeWorkspacePath(relativePath);
-  const stat = await fs.stat(resolved.absolutePath);
+  const stat = await fsp.stat(resolved.absolutePath);
   if (!stat.isFile()) {
     throw new Error("Not a file.");
   }
 
-  const text = await fs.readFile(resolved.absolutePath, "utf8");
+  const text = await fsp.readFile(resolved.absolutePath, "utf8");
   const allLines = text.length === 0 ? [] : text.split(/\r\n|\n|\r/);
   const totalLines = allLines.length;
   const fromIndex = Math.max(0, startLine - 1);
@@ -135,12 +202,12 @@ async function readFileLines(relativePath, { startLine, endLine, includeLineNumb
 
 async function readFileChunk(relativePath, { offset = 0, length = MAX_READ_CHUNK_CHARS } = {}) {
   const resolved = safeWorkspacePath(relativePath);
-  const stat = await fs.stat(resolved.absolutePath);
+  const stat = await fsp.stat(resolved.absolutePath);
   if (!stat.isFile()) {
     throw new Error("Not a file.");
   }
 
-  const text = await fs.readFile(resolved.absolutePath, "utf8");
+  const text = await fsp.readFile(resolved.absolutePath, "utf8");
   const safeOffset = Math.max(0, Number(offset) || 0);
   const safeLength = Math.min(normalizePositiveInt(length, MAX_READ_CHUNK_CHARS), MAX_READ_CHUNK_CHARS);
   const returnedText = text.slice(safeOffset, safeOffset + safeLength);

@@ -1,6 +1,8 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs/promises");
+const path = require("node:path");
 
 const MCP_URL = process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3008/mcp";
 const EXTRA_HEADERS = process.env.MCP_TEST_SMOKE_HEADERS_JSON ? JSON.parse(process.env.MCP_TEST_SMOKE_HEADERS_JSON) : {};
@@ -67,6 +69,34 @@ async function callTool(name, args) {
   const absolute = await callTool("read_file", { path: "C:/Work/mcp-tests/README.md" });
   assert.equal(absolute.success, false);
   assert.match(absolute.error, /drive-letter/i);
+
+  const workspaceFs = require("../src/util/workspace_fs");
+  const tempDir = path.join(__dirname, "..", "_tmp");
+  const tempFile = path.join(tempDir, "workspace-fs-read-file-streaming.txt");
+  const tempRelative = "mcp-tests/_tmp/workspace-fs-read-file-streaming.txt";
+  const source = Array.from({ length: 1200 }, (_, index) => `line-${String(index + 1).padStart(4, "0")} ${"x".repeat(64)}`).join("\n");
+  const originalReadFile = fs.readFile;
+  let blockedCalls = 0;
+
+  await fs.mkdir(tempDir, { recursive: true });
+  await fs.writeFile(tempFile, source, "utf8");
+  fs.readFile = async function blocked(...args) {
+    blockedCalls += 1;
+    throw new Error(`fs.promises.readFile was called: ${args[0]}`);
+  };
+
+  try {
+    const streamed = await workspaceFs.readFile(tempRelative, { maxChars: 120 });
+    assert.equal(streamed.chars, source.length);
+    assert.equal(streamed.returned_chars, 120);
+    assert.equal(streamed.total_lines, source.split(/\r\n|\n|\r/).length);
+    assert.equal(streamed.truncated, true);
+    assert.equal(streamed.text, source.slice(0, 120));
+    assert.equal(blockedCalls, 0);
+  } finally {
+    fs.readFile = originalReadFile;
+    await fs.rm(tempDir, { recursive: true, force: true });
+  }
 
   console.log("smoke_workspace_fs_tools ok");
 })().catch((error) => {

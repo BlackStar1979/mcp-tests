@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active src directory map
-Updated: 2026-07-17
+Updated: 2026-07-13
 
 - `auth/`
   OAuth/OAuth21, legacy auth, and authorization-server implementation modules.
@@ -19,7 +19,5 @@ Updated: 2026-07-17
   Read-only truth/audit helpers used for repo/runtime/workflow inspection.
 - `util/`
   General utility support used across runtime and guards.
-- `client_entry_blocker_matrix.js`
-  Shared blocker-matrix helper for current-window diagnostics plus retained-evidence freshness-window comparisons; used by both live `observability_status` and workflow evidence scripts.
 - `README.md`
   Source-tree orientation note.
