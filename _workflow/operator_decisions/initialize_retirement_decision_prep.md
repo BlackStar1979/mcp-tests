@@ -48,6 +48,20 @@ The current decision-prep baseline is now explicit:
         - `operational_known`
         - `synthetic_validation`
         - `unknown`
+    - latest 2026-07-17 blocker-matrix evidence further sharpens the retained-evidence interpretation:
+      - `1d` retained operational blocker set:
+        - `codex-mcp-client 0.145.0-alpha.18`
+      - `2d` retained operational blocker set:
+        - `codex-mcp-client 0.145.0-alpha.18`
+        - `codex-mcp-client 0.144.2`
+      - `7d` retained operational blocker set expands to:
+        - `openai-mcp 1.0.0`
+        - `codex-mcp-client 0.144.1`
+        - `Anthropic/ClaudeAI 1.0.0`
+        - `Anthropic/Toolbox 1.0.0`
+        - `codex-mcp-client 0.144.0-alpha.4`
+      - `30d` / `all` still remain initialize-only across the wider historical tail
+      - so the blocker is not only historical residue; it remains present in the freshest operational windows too
 
 ## Current blocker statement
 
@@ -56,6 +70,7 @@ The remaining blocker is now narrow and explicit:
 - do not describe retirement as blocked by missing repo/runtime request-flow support
 - do not describe retirement as blocked by generic uncertainty
 - retirement is currently blocked by real client entry behavior plus missing explicit authorization to remove compatibility debt
+- when discussing retained evidence, say which freshness window is meant; do not collapse `1d`, `2d`, `7d`, and `all` into one implied blocker set
 
 ## Minimum prerequisites before a real retirement decision
 
@@ -64,6 +79,7 @@ All of the following must be true:
 1. Fresh client-path evidence shows that the operationally relevant client family can enter through `server/discover` without relying on legacy `initialize`.
 2. That evidence must be fresh for the current client line, not inherited from historical audit entries or older transition routes.
    - a stale-entry window with follow-up traffic but no fresh `initialize` / `server/discover` does not satisfy this requirement
+   - a wider retained window may still be useful for risk framing, but it cannot substitute for fresh current-line evidence
 3. The surviving `/mcp` route must continue to prove useful no-handshake flow on the same active runtime:
    - `server/discover`
    - `tools/list`
@@ -77,6 +93,7 @@ It enables bounded future work such as:
 
 - refreshing real client-path evidence
 - tightening blocker wording in workflow docs
+- comparing blocker persistence across freshness windows before drafting any retirement package
 - preparing a later removal package only after the blocker changes
 
 It does not enable:
