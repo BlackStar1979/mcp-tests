@@ -6,6 +6,11 @@ const { assessAuditExportSafety } = require("./audit_export_safety");
 const { buildToolsListCacheDiagnostics } = require("./tools_list_cache_diagnostics");
 const { buildClientEntryPathDiagnostics } = require("./client_entry_path_diagnostics");
 const {
+  latestAuditTimestamp,
+  parseBlockerWindows,
+  buildRetainedBlockerMatrix,
+} = require("./client_entry_blocker_matrix");
+const {
   summarizeClientFamilies,
   buildRetirementEvidenceSummary,
   normalizeEvidenceScope,
@@ -298,6 +303,7 @@ function buildObservabilityStatus(options = {}) {
   const clientNameFilter = String(args.client_name || "");
   const evidenceScope = normalizeEvidenceScope(args.evidence_scope || "all");
   const maxAgeDays = normalizeMaxAgeDays(args.max_age_days);
+  const blockerWindows = parseBlockerWindows(args.blocker_windows || "");
 
   const runtimeStatus = typeof runtimeStatusProvider === "function" ? runtimeStatusProvider() : {};
   const runtimeTools = Array.isArray(runtimeStatus.enabled_tools) ? runtimeStatus.enabled_tools : [];
@@ -504,7 +510,8 @@ function buildObservabilityStatus(options = {}) {
   const auditExportSafety = assessAuditExportSafety(parsedAuditEntries, { maxSamples: 10 });
   const toolsListCacheDiagnostics = buildToolsListCacheDiagnostics(parsedAuditEntries, runtimeStatus);
   const clientEntryPathDiagnostics = buildClientEntryPathDiagnostics(parsedAuditEntries, runtimeStatus);
-  const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, lastTs);
+  const latestAuditTs = latestAuditTimestamp(parsedAuditEntries) || lastTs;
+  const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, latestAuditTs);
   const latestClientFamiliesAnyWindow = filterClientFamiliesByScope(summarizeClientFamilies(
     parsedAuditEntries,
     String(runtimeStatus.server_start_id || ""),
@@ -526,6 +533,19 @@ function buildObservabilityStatus(options = {}) {
   clientEntryPathDiagnostics.latest_operational_client_families_any_window = latestClientFamiliesAnyWindow
     .filter((item) => item.client_class === "operational_known")
     .slice(0, 10);
+  clientEntryPathDiagnostics.retained_blocker_matrix = buildRetainedBlockerMatrix({
+    entries: parsedAuditEntries,
+    currentServerStartId: String(runtimeStatus.server_start_id || ""),
+    clientName: clientNameFilter,
+    evidenceScope,
+    latestAuditTs,
+    windows: blockerWindows,
+  });
+  clientEntryPathDiagnostics.blocker_matrix_filter = {
+    client_name: clientNameFilter || null,
+    evidence_scope: evidenceScope,
+    windows: blockerWindows,
+  };
 
   const recommendedActions = buildRecommendedActions({
     connectorComparison,

@@ -3,15 +3,14 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
-const { buildClientEntryPathDiagnostics } = require("../../src/client_entry_path_diagnostics");
 const {
-  summarizeClientFamilies,
-  buildRetirementEvidenceSummary,
   normalizeEvidenceScope,
-  normalizeMaxAgeDays,
-  isoThresholdFromMaxAgeDays,
-  filterClientFamiliesByScope,
 } = require("../../src/client_entry_evidence_summary");
+const {
+  latestAuditTimestamp,
+  parseBlockerWindows,
+  buildClientEntryBlockerMatrix,
+} = require("../../src/client_entry_blocker_matrix");
 
 const MARKER = "client_entry_blocker_matrix";
 const Repo = path.resolve(__dirname, "..", "..");
@@ -45,14 +44,6 @@ function readAuditEntries(auditLogPath) {
   return { exists: true, entries, parse_errors: parseErrors };
 }
 
-function latestAuditTimestamp(entries) {
-  for (let index = entries.length - 1; index >= 0; index -= 1) {
-    const ts = String((entries[index] && entries[index].ts) || "").trim();
-    if (ts) return ts;
-  }
-  return "";
-}
-
 function latestServerStart(entries) {
   for (let index = entries.length - 1; index >= 0; index -= 1) {
     const entry = entries[index];
@@ -65,80 +56,22 @@ function latestServerStart(entries) {
   return { server_start_id: "", ts: "" };
 }
 
-function parseWindows(value) {
-  const raw = String(value || "1,2,7,30,all").trim();
-  const items = raw.split(",").map((item) => item.trim()).filter(Boolean);
-  if (!items.length) return [{ label: "all", max_age_days: null }];
-  const result = [];
-  const seen = new Set();
-  for (const item of items) {
-    const lower = item.toLowerCase();
-    if (lower === "all") {
-      if (!seen.has("all")) {
-        seen.add("all");
-        result.push({ label: "all", max_age_days: null });
-      }
-      continue;
-    }
-    const normalized = normalizeMaxAgeDays(item);
-    if (normalized === null) continue;
-    const label = `${normalized}d`;
-    if (seen.has(label)) continue;
-    seen.add(label);
-    result.push({ label, max_age_days: normalized });
-  }
-  return result.length ? result : [{ label: "all", max_age_days: null }];
-}
-
-function buildWindowSummary({ entries, currentServerStartId, clientName, evidenceScope, latestAuditTs, windowSpec }) {
-  const retainedEvidenceSinceTs = windowSpec.max_age_days === null
-    ? ""
-    : isoThresholdFromMaxAgeDays(windowSpec.max_age_days, latestAuditTs);
-  const retainedClients = filterClientFamiliesByScope(
-    summarizeClientFamilies(entries, currentServerStartId, clientName, false, { since_ts: retainedEvidenceSinceTs }),
-    evidenceScope
-  );
-  const retirementEvidenceSummary = buildRetirementEvidenceSummary({}, retainedClients);
-  return {
-    label: windowSpec.label,
-    max_age_days: windowSpec.max_age_days,
-    retained_evidence_since_ts: retainedEvidenceSinceTs || null,
-    retained_client_count: retainedClients.length,
-    retirement_evidence_summary: retirementEvidenceSummary,
-    sample_client_families: retainedClients.slice(0, 10),
-  };
-}
-
-function buildCurrentDiagnostics(entries, currentServerStartId) {
-  return buildClientEntryPathDiagnostics(entries, {
-    server_start_id: currentServerStartId,
-    request_contract: {
-      route: "/mcp",
-      initialize_required: false,
-      protocol_sessions: false,
-      server_discover_supported: true,
-      legacy_initialize_supported: true,
-    },
-  });
-}
-
 function main() {
   const auditLogPath = argValue("audit-log", AuditLog);
   const clientName = argValue("client-name", "");
   const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "operational"));
-  const windows = parseWindows(argValue("windows", "1,2,7,30,all"));
+  const windows = parseBlockerWindows(argValue("windows", "1,2,7,30,all"));
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
   const latestAuditTs = latestAuditTimestamp(entries);
   const currentServerStart = latestServerStart(entries);
-  const currentDiagnostics = buildCurrentDiagnostics(entries, currentServerStart.server_start_id);
-  const matrix = windows.map((windowSpec) => buildWindowSummary({
-    entries,
+  const matrixPayload = buildClientEntryBlockerMatrix(entries, {
     currentServerStartId: currentServerStart.server_start_id,
+    currentServerStartTs: currentServerStart.ts,
     clientName,
     evidenceScope,
     latestAuditTs,
-    windowSpec,
-  }));
+    windows,
+  });
 
   console.log(JSON.stringify({
     success: true,
@@ -151,17 +84,7 @@ function main() {
       entry_count: entries.length,
       latest_ts: latestAuditTs || null,
     },
-    filter: {
-      client_name: clientName || null,
-      evidence_scope: evidenceScope,
-      windows,
-    },
-    current_window: {
-      server_start_id: currentServerStart.server_start_id || null,
-      server_start_ts: currentServerStart.ts || null,
-      diagnostics: currentDiagnostics,
-    },
-    retained_blocker_matrix: matrix,
+    ...matrixPayload,
   }, null, 2));
 }
 

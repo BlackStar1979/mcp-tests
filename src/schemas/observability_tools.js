@@ -45,6 +45,12 @@ const OBSERVABILITY_STATUS_INPUT_SCHEMA = {
       maximum: 3650,
       description: "Optional retained-evidence freshness filter in days. When supplied, retained client-family summaries only include evidence at or newer than the derived threshold.",
     },
+    blocker_windows: {
+      type: "string",
+      minLength: 1,
+      maxLength: 80,
+      description: "Optional comma-separated retained blocker-matrix windows such as `1,2,7,30,all`. Defaults to `1,2,7,30,all`.",
+    },
     connector_visible_tools: {
       type: "array",
       maxItems: 200,

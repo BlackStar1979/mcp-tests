@@ -63,6 +63,9 @@ assert.equal(typeof status.client_entry_path_diagnostics.followup_traffic_withou
 assert.equal(typeof status.client_entry_path_diagnostics.retirement_evidence_summary.status, "string");
 assert.ok(Array.isArray(status.client_entry_path_diagnostics.latest_operational_client_families_any_window));
 assert.equal(status.client_entry_path_diagnostics.evidence_filter.evidence_scope, "all");
+assert.ok(Array.isArray(status.client_entry_path_diagnostics.retained_blocker_matrix));
+assert.equal(status.client_entry_path_diagnostics.retained_blocker_matrix[0].label, "1d");
+assert.equal(status.client_entry_path_diagnostics.blocker_matrix_filter.windows.at(-1).label, "all");
 assert.equal(status.connector_map.comparison_available, true);
 assert.equal(status.connector_map.status, "drift_detected");
 assert.deepEqual(status.connector_map.missing_in_connector, ["observability_status"]);
@@ -104,6 +107,17 @@ assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.max_age_days, 
 assert.equal(typeof scoped.client_entry_path_diagnostics.evidence_filter.retained_evidence_since_ts, "string");
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_name === "codex-mcp-client"), true);
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_class === "operational_known"), true);
+assert.equal(scoped.client_entry_path_diagnostics.retained_blocker_matrix.every((item) => Array.isArray(item.sample_client_families)), true);
+
+const customWindows = buildObservabilityStatus({
+  args: { window_size: 200, client_name: "codex-mcp-client", evidence_scope: "operational", blocker_windows: "2,all" },
+  runtimeStatusProvider: () => ({
+    ...runtimeStatus,
+    server_start_id: "2026-07-15T17:49:45.348Z",
+  }),
+  auditLogPath,
+});
+assert.deepEqual(customWindows.client_entry_path_diagnostics.blocker_matrix_filter.windows.map((item) => item.label), ["2d", "all"]);
 
 const tool = createObservabilityStatusTool({ runtimeStatusProvider: () => runtimeStatus, auditLogPath });
 assert.equal(tool.name, "observability_status");

@@ -70,6 +70,7 @@ function createObservabilityStatusTool(options = {}) {
         top_n: args.top_n || null,
         client_name: args.client_name || null,
         evidence_scope: args.evidence_scope || "all",
+        blocker_windows: args.blocker_windows || "1,2,7,30,all",
         connector_visible_tool_count: Array.isArray(args.connector_visible_tools) ? args.connector_visible_tools.length : 0,
       };
     },
