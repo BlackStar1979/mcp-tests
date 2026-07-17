@@ -71,8 +71,8 @@ Use this dependency spine when deciding what to do next:
 
 1. Fresh connector/UI truth can still drift from repo/runtime truth, even when the model runtime can already call the connector again.
 2. Legacy `initialize` removal is still blocked by client compatibility evidence, not by repo request-flow capability.
-3. Fresh real Codex client evidence now confirms the live `initialize -> notifications/initialized -> tools/list -> tools/call` path, but the same current client family still does not provide matching fresh `server/discover` entry evidence in that window.
-   - New client-entry observability also distinguishes stale-entry windows from fresh reconnect evidence, so a current window containing only follow-up `tools/list` / `tools/call` traffic is no longer ambiguous and does not count as migration proof.
+3. Fresh real Codex client evidence now confirms the live `initialize -> notifications/initialized -> tools/list -> tools/call` path, and the newest `2026-07-17` repo-native report tightens that blocker on `codex-mcp-client 0.145.0-alpha.18`: the current window is `initialize_only` with `2` successful legacy `initialize` responses and no matching fresh `server/discover` entry in that same window.
+   - New client-entry observability also distinguishes stale-entry windows from fresh reconnect evidence, so a current window containing only follow-up `tools/list` / `tools/call` remains non-evidence and does not count as migration proof.
 4. Operator-facing `DIRECTORY` coverage is still partial outside the currently normalized operational directories.
 
 ## What should move next by default

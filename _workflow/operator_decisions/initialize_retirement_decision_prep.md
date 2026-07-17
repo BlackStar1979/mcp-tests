@@ -37,15 +37,17 @@ The current decision-prep baseline is now explicit:
      - then `tools/list`
      - then `tools/call`
    - no matching fresh `server/discover` entry is observed in that same current real-client window
-   - newer stale-entry windows that contain only follow-up `tools/list` / `tools/call` traffic must not be misread as fresh entry-path evidence either way
-   - latest 2026-07-15 live report further confirms:
-     - current runtime slice is a `stale_entry_window`
-     - retained broader real-client families such as `codex-mcp-client 0.144.2`, `openai-mcp 1.0.0`, and `Anthropic/ClaudeAI 1.0.0` still remain `initialize_only`
-     - observed `server_discover_only` evidence in that broader file is synthetic validation traffic rather than an operational client family
-     - refreshed report classification now separates:
-       - `operational_known`
-       - `synthetic_validation`
-       - `unknown`
+    - newer stale-entry windows that contain only follow-up `tools/list` / `tools/call` traffic must not be misread as fresh entry-path evidence either way
+    - latest 2026-07-17 repo-native report further confirms:
+      - current runtime slice on `server_start_id 2026-07-16T17:49:38.692Z` is `initialize_only`
+      - `codex-mcp-client 0.145.0-alpha.18` receives `2` successful legacy `initialize` responses in that current window
+      - no matching fresh `server/discover` entry is observed in that same current window
+      - retained broader real-client families such as `codex-mcp-client 0.144.2`, `openai-mcp 1.0.0`, and `Anthropic/ClaudeAI 1.0.0` still remain `initialize_only`
+      - observed `server_discover_only` evidence in that broader file is synthetic validation traffic rather than an operational client family
+      - refreshed report classification now separates:
+        - `operational_known`
+        - `synthetic_validation`
+        - `unknown`
 
 ## Current blocker statement
 

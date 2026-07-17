@@ -71,6 +71,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but full UI visible-tool enumeration is still not independently re-verified in the same step.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
+- Fresh repo-native `2026-07-17` client-entry reporting against `_logs/.mcp-tests-audit.jsonl` now shows the current window on `server_start_id 2026-07-16T17:49:38.692Z` as `initialize_only`, with `2` successful legacy `initialize` responses for `codex-mcp-client 0.145.0-alpha.18` and no matching fresh `server/discover` entry in that same window.
 - `state.json` is an orientation map, not a progress log.
 - Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.
 - OAuth21 durable-state hygiene now has an explicit control-plane path with bounded records/backups and approval-gated apply; it is not a connector-visible runtime tool.

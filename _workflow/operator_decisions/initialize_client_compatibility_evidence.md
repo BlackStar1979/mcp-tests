@@ -114,6 +114,37 @@ This refresh matters because it further narrows the safe conclusion:
 - the retained broader `server_discover_only` evidence is synthetic validation traffic rather than an operational client family
 - initialize retirement therefore remains blocked by current real-client evidence, not by missing server capability and not by ambiguity about stale windows
 
+## Live evidence refresh on 2026-07-17
+
+Fresh evidence from `node _workflow/scripts/client_entry_path_report.js` against `_logs/.mcp-tests-audit.jsonl` replaces the earlier current-window ambiguity with a stronger blocker on the newest observed Codex client line:
+
+- current runtime slice reports:
+  - `current_server_start_id: "2026-07-16T17:49:38.692Z"`
+  - `diagnostics.status: "initialize_only"`
+  - `initialize_retirement_readiness.status: "blocked_initialize_only_current_window"`
+  - `current_window_counts.initialize_response_success: 2`
+  - `current_window_counts.server_discover_response_success: 0`
+- the current real client in that same window is:
+  - `client_name: "codex-mcp-client"`
+  - `client_version: "0.145.0-alpha.18"`
+  - status `initialize_only`
+- the same current window also shows:
+  - `notifications_initialized: 2`
+  - `tools_list: 2`
+  - `tools_call: 19`
+  - so the runtime still behaves normally after legacy `initialize`; the blocker remains specifically the entry path
+- retained broader operational evidence across the file still remains initialize-bound as before:
+  - `codex-mcp-client 0.144.2`
+  - `openai-mcp 1.0.0`
+  - `Anthropic/ClaudeAI 1.0.0`
+  - `Anthropic/Toolbox 1.0.0`
+- retained `server_discover_only` evidence remains synthetic validation traffic only:
+  - `step95-discover-smoke 1`
+- therefore the compatibility interpretation tightens again:
+  - the surviving `/mcp` route still must preserve legacy `initialize`
+  - initialize retirement remains blocked by fresh current operational client behavior
+  - no current operational `server_discover_only` reconnect evidence exists yet for the same client family
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:
