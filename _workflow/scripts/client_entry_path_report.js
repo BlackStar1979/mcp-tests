@@ -4,7 +4,12 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { buildClientEntryPathDiagnostics } = require("../../src/client_entry_path_diagnostics");
-const { summarizeClientFamilies, buildRetirementEvidenceSummary } = require("../../src/client_entry_evidence_summary");
+const {
+  summarizeClientFamilies,
+  buildRetirementEvidenceSummary,
+  normalizeMaxAgeDays,
+  isoThresholdFromMaxAgeDays,
+} = require("../../src/client_entry_evidence_summary");
 
 const MARKER = "client_entry_path_report";
 const Repo = path.resolve(__dirname, "..", "..");
@@ -22,6 +27,14 @@ function normalizeEvidenceScope(value) {
     return normalized;
   }
   return "all";
+}
+
+function latestAuditTimestamp(entries) {
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const ts = String((entries[index] && entries[index].ts) || "").trim();
+    if (ts) return ts;
+  }
+  return "";
 }
 
 function fail(code, error, extra = {}) {
@@ -103,17 +116,20 @@ function main() {
   const auditLogPath = argValue("audit-log", AuditLog);
   const clientName = argValue("client-name", "");
   const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "all"));
+  const maxAgeDays = normalizeMaxAgeDays(argValue("max-age-days", ""));
   const limit = Math.max(1, Number(argValue("limit", "10")) || 10);
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
   const currentServerStart = latestServerStart(entries);
   const currentServerStartId = currentServerStart.server_start_id || latestServerStartId(entries);
+  const latestAuditTs = latestAuditTimestamp(entries);
+  const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, latestAuditTs);
   const windowEntries = currentWindowEntries(entries, currentServerStart);
   const matchingClients = filterClientFamiliesByScope(
     summarizeClientFamilies(entries, currentServerStartId, clientName, true),
     evidenceScope
   ).slice(0, limit);
   const latestMatchingClientsAnyWindow = filterClientFamiliesByScope(
-    summarizeClientFamilies(entries, currentServerStartId, clientName, false),
+    summarizeClientFamilies(entries, currentServerStartId, clientName, false, { since_ts: retainedEvidenceSinceTs }),
     evidenceScope
   ).slice(0, limit);
   const diagnostics = buildClientEntryPathDiagnostics(entries, {
@@ -137,6 +153,7 @@ function main() {
       exists,
       parse_errors,
       entry_count: entries.length,
+      latest_ts: latestAuditTs || null,
     },
     current_server_start_id: currentServerStartId,
     current_server_start_ts: currentServerStart.ts || null,
@@ -148,6 +165,8 @@ function main() {
     filter: {
       client_name: clientName || null,
       evidence_scope: evidenceScope,
+      max_age_days: maxAgeDays,
+      retained_evidence_since_ts: retainedEvidenceSinceTs || null,
       limit,
     },
   }, null, 2));

@@ -91,7 +91,7 @@ assert.equal(noConnector.connector_map.comparison_available, false);
 assert.equal(noConnector.connector_map.status, "external_connector_tool_map_not_provided");
 
 const scoped = buildObservabilityStatus({
-  args: { window_size: 200, client_name: "codex-mcp-client", evidence_scope: "operational" },
+  args: { window_size: 200, client_name: "codex-mcp-client", evidence_scope: "operational", max_age_days: 2 },
   runtimeStatusProvider: () => ({
     ...runtimeStatus,
     server_start_id: "2026-07-15T17:49:45.348Z",
@@ -100,6 +100,8 @@ const scoped = buildObservabilityStatus({
 });
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.client_name, "codex-mcp-client");
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.evidence_scope, "operational");
+assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.max_age_days, 2);
+assert.equal(typeof scoped.client_entry_path_diagnostics.evidence_filter.retained_evidence_since_ts, "string");
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_name === "codex-mcp-client"), true);
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_class === "operational_known"), true);
 

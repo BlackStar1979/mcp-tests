@@ -8,6 +8,31 @@ function normalizeEvidenceScope(value) {
   return "all";
 }
 
+function normalizeMaxAgeDays(value) {
+  if (value === undefined || value === null || value === "") return null;
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed < 0) return null;
+  return parsed;
+}
+
+function isoThresholdFromMaxAgeDays(maxAgeDays, nowIso = "") {
+  const normalizedDays = normalizeMaxAgeDays(maxAgeDays);
+  const anchor = String(nowIso || "").trim();
+  if (normalizedDays === null || !anchor) return "";
+  const anchorMs = Date.parse(anchor);
+  if (!Number.isFinite(anchorMs)) return "";
+  const thresholdMs = anchorMs - normalizedDays * 24 * 60 * 60 * 1000;
+  return new Date(thresholdMs).toISOString();
+}
+
+function timestampAtOrAfter(timestamp, threshold) {
+  const left = String(timestamp || "").trim();
+  const right = String(threshold || "").trim();
+  if (!right) return true;
+  if (!left) return false;
+  return left >= right;
+}
+
 function classifyClientFamily(clientName, clientVersion) {
   const name = String(clientName || "");
   const version = String(clientVersion || "");
@@ -47,13 +72,15 @@ function classifyClientFamily(clientName, clientVersion) {
   };
 }
 
-function summarizeClientFamilies(entries, currentServerStartId, clientNameFilter = "", currentOnly = true) {
+function summarizeClientFamilies(entries, currentServerStartId, clientNameFilter = "", currentOnly = true, options = {}) {
+  const sinceTs = String(options.since_ts || options.sinceTs || "").trim();
   const grouped = new Map();
   for (const entry of entries || []) {
     const event = String((entry && entry.event) || "");
     if (event !== "initialize_received" && event !== "server_discover_received") continue;
     const serverStartId = String(entry.server_start_id || "");
     if (currentOnly && currentServerStartId && serverStartId !== currentServerStartId) continue;
+    if (sinceTs && !timestampAtOrAfter(entry.ts, sinceTs)) continue;
     const clientName = String(entry.client_name || "");
     const clientVersion = String(entry.client_version || "");
     if (clientNameFilter && clientName !== clientNameFilter) continue;
@@ -152,6 +179,8 @@ function buildRetirementEvidenceSummary(diagnostics, latestMatchingClientsAnyWin
 
 module.exports = {
   normalizeEvidenceScope,
+  normalizeMaxAgeDays,
+  isoThresholdFromMaxAgeDays,
   classifyClientFamily,
   summarizeClientFamilies,
   filterClientFamiliesByScope,

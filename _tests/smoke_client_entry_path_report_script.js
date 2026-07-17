@@ -99,5 +99,16 @@ assert.equal(syntheticOnly.matching_clients[0].client_name, "claude");
 assert.equal(syntheticOnly.matching_clients[0].client_class, "synthetic_validation");
 assert.equal(syntheticOnly.latest_matching_clients_any_window.every((item) => item.client_class === "synthetic_validation"), true);
 
+const recentOnly = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--max-age-days=0"], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(recentOnly.filter.max_age_days, 0);
+assert.equal(recentOnly.filter.retained_evidence_since_ts, "2026-07-13T17:42:07.000Z");
+assert.equal(recentOnly.latest_matching_clients_any_window.length, 0);
+assert.equal(recentOnly.retirement_evidence_summary.status, "insufficient_evidence");
+
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_client_entry_path_report_script ok");

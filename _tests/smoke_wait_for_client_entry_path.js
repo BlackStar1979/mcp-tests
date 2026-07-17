@@ -21,6 +21,7 @@ const child = cp.spawn(process.execPath, [
   `--audit-log=${auditLog}`,
   "--client-name=codex-mcp-client",
   "--evidence-scope=operational",
+  "--max-age-days=1",
   "--timeout-ms=5000",
   "--poll-ms=50",
 ], {
@@ -56,6 +57,7 @@ child.on("exit", (code) => {
     assert.equal(payload.report.diagnostics.status, "initialize_only");
     assert.equal(payload.report.diagnostics.initialize_retirement_readiness.status, "blocked_initialize_only_current_window");
     assert.equal(payload.report.current_server_start_id, "current-start");
+    assert.equal(payload.report.filter.max_age_days, 1);
     fs.rmSync(tempRoot, { recursive: true, force: true });
     console.log("smoke_wait_for_client_entry_path ok");
   } catch (error) {

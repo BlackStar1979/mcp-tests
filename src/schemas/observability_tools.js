@@ -39,6 +39,12 @@ const OBSERVABILITY_STATUS_INPUT_SCHEMA = {
       enum: ["all", "operational", "synthetic", "unknown"],
       description: "Optional retained-evidence scope filter for client-family summaries. Defaults to all.",
     },
+    max_age_days: {
+      type: "integer",
+      minimum: 0,
+      maximum: 3650,
+      description: "Optional retained-evidence freshness filter in days. When supplied, retained client-family summaries only include evidence at or newer than the derived threshold.",
+    },
     connector_visible_tools: {
       type: "array",
       maxItems: 200,

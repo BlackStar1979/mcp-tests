@@ -106,6 +106,7 @@ Current live evidence from `node _workflow/scripts/client_entry_path_report.js` 
   - the same retained-evidence filters are now also available through runtime-facing `observability_status` using:
     - `client_name`
     - `evidence_scope`
+    - `max_age_days`
 
 This refresh matters because it further narrows the safe conclusion:
 
@@ -144,6 +145,26 @@ Fresh evidence from `node _workflow/scripts/client_entry_path_report.js` against
   - the surviving `/mcp` route still must preserve legacy `initialize`
   - initialize retirement remains blocked by fresh current operational client behavior
   - no current operational `server_discover_only` reconnect evidence exists yet for the same client family
+
+## Freshness-filtered retained evidence on 2026-07-17
+
+The retained-evidence interpretation is now also freshness-aware:
+
+- `node _workflow/scripts/client_entry_path_report.js --evidence-scope=operational --max-age-days=2 --limit=20`
+- current live result still reports:
+  - `retirement_evidence_summary.status: "blocked_by_operational_initialize_clients"`
+- but the retained operational blocker set is now narrowed to the freshest observed client lines only:
+  - `codex-mcp-client 0.145.0-alpha.18`
+  - `codex-mcp-client 0.144.2`
+- older operational families remain historically relevant, but they no longer need to dominate default retained-evidence summaries when the question is "what is still fresh enough to block retirement now?"
+
+This matters because it improves the safety of the blocker statement without weakening it:
+
+- the blocker still exists
+- the blocker is now attributable to fresh Codex client lines, not only to long-tail historical audit residue
+- future retirement review can now ask two separate questions without mixing them:
+  - what is the full retained operational history?
+  - what is the fresh retained operational blocker set?
 
 ## Compatibility interpretation
 

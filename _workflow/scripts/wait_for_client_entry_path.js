@@ -27,11 +27,12 @@ function isoAtOrAfter(value, threshold) {
   return left >= right;
 }
 
-function buildReportArgs({ auditLogPath, clientName, evidenceScope, limit }) {
+function buildReportArgs({ auditLogPath, clientName, evidenceScope, maxAgeDays, limit }) {
   const args = [ReportScript];
   if (auditLogPath) args.push(`--audit-log=${auditLogPath}`);
   if (clientName) args.push(`--client-name=${clientName}`);
   if (evidenceScope) args.push(`--evidence-scope=${evidenceScope}`);
+  if (maxAgeDays !== null && maxAgeDays !== undefined && maxAgeDays !== "") args.push(`--max-age-days=${maxAgeDays}`);
   if (limit) args.push(`--limit=${limit}`);
   return args;
 }
@@ -89,6 +90,8 @@ async function main() {
   const clientName = argValue("client-name", "");
   const clientVersion = argValue("client-version", "");
   const evidenceScope = argValue("evidence-scope", "operational");
+  const maxAgeDaysRaw = argValue("max-age-days", "");
+  const maxAgeDays = maxAgeDaysRaw === "" ? "" : clampInteger(maxAgeDaysRaw, "", 0, 3650);
   const timeoutMs = clampInteger(argValue("timeout-ms", "30000"), 30000, 100, 900000);
   const pollMs = clampInteger(argValue("poll-ms", "1000"), 1000, 50, 60000);
   const limit = clampInteger(argValue("limit", "10"), 10, 1, 50);
@@ -102,7 +105,7 @@ async function main() {
     ...process.env,
     ...(auditLogPath ? { MCP_TEST_AUDIT_LOG: auditLogPath } : {}),
   };
-  const reportArgs = buildReportArgs({ auditLogPath, clientName, evidenceScope, limit });
+  const reportArgs = buildReportArgs({ auditLogPath, clientName, evidenceScope, maxAgeDays, limit });
   const deadline = Date.now() + timeoutMs;
   let attempts = 0;
   let lastReport = null;
@@ -140,6 +143,7 @@ async function main() {
     client_name: clientName,
     client_version: clientVersion || null,
     evidence_scope: evidenceScope,
+    max_age_days: maxAgeDays === "" ? null : maxAgeDays,
     last_report: lastReport,
   }, null, 2));
   process.exit(3);

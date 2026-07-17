@@ -10,6 +10,8 @@ const {
   buildRetirementEvidenceSummary,
   normalizeEvidenceScope,
   filterClientFamiliesByScope,
+  normalizeMaxAgeDays,
+  isoThresholdFromMaxAgeDays,
 } = require("./client_entry_evidence_summary");
 
 const OBSERVABILITY_VERSION = "test-mcp-observability-v1";
@@ -295,6 +297,7 @@ function buildObservabilityStatus(options = {}) {
   const topN = clampInteger(args.top_n, DEFAULT_TOP_N, 1, 50);
   const clientNameFilter = String(args.client_name || "");
   const evidenceScope = normalizeEvidenceScope(args.evidence_scope || "all");
+  const maxAgeDays = normalizeMaxAgeDays(args.max_age_days);
 
   const runtimeStatus = typeof runtimeStatusProvider === "function" ? runtimeStatusProvider() : {};
   const runtimeTools = Array.isArray(runtimeStatus.enabled_tools) ? runtimeStatus.enabled_tools : [];
@@ -501,11 +504,13 @@ function buildObservabilityStatus(options = {}) {
   const auditExportSafety = assessAuditExportSafety(parsedAuditEntries, { maxSamples: 10 });
   const toolsListCacheDiagnostics = buildToolsListCacheDiagnostics(parsedAuditEntries, runtimeStatus);
   const clientEntryPathDiagnostics = buildClientEntryPathDiagnostics(parsedAuditEntries, runtimeStatus);
+  const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, lastTs);
   const latestClientFamiliesAnyWindow = filterClientFamiliesByScope(summarizeClientFamilies(
     parsedAuditEntries,
     String(runtimeStatus.server_start_id || ""),
     clientNameFilter,
-    false
+    false,
+    { since_ts: retainedEvidenceSinceTs }
   ), evidenceScope);
   clientEntryPathDiagnostics.retirement_evidence_summary = buildRetirementEvidenceSummary(
     clientEntryPathDiagnostics,
@@ -514,6 +519,8 @@ function buildObservabilityStatus(options = {}) {
   clientEntryPathDiagnostics.evidence_filter = {
     client_name: clientNameFilter || null,
     evidence_scope: evidenceScope,
+    max_age_days: maxAgeDays,
+    retained_evidence_since_ts: retainedEvidenceSinceTs || null,
   };
   clientEntryPathDiagnostics.latest_matching_client_families_any_window = latestClientFamiliesAnyWindow.slice(0, 10);
   clientEntryPathDiagnostics.latest_operational_client_families_any_window = latestClientFamiliesAnyWindow
