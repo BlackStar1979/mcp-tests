@@ -124,6 +124,9 @@ async function copyPath(fromPath, toPath, { allowProtected = false } = {}) {
 async function movePath(fromPath, toPath, { allowProtected = false } = {}) {
   const fromResolved = resolveWritableWorkspacePath(fromPath, { allowProtected });
   const toResolved = resolveWritableWorkspacePath(toPath, { allowProtected });
+  if (await pathExists(toResolved.absolutePath)) {
+    throw new Error("Destination already exists. move_path does not overwrite existing targets.");
+  }
   await fs.mkdir(path.dirname(toResolved.absolutePath), { recursive: true });
   await fs.rename(fromResolved.absolutePath, toResolved.absolutePath);
   return {

@@ -59,6 +59,17 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
     const moveResult = await movePathTool.execute({ from: copy, to: moved });
     assert.equal(moveResult.status, "moved");
 
+    const moveConflictSource = "_control/smoke_workspace_mutation_tools/move-conflict-source.txt";
+    const moveConflictTarget = "_control/smoke_workspace_mutation_tools/move-conflict-target.txt";
+    await writeFileTool.execute({ path: moveConflictSource, content: "source\n" });
+    await writeFileTool.execute({ path: moveConflictTarget, content: "target\n" });
+    await assert.rejects(
+      () => movePathTool.execute({ from: moveConflictSource, to: moveConflictTarget }),
+      /move_path does not overwrite existing targets/
+    );
+    assert.equal(await fs.readFile(path.join(WORK_ROOT, moveConflictSource), "utf8"), "source\n");
+    assert.equal(await fs.readFile(path.join(WORK_ROOT, moveConflictTarget), "utf8"), "target\n");
+
     const deleteResult = await deletePathTool.execute({ path: moved });
     assert.equal(deleteResult.status, "moved_to_trash");
     assert.match(deleteResult.to, /\.mcp_trash\//);
