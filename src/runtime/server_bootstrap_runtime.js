@@ -68,8 +68,24 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   if (bootstrapConfig.authMode === "oauth21") {
     const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
     oauth21Issuer = secretConfig.issuer;
+    // Legacy JSON backend is selected only when BOTH file vars are set. Setting exactly
+    // one used to silently select it anyway, leaving the unset half to default to a REAL
+    // path under ~/.romion -- so a test that meant to be hermetic would quietly read and
+    // write the operator's live store. That is the F1 failure, and it is the kind that
+    // reappears in the next hand-written test. Fail fast instead of guessing an intent.
+    const legacyStateFile = String(env.MCP_TEST_OAUTH_STATE_FILE || "").trim();
+    const legacyClientsFile = String(env.MCP_TEST_OAUTH_CLIENTS_FILE || "").trim();
+    if (Boolean(legacyStateFile) !== Boolean(legacyClientsFile)) {
+      throw new Error(
+        "oauth21_legacy_backend_half_configured: set BOTH MCP_TEST_OAUTH_STATE_FILE and "
+        + "MCP_TEST_OAUTH_CLIENTS_FILE, or NEITHER. Exactly one was set ("
+        + (legacyStateFile ? "MCP_TEST_OAUTH_STATE_FILE" : "MCP_TEST_OAUTH_CLIENTS_FILE")
+        + "), which would silently fall back to the JSON backend and default the missing "
+        + "file to a real path under ~/.romion."
+      );
+    }
     const oauth21StorageFile = env.MCP_TEST_OAUTH_STORAGE_FILE
-      || ((!env.MCP_TEST_OAUTH_STATE_FILE && !env.MCP_TEST_OAUTH_CLIENTS_FILE)
+      || ((!legacyStateFile && !legacyClientsFile)
         ? path.join(os.homedir(), ".romion", "tests_oauth.sqlite")
         : "");
     oauth21AuthorizationServer = createOAuth21AuthorizationServer({
