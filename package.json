@@ -17,5 +17,8 @@
     "self-test": "node server.js --self-test",
     "test": "node _tests/run_all_smokes.js --skip-network",
     "test:full": "node _tests/run_all_smokes.js"
+  },
+  "allowScripts": {
+    "ssh2@1.17.0": true
   }
 }

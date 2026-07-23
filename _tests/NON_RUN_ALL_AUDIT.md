@@ -16,7 +16,7 @@ Audit date: `2026-07-01`
 
 Post-audit drift now visible from the current tree:
 
-- current mechanical non-`run_all` count is `40`
+- current mechanical non-`run_all` count is `41`
 - the former transitional SSE/list-changed debt guards were later removed entirely after their unreachable helper files were retired from the active repo
 - all seven `stress_*.js` files were rechecked directly in source on `2026-06-30`
 - each stress file posts directly to `process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3009/mcp"` and therefore requires a separately running MCP server
@@ -68,9 +68,15 @@ Helper execution slices now available:
 - `smoke_policy_spec.js`
   Reason: current root structured-spec cross-check for `SERVER_AUTHZ_DECISION_SPEC.json`.
   Recommendation: keep; possible future promotion to `run_all`.
+- `smoke_oauth_legacy_env_failfast.js`
+  Reason: current targeted guard for OAuth21 legacy JSON backend half-config fail-fast behavior; prevents hermetic tests from reading or writing the operator live store.
+  Recommendation: keep outside default `run_all` unless OAuth21 bootstrap regression coverage is promoted into the baseline manifest.
 - `smoke_preflight_control_plane_guard.js`
   Reason: current control-plane directory and state-map guard.
   Recommendation: keep.
+- `smoke_historical_next_recommendation_quarantine.js`
+  Reason: current targeted guard that quarantines historical next-recommendation records from active planning truth.
+  Recommendation: keep outside default `run_all`; it protects workflow-state hygiene and active queue boundaries.
 - `smoke_state_store_apply_readiness_gate.js`
   Reason: current readiness-only gate for plugin visibility state-store apply path.
   Recommendation: keep outside default `run_all` while apply remains disabled.
