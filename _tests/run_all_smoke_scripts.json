@@ -3,6 +3,7 @@
   "_tests/profile_policy_audit.js",
   "_tests/smoke_profile_schema_validator.js",
   "_tests/smoke_cbm_cli_bridge.js",
+  "_tests/smoke_cbm_live_bridge_stress.js",
   "_tests/smoke_cbm_schema_repair.js",
   "_tests/smoke_cbm_tool_contracts.js",
   "_tests/smoke_cbm_loader_gate.js",

@@ -27,6 +27,8 @@ Use CBM as an indexed evidence layer, not as a substitute for repository files o
 5. Inspect `success`, `error_code`, `partial_success`, `warnings`, `queue_wait_ms`, and `execution_ms`.
 6. Verify consequential findings against repository or runtime truth.
 
+Prefer the `project` argument shown by TEST MCP descriptors. The bridge also accepts upstream CBM's `project_name` alias for project-scoped tools, but both fields must match if both are supplied.
+
 ## Quick Reference
 
 | Need | Tool path |

@@ -42,8 +42,21 @@ function copyDefined(source, keys) {
   return output;
 }
 
+function normalizeProjectAlias(args = {}) {
+  const hasProject = args.project !== undefined;
+  const hasProjectName = args.project_name !== undefined;
+  if (hasProject && hasProjectName && String(args.project) !== String(args.project_name)) {
+    return {
+      ok: false,
+      error: new Error("project and project_name must refer to the same codebase-memory project."),
+    };
+  }
+  if (!hasProject && hasProjectName) return { ok: true, args: { ...args, project: args.project_name } };
+  return { ok: true, args };
+}
+
 function projectSummary(operation, args = {}, extra = {}) {
-  return safeArgSummary(args.project || "", { operation, ...extra });
+  return safeArgSummary(args.project || args.project_name || "", { operation, ...extra });
 }
 
 function comparablePath(value) {
@@ -90,7 +103,9 @@ function createNativeTool({
       annotations,
     },
     execute(args = {}) {
-      return cbmBridge.callCbmTool(nativeName, copyDefined(args, forwardedKeys));
+      const normalized = forwardedKeys.includes("project") ? normalizeProjectAlias(args) : { ok: true, args };
+      if (!normalized.ok) return bridgeFailure(nativeName, "invalid_project_alias", normalized.error);
+      return cbmBridge.callCbmTool(nativeName, copyDefined(normalized.args, forwardedKeys));
     },
     summarizeArgs: summarizeArgs || ((args = {}) => projectSummary(connectorName, args)),
     resultStats: genericResultStats,

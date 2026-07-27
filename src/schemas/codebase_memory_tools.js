@@ -37,12 +37,37 @@ const PROJECT_PROPERTY = Object.freeze({
   description: "Name of an existing codebase-memory project/index.",
 });
 
+const PROJECT_NAME_PROPERTY = Object.freeze({
+  type: "string",
+  minLength: 1,
+  maxLength: 256,
+  description: "Alias for project, accepted for compatibility with codebase-memory v0.9.0 CLI terminology.",
+});
+
 function objectSchema(required, properties) {
   return Object.freeze({
     type: "object",
     additionalProperties: false,
     required,
     properties,
+  });
+}
+
+function projectObjectSchema(required, properties) {
+  const baseRequired = required.filter((name) => name !== "project");
+  return Object.freeze({
+    type: "object",
+    additionalProperties: false,
+    required: baseRequired,
+    anyOf: [
+      { required: ["project"] },
+      { required: ["project_name"] },
+    ],
+    properties: {
+      project: PROJECT_PROPERTY,
+      project_name: PROJECT_NAME_PROPERTY,
+      ...properties,
+    },
   });
 }
 
@@ -81,14 +106,12 @@ const CBM_INDEX_REPOSITORY_INPUT_SCHEMA = objectSchema(["path"], {
   persistence: { type: "boolean", default: false },
 });
 
-const CBM_GET_ARCHITECTURE_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
+const CBM_GET_ARCHITECTURE_INPUT_SCHEMA = projectObjectSchema(["project"], {
   path: boundedString(1000),
   aspects: stringArray(32, 128),
 });
 
-const CBM_SEARCH_GRAPH_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
+const CBM_SEARCH_GRAPH_INPUT_SCHEMA = projectObjectSchema(["project"], {
   query: boundedString(2000),
   label: boundedString(64),
   name_pattern: boundedString(512),
@@ -104,14 +127,12 @@ const CBM_SEARCH_GRAPH_INPUT_SCHEMA = objectSchema(["project"], {
   offset: { type: "integer", minimum: 0, maximum: 1000000, default: 0 },
 });
 
-const CBM_QUERY_GRAPH_INPUT_SCHEMA = objectSchema(["project", "query"], {
-  project: PROJECT_PROPERTY,
+const CBM_QUERY_GRAPH_INPUT_SCHEMA = projectObjectSchema(["project", "query"], {
   query: boundedString(20000, "Read-only Cypher query accepted by the native CBM subset."),
   max_rows: { type: "integer", minimum: 1, maximum: 100000 },
 });
 
-const CBM_TRACE_PATH_INPUT_SCHEMA = objectSchema(["project", "function_name"], {
-  project: PROJECT_PROPERTY,
+const CBM_TRACE_PATH_INPUT_SCHEMA = projectObjectSchema(["project", "function_name"], {
   function_name: boundedString(1000),
   direction: { type: "string", enum: ["inbound", "outbound", "both"], default: "both" },
   depth: { type: "integer", minimum: 1, maximum: 5, default: 3 },
@@ -122,18 +143,14 @@ const CBM_TRACE_PATH_INPUT_SCHEMA = objectSchema(["project", "function_name"], {
   include_tests: { type: "boolean", default: false },
 });
 
-const CBM_GET_CODE_SNIPPET_INPUT_SCHEMA = objectSchema(["project", "qualified_name"], {
-  project: PROJECT_PROPERTY,
+const CBM_GET_CODE_SNIPPET_INPUT_SCHEMA = projectObjectSchema(["project", "qualified_name"], {
   qualified_name: boundedString(2000),
   include_neighbors: { type: "boolean", default: false },
 });
 
-const CBM_GET_GRAPH_SCHEMA_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
-});
+const CBM_GET_GRAPH_SCHEMA_INPUT_SCHEMA = projectObjectSchema(["project"], {});
 
-const CBM_SEARCH_CODE_INPUT_SCHEMA = objectSchema(["project", "pattern"], {
-  project: PROJECT_PROPERTY,
+const CBM_SEARCH_CODE_INPUT_SCHEMA = projectObjectSchema(["project", "pattern"], {
   pattern: boundedString(2000),
   file_pattern: boundedString(512),
   path_filter: boundedString(1000),
@@ -143,26 +160,21 @@ const CBM_SEARCH_CODE_INPUT_SCHEMA = objectSchema(["project", "pattern"], {
   limit: { type: "integer", minimum: 1, maximum: 200, default: 10 },
 });
 
-const CBM_DELETE_PROJECT_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
+const CBM_DELETE_PROJECT_INPUT_SCHEMA = projectObjectSchema(["project"], {
   confirm: { type: "boolean", const: true },
   state_handle: { type: "string", minLength: 24, maxLength: 512 },
 });
 
-const CBM_INDEX_STATUS_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
-});
+const CBM_INDEX_STATUS_INPUT_SCHEMA = projectObjectSchema(["project"], {});
 
-const CBM_DETECT_CHANGES_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
+const CBM_DETECT_CHANGES_INPUT_SCHEMA = projectObjectSchema(["project"], {
   scope: boundedString(1000),
   depth: { type: "integer", minimum: 0, maximum: 10, default: 2 },
   base_branch: boundedString(256),
   since: boundedString(256),
 });
 
-const CBM_MANAGE_ADR_INPUT_SCHEMA = objectSchema(["project"], {
-  project: PROJECT_PROPERTY,
+const CBM_MANAGE_ADR_INPUT_SCHEMA = projectObjectSchema(["project"], {
   mode: { type: "string", enum: ["get", "update", "sections"] },
   content: { type: "string", maxLength: 100000 },
   sections: stringArray(64, 256),
@@ -175,8 +187,7 @@ const TRACE_TIME_PROPERTY = Object.freeze({
   ],
 });
 
-const CBM_INGEST_TRACES_INPUT_SCHEMA = objectSchema(["project", "traces"], {
-  project: PROJECT_PROPERTY,
+const CBM_INGEST_TRACES_INPUT_SCHEMA = projectObjectSchema(["project", "traces"], {
   traces: {
     type: "array",
     minItems: 1,

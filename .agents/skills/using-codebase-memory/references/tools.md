@@ -17,6 +17,8 @@ All native envelopes expose:
 
 Read `warnings` whenever `partial_success` is true. Stable error codes are the primary classification; `diagnostic` is supporting evidence.
 
+Use `project` as the canonical argument name. `project_name` is accepted as a compatibility alias for upstream CBM v0.9.0 project-scoped tools; if both are supplied, they must be identical or the bridge returns `invalid_project_alias`.
+
 ## Tool Selection
 
 | Tool | Use | Key inputs | Operational notes |

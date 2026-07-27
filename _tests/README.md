@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-07-26`:
 
-- `355` JavaScript files total in `_tests`
-- `273` active scripts currently listed in `run_all_smoke_scripts.json`
+- `356` JavaScript files total in `_tests`
+- `274` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
@@ -18,9 +18,9 @@ Audit snapshot from `2026-07-26`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- last confirmed result from `2026-07-26`: `ok=true`
-- last confirmed section counts from that full run: `7` public scripts and `265` authenticated scripts
-- current manifest file contains `273` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `272` sectioned scripts, not all `273` manifest entries
+- last confirmed result from `2026-07-27`: `ok=true`
+- last confirmed section counts from that full run: `7` public scripts and `266` authenticated scripts
+- current manifest file contains `274` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `273` sectioned scripts, not all `274` manifest entries
 
 ## Orientation
 
@@ -44,6 +44,7 @@ Latest full active validation:
 
 - Public profile surface: descriptor audit, profile audit, public FS surface, and profile schema checks
 - Core authenticated surface: policy, routing, schema, MCP dispatch, repo/runtime topology, and enforcement guards
+- Codebase-memory bridge: fixture-based contract smokes plus live v0.9.0 bridge stress coverage for indexing, project aliasing, concurrent heavy reads, snippets, tracing, and cleanup
 - OAuth and OAuth21: AS metadata, JWKS/introspection, DCR, PKCE, rotation, state, prune preview/receipt/gate/apply-package draft/apply helper/control-plane script, and route contract checks
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
 - Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks

@@ -183,7 +183,13 @@ function bridgeResult(toolName, args) {
 
   assert.notEqual(byName.get("cbm_status"), byName.get("cbm_index_status"));
   assert.deepEqual(byName.get("cbm_status").descriptor.inputSchema.required, []);
-  assert.deepEqual(byName.get("cbm_index_status").descriptor.inputSchema.required, ["project"]);
+  assert.deepEqual(byName.get("cbm_index_status").descriptor.inputSchema.required, []);
+  assert.deepEqual(byName.get("cbm_index_status").descriptor.inputSchema.anyOf, [
+    { required: ["project"] },
+    { required: ["project_name"] },
+  ]);
+  assert.equal(Object.hasOwn(byName.get("cbm_index_status").descriptor.inputSchema.properties, "project"), true);
+  assert.equal(Object.hasOwn(byName.get("cbm_index_status").descriptor.inputSchema.properties, "project_name"), true);
 
   const status = await byName.get("cbm_status").execute({});
   assert.equal(status.available, true);
@@ -336,6 +342,24 @@ function bridgeResult(toolName, args) {
     assert.equal(result.cbm_tool, nativeName);
     assert.deepEqual(result.result.args, expectedArgs);
   }
+
+  const projectNameAlias = await byName.get("cbm_index_status").execute({ project_name: "demo-alias" });
+  assert.equal(projectNameAlias.cbm_tool, "index_status");
+  assert.deepEqual(projectNameAlias.result.args, { project: "demo-alias" });
+  const matchingAlias = await byName.get("cbm_search_code").execute({
+    project: "demo",
+    project_name: "demo",
+    pattern: "buildInvoice",
+  });
+  assert.equal(matchingAlias.cbm_tool, "search_code");
+  assert.deepEqual(matchingAlias.result.args, { project: "demo", pattern: "buildInvoice" });
+  const conflictingAlias = await byName.get("cbm_search_graph").execute({
+    project: "demo-left",
+    project_name: "demo-right",
+  });
+  assert.equal(conflictingAlias.success, false);
+  assert.equal(conflictingAlias.error_code, "invalid_project_alias");
+  assert.match(conflictingAlias.error, /project_name/);
 
   const readCallsBeforeIndex = calls
     .filter((entry) => entry.op === "call")
