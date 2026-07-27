@@ -8,12 +8,12 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-07-26`:
 
-- `356` JavaScript files total in `_tests`
+- `357` JavaScript files total in `_tests`
 - `274` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
-- `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
-- `41` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, and review debt
+- `8` `stress_*.js` scripts for explicit manual stress runs
+- `42` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, and review debt
 
 Latest full active validation:
 
@@ -56,7 +56,7 @@ Latest full active validation:
 - `smoke_client_disconnect_write_guard.js`: active client-disconnect write-boundary guard
 - `smoke_cooperative_tool_cancellation.js`: active cooperative tool-cancellation guard
 - Historical shorthand `c1` / `c2` / `c3` referred to these three cancellation-related guards. Current active names are the descriptive filenames above; do not recreate the shorthand in new files.
-- `stress_*.js`: not part of default `run_all`; each script posts directly to `process.env.MCP_TEST_SMOKE_URL || http://127.0.0.1:3009/mcp` and requires a running MCP server
+- `stress_*.js`: not part of default `run_all`; most scripts post directly to `process.env.MCP_TEST_SMOKE_URL || http://127.0.0.1:3009/mcp` and require a running MCP server, while `stress_cbm_bridge_samples.js` runs the local CBM bridge against sample repositories and creates temporary CBM indexes
 - `archive/legacy_retired_auth/*.js`: historical files retained outside the active surface
 - `archive/non_run_all_stale/*.js`: removed from the current top-level review surface because they are stale or broken
 - Historical names preserved inside archived files are evidence labels only. Do not copy them into new active filenames.
@@ -67,7 +67,7 @@ These are not all equivalent and should not be assumed current just because they
 
 - Harness helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
 - Explicit stress scripts: `stress_*.js`
-  These are manual external-client stress harnesses, not self-contained smoke tests. Direct execution without a running target server produces transport failure such as `fetch failed`.
+  These are manual stress harnesses, not self-contained smoke tests. HTTP stress scripts require a running target server and direct execution without one produces transport failure such as `fetch failed`; `stress_cbm_bridge_samples.js` requires the local `codebase-memory-mcp` executable and sample repositories.
 - Archived legacy scripts: `archive/legacy_retired_auth/*.js`
 - Archived stale scripts: `archive/non_run_all_stale/*.js`
 - Targeted/manual guards outside default `run_all`: for example `smoke_harness_no_pollution_guard.js`, `smoke_canary_naming_guard.js`, `smoke_list_changed_readiness_contract.js`
@@ -76,7 +76,7 @@ These are not all equivalent and should not be assumed current just because they
 Current top-level non-`run_all` inventory:
 
 - Historical audit from `2026-06-29` classified `32` files.
-- Current mechanical count is `41`, so the older classification is still useful but not complete for every newly renamed or added file.
+- Current mechanical count is `42`, so the older classification is still useful but not complete for every newly renamed or added file.
 
 - Helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
 - Current targeted guards include: `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_discovery_compat_empty_lists.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_oauth_legacy_env_failfast.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
@@ -88,6 +88,7 @@ Current top-level non-`run_all` inventory:
 Stress inventory:
 
 - `stress_devtools.js`: manual HTTP stress run for devtools surface
+- `stress_cbm_bridge_samples.js`: manual local CBM bridge stress run against `_repos_with_code_samples`; indexes temporary projects, repeats every CBM bridge tool on several sample repos, records latency/stability, and deletes its temporary CBM indexes
 - `stress_plugin_catalog.js`: manual HTTP stress run for plugin catalog read path
 - `stress_plugin_execution.js`: manual HTTP stress run for plugin execution path
 - `stress_plugin_registry.js`: manual HTTP stress run for plugin registry surface

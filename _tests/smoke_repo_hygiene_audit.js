@@ -65,9 +65,9 @@ const unisolatedServerSpawningTests = serverSpawningTests.filter((name) => {
   return !source.includes("withHermeticServerControlEnv") && !source.includes("MCP_TEST_TOOL_SURFACE_STATE_FILE");
 });
 
-assert.equal(totalJsFiles.length, 356);
+assert.equal(totalJsFiles.length, 357);
 assert.equal(smokeScripts.length, 274);
-assert.equal(nonRunAll.length, 41);
+assert.equal(nonRunAll.length, 42);
 assert.equal(workflowHelperManifest.length, 25);
 assert.equal(readinessHelperManifest.length, 45);
 assert.equal(targetedDebtHelperManifest.length, 6);
@@ -75,13 +75,14 @@ assert.deepEqual(undocumentedNonRunAll, []);
 assert.deepEqual(unisolatedServerSpawningTests, []);
 assert.ok(hermeticServerControlEnv.includes("MCP_TEST_AUDIT_LOG"), "shared hermetic child-server env must isolate the audit log");
 
-assert.ok(testsReadme.includes("`356` JavaScript files total in `_tests`"));
+assert.ok(testsReadme.includes("`357` JavaScript files total in `_tests`"));
 assert.ok(testsReadme.includes("`274` active scripts currently listed in `run_all_smoke_scripts.json`"));
-assert.ok(testsReadme.includes("`41` top-level `_tests/*.js` files currently outside default `run_all`"));
+assert.ok(testsReadme.includes("`42` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `25` scripts"));
 assert.ok(testsReadme.includes("Current readiness helper manifest size: `45` scripts"));
 assert.ok(testsReadme.includes("Current targeted/debt helper manifest size: `6` scripts"));
-assert.ok(nonRunAllAudit.includes("current mechanical non-`run_all` count is `41`"));
+assert.ok(nonRunAllAudit.includes("current mechanical non-`run_all` count is `42`"));
+assert.ok(nonRunAllAudit.includes("stress_cbm_bridge_samples.js"));
 assert.ok(nonRunAllAudit.includes("run_all_targeted_debt_smoke_scripts.json"));
 
 console.log("smoke_repo_hygiene_audit ok");

@@ -691,12 +691,28 @@ function uniqueImpactedSymbols(values) {
   return unique;
 }
 
+function isVolatileNativeWarning(value) {
+  return /^search took \d+ms \(>5s\); /i.test(String(value || ""));
+}
+
+function sanitizeResultWarnings(result) {
+  if (!result || typeof result !== "object" || Array.isArray(result) || !Array.isArray(result.warnings)) return result;
+  const filtered = result.warnings
+    .map((warning) => String(warning).slice(0, 500))
+    .filter((warning) => !isVolatileNativeWarning(warning));
+  if (filtered.length === result.warnings.length) return result;
+  const sanitized = { ...result };
+  if (filtered.length > 0) sanitized.warnings = filtered;
+  else delete sanitized.warnings;
+  return sanitized;
+}
+
 function boundConnectorResult(toolName, result, args = {}) {
   if (!result || typeof result !== "object" || Array.isArray(result)) {
     return { result, warnings: [] };
   }
   const warnings = [];
-  let bounded = result;
+  let bounded = sanitizeResultWarnings(result);
   if (toolName === "detect_changes") {
     bounded = { ...result };
     const nativeChangedFiles = Array.isArray(result.changed_files) ? result.changed_files : [];
@@ -759,7 +775,11 @@ function boundConnectorResult(toolName, result, args = {}) {
 function normalizeWarnings(result) {
   const warnings = [];
   if (result && Array.isArray(result.warnings)) {
-    for (const warning of result.warnings.slice(0, 20)) warnings.push(String(warning).slice(0, 500));
+    for (const warning of result.warnings.slice(0, 20)) {
+      const text = String(warning).slice(0, 500);
+      if (isVolatileNativeWarning(text)) continue;
+      warnings.push(text);
+    }
   }
   if (result && Array.isArray(result.skipped)) {
     for (const item of result.skipped.slice(0, 20)) {

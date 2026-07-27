@@ -103,6 +103,12 @@ if (mode === "partial") {
   }));
   return;
 }
+if (mode === "slow_search_warning") {
+  process.stdout.write(JSON.stringify({
+    content: [{ type: "text", text: JSON.stringify({ ok: true, warnings: ["search took 5042ms (>5s); narrow file_pattern/path_filter or use a more specific pattern"] }) }],
+  }));
+  return;
+}
 if (mode === "tool_error") {
   process.stdout.write(JSON.stringify({
     content: [{ type: "text", text: JSON.stringify({ error: "fixture tool error", hint: "fixture hint" }) }],
@@ -309,6 +315,15 @@ function fixtureOptions(overrides = {}) {
   assert.equal(partial.warnings.length, 2);
   assert.match(partial.warnings.join(" "), /fixture warning/);
   assert.match(partial.warnings.join(" "), /broken.js/);
+
+  const slowSearchWarning = await callCbmTool("search_code", { project: "demo", pattern: "server" }, fixtureOptions({
+    env: { FAKE_CBM_CALL_MODE: "slow_search_warning" },
+  }));
+  assert.equal(slowSearchWarning.success, true);
+  assert.equal(slowSearchWarning.partial_success, false);
+  assert.deepEqual(slowSearchWarning.warnings, []);
+  assert.equal(Object.hasOwn(slowSearchWarning.result, "warnings"), false);
+  assert.equal(slowSearchWarning.result.ok, true);
 
   const heavyOptions = fixtureOptions({
     env: { FAKE_CBM_SLEEP_MS: "140" },

@@ -16,11 +16,12 @@ Audit date: `2026-07-01`
 
 Post-audit drift now visible from the current tree:
 
-- current mechanical non-`run_all` count is `41`
+- current mechanical non-`run_all` count is `42`
 - the former transitional SSE/list-changed debt guards were later removed entirely after their unreachable helper files were retired from the active repo
-- all seven `stress_*.js` files were rechecked directly in source on `2026-06-30`
-- each stress file posts directly to `process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3009/mcp"` and therefore requires a separately running MCP server
-- direct standalone execution without a running target server fails at transport level and must not be misread as proof of stale assertions
+- seven HTTP `stress_*.js` files were rechecked directly in source on `2026-06-30`
+- `stress_cbm_bridge_samples.js` was added later as a local in-process CBM bridge stress harness against `_repos_with_code_samples`
+- each HTTP stress file posts directly to `process.env.MCP_TEST_SMOKE_URL || "http://127.0.0.1:3009/mcp"` and therefore requires a separately running MCP server
+- direct standalone execution of HTTP stress files without a running target server fails at transport level and must not be misread as proof of stale assertions
 
 Helper execution slices now available:
 
@@ -34,6 +35,7 @@ Helper execution slices now available:
 - `current_targeted_guard`: current guard or targeted contract check kept outside default `run_all`
 - `meta_guard`: recursive or full-run wrapper guard kept outside default `run_all`
 - `manual_external_stress`: explicit stress client that requires a separately running MCP endpoint
+- `manual_cbm_bridge_stress`: explicit local CBM bridge stress client that creates temporary codebase-memory indexes
 - `historical_workflow_wrapper`: wrapper around historical `_workflow/scripts/*` or `_workflow/patch_manifests/*` checkpoints
 - `archived_from_top_level`: file was identified as stale or broken and moved out of the current top-level review surface
 
@@ -123,6 +125,12 @@ These current targeted/debt guards are additionally grouped in `run_all_targeted
 - `stress_session_toolsets.js`
   Reason: each script is an explicit HTTP client harness that targets `MCP_TEST_SMOKE_URL` (default `http://127.0.0.1:3009/mcp`) and measures latency/behavior under repeated concurrent tool calls.
   Recommendation: keep outside default `run_all`; document and invoke only when a matching MCP server is already running and the operator intentionally wants load or concurrency coverage.
+
+### `manual_cbm_bridge_stress`
+
+- `stress_cbm_bridge_samples.js`
+  Reason: explicit in-process CBM bridge stress harness that indexes selected sample repositories from `_repos_with_code_samples`, repeats every exposed CBM bridge tool, records latency/stability, and deletes its temporary CBM projects.
+  Recommendation: keep outside default `run_all`; invoke manually when validating codebase-memory bridge stability, timeout policy, output bounding, or sample-size behavior.
 
 ### `historical_workflow_wrapper`
 
