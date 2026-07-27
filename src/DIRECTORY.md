@@ -1,12 +1,14 @@
 # DIRECTORY
 
 Status: active src directory map
-Updated: 2026-07-17
+Updated: 2026-07-27
 
 - `auth/`
   OAuth/OAuth21, legacy auth, and authorization-server implementation modules.
 - `exec/`
   Bounded execution and process-control support.
+- `integrations/`
+  External dependency bridges and versioned integration contracts.
 - `memory/`
   Memory/state/task support modules for the MCP surface.
 - `plugin/`

@@ -23,25 +23,25 @@ The bridge does not expose generic process execution and does not permit callers
 
 The MVP exposes five authenticated tools:
 
-- `cbm_runtime_status` — reports availability, configured executable path, detected version, timeout policy, and watcher posture.
+- `cbm_status` — reports profile-managed exposure state, dependency availability, resolved executable path, detected version, timeout policy, indexing lock state, and watcher posture.
 - `cbm_list_projects` — lists existing CBM indexes.
-- `cbm_sync_repository` — resolves a repository beneath an authorized workspace root and calls `index_repository` explicitly.
+- `cbm_index_repository` — resolves a repository beneath an authorized workspace root and calls `index_repository` explicitly.
 - `cbm_get_architecture` — returns architecture data for an indexed project.
 - `cbm_search_graph` — performs bounded graph search for an indexed project.
 
 The remaining CBM tools are deferred until this path is validated through the live ChatGPT connector.
 
-## Availability gate
+## Profile-controlled exposure and dependency availability
 
-CBM tools are loaded only when all of these conditions hold:
+Tool exposure is controlled exclusively by the server profile. The authenticated surface of profile `tests` exposes all five `cbm_*` tools; the public surface exposes none of them. No CBM-specific feature flag may add, remove, or conditionally hide these tools.
 
-1. Runtime profile is authenticated/authorized.
-2. `MCP_TEST_ENABLE_CBM_TOOLS` is enabled. Default: disabled.
-3. The configured executable exists as a regular file.
-4. Running `<exe> --version` succeeds within 5 seconds.
-5. The output matches `codebase-memory-mcp <semantic-version>`.
+The executable probe determines only whether calls can currently be fulfilled:
 
-A failed probe must not prevent `mcp-tests` from starting. The tool group is omitted and the failure is represented in server diagnostics. The probe result is cached for the lifetime of the server process.
+1. The resolved executable exists as a regular file.
+2. Running `<exe> --version` succeeds within 5 seconds.
+3. The output matches `codebase-memory-mcp <semantic-version>`.
+
+A failed probe must not prevent `mcp-tests` from starting and must not change `tools/list`. All five tools remain registered on `tests.authenticated`; operational calls return a structured `cbm_unavailable` result, while `cbm_status` exposes the cached diagnostic state. The executable path uses the platform-aware server default unless an optional machine-level `CBM_EXE_PATH` override is configured; callers cannot override it.
 
 ## Watcher decision
 
@@ -51,10 +51,10 @@ This does not affect correctness against the current stored index. It affects fr
 
 The MVP addresses this explicitly:
 
-- `cbm_sync_repository` is the only indexing/synchronization operation.
+- `cbm_index_repository` is the only indexing operation.
 - Read tools do not silently trigger indexing.
 - Read-tool descriptions state that results reflect the latest successful CBM index.
-- `cbm_runtime_status` reports `watcher_mode: "not_managed_by_bridge"`.
+- `cbm_status` reports `watcher_mode: "not_managed_by_bridge"`.
 - A later persistent-stdio package may add continuous watching if live use shows that explicit synchronization is insufficient.
 
 ## Path policy
@@ -70,8 +70,8 @@ Timeouts are operation-specific and server-controlled:
 - availability probe: 5 seconds;
 - list/status: 30 seconds;
 - architecture/search: 60 seconds;
-- repository synchronization: 15 minutes by default;
-- hard synchronization ceiling: 30 minutes.
+- repository indexing: 10 minutes by default;
+- hard indexing ceiling: 30 minutes.
 
 The caller cannot exceed server limits. A timeout terminates the child process and returns a structured `timeout` result. A timed-out synchronization is not reported as successful; the previous completed index remains the only trusted state.
 
@@ -79,9 +79,9 @@ Large repositories are handled by the longer synchronization budget. Indexing is
 
 ## Concurrency
 
-- At most one `cbm_sync_repository` operation runs at a time in the `mcp-tests` process.
-- Concurrent read calls are allowed with a small fixed limit.
-- The first implementation uses a process-local semaphore; cross-process coordination remains CBM's responsibility.
+- At most one `cbm_index_repository` operation runs at a time in the `mcp-tests` process.
+- Read calls do not acquire the indexing lock and never trigger indexing.
+- The first implementation uses a process-local lock; cross-process coordination remains CBM's responsibility.
 
 ## Output handling
 
@@ -93,8 +93,8 @@ Audit records include tool name, project or logical path, duration, exit status,
 
 All `cbm_*` tools are authenticated tools and are absent from the public profile.
 
-- `cbm_runtime_status`, `cbm_list_projects`, `cbm_get_architecture`, and `cbm_search_graph` are read operations.
-- `cbm_sync_repository` is a workspace-index mutation and requires audit.
+- `cbm_status`, `cbm_list_projects`, `cbm_get_architecture`, and `cbm_search_graph` are read operations.
+- `cbm_index_repository` is a workspace-index mutation and requires audit.
 
 ## Testing
 
@@ -103,14 +103,14 @@ The implementation must include hermetic tests using a fake executable, not the 
 - missing executable;
 - invalid version output;
 - successful version probe and cached availability;
-- omission of tools when unavailable;
+- stable exposure of all five tools on `tests.authenticated` when the executable is unavailable;
 - path escape rejection;
 - correct CLI arguments and JSON parsing;
 - read timeout;
 - synchronization timeout;
 - output truncation/error classification;
 - public-profile exclusion;
-- authenticated-profile inclusion when the fake probe succeeds;
+- authenticated-profile inclusion independent of probe success;
 - no implicit indexing from read tools.
 
 Live validation against the real executable and connector is a separate post-merge/operator step.
@@ -118,8 +118,8 @@ Live validation against the real executable and connector is a separate post-mer
 ## Rollout
 
 1. Implement and pass hermetic tests.
-2. Enable `MCP_TEST_ENABLE_CBM_TOOLS=1` and configure `MCP_TEST_CBM_EXE_PATH` on the authenticated runtime only.
-3. Restart through `node .\scripts\request-restart.js --code=42 --reason=manual` from `C:\Work\mcp-tests`.
-4. Verify live `tools/list` and invoke `cbm_runtime_status`.
-5. Synchronize `C:\Work\mcp-tests` and validate architecture/search calls.
-6. Refresh the ChatGPT connector tool surface if required.
+2. Confirm that profile `tests` exposes all five `cbm_*` tools in repository-level surface assembly without any CBM-specific feature flag.
+3. Request the controlled restart only with `node .\scripts\request-restart.js --code=42 --reason=manual` from `C:\Work\mcp-tests`. Do not start a replacement server or supervisor process.
+4. Report the requested surface change to the operator. The operator refreshes the ChatGPT connector.
+5. After the operator confirms the connector refresh, verify live `tools/list` and invoke `cbm_status`.
+6. Run `cbm_index_repository` only after separate explicit operator authorization, then validate architecture/search calls.

@@ -1,15 +1,15 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-17
+Date: 2026-07-27
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: repo truth now expects `69` connector-visible authenticated tools (`13 public + 56 authorized-visible`) after reclassifying `26` server-internal helpers out of the MCP-visible surface. Fresh repo-native client-entry evidence from `2026-07-17` is now anchored to current OAuth21 `3008` `server_start_id = 2026-07-17T17:38:34.244Z`: the current audit window is still `initialize_only`, with `2` successful legacy `initialize` responses for `codex-mcp-client 0.145.0-alpha.18`, `2` matching `notifications/initialized`, `2` `tools/list`, `15` `tools/call`, and no fresh same-window `server/discover`. Earlier 2026-07-15 diagnostics still matter because they distinguish stale-entry windows from fresh reconnect evidence, so follow-up-only `tools/list` / `tools/call` traffic must not be misread as migration proof. The refreshed report also classifies retained client families as `operational_known`, `synthetic_validation`, or `unknown`, and the retained `server_discover_only` evidence currently belongs only to synthetic validation traffic rather than an operational client family. The same retained-evidence filters are available through `observability_status` via `client_name`, `evidence_scope`, and `max_age_days`, so runtime-facing diagnostics and workflow script evidence no longer diverge. The new blocker-matrix helper sharpens the interpretation further: the blocker already exists in the freshest retained operational windows (`1d` = `codex-mcp-client 0.145.0-alpha.18`, `2d` = `0.145.0-alpha.18` plus `0.144.2`), while only wider `7d+` windows add the older operational tail. A fresh 2026-07-15 model-runtime probe also confirms that `mcp__workbench` is callable again from this Codex runtime session. Repo-validated OAuth21 hardening from 2026-07-16 now additionally covers pre-auth public-route throttling, oversized-body aborts, and bounded DCR client-registry growth with retention-based dead-client pruning. Codex UI connector-side visible-tool enumeration is still not independently re-verified here; treat the current live proof as runtime/MCP truth first, not as UI inventory proof.
+Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`), including fifteen `cbm_*` tools. Hardened CBM v0.9.0 behavior is live at `server_start_id = 2026-07-27T03:10:26.042Z` with unchanged combined fingerprint `6a1329e3b3892b9c`. Native calls use stdin transport without the raw-JSON deprecation warning; `detect_changes` normalizes duplicates; all three active cache databases are v0.9.0-compatible; `manage_adr(get)` succeeds. A post-refresh disposable index was deleted through `state_handle`, a fresh confirmed repeat mapped to `cbm_project_not_found`, and `_tests/fixtures/cbm-live-fixture` remained intact. No restart or connector refresh remains pending. Fresh client-entry evidence from `2026-07-27` remains `initialize_only` for `openai-mcp 1.0.0`: the explicitly selected live server window contains `8` successful legacy `initialize` responses and `0` `server/discover` entries. Refresh again only after newer external traffic creates a meaningfully new window.
 
 Current workflow markers:
-- `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_primary = post_53d-real-client-entry-evidence-refresh`
-- `next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`
+- `current_working_course = initialize-retirement-evidence-wait`
+- `next_primary = comp-1a-on-fresh-external-client-traffic`
+- `next_secondary = bounded-doc-orientation-maintenance`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -50,7 +50,11 @@ Read these first, in this order:
 6. Current run-all manifest:
    - `_tests/run_all_smoke_scripts.json`
 
-7. Operator-facing documentation contract:
+7. Project-local agent skills:
+   - `.agents/skills/using-codebase-memory/SKILL.md`
+   - Load `references/tools.md` for exact `cbm_*` contracts and `references/scenarios.md` for decision examples only when their `Load when:` condition matches the task.
+
+8. Operator-facing documentation contract:
    - `_workflow/NORTHSTAR.md`
    - `_workflow/STATE.md`
    - `_workflow/READINESS.md`
@@ -66,9 +70,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke after historical-next-step quarantine guard: `ok=true, version=0.40.0, public=7, tests_authenticated=253`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=265`.
 - Public section count: `7`.
-- Authenticated smoke count: `253`.
+- Authenticated smoke count: `265`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -78,11 +82,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repo target 69 connector-visible tools / current client-entry evidence is anchored to server_start_id `2026-07-17T17:38:34.244Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 84 connector-visible tools at `server_start_id = 2026-07-27T03:10:26.042Z`; current `COMP-1A` evidence explicitly selects that same live identity and remains `initialize_only` for `openai-mcp 1.0.0`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Live authenticated `/mcp` is now aligned with the repo `69`-tool connector-visible surface; connector-UI visible-tool re-enumeration remains unverified in this turn.
+- Counts remain aligned at 84 and the hardened connector-visible CBM v0.9.0 contract is live at `server_start_id = 2026-07-27T03:10:26.042Z`; `state_handle` deletion, not-found classification, source preservation, normalized change results, repaired ADR storage, and unchanged fingerprints are verified. No restart or connector refresh remains pending.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, but `DIRECTORY` coverage is still being rolled out beyond the initial operational directories.
@@ -376,27 +380,35 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`.
-2. Re-check connector-visible tool enumeration now that the live OAuth21 `3008` surface is revalidated at `69` connector-visible tools, if the Codex/OpenAI client layer starts exposing remote Streamable HTTP tool surfaces again.
-3. Prepare the bounded initialize-retirement decision package only after repo/runtime/client evidence stays coherent.
+1. Wait for a meaningfully new external-client evidence window before rerunning `COMP-1A`.
+2. Use `DOC-2A` only as a bounded fallback when one real high-churn orientation gap exists.
+3. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the recovered supervisor-managed OAuth21 `3008` runtime stable at the repo `69`-tool connector-visible surface, then capture any client/connector evidence needed for the `initialize` retirement/debug track. Modular parity against `C:\Work\mcp` is now repo-complete; do not reopen `/mcp/sessionless` target planning.
+Next recommended action: keep the hardened OAuth21 `3008` and 84-tool surface stable. Do not refresh `COMP-1A` again until traffic newer than the July 27 `openai-mcp 1.0.0` window creates a meaningfully new entry-path sample. Select one bounded `DOC-2A` orientation package only when a current high-churn gap is demonstrable.
 
 Readiness-derived default next package queue:
 
-1. `COMP-1A`
-   Refresh current operational client-entry evidence for the `initialize` retirement track when a new evidence window exists.
+1. `COMP-1A` — event-gated
+   Resume only when a new external-client evidence window exists.
 
-2. `COMP-1B`
-   Only if the next `COMP-1A` run changes or materially narrows the blocker.
+2. `DOC-2A` — bounded fallback
+   Close one real high-churn orientation gap, then stop.
 
-3. `SURF-1A`
-   Only if connector/UI-visible surface truth is what still prevents the decision.
+3. `COMP-1B` / `SURF-1A`
+   Execute only when fresh evidence materially changes the decision surface.
 
 Recently completed:
+
+- Refreshed `COMP-1A` on July 27, 2026 against explicit live `server_start_id = 2026-07-27T03:10:26.042Z`: operational `openai-mcp 1.0.0` on protocol `2025-11-25` remains `initialize_only` with `8` successful responses and `0` `server/discover` entries. The shared child-server helper now isolates audit output, and the report can select and attribute a named live window without rewriting historical audit evidence.
+
+- Completed one bounded `DOC-2A` fallback on July 27, 2026: `scripts/generate_directory_docs.js` now owns generator-owned maps for `src/integrations` and `src/integrations/codebase_memory`; the child map names native transport, contract registry, runtime orchestration, versioned contracts, and the repository/runtime/index truth boundary.
+
+- Closed test-harness control-state pollution on July 27, 2026: self-test no longer starts the restart controller or writes tool-surface state; every smoke child-server uses hermetic surface/restart/rate paths; standalone harnesses, ordinary self-test, and the full suite preserve the restored operational 84-tool state byte-for-byte. No additional restart was required.
+
+- Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026: stdin payload transport, duplicate `detect_changes` normalization, fail-fast runtime output configuration, operator-neutral executable fallback, fail-closed ADR snapshot gating, exact OAuth/HTTP helper consolidation, and transactional migration of all three active cache databases are live at `server_start_id = 2026-07-27T03:10:26.042Z`. `manage_adr(get)` succeeds without reindexing; post-refresh delete verification returned `deleted` then `cbm_project_not_found`; full offline smoke is GREEN at `7 + 265`.
 
 - Applied the bounded surviving-route transport-session retirement package: stable `/mcp` no longer creates transport sessions, no longer emits `Mcp-Session-Id`, ignores session headers on POST, and now reports `protocol_sessions: false` from `server/discover`.
 

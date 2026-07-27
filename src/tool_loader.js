@@ -43,6 +43,24 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/code_sample_js", "codeSampleJsTool", "code_sample_js");
   }
 
+  if (profile === "internal" && authRequired && groupEnabled("authorized")) {
+    add("../tools/authorized/cbm_status", "cbmStatusTool", "cbm_status");
+    add("../tools/authorized/cbm_list_projects", "cbmListProjectsTool", "cbm_list_projects");
+    add("../tools/authorized/cbm_index_repository", "cbmIndexRepositoryTool", "cbm_index_repository");
+    add("../tools/authorized/cbm_get_architecture", "cbmGetArchitectureTool", "cbm_get_architecture");
+    add("../tools/authorized/cbm_search_graph", "cbmSearchGraphTool", "cbm_search_graph");
+    add("../tools/authorized/cbm_query_graph", "cbmQueryGraphTool", "cbm_query_graph");
+    add("../tools/authorized/cbm_trace_path", "cbmTracePathTool", "cbm_trace_path");
+    add("../tools/authorized/cbm_get_code_snippet", "cbmGetCodeSnippetTool", "cbm_get_code_snippet");
+    add("../tools/authorized/cbm_get_graph_schema", "cbmGetGraphSchemaTool", "cbm_get_graph_schema");
+    add("../tools/authorized/cbm_search_code", "cbmSearchCodeTool", "cbm_search_code");
+    add("../tools/authorized/cbm_delete_project", "cbmDeleteProjectTool", "cbm_delete_project");
+    add("../tools/authorized/cbm_index_status", "cbmIndexStatusTool", "cbm_index_status");
+    add("../tools/authorized/cbm_detect_changes", "cbmDetectChangesTool", "cbm_detect_changes");
+    add("../tools/authorized/cbm_manage_adr", "cbmManageAdrTool", "cbm_manage_adr");
+    add("../tools/authorized/cbm_ingest_traces", "cbmIngestTracesTool", "cbm_ingest_traces");
+  }
+
   if (groupEnabled("public") && envFlagEnabled("MCP_TEST_ENABLE_NET_TOOLS", true)) {
     add("../tools/public/net_http_get_allowlisted", "netHttpGetAllowlistedTool", "net_http_get_allowlisted");
     add("../tools/public/net_fetch_text_allowlisted", "netFetchTextAllowlistedTool", "net_fetch_text_allowlisted");

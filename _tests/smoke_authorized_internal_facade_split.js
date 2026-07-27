@@ -51,8 +51,16 @@ const tools = loadOptionalTools({
   createRuntimeRegistryContext: (label) => support.registryContext({ label }),
 });
 
+const conditionallyDisabled = new Set(
+  authorized.filter((name) => toolsSpec.tool_catalog[name]?.enabled_by_default === false)
+);
 for (const name of authorized) {
-  assert.ok(tools.some((tool) => tool.name === name), `missing loaded authorized tool ${name}`);
+  const loaded = tools.some((tool) => tool.name === name);
+  if (conditionallyDisabled.has(name)) {
+    assert.equal(loaded, false, `conditionally disabled authorized tool must not load by default: ${name}`);
+  } else {
+    assert.ok(loaded, `missing loaded authorized tool ${name}`);
+  }
 }
 for (const name of internal) {
   assert.equal(tools.some((tool) => tool.name === name), false, `internal runtime tool must not be MCP-visible: ${name}`);

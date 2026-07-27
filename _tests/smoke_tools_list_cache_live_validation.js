@@ -8,21 +8,22 @@ const plan = fs.readFileSync(path.join(ROOT, "_workflow", "operator_decisions", 
 const index = fs.readFileSync(path.join(ROOT, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "utf8");
 const canon = fs.readFileSync(path.join(ROOT, "_workflow", "WORKFLOW_CANON.md"), "utf8");
 
-const expectedCurrentStatus = "live_healthz_and_startup_inventory_69_repo_expected_69_connector_ui_visibility_unverified";
-const expectedCurrentFingerprint = "572ac8dc00c58410";
-const expectedCurrentHash = "3a69d810619b2b97";
+const expectedCurrentStatus = "live_hardened_v0_9_0_84_in_sync";
+const expectedCurrentFingerprint = "6a1329e3b3892b9c";
+const expectedCurrentHash = "7b5bfc1bd21386d3";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
 assert.equal(c.connector_map_status, expectedCurrentStatus);
-assert.equal(typeof state.current_runtime_truth.oauth21_3008.server_start_id, "string");
-assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id.length > 0, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-07-27T03:10:26.042Z");
+assert.equal(c.server_start_id, "2026-07-27T03:10:26.042Z");
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
-assert.equal(c.tool_count, 69);
-assert.equal(c.repo_current_expected_tool_count, 69);
+assert.equal(c.tool_count, 84);
+assert.equal(c.repo_current_expected_tool_count, 84);
 assert.equal(c.connector_refresh_required_now, false);
-assert.equal(c.connector_ui_visibility_verified_now, false);
+assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
 
@@ -30,11 +31,13 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repo truth now expects `69` connector-visible authenticated tools"));
-assert.ok(index.includes("Fresh repo-native client-entry evidence from `2026-07-17` is now anchored to current OAuth21 `3008` `server_start_id = 2026-07-17T17:38:34.244Z`"));
-assert.ok(index.includes("visible-tool enumeration is still not independently re-verified"));
-assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `69`"));
-assert.ok(canon.includes("tool count `69`"));
-assert.ok(canon.includes("not a fresh UI inventory proof"));
+assert.ok(index.includes("profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools"));
+assert.ok(index.includes("Fresh client-entry evidence from `2026-07-27` remains `initialize_only` for `openai-mcp 1.0.0`"));
+assert.ok(index.includes("Hardened CBM v0.9.0 behavior is live"));
+assert.ok(index.includes("No restart or connector refresh remains pending"));
+assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `84`"));
+assert.ok(canon.includes("tool count `84`"));
+assert.ok(canon.includes("CBM reliability hardening is live"));
+assert.ok(canon.includes("no restart or connector refresh remains pending"));
 
 console.log("smoke_tools_list_cache_live_validation ok");

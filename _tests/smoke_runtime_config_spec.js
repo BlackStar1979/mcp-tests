@@ -24,6 +24,11 @@ for (const base of ["src", "tools"]) {
       else if (entry.name.endsWith(".js")) {
         const text = fs.readFileSync(p, "utf8");
         for (const m of text.matchAll(/MCP_TEST_[A-Z0-9_]+/g)) envFromCode.add(m[0]);
+        for (const m of text.matchAll(/process\.env\.(CBM_[A-Z0-9_]+)/g)) envFromCode.add(m[1]);
+        if (p.endsWith(path.join("src", "integrations", "codebase_memory", "cbm_cli_bridge.js"))) {
+          const block = text.match(/const SAFE_INHERITED_ENV_KEYS = new Set\(\[([\s\S]*?)\]\);/);
+          if (block) for (const m of block[1].matchAll(/"(CBM_[A-Z0-9_]+)"/g)) envFromCode.add(m[1]);
+        }
       }
     }
   }

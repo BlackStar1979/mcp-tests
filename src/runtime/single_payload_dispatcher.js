@@ -21,6 +21,7 @@ async function handleSinglePayload({
   responseMode = "json",
   httpMethod,
   abortSignal,
+  authResult,
   handleRpcMessage,
 }) {
   auditLog("rpc_received", {
@@ -52,7 +53,7 @@ async function handleSinglePayload({
     return;
   }
 
-  const response = await handleRpcMessage(payload || {}, { requestId, sessionId, session, protocolVersion, protocolVersionHeader, abortSignal });
+  const response = await handleRpcMessage(payload || {}, { requestId, sessionId, session, protocolVersion, protocolVersionHeader, abortSignal, authResult });
 
   if (response === undefined) {
     if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_no_response" })) {

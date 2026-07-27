@@ -19,7 +19,11 @@ assert.ok(index.includes("Do not infer active work from historical plan files"))
 assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Historical records remain traceability evidence, not the active queue."));
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
-assert.ok(index.includes("Preserve bounded single-route compatibility for both legacy `initialize` and modern `server/discover` until tested clients stop requiring legacy `initialize`, and only after explicit authorization retire `initialize`."));
+assert.ok(index.includes("Wait for a meaningfully new external-client evidence window before rerunning `COMP-1A`."));
+assert.ok(index.includes("`COMP-1A` — event-gated"));
+assert.ok(index.includes("`DOC-2A` — bounded fallback"));
+assert.ok(index.includes("`COMP-1B` / `SURF-1A`"));
+assert.ok(index.includes("Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026"));
 assert.ok(index.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(index.includes("connector_runtime_callable_surface_revalidation.md"));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
@@ -87,12 +91,18 @@ for (const stale of [
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.equal(state.workflow_progress_markers.next_primary, "post_53d-real-client-entry-evidence-refresh");
-assert.equal(state.workflow_progress_markers.next_secondary, "post_53d-retirement-decision-delta-if-evidence-changes");
-assert.ok(index.includes("`next_primary = post_53d-real-client-entry-evidence-refresh`"));
-assert.ok(index.includes("`next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`"));
-assert.ok(canon.includes("`next_primary = post_53d-real-client-entry-evidence-refresh`"));
-assert.ok(canon.includes("`next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`"));
+assert.equal(state.workflow_progress_markers.current_working_course, "initialize-retirement-evidence-wait");
+assert.equal(state.workflow_progress_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
+assert.equal(state.workflow_progress_markers.next_secondary, "bounded-doc-orientation-maintenance");
+assert.ok(index.includes("`current_working_course = initialize-retirement-evidence-wait`"));
+assert.ok(index.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
+assert.ok(index.includes("`next_secondary = bounded-doc-orientation-maintenance`"));
+assert.ok(canon.includes("`current_working_course = initialize-retirement-evidence-wait`"));
+assert.ok(canon.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
+assert.ok(canon.includes("`next_secondary = bounded-doc-orientation-maintenance`"));
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);
 assert.equal(state.active_target_direction.sse_allowed_in_end_state, false);

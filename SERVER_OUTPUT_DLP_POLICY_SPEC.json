@@ -11,7 +11,24 @@
     "resource_link_filtering": "required",
     "embedded_resource_trust": "untrusted_by_default",
     "output_to_model_boundary": "explicit_context_label_required",
-    "logs_must_not_expose_secrets": true
+    "logs_must_not_expose_secrets": true,
+    "codebase_memory_output_handling": {
+      "connector_visible": true,
+      "bounded_output_required": true,
+      "structured_schema_validation_required": true,
+      "audit_payload_content_forbidden": true,
+      "partial_success_explicit": true,
+      "warnings_bounded": true,
+      "binary_identity_metadata_allowed": true,
+      "state_handle_audit_forbidden": true,
+      "detect_changes_arrays_bounded": true,
+      "detect_changes_item_limit": 200,
+      "native_totals_preserved": true,
+      "scope_filter_metadata_explicit": true,
+      "unresolved_impact_explicit": true,
+      "trace_placeholder_partial_success": true,
+      "cypher_aggregation_warning": true
+    }
   },
   "current_repo_bindings": [
     "SERVER_TOOLS_SPEC.json",

@@ -1,0 +1,446 @@
+{
+  "contract_version": "cbm-cli-contract-v1",
+  "cbm_version": "0.9.0",
+  "captured_at": "2026-07-26T14:04:47.928Z",
+  "captured_executable_path": "C:\\Users\\mczyz\\AppData\\Local\\Programs\\codebase-memory-mcp\\codebase-memory-mcp.exe",
+  "captured_executable_size": 273333760,
+  "captured_executable_sha256": "9a205fa5ae759fbc866bfe1554f0c05a303be9ae6e0a00f94d875dc0c25e0680",
+  "native_tools": [
+    "index_repository",
+    "search_graph",
+    "query_graph",
+    "trace_path",
+    "get_code_snippet",
+    "get_graph_schema",
+    "get_architecture",
+    "search_code",
+    "list_projects",
+    "delete_project",
+    "index_status",
+    "detect_changes",
+    "manage_adr",
+    "ingest_traces"
+  ],
+  "tools": {
+    "index_repository": {
+      "flags": {
+        "repo_path": {
+          "type": "string",
+          "required": true
+        },
+        "mode": {
+          "type": "string",
+          "required": false
+        },
+        "target_projects": {
+          "type": "array",
+          "required": false
+        },
+        "name": {
+          "type": "string",
+          "required": false
+        },
+        "persistence": {
+          "type": "boolean",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "repo_path"
+      ],
+      "optional_flags": [
+        "mode",
+        "target_projects",
+        "name",
+        "persistence"
+      ],
+      "help_sha256": "8a57cc639c1a00c420457defcf4687c72e4d4f706aa046c6274d92001cc7cf04"
+    },
+    "search_graph": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "query": {
+          "type": "string",
+          "required": false
+        },
+        "label": {
+          "type": "string",
+          "required": false
+        },
+        "name_pattern": {
+          "type": "string",
+          "required": false
+        },
+        "qn_pattern": {
+          "type": "string",
+          "required": false
+        },
+        "file_pattern": {
+          "type": "string",
+          "required": false
+        },
+        "relationship": {
+          "type": "string",
+          "required": false
+        },
+        "min_degree": {
+          "type": "integer",
+          "required": false
+        },
+        "max_degree": {
+          "type": "integer",
+          "required": false
+        },
+        "exclude_entry_points": {
+          "type": "boolean",
+          "required": false
+        },
+        "include_connected": {
+          "type": "boolean",
+          "required": false
+        },
+        "semantic_query": {
+          "type": "array",
+          "required": false
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        },
+        "offset": {
+          "type": "integer",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [
+        "query",
+        "label",
+        "name_pattern",
+        "qn_pattern",
+        "file_pattern",
+        "relationship",
+        "min_degree",
+        "max_degree",
+        "exclude_entry_points",
+        "include_connected",
+        "semantic_query",
+        "limit",
+        "offset"
+      ],
+      "help_sha256": "9f290df1ff31f6d9f8096806397a0153f77868410b21716d8952f0f16e901c06"
+    },
+    "query_graph": {
+      "flags": {
+        "query": {
+          "type": "string",
+          "required": true
+        },
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "max_rows": {
+          "type": "integer",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "query",
+        "project"
+      ],
+      "optional_flags": [
+        "max_rows"
+      ],
+      "help_sha256": "5b244e3762de72a1baa981e318bdec809c597f161635f7c93ef05e5eb0f923ce"
+    },
+    "trace_path": {
+      "flags": {
+        "function_name": {
+          "type": "string",
+          "required": true
+        },
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "direction": {
+          "type": "string",
+          "required": false
+        },
+        "depth": {
+          "type": "integer",
+          "required": false
+        },
+        "mode": {
+          "type": "string",
+          "required": false
+        },
+        "parameter_name": {
+          "type": "string",
+          "required": false
+        },
+        "edge_types": {
+          "type": "array",
+          "required": false
+        },
+        "risk_labels": {
+          "type": "boolean",
+          "required": false
+        },
+        "include_tests": {
+          "type": "boolean",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "function_name",
+        "project"
+      ],
+      "optional_flags": [
+        "direction",
+        "depth",
+        "mode",
+        "parameter_name",
+        "edge_types",
+        "risk_labels",
+        "include_tests"
+      ],
+      "help_sha256": "0bc3c57b1502fc6e6cbc7200ac929aeba5f97b4ad71a0165c38166275ee4ed8d"
+    },
+    "get_code_snippet": {
+      "flags": {
+        "qualified_name": {
+          "type": "string",
+          "required": true
+        },
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "include_neighbors": {
+          "type": "boolean",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "qualified_name",
+        "project"
+      ],
+      "optional_flags": [
+        "include_neighbors"
+      ],
+      "help_sha256": "653f0d16eccbd26de716610bed851629f11a88d7e95f0b696969f970ed8a9573"
+    },
+    "get_graph_schema": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [],
+      "help_sha256": "3a4935fdea1aeac3deadc8b69052968c77335b624bbe15e1138e64e24c16b9a6"
+    },
+    "get_architecture": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "path": {
+          "type": "string",
+          "required": false
+        },
+        "aspects": {
+          "type": "array",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [
+        "path",
+        "aspects"
+      ],
+      "help_sha256": "ff01db0f917b1f8c6a0b3f88f73954566eb855f8f98f9c831541438d5d9231cc"
+    },
+    "search_code": {
+      "flags": {
+        "pattern": {
+          "type": "string",
+          "required": true
+        },
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "file_pattern": {
+          "type": "string",
+          "required": false
+        },
+        "path_filter": {
+          "type": "string",
+          "required": false
+        },
+        "mode": {
+          "type": "string",
+          "required": false
+        },
+        "context": {
+          "type": "integer",
+          "required": false
+        },
+        "regex": {
+          "type": "boolean",
+          "required": false
+        },
+        "limit": {
+          "type": "integer",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "pattern",
+        "project"
+      ],
+      "optional_flags": [
+        "file_pattern",
+        "path_filter",
+        "mode",
+        "context",
+        "regex",
+        "limit"
+      ],
+      "help_sha256": "79750adc5095c7f6a8eb2b706531321e755b0701115a7ae812e4cedc6b1c8d63"
+    },
+    "list_projects": {
+      "flags": {},
+      "required_flags": [],
+      "optional_flags": [],
+      "help_sha256": "5629f27713a136f0f2220f40c2cf36342618231dedad3add3dcfa6d61cd9d9be"
+    },
+    "delete_project": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [],
+      "help_sha256": "2c09ff4ffe927cf5714d602dbc89f779f7d25ce10fb344963c40ac76cac66989"
+    },
+    "index_status": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [],
+      "help_sha256": "f384928330036c77dbbf0c4913ca14d3e4c3d861ef747346a75ba1b915425757"
+    },
+    "detect_changes": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "scope": {
+          "type": "string",
+          "required": false
+        },
+        "depth": {
+          "type": "integer",
+          "required": false
+        },
+        "base_branch": {
+          "type": "string",
+          "required": false
+        },
+        "since": {
+          "type": "string",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [
+        "scope",
+        "depth",
+        "base_branch",
+        "since"
+      ],
+      "help_sha256": "d3196d972e34d3a767fb9b33901cc436d0bc199a4dcc33f25e214389bf465609"
+    },
+    "manage_adr": {
+      "flags": {
+        "project": {
+          "type": "string",
+          "required": true
+        },
+        "mode": {
+          "type": "string",
+          "required": false
+        },
+        "content": {
+          "type": "string",
+          "required": false
+        },
+        "sections": {
+          "type": "array",
+          "required": false
+        }
+      },
+      "required_flags": [
+        "project"
+      ],
+      "optional_flags": [
+        "mode",
+        "content",
+        "sections"
+      ],
+      "help_sha256": "a8365c50e9b033282229f71d91efa6e52320a79d52254004c3acd0caef878b9e"
+    },
+    "ingest_traces": {
+      "flags": {
+        "traces": {
+          "type": "array",
+          "required": true
+        },
+        "project": {
+          "type": "string",
+          "required": true
+        }
+      },
+      "required_flags": [
+        "traces",
+        "project"
+      ],
+      "optional_flags": [],
+      "help_sha256": "eea90249fa25ab3a62a4c7a822afa26c3471310b181adea16849425934f11f5f"
+    }
+  },
+  "help_sha256": "7bb2ee0671eb499f0160384db30aaba4b5a0ad3b651a9b6008329991def02571",
+  "sources": {
+    "release": "https://github.com/DeusData/codebase-memory-mcp/releases/tag/v0.9.0",
+    "readme": "https://github.com/DeusData/codebase-memory-mcp/blob/v0.9.0/README.md",
+    "docs": "https://github.com/DeusData/codebase-memory-mcp/tree/v0.9.0/docs"
+  }
+}

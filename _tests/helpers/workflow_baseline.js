@@ -2,12 +2,12 @@
 
 const assert = require("node:assert/strict");
 
-const latestFullSmokeToken = "ok=true, version=0.40.0, public=7, tests_authenticated=253";
-const latestAuthenticatedSmokeCount = 253;
+const latestFullSmokeToken = "ok=true, version=0.40.0, public=7, tests_authenticated=265";
+const latestAuthenticatedSmokeCount = 265;
 
 const latestCanonFullSmokeLine = `Latest known full smoke: \`node ./_tests/run_all_smokes.js --skip-network = ${latestFullSmokeToken}\``;
 const latestCanonAuthenticatedCountLine = `Latest validated authenticated smoke count: \`${latestAuthenticatedSmokeCount}\``;
-const latestIndexFullSmokeLine = `Latest full smoke after historical-next-step quarantine guard: \`${latestFullSmokeToken}\`.`;
+const latestIndexFullSmokeLine = `Latest full smoke: \`${latestFullSmokeToken}\`.`;
 const latestIndexAuthenticatedCountLine = `Authenticated smoke count: \`${latestAuthenticatedSmokeCount}\`.`;
 
 function assertCanonCurrentSmokeBaseline(canon) {

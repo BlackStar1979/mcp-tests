@@ -6,10 +6,10 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 ## Current Status
 
-Audit snapshot from `2026-07-17`:
+Audit snapshot from `2026-07-26`:
 
-- `339` JavaScript files total in `_tests`
-- `261` active scripts currently listed in `run_all_smoke_scripts.json`
+- `355` JavaScript files total in `_tests`
+- `273` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `7` `stress_*.js` scripts for explicit manual stress runs against a running MCP endpoint
@@ -18,9 +18,9 @@ Audit snapshot from `2026-07-17`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- last confirmed result from `2026-07-17`: `ok=true`
-- last confirmed section counts from that full run: `7` public scripts and `253` authenticated scripts
-- current manifest file contains `261` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `260` sectioned scripts, not all `261` manifest entries
+- last confirmed result from `2026-07-26`: `ok=true`
+- last confirmed section counts from that full run: `7` public scripts and `265` authenticated scripts
+- current manifest file contains `273` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `272` sectioned scripts, not all `273` manifest entries
 
 ## Orientation
 

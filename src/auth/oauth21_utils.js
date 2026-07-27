@@ -2,6 +2,7 @@
 
 const crypto = require("node:crypto");
 const { URLSearchParams } = require("node:url");
+const { jsonResponse } = require("../util/http_response_helpers");
 
 const OAUTH_REPEATABLE_PARAMS = new Set(["resource"]);
 
@@ -110,17 +111,6 @@ async function readFormBody(req) {
   if (normalizedContentType(req) !== "application/x-www-form-urlencoded") throw invalidRequestError();
   const raw = await readRequestBody(req);
   return parseForm(raw);
-}
-
-function jsonResponse(res, statusCode, body, extraHeaders = {}) {
-  const text = JSON.stringify(body);
-  res.writeHead(statusCode, {
-    "content-type": "application/json; charset=utf-8",
-    "content-length": Buffer.byteLength(text),
-    "cache-control": "no-store",
-    ...extraHeaders,
-  });
-  res.end(text);
 }
 
 function htmlResponse(res, statusCode, text, extraHeaders = {}) {

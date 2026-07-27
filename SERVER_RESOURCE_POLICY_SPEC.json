@@ -144,6 +144,34 @@
       ],
       "public_surface_allowed": false
     },
+    "codebase_memory_readonly": {
+      "description": "Authenticated read-only access to persisted codebase-memory project indexes through the fixed one-shot CLI bridge.",
+      "allowed_operations": [
+        "read",
+        "list",
+        "search"
+      ],
+      "public_surface_allowed": false
+    },
+    "codebase_memory_mutation": {
+      "description": "Authenticated explicit repository indexing, ADR updates, and trace ingestion through the fixed codebase-memory CLI bridge, with one active mutation at a time.",
+      "allowed_operations": [
+        "write"
+      ],
+      "public_surface_allowed": false
+    },
+    "codebase_memory_destructive": {
+      "description": "Authenticated destructive removal of one named codebase-memory project index. Repository source files are outside this operation.",
+      "allowed_operations": [
+        "delete"
+      ],
+      "public_surface_allowed": false,
+      "destructive": true,
+      "confirmation_required": true,
+      "confirmation_kind": "cbm_delete_project_confirmation",
+      "confirmation_ttl_ms": 120000,
+      "source_repository_deletion": false
+    },
     "runtime_status_readonly": {
       "description": "Read-only server runtime/status resource.",
       "allowed_operations": [
@@ -210,6 +238,11 @@
     },
     "write": {
       "mutation": true
+    },
+    "delete": {
+      "mutation": true,
+      "destructive": true,
+      "operator_approval_required": true
     },
     "state_update": {
       "mutation": true

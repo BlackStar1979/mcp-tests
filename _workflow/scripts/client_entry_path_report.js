@@ -79,9 +79,55 @@ function latestServerStart(entries) {
   return { server_start_id: "", ts: "" };
 }
 
+function serverStartById(entries, serverStartId) {
+  const wanted = String(serverStartId || "").trim();
+  if (!wanted) return { server_start_id: "", ts: "" };
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    if (String((entry && entry.event) || "") !== "server_start") continue;
+    if (String((entry && entry.server_start_id) || "") !== wanted) continue;
+    return {
+      server_start_id: wanted,
+      ts: String(entry.ts || ""),
+    };
+  }
+  return { server_start_id: wanted, ts: "" };
+}
+
 function currentWindowEntries(entries, currentServerStart) {
-  if (!currentServerStart.ts) return entries;
-  return entries.filter((entry) => String(entry.ts || "") >= currentServerStart.ts);
+  const serverStartId = String((currentServerStart && currentServerStart.server_start_id) || "").trim();
+  if (!serverStartId) {
+    if (!currentServerStart.ts) return entries;
+    return entries.filter((entry) => String(entry.ts || "") >= currentServerStart.ts);
+  }
+
+  const requestServerStartIds = new Map();
+  for (const entry of entries) {
+    const requestId = String((entry && entry.request_id) || "");
+    const explicitServerStartId = String((entry && entry.server_start_id) || "");
+    if (requestId && explicitServerStartId) {
+      requestServerStartIds.set(requestId, explicitServerStartId);
+    }
+  }
+
+  const selected = [];
+  let activeServerStartId = "";
+  for (const entry of entries) {
+    const event = String((entry && entry.event) || "");
+    const explicitServerStartId = String((entry && entry.server_start_id) || "");
+    if (event === "server_start" && explicitServerStartId) {
+      activeServerStartId = explicitServerStartId;
+    }
+    const requestId = String((entry && entry.request_id) || "");
+    const requestServerStartId = requestId
+      ? String(requestServerStartIds.get(requestId) || "")
+      : "";
+    const effectiveServerStartId = explicitServerStartId
+      || requestServerStartId
+      || activeServerStartId;
+    if (effectiveServerStartId === serverStartId) selected.push(entry);
+  }
+  return selected;
 }
 
 function countMethods(entries) {
@@ -115,12 +161,17 @@ function filterClientFamiliesByScope(items, evidenceScope) {
 function main() {
   const auditLogPath = argValue("audit-log", AuditLog);
   const clientName = argValue("client-name", "");
+  const requestedServerStartId = argValue("server-start-id", "").trim();
   const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "all"));
   const maxAgeDays = normalizeMaxAgeDays(argValue("max-age-days", ""));
   const limit = Math.max(1, Number(argValue("limit", "10")) || 10);
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
-  const currentServerStart = latestServerStart(entries);
-  const currentServerStartId = currentServerStart.server_start_id || latestServerStartId(entries);
+  const currentServerStart = requestedServerStartId
+    ? serverStartById(entries, requestedServerStartId)
+    : latestServerStart(entries);
+  const currentServerStartId = requestedServerStartId
+    || currentServerStart.server_start_id
+    || latestServerStartId(entries);
   const latestAuditTs = latestAuditTimestamp(entries);
   const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, latestAuditTs);
   const windowEntries = currentWindowEntries(entries, currentServerStart);
@@ -164,6 +215,7 @@ function main() {
     latest_matching_clients_any_window: latestMatchingClientsAnyWindow,
     filter: {
       client_name: clientName || null,
+      server_start_id: requestedServerStartId || null,
       evidence_scope: evidenceScope,
       max_age_days: maxAgeDays,
       retained_evidence_since_ts: retainedEvidenceSinceTs || null,

@@ -166,6 +166,36 @@ This matters because it improves the safety of the blocker statement without wea
   - what is the full retained operational history?
   - what is the fresh retained operational blocker set?
 
+## Live evidence refresh on 2026-07-27
+
+The connector refresh and subsequent external client traffic created a meaningfully new operational evidence window on the live OAuth21 server:
+
+- explicit report command:
+  - `node _workflow/scripts/client_entry_path_report.js --server-start-id=2026-07-27T03:10:26.042Z --evidence-scope=operational --max-age-days=2 --limit=20`
+- selected live identity:
+  - `server_start_id: 2026-07-27T03:10:26.042Z`
+  - server start timestamp `2026-07-27T03:10:26.163Z`
+- current live entry result:
+  - `diagnostics.status: "initialize_only"`
+  - `initialize_retirement_readiness.status: "blocked_initialize_only_current_window"`
+  - `retirement_evidence_summary.status: "blocked_by_operational_initialize_clients"`
+- operational client family:
+  - `openai-mcp 1.0.0`
+  - protocol version `2025-11-25`
+  - `8` successful legacy `initialize` responses
+  - `0` `server/discover` entries
+  - latest successful initialize timestamp `2026-07-27T15:23:44.351Z`
+
+The result is current operational evidence, not retained historical inference. It confirms that the compatibility shim must remain and does not authorize `initialize` retirement.
+
+The refresh also exposed and closed a test-evidence integrity defect:
+
+- standalone smoke child-servers could inherit the production `_logs/.mcp-tests-audit.jsonl` path even when their surface, restart, and rate-limit state were hermetic;
+- `_tests/helpers/hermetic_server_control_env.js` now assigns a temporary audit path by default and preserves an explicit audit override;
+- `_workflow/scripts/client_entry_path_report.js` now accepts `--server-start-id`, selects the named server start, and attributes request events through explicit IDs, request correlation, or active-start context;
+- test child-server audit isolation is guarded by bootstrap, repository-hygiene, report-fixture, standalone hash, and full-suite no-pollution checks;
+- historical test entries remain preserved in the audit log as evidence; no audit-log deletion or rewriting was performed.
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:

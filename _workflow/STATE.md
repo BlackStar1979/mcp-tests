@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-07-17
+Updated: 2026-07-27
 
 ## Purpose
 
@@ -28,27 +28,28 @@ Summarize the current validated product state in one operator-facing place witho
   - port `3008`
   - auth mode `oauth21`
   - profile `tests/internal`
-  - target connector-visible tools `69`
+  - target connector-visible tools `84`
 
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=253`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=265`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `253`
+- Latest validated authenticated smoke count: `265`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
-- Authorized MCP-visible tools: `56`
-- Authenticated total on authorized runtime: `69`
+- Authorized MCP-visible tools: `71`
+- Authenticated repo target for profile `tests`: `84`
+- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0 contract, including stdin native transport, normalized change results, repaired ADR storage, and `state_handle` confirmation, is live at `server_start_id = 2026-07-27T03:10:26.042Z` with combined fingerprint `6a1329e3b3892b9c`. No restart or connector refresh remains pending.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = post_53d-initialize-compatibility-debug-and-retirement-scope`
-- `next_primary = post_53d-real-client-entry-evidence-refresh`
-- `next_secondary = post_53d-retirement-decision-delta-if-evidence-changes`
+- `current_working_course = initialize-retirement-evidence-wait`
+- `next_primary = comp-1a-on-fresh-external-client-traffic`
+- `next_secondary = bounded-doc-orientation-maintenance`
 
 ## Verified documentation authorities
 
@@ -66,14 +67,20 @@ Summarize the current validated product state in one operator-facing place witho
 
 ## Current operational caveats
 
+- Profile `tests` controls the complete authenticated tool surface. CBM dependency availability must not add or remove `cbm_*` descriptors.
+- Local CBM binary is `0.9.0` (SHA-256 `9a205fa5ae759fbc866bfe1554f0c05a303be9ae6e0a00f94d875dc0c25e0680`). The refreshed connector exposes `state_handle`; live two-phase deletion returned `deleted`, replay through a fresh challenge returned `cbm_project_not_found`, and `_tests/fixtures/cbm-live-fixture` remained intact.
+- Repository-side reliability hardening is GREEN and live-loaded on OAuth21 `3008` at `server_start_id = 2026-07-27T03:10:26.042Z`: native payloads use stdin instead of raw JSON argv, `detect_changes` is deduplicated before bounding, runtime output configuration fails before side effects, executable fallback is operator-neutral, and existing-project indexing is blocked when ADR snapshot retrieval fails. Test processes use hermetic control-state paths, and no restart or connector refresh is pending.
+- Fresh isolated-cache evidence is recorded in `docs/CBM_V0_9_0_REBASELINE_REPORT.md`; it confirms native v0.9.0 improvements and bridge compensations for bounded change impact, ADR preservation, trace placeholder semantics, scope enforcement, and stable not-found errors.
+- Project-local CBM operating guidance is available at `.agents/skills/using-codebase-memory/SKILL.md`; its tool reference and six decision scenarios are guarded by `_tests/smoke_cbm_agent_skill.js`.
+- Generator-owned source orientation now includes `src/integrations/DIRECTORY.md` and `src/integrations/codebase_memory/DIRECTORY.md`; the CBM map identifies transport, contract-registry, orchestration, and versioned-contract responsibilities while preserving repository, runtime, and index truth boundaries.
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
-- Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but full UI visible-tool enumeration is still not independently re-verified in the same step.
+- Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
-- Fresh repo-native `2026-07-17` client-entry reporting against `_logs/.mcp-tests-audit.jsonl` now shows the current window on `server_start_id 2026-07-17T17:38:34.244Z` as `initialize_only`, with `2` successful legacy `initialize` responses for `codex-mcp-client 0.145.0-alpha.18` and no matching fresh `server/discover` entry in that same window.
-- Because the July 17, 2026 `COMP-1A` refresh did not change that blocker, the next primary package is another `COMP-1A` evidence refresh only after new external client traffic creates a meaningfully new evidence window.
-- `DOC-2A` is now complete: bounded directory-map coverage now includes the runtime-owned control-plane backup roots and the live OAuth21 prune backup bundle, so that fallback no longer needs to stay active as the default queue head.
+- Fresh repo-native `2026-07-27` client-entry reporting explicitly selects live `server_start_id 2026-07-27T03:10:26.042Z` and shows `initialize_only` for `openai-mcp 1.0.0` on protocol `2025-11-25`, with `8` successful legacy `initialize` responses and `0` `server/discover` entries.
+- Test child-server audit isolation and explicit report selection are now guarded; historical synthetic starts remain preserved but no longer displace the selected live window. Because the July 27, 2026 `COMP-1A` refresh still blocks retirement, another refresh is allowed only after newer external client traffic creates a meaningfully new evidence window.
+- The July 17 directory-map instance of `DOC-2A` is complete. `DOC-2A` remains a reusable bounded fallback, not a permanently open task, and may run again only for a demonstrable current high-churn orientation gap.
 - Live `observability_status` now exposes the same retained blocker-matrix view as the workflow helper, so current-window entry evidence and `1d`/`2d`/`7d`/`30d`/`all` blocker framing no longer depend on a script-only code path.
 - `state.json` is an orientation map, not a progress log.
 - Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.

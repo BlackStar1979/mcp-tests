@@ -10,7 +10,7 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 69,
+    "full_tests_authenticated_tool_count": 84,
     "target_active_runtime_count": 2,
     "target_active_runtime_modes": [
       "none",
@@ -22,7 +22,7 @@
     },
     "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
     "public_tool_count": 13,
-    "authenticated_tool_count": 69,
+    "authenticated_tool_count": 84,
     "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {
@@ -451,7 +451,7 @@
   "runtime_config_spec": {
     "summary": "Active CLI/env/HTTP-route configuration surface derived from code.",
     "spec_ref": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 69,
+    "env_var_count": 79,
     "http_route_count": 11
   },
   "audit_events_spec": {

@@ -17,6 +17,7 @@ const CONFIG = {
       "_repos_with_code_samples/": "Local code-sample corpus used by bounded tooling and tests.",
       "_tests/": "Active smoke suite, targeted guards, helper manifests, and archived test evidence.",
       "_workflow/": "Canonical workflow truth, operator decisions, inventories, and control-plane guidance.",
+      ".agents/": "Project-local cross-runtime agent skills and their discovery-oriented references.",
       ".codebase-memory/": "Local code graph/index artifacts for codebase-memory tooling.",
       ".temp/": "Local transient scratch area.",
       "docker/": "Container and devcontainer scaffolding.",
@@ -66,6 +67,14 @@ const CONFIG = {
       "server.js": "Thin runtime entrypoint that delegates to the current bootstrap runtime.",
     },
     tail: "This top-level map is intentional but not yet exhaustive for every nested directory in the repository. The remaining rollout is tracked in `_workflow/ROADMAP.md`, and bounded regeneration support is available through `npm run docs:directory`.",
+  },
+  ".agents": {
+    title: "project-local agent directory map",
+    entries: {
+      "skills/": "Cross-runtime project-local skills discovered from `.agents/skills/<skill-name>/SKILL.md`.",
+      "DIRECTORY.md": "Functional map of the `.agents` directory.",
+    },
+    tail: "Keep skills in a flat namespace. Each skill must contain `SKILL.md`; load supporting references only when their `Load when:` condition matches the task.",
   },
   "_workflow": {
     title: "workflow directory map",
@@ -154,9 +163,11 @@ const CONFIG = {
   },
   "src": {
     title: "src directory map",
+    updated: "2026-07-27",
     entries: {
       "auth/": "OAuth/OAuth21, legacy auth, and authorization-server implementation modules.",
       "exec/": "Bounded execution and process-control support.",
+      "integrations/": "External dependency bridges and versioned integration contracts.",
       "memory/": "Memory/state/task support modules for the MCP surface.",
       "plugin/": "Plugin registry, visibility, governance, and execution support.",
       "runtime/": "Core MCP runtime assembly, routing, handlers, and observability wiring.",
@@ -165,6 +176,25 @@ const CONFIG = {
       "util/": "General utility support used across runtime and guards.",
       "README.md": "Source-tree orientation note.",
     },
+  },
+  "src/integrations": {
+    title: "source integrations directory map",
+    updated: "2026-07-27",
+    entries: {
+      "codebase_memory/": "External integration boundaries for the native codebase-memory executable and its versioned contract.",
+    },
+    tail: "Keep dependency-specific transport, compatibility, and normalization logic inside this boundary rather than leaking it into general runtime modules.",
+  },
+  "src/integrations/codebase_memory": {
+    title: "codebase-memory integration directory map",
+    updated: "2026-07-27",
+    entries: {
+      "cbm_cli_bridge.js": "Native process bridge for executable discovery, stdin JSON transport, timeouts, output parsing, normalization, and queue-aware execution.",
+      "cbm_contract_registry.js": "Loads and validates versioned native CBM contract manifests used by bridge compatibility checks.",
+      "cbm_tools.js": "Runtime-facing CBM orchestration, containment, mutation locking, ADR preservation, error mapping, and result shaping.",
+      "contracts/": "Versioned native codebase-memory contract manifests; currently anchored to v0.9.0.",
+    },
+    tail: "This directory describes bridge and runtime behavior. Repository files remain repository truth, while persisted CBM graphs and ADR data remain index truth.",
   },
   "tools": {
     title: "tools directory map",
@@ -196,7 +226,7 @@ function render(cfg) {
     "# DIRECTORY",
     "",
     `Status: active ${cfg.title}`,
-    `Updated: ${TODAY}`,
+    `Updated: ${cfg.updated || TODAY}`,
     "",
   ];
 

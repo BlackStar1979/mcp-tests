@@ -37,6 +37,7 @@ function buildDecisionRuntimeContext({
   getOptionalTool,
   coreTools = ["search", "fetch"],
   requestMeta = {},
+  authResult = {},
 } = {}) {
   const reasonCodes = [];
 
@@ -67,7 +68,23 @@ function buildDecisionRuntimeContext({
     profile: typeof profile === "string" ? profile : "unknown",
     request_id: typeof requestMeta.requestId === "string" ? requestMeta.requestId : null,
     arg_summary: summarizeArgs(args),
+    auth_context: {
+      subject: String(authResult.subject || "anonymous"),
+      clientId: String(authResult.clientId || authResult.client_id || "unknown_client"),
+      audience: "mcp-tools",
+      profile: typeof profile === "string" ? profile : "unknown",
+      scopes: Array.isArray(authResult.scopes) ? authResult.scopes.map(String).slice(0, 32) : [],
+    },
   };
+
+  if (safeToolName === "cbm_delete_project") {
+    const safeArgs = safeObject(args);
+    context.destructive_confirmation = {
+      project: String(safeArgs.project || "").slice(0, 256),
+      confirm: safeArgs.confirm === true,
+      state_handle: String(safeArgs.state_handle || "").slice(0, 512),
+    };
+  }
 
   return {
     ok: reasonCodes.length === 0,

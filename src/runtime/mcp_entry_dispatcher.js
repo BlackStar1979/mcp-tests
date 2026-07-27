@@ -118,6 +118,7 @@ async function dispatchMcpEntry({
       responseMode: "json",
       httpMethod: req.method,
       abortSignal,
+      authResult,
       handleRpcMessage,
     });
 
@@ -138,6 +139,7 @@ async function dispatchMcpEntry({
       responseMode: "json",
       httpMethod: req.method,
       abortSignal,
+      authResult,
       handleRpcMessage,
     });
   } catch (error) {

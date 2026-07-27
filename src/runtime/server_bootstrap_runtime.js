@@ -27,8 +27,7 @@ const { createRestartController } = require("./restart_controller");
 const { createRuntimeRateLimiter } = require("./rate_limit_policy");
 const { DOCS } = require("./static_docs");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
-
-const VALID_OUTPUT_MODES = new Set(["structured", "content-only"]);
+const { resolveRuntimeOutputConfig } = require("./runtime_output_config");
 
 function runServerBootstrapRuntime({ argv = process.argv, env = process.env, rootDir = path.resolve(__dirname, "../..") } = {}) {
   const serverCliConfig = parseServerCliArgs(argv.slice(2));
@@ -37,6 +36,8 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     argv: serverCliConfig.bootstrapArgv,
     env,
   });
+  const { outputMode, maxFetchTextChars } = resolveRuntimeOutputConfig(env);
+  const runtimeSideEffectsEnabled = bootstrapConfig.selfTest !== true;
 
   const serverProfileConfig = loadServerProfileConfig({
     profileName: serverCliConfig.serverProfileName,
@@ -51,12 +52,6 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const port = bootstrapConfig.port;
   const publicBaseUrl = bootstrapConfig.publicBaseUrl;
   const mcpResourceUrl = canonicalResource(publicBaseUrl);
-
-  const outputMode = String(env.MCP_TEST_OUTPUT_MODE || "structured")
-    .trim()
-    .toLowerCase();
-
-  const maxFetchTextChars = Number(env.MCP_TEST_FETCH_CAP_CHARS || 2500);
   const serverStartId = new Date().toISOString();
 
   const auditLogDir = env.MCP_TEST_LOG_DIR || path.join(rootDir, "_logs");
@@ -142,7 +137,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
 
   const rateLimiter = createRuntimeRateLimiter({ env, rootDir });
   const restartController = createRestartController({ auditLog, env, rootDir, rateLimiter });
-  restartController.start();
+  if (runtimeSideEffectsEnabled) restartController.start();
 
   const getRuntimeStatus = createRuntimeStatusAssembly({
     serverName: SERVER_NAME,
@@ -178,24 +173,14 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     runtimeRegistryContextProvider: (label) => registryContext({ label }),
   });
 
-  const toolSurfaceStateFile = env.MCP_TEST_TOOL_SURFACE_STATE_FILE || defaultToolSurfaceStateFile(rootDir);
-  evaluateToolSurfaceState({
-    stateFile: toolSurfaceStateFile,
-    currentSurface: toolIntrospection().toolSurface,
-    serverStartId,
-    auditLog,
-  });
-
-  if (!VALID_OUTPUT_MODES.has(outputMode)) {
-    console.error(`Invalid MCP_TEST_OUTPUT_MODE: ${outputMode}`);
-    console.error("Allowed values: structured, content-only");
-    process.exit(2);
-  }
-
-  if (!Number.isInteger(maxFetchTextChars) || maxFetchTextChars < 100) {
-    console.error(`Invalid MCP_TEST_FETCH_CAP_CHARS: ${env.MCP_TEST_FETCH_CAP_CHARS}`);
-    console.error("Expected integer >= 100.");
-    process.exit(2);
+  if (runtimeSideEffectsEnabled) {
+    const toolSurfaceStateFile = env.MCP_TEST_TOOL_SURFACE_STATE_FILE || defaultToolSurfaceStateFile(rootDir);
+    evaluateToolSurfaceState({
+      stateFile: toolSurfaceStateFile,
+      currentSurface: toolIntrospection().toolSurface,
+      serverStartId,
+      auditLog,
+    });
   }
 
   return runConfiguredRuntime({

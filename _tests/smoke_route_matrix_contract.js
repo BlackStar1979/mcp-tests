@@ -12,8 +12,11 @@
 // server.js. This is a test-only contract; it must not change runtime behavior.
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 // Isolated local port. Default avoids 3009 (active TEST MCP) and 3095
 // (run_all_smokes shared server). Overridable for parallel local runs.
@@ -36,16 +39,17 @@ async function waitHealth(port) {
 }
 
 (async () => {
+  const controlRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-route-matrix-child-"));
   const child = spawn(process.execPath, ["server.js"], {
     cwd: process.cwd(),
-    env: {
+    env: withHermeticServerControlEnv({
       ...process.env,
       // Force the isolated port even if MCP_TEST_PORT is set in the parent env.
       MCP_TEST_PORT: String(PORT),
       MCP_TEST_AUTH_MODE: "none",
       MCP_TEST_HEALTH_FULL: "1",
       MCP_TEST_FS_ROOT: path.join(process.cwd(), "_public_sandbox"),
-    },
+    }, controlRoot),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -161,6 +165,7 @@ async function waitHealth(port) {
     throw error;
   } finally {
     child.kill();
+    fs.rmSync(controlRoot, { recursive: true, force: true });
   }
 })().catch((error) => {
   console.error(error?.stack || error?.message || String(error));

@@ -25,6 +25,7 @@ const index = read("_workflow", "ACTIVE_WORKFLOW_INDEX.md");
 const state = JSON.parse(read("_workflow", "state.json"));
 const smokeScripts = JSON.parse(read("_tests", "run_all_smoke_scripts.json"));
 const testsReadme = read("_tests", "README.md");
+const hermeticServerControlEnv = read("_tests", "helpers", "hermetic_server_control_env.js");
 const nonRunAllAudit = read("_tests", "NON_RUN_ALL_AUDIT.md");
 const workflowHelperManifest = JSON.parse(read("_tests", "run_all_workflow_control_plane_smoke_scripts.json"));
 const readinessHelperManifest = JSON.parse(read("_tests", "run_all_readiness_smoke_scripts.json"));
@@ -55,17 +56,27 @@ const totalJsFiles = listJsFilesRecursive(path.join(ROOT, "_tests"));
 const activeManifest = new Set(smokeScripts.map((name) => path.normalize(name)));
 const nonRunAll = topLevelTests.filter((name) => !activeManifest.has(name));
 const undocumentedNonRunAll = nonRunAll.filter((name) => !nonRunAllAudit.includes(`\`${path.basename(name)}\``));
+const serverSpawningTests = topLevelTests.filter((name) => {
+  const source = fs.readFileSync(path.join(ROOT, name), "utf8");
+  return /spawn(?:Sync)?\([^\n]*process\.execPath[^\n]*server\.js|\[\"server\.js\"/.test(source);
+});
+const unisolatedServerSpawningTests = serverSpawningTests.filter((name) => {
+  const source = fs.readFileSync(path.join(ROOT, name), "utf8");
+  return !source.includes("withHermeticServerControlEnv") && !source.includes("MCP_TEST_TOOL_SURFACE_STATE_FILE");
+});
 
-assert.equal(totalJsFiles.length, 339);
-assert.equal(smokeScripts.length, 261);
+assert.equal(totalJsFiles.length, 355);
+assert.equal(smokeScripts.length, 273);
 assert.equal(nonRunAll.length, 41);
 assert.equal(workflowHelperManifest.length, 25);
 assert.equal(readinessHelperManifest.length, 45);
 assert.equal(targetedDebtHelperManifest.length, 6);
 assert.deepEqual(undocumentedNonRunAll, []);
+assert.deepEqual(unisolatedServerSpawningTests, []);
+assert.ok(hermeticServerControlEnv.includes("MCP_TEST_AUDIT_LOG"), "shared hermetic child-server env must isolate the audit log");
 
-assert.ok(testsReadme.includes("`339` JavaScript files total in `_tests`"));
-assert.ok(testsReadme.includes("`261` active scripts currently listed in `run_all_smoke_scripts.json`"));
+assert.ok(testsReadme.includes("`355` JavaScript files total in `_tests`"));
+assert.ok(testsReadme.includes("`273` active scripts currently listed in `run_all_smoke_scripts.json`"));
 assert.ok(testsReadme.includes("`41` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `25` scripts"));
 assert.ok(testsReadme.includes("Current readiness helper manifest size: `45` scripts"));

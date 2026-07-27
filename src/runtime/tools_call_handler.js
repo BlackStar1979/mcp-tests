@@ -42,6 +42,7 @@ async function handleToolsCall({
     requestMeta: {
       requestId: context.requestId,
     },
+    authResult: context.authResult || {},
   });
   const decision = evaluateDecisionRuntimePolicy({ decisionContext });
   const decisionReceipt = buildDecisionRuntimeReceipt({
@@ -76,6 +77,7 @@ async function handleToolsCall({
     return rpcError(id, decision.json_rpc_error.code, decision.json_rpc_error.message, {
       decision_code: decision.deny_code,
       reason_codes: decision.decision_meta.reason_codes,
+      ...(decision.response_data || {}),
     });
   }
 

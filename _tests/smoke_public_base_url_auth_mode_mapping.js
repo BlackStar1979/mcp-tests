@@ -10,6 +10,7 @@ const {
   AUTH_PUBLIC_BASE_URLS,
   resolveAuthBootstrapConfig,
 } = require("../src/runtime/auth_bootstrap_config_resolver");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 const ROOT = path.join(__dirname, "..");
 const TOKEN = "stage12-public-url-token-0123456789abcdef";
@@ -77,15 +78,16 @@ async function callTool({ port, headers = {}, name, args = {} }) {
 
 async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode, expectedPublicBaseUrl }) {
   const port = await getFreePort();
+  const controlRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-public-url-child-"));
   assert.notEqual(port, 3009, "test child must not bind active public fallback port 3009");
 
   const profileArgs = expectedAuthMode === "none" ? [] : ["--profile", "tests"];
   const child = spawn(process.execPath, ["server.js", ...profileArgs, ...argv, "--port", String(port)], {
     cwd: ROOT,
-    env: cleanEnv({
+    env: withHermeticServerControlEnv(cleanEnv({
       ...env,
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
-    }),
+    }), controlRoot),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -132,6 +134,7 @@ async function withServer({ argv = [], env = {}, headers = {}, expectedAuthMode,
     return { output, health, runtime };
   } finally {
     child.kill();
+    fs.rmSync(controlRoot, { recursive: true, force: true });
   }
 }
 

@@ -6,6 +6,7 @@ const os=require("node:os");
 const path=require("node:path");
 const crypto=require("node:crypto");
 const {spawn}=require("node:child_process");
+const {withHermeticServerControlEnv}=require("./helpers/hermetic_server_control_env");
 
 const ROOT=path.join(__dirname,"..");
 
@@ -53,7 +54,7 @@ async function authorizeWithLogin(issuer,{clientId,redirectUri,resource,duplicat
   const resource=`${issuer}/mcp`;
   const redirectUri="http://127.0.0.1/callback";
   fs.writeFileSync(cfg,JSON.stringify({operator_secret:operatorSecret,issuer}),"utf8");
-  const child=spawn(process.execPath,["server.js","--profile","tests","--auth","oauth21","--oauth-secret-file",cfg,"--port",String(port)],{cwd:ROOT,env:cleanEnv({MCP_TEST_FS_ROOT:path.join(ROOT,"_public_sandbox"),MCP_TEST_PUBLIC_BASE_URL:issuer}),stdio:["ignore","pipe","pipe"]});
+  const child=spawn(process.execPath,["server.js","--profile","tests","--auth","oauth21","--oauth-secret-file",cfg,"--port",String(port)],{cwd:ROOT,env:withHermeticServerControlEnv(cleanEnv({MCP_TEST_FS_ROOT:path.join(ROOT,"_public_sandbox"),MCP_TEST_PUBLIC_BASE_URL:issuer}),path.join(tmp,"control")),stdio:["ignore","pipe","pipe"]});
   let output="";
   child.stdout.on("data",d=>{output+=String(d);});
   child.stderr.on("data",d=>{output+=String(d);});

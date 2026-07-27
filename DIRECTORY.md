@@ -17,6 +17,8 @@ Updated: 2026-07-17
   Active smoke suite, targeted guards, helper manifests, and archived test evidence.
 - `_workflow/`
   Canonical workflow truth, operator decisions, inventories, and control-plane guidance.
+- `.agents/`
+  Project-local cross-runtime agent skills and their discovery-oriented references.
 - `.codebase-memory/`
   Local code graph/index artifacts for codebase-memory tooling.
 - `.temp/`

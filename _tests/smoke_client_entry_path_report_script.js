@@ -110,5 +110,35 @@ assert.equal(recentOnly.filter.retained_evidence_since_ts, "2026-07-13T17:42:07.
 assert.equal(recentOnly.latest_matching_clients_any_window.length, 0);
 assert.equal(recentOnly.retirement_evidence_summary.status, "insufficient_evidence");
 
+const contaminatedAuditLog = path.join(tempRoot, "contaminated-audit.jsonl");
+const contaminatedFixture = [
+  ...fixture.map((entry) => {
+    if (entry.event !== "rpc_received") return entry;
+    const { server_start_id: _omittedServerStartId, ...withoutServerStartId } = entry;
+    return withoutServerStartId;
+  }),
+  { ts: "2026-07-13T17:42:08.000Z", event: "server_start", server_start_id: "test-start", port: 51999, public_base_url: "http://127.0.0.1:51999" },
+  { ts: "2026-07-13T17:42:09.000Z", event: "rpc_received", server_start_id: "test-start", method: "tools/call" },
+];
+fs.writeFileSync(contaminatedAuditLog, contaminatedFixture.map((entry) => JSON.stringify(entry)).join("\n") + "\n", "utf8");
+
+const explicitLiveWindow = JSON.parse(cp.execFileSync(process.execPath, [
+  SCRIPT,
+  `--audit-log=${contaminatedAuditLog}`,
+  "--server-start-id=current-start",
+], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: contaminatedAuditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(explicitLiveWindow.current_server_start_id, "current-start");
+assert.equal(explicitLiveWindow.current_server_start_ts, "2026-07-13T17:42:01.000Z");
+assert.equal(explicitLiveWindow.current_window_rpc_counts.initialize, 1);
+assert.equal(explicitLiveWindow.current_window_rpc_counts.server_discover, 1);
+assert.equal(explicitLiveWindow.current_window_rpc_counts.tools_call, 1);
+assert.equal(explicitLiveWindow.diagnostics.status, "mixed_initialize_and_server_discover");
+assert.equal(explicitLiveWindow.filter.server_start_id, "current-start");
+
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_client_entry_path_report_script ok");

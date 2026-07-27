@@ -43,7 +43,13 @@ function auditRuntimeConfig(findings){
   if (!exists("SERVER_RUNTIME_CONFIG_SPEC.json")) { push(findings,"error","missing_runtime_config_spec",{}); return; }
   const spec = json("SERVER_RUNTIME_CONFIG_SPEC.json");
   const codeText = activeJsFiles().map(read).join("\n");
-  const env = uniq([...codeText.matchAll(/MCP_TEST_[A-Z0-9_]+/g)].map(m=>m[0]));
+  const bridgeText = read("src/integrations/codebase_memory/cbm_cli_bridge.js");
+  const safeEnvBlock = bridgeText.match(/const SAFE_INHERITED_ENV_KEYS = new Set\(\[([\s\S]*?)\]\);/);
+  const cbmSafeEnv = safeEnvBlock ? [...safeEnvBlock[1].matchAll(/"(CBM_[A-Z0-9_]+)"/g)].map(m=>m[1]) : [];
+  const env = uniq(
+    [...codeText.matchAll(/MCP_TEST_[A-Z0-9_]+/g)].map(m=>m[0])
+      .concat([...codeText.matchAll(/process\.env\.(CBM_[A-Z0-9_]+)/g)].map(m=>m[1]), cbmSafeEnv)
+  );
   const specEnv = (spec.env_vars||[]).slice().sort();
   const missingEnv = env.filter(x=>!specEnv.includes(x));
   const staleEnv = specEnv.filter(x=>!env.includes(x));

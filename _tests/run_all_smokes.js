@@ -5,6 +5,7 @@ const fs=require("node:fs");
 const crypto=require("node:crypto");
 const {spawn}=require("node:child_process");
 const {CURRENT_STAGE_STATUS,CURRENT_COMPATIBILITY_LABEL}=require("../src/stage_metadata");
+const {withHermeticServerControlEnv}=require("./helpers/hermetic_server_control_env");
 const DEFAULT_PORT=Number(process.env.MCP_TEST_SMOKE_PORT||3095);
 const INTERNAL_PORT=Number(process.env.MCP_TEST_SMOKE_INTERNAL_PORT||(DEFAULT_PORT+100));
 const SKIP_NETWORK=process.argv.includes("--skip-network");
@@ -31,7 +32,7 @@ function sha256Base64Url(text){return b64(crypto.createHash("sha256").update(tex
 async function json(url,init){const r=await fetch(url,init);let body={};try{body=await r.json()}catch{}return {status:r.status,headers:r.headers,body}}
 async function oauth21SmokeHeaders(issuer){const resource=issuer+"/mcp";const reg=await json(issuer+"/register",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({redirect_uris:["http://localhost/cb"],token_endpoint_auth_method:"none",grant_types:["authorization_code","refresh_token"],response_types:["code"]})});assert.equal(reg.status,201);assert.ok(reg.body.client_id);const verifier=b64(crypto.randomBytes(32));const az=new URL(issuer+"/authorize");az.searchParams.set("response_type","code");az.searchParams.set("client_id",reg.body.client_id);az.searchParams.set("redirect_uri","http://localhost/cb");az.searchParams.set("code_challenge",sha256Base64Url(verifier));az.searchParams.set("code_challenge_method","S256");az.searchParams.set("state","run-all");az.searchParams.set("scope","mcp:tools");az.searchParams.set("resource",resource);const a=await fetch(az,{redirect:"manual"});assert.equal(a.status,302);const login=a.headers.get("location");assert.ok(login&&login.includes("/oauth/operator-login?pid="));const pid=new URL(login).searchParams.get("pid");const good=await fetch(issuer+"/oauth/operator-login",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({pid,client_id:reg.body.client_id,redirect_uri:"http://localhost/cb",scope:"mcp:tools",password:OAUTH_OPERATOR_SECRET}),redirect:"manual"});assert.equal(good.status,302);const cb=new URL(good.headers.get("location"));assert.equal(cb.searchParams.get("state"),"run-all");const tok=await json(issuer+"/token",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({grant_type:"authorization_code",code:cb.searchParams.get("code"),redirect_uri:"http://localhost/cb",client_id:reg.body.client_id,code_verifier:verifier,resource})});assert.equal(tok.status,200);assert.ok(tok.body.access_token);return {authorization:"Bearer "+tok.body.access_token}}
 (async()=>{
-const baseEnv={...process.env,MCP_TEST_FS_ROOT:FS_ROOT,MCP_TEST_LOG_DIR:RUN_TMP,MCP_TEST_HEALTH_FULL:"1",MCP_TEST_ACCESS_TRUSTED_PROXY:"1",MCP_TEST_OAUTH_STORAGE_FILE:RUN_OAUTH_STORAGE_FILE};
+const baseEnv=withHermeticServerControlEnv({...process.env,MCP_TEST_FS_ROOT:FS_ROOT,MCP_TEST_LOG_DIR:RUN_TMP,MCP_TEST_HEALTH_FULL:"1",MCP_TEST_ACCESS_TRUSTED_PROXY:"1",MCP_TEST_OAUTH_STORAGE_FILE:RUN_OAUTH_STORAGE_FILE},path.join(RUN_TMP,"control"));
 const results=[];
 const publicScripts=ALL_SCRIPTS.filter(s=>PUBLIC_SCRIPTS.has(s));
 const internalScripts=ALL_SCRIPTS.filter(s=>!PUBLIC_SCRIPTS.has(s)&&s!==NETWORK_SCRIPT);

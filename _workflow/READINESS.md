@@ -1,7 +1,7 @@
 # Readiness
 
 Status: active technical component readiness report
-Updated: 2026-07-17
+Updated: 2026-07-27
 
 ## Purpose
 
@@ -42,11 +42,12 @@ Choose the next package by walking this order:
 | DOC-1 | Operator-facing documentation contract | 3/4 | Keep the project operator-legible and handoff-safe | none | `NorthStar/State/Readiness/Roadmap` exist, core `DIRECTORY.md` coverage exists, and workflow docs are already smoke-guarded. | Planning still depends too much on reading several files together unless `READINESS` stays execution-grade. | Keep `READINESS`, `ROADMAP`, and the active index synchronized so the next package is inferable without operator intervention. | Next bounded package is obvious from docs alone, with no cross-reading required. |
 | OBS-1 | Server-side request/response observability | 3/4 | Preserve structured, auditable runtime truth | DOC-1 | Bounded `rpc_received` and `rpc_response_sent` audit coverage exists on active `/mcp` paths, including authenticated local validation. | Observability is good enough for diagnosis, but still needs disciplined use as the source for client-entry decisions. | Use live trail evidence before adding any broader logging or diagnostics churn. | Active client-entry questions can be answered from existing bounded observability without new logging work. |
 | AUTH-1 | OAuth21 authorized runtime | 3/4 | Keep the internal authorized surface production-grade and stable | DOC-1 | Resource-server identity, throttling, oversized-body aborts, bounded DCR growth, SQLite durability, and explicit prune control-plane all exist. | Stability must remain ahead of change pressure; new auth churn now has to be problem-driven. | Hold runtime auth steady and only touch auth when fresh evidence shows a real failure or gap. | Runtime auth work is driven only by a current defect or an approved target change. |
-| SURF-1 | Connector-visible surface governance | 3/4 | Keep MCP-visible tools intentionally governed | DOC-1, AUTH-1 | Repo/runtime truth says `13 + 56 = 69` visible tools, and fresh evidence shows `mcp__workbench` is callable again from the Codex model runtime layer. | UI-visible enumeration can still drift from callable/runtime truth. | Revalidate UI-visible enumeration only when it changes an active decision; do not conflate it with runtime callability. | Repo truth, runtime truth, and client-facing enumeration are explicitly separated in current evidence. |
-| COMP-1 | Legacy `initialize` retirement readiness | 2/4 | Retire the main remaining protocol-debt path safely | OBS-1, AUTH-1, SURF-1 | Repo-native no-handshake support is real, and the current `2026-07-17` client-entry report still shows an `initialize_only` window for `codex-mcp-client 0.145.0-alpha.18` with `2` successful legacy `initialize` responses and no fresh same-window `server/discover`. The blocker matrix now confirms persistence across retained-evidence windows: `1d` still blocks on `codex-mcp-client 0.145.0-alpha.18`, `2d` still blocks on `0.145.0-alpha.18` plus `0.144.2`, and only wider `7d+` windows add the older operational tail. | Real client-family entry behavior still blocks retirement. | Gather or refresh real client compatibility evidence before any retirement decision package, using freshness-filtered retained evidence and blocker-matrix windows when the question is about current operational blocker lines versus broader historical risk. | A fresh operational client family proves `server/discover` entry behavior or the remaining `initialize` dependence is explicitly accepted. |
+| SURF-1 | Connector-visible surface governance | 4/4 | Keep MCP-visible tools intentionally governed | DOC-1, AUTH-1 | Live and repository counts are aligned at `13 + 71 = 84`; hardened CBM v0.9.0 is live at `server_start_id = 2026-07-27T03:10:26.042Z`, combined fingerprint `6a1329e3b3892b9c`, with all fifteen `cbm_*` tools. Post-refresh `state_handle` deletion returned `deleted`; a fresh confirmed repeat returned `cbm_project_not_found`; the fixture source directory remained intact. Full offline smoke is GREEN at `7 + 265`. | No connector-visible surface blocker remains. | Preserve the unchanged 84-tool contract and reopen surface work only on a reproduced regression or approved capability change. | Count, schemas, fingerprints, destructive confirmation, source safety, and cache directives remain aligned. |
+| CBM-1 | Codebase-Memory bridge and index integrity | 4/4 | Keep repository analysis trustworthy and mutation-safe | DOC-1, SURF-1 | Stdin native transport, duplicate change normalization, fail-fast runtime output configuration, operator-neutral executable fallback, fail-closed ADR snapshot gating, exact OAuth/HTTP helper consolidation, and v0.9.0 cache-schema repair are live at `server_start_id = 2026-07-27T03:10:26.042Z`. All three active indexes retain their counts; `manage_adr(get)` succeeds; live `detect_changes` removed 68 duplicate entries; full offline smoke is GREEN at `7 + 265`. | No active CBM integrity blocker remains. | Preserve the backup and migrator; reopen CBM work only on a reproduced regression or approved capability change. | Live identity remains 84 tools with unchanged fingerprints, repaired ADR storage, normalized results, and no restart or connector refresh pending. |
+| COMP-1 | Legacy `initialize` retirement readiness | 2/4 | Retire the main remaining protocol-debt path safely | OBS-1, AUTH-1, SURF-1 | Repo-native no-handshake support is real. The fresh `2026-07-27` report explicitly selects live `server_start_id 2026-07-27T03:10:26.042Z` and shows `initialize_only` for `openai-mcp 1.0.0` with `8` successful legacy `initialize` responses and `0` `server/discover` entries. Historical synthetic server starts are preserved but no longer displace the selected live window. | Real client-family entry behavior still blocks retirement. | Gather or refresh real client compatibility evidence before any retirement decision package, explicitly selecting the live server identity when shared audit history contains other process starts. | A fresh operational client family proves `server/discover` entry behavior or the remaining `initialize` dependence is explicitly accepted. |
 | CTRL-1 | OAuth21 durable-state hygiene control plane | 3/4 | Keep state maintenance explicit and auditable | AUTH-1, DOC-1 | Preview/receipt/gate/apply/rollback helpers and bounded records/backups exist under `_workflow/control_plane/`. | Remaining value is operational discipline, not more automation. | Keep apply explicit and operator-visible; do not auto-wire maintenance into runtime. | Maintenance remains control-plane-only and does not leak into runtime behavior. |
 | DEBT-1 | Session-bound outbound/sampling helper debt | 2/4 | Close residual local-helper debt without reopening target architecture | OBS-1 | Scope is explicitly recorded as bounded helper debt, not active route architecture. | No evidence yet that removing it outranks client-entry compatibility work. | Leave deferred until it blocks a higher-priority component or creates measurable execution drag. | Future work is either an intentional cleanup package or an explicit retention decision. |
-| DOC-2 | Directory-level functional orientation | 2/4 | Make every high-value area self-describing for handoff/restart continuity | DOC-1 | Core operational directories already have `DIRECTORY.md`, but coverage is still partial outside normalized areas. | Repo-wide expansion would create churn unless it targets high-change directories. | Extend `DIRECTORY` coverage only where churn or handoff cost is currently real. | Remaining high-churn directories are covered without documentation sprawl. |
+| DOC-2 | Directory-level functional orientation | 2/4 | Make every high-value area self-describing for handoff/restart continuity | DOC-1 | Core operational directories and the high-churn CBM integration boundary now have generator-owned maps for `src/integrations` and `src/integrations/codebase_memory`; coverage remains partial elsewhere. | Repo-wide expansion would create churn unless it targets high-change directories. | Extend `DIRECTORY` coverage only where churn or handoff cost is currently real. | Remaining high-churn directories are covered without documentation sprawl. |
 | RETR-1 | Workspace retrieval ergonomics | 2/4 | Reduce agent execution friction without changing product truth | DOC-1, SURF-1 | `workbench` callability and repository indexing are materially better than before. | Retrieval quality still depends on environment freshness and ranking heuristics. | Improve only when it materially shortens current target work or reduces evidence-gathering friction. | Retrieval issues stop being a recurring blocker on active packages. |
 
 ## Dependency spine
@@ -59,46 +60,66 @@ Read the queue through this dependency spine:
 2. `OBS-1` observability
    - provides the truth source for runtime/client interpretation
 3. `AUTH-1` authorized runtime
-   - must stay stable while evidence is gathered
+   - remains stable while client-entry evidence is event-gated
 4. `SURF-1` surface governance
-   - matters when client truth and runtime truth need reconciliation
-5. `COMP-1` initialize retirement readiness
-   - remains the main protocol-debt gate
-6. `CTRL-1`, `DEBT-1`, `DOC-2`, `RETR-1`
-   - operational support tracks; do not let them outrank the protocol gate without evidence
+   - preserves the unchanged 84-tool contract
+5. `CBM-1` bridge and index integrity
+   - is complete and remains a protected support layer
+6. `COMP-1` initialize retirement readiness
+   - is the highest-leverage remaining protocol gate, but resumes only on fresh client traffic
+7. `CTRL-1`, `DEBT-1`, `DOC-2`, `RETR-1`
+   - operational support tracks; `DOC-2A` is the only bounded autonomous fallback while `COMP-1A` is externally blocked
 
 ## Current blockers by leverage
 
 1. `COMP-1`
-   Real client-family entry behavior still blocks `initialize` retirement, and the blocker remains present even in the freshest retained operational windows.
+   Real client-family entry behavior still blocks `initialize` retirement. The package is externally event-gated and must not be refreshed until new traffic creates a meaningfully new evidence window.
 
-2. `SURF-1`
-   Runtime callability and UI-visible enumeration are still different evidence layers and must not be collapsed into one claim.
+2. `DOC-2`
+   Directory coverage remains incomplete outside normalized operational areas. This is a bounded fallback only when one current high-churn gap is demonstrable.
 
-3. `DOC-2`
-   Directory coverage is still incomplete outside the currently normalized operational areas.
+`CBM-1` and `SURF-1` have no active blocker. Runtime callability and UI-visible enumeration remain separate evidence layers, but the current hardened 84-tool identity is stable.
 
 ## Autonomous execution packages
 
-Use these package IDs directly when selecting work. Do not invent a parallel queue unless one of these packages is completed, blocked by external timing, or disproved by fresh evidence.
+Active selection is limited to event-gated `COMP-1A` and bounded fallback `DOC-2A`. Completed CBM packages remain listed as regression references, not as current queue items. Do not invent a parallel queue unless fresh evidence disproves this ordering.
 
 | Package | Targets | Why now | Primary evidence source | Stop condition | If blocked |
 | --- | --- | --- | --- | --- | --- |
-| `COMP-1A` | `COMP-1`, `OBS-1` | Highest-leverage open gate still controls compatibility retirement. | `_logs/.mcp-tests-audit.jsonl`, `observability_status`, `_workflow/operator_decisions/initialize_client_compatibility_evidence.md` | Current operational client-family evidence is refreshed into a clear `initialize_only` or `server_discover_entry` verdict. | Current repo-native evidence already refreshed on 2026-07-17 still shows `initialize_only`; keep compatibility steady and wait for new external client traffic before refreshing again. |
+| `CBM-ADR-REPAIR` | `CBM-1` | Completed regression reference. | External backup manifest, bounded migrator, `cbm_manage_adr`, `cbm_index_status`, and isolated-cache reconstruction tests | Reopen only if ADR reads, schema compatibility, or preserved counts regress. | Restore from the external checkpoint before any further cache mutation. |
+| `OAUTH-DUPLICATE-HELPER-REVIEW` | `CBM-1`, `AUTH-1` | Completed regression reference. | Shared helper modules, characterization tests, OAuth/runtime smokes | Reopen only if exact helper behavior diverges or a security fix exposes a new duplicate. | Stop before semantic refactoring if equivalence cannot be proved. |
+| `FINAL-LIVE-LOAD` | `CBM-1`, `SURF-1`, `AUTH-1` | Completed regression reference. | Full offline suite, self-test, restart receipt `manual-1785110528926`, refreshed connector identity, and live CBM probes | Reopen only if live identity or hardened behavior regresses. | Preserve the current runtime and restore from the existing checkpoint before new live mutation. |
+| `COMP-1A` | `COMP-1`, `OBS-1` | Highest-leverage protocol gate after CBM repair closeout, but externally event-gated. | `_logs/.mcp-tests-audit.jsonl`, explicit live `server_start_id`, and `_workflow/operator_decisions/initialize_client_compatibility_evidence.md` | Current operational client-family evidence is refreshed into a clear `initialize_only` or `server_discover_entry` verdict. | Fresh evidence on 2026-07-27 still shows `initialize_only` for `openai-mcp 1.0.0`; keep compatibility steady and wait for newer external client traffic before refreshing again. |
 | `COMP-1B` | `COMP-1`, `SURF-1` | Only worth doing after `COMP-1A` narrows the blocker or changes the decision boundary. | Fresh `COMP-1A` result plus `_workflow/operator_decisions/initialize_retirement_decision_prep.md` | A bounded retirement-decision delta exists or the blocker is restated with tighter current evidence. | Fall back to `SURF-1A` only if connector/UI truth is the deciding ambiguity. |
 | `SURF-1A` | `SURF-1` | Connector/UI verification matters only when it changes the protocol-debt decision. | Codex/OpenAI UI evidence, runtime callability evidence, connector-facing tool inventory evidence | UI-visible enumeration is either confirmed decision-relevant or explicitly ruled irrelevant to the current package. | Return to `COMP-1A`; do not let UI verification become autonomous churn. |
 | `DOC-2A` | `DOC-1`, `DOC-2` | Safe fallback package when higher-leverage protocol evidence is externally timing-bound. | `READINESS.md`, `ROADMAP.md`, `ACTIVE_WORKFLOW_INDEX.md`, current directory maps | One real high-churn documentation gap is closed and the next bounded package remains inferable from docs alone. | Stop if the work would become repo-wide documentation sprawl instead of a bounded orientation fix. |
 
+## Completed hardened v0.9.0 rollout
+
+The hardened CBM v0.9.0 rollout is complete.
+
+- Live runtime and connector: `84` tools, including fifteen `cbm_*` tools.
+- Live identity: `server_start_id = 2026-07-27T03:10:26.042Z`, combined fingerprint `6a1329e3b3892b9c`.
+- Live behavior: stdin native transport emits no raw-JSON deprecation warning; `detect_changes` normalizes duplicate entries; ADR reads succeed across all three repaired indexes.
+- Delete contract: `project`, `confirm`, `state_handle`; the handle remains TTL-bound, auth-bound, project-bound, one-time, and audit-redacted.
+- Post-refresh outcome: disposable index deleted; repeated delete through a fresh challenge mapped to `cbm_project_not_found`; source fixture directory remained intact.
+- Restart/refresh state: none pending.
+
 ## Default next package
 
-Unless fresh live evidence changes the order, the next package should be:
+Unless fresh evidence changes the dependency graph:
 
-1. `COMP-1A`: rerun only after new operational client traffic changes the evidence window
-2. `COMP-1B`: only if the next `COMP-1A` refresh changes the decision surface
-3. `SURF-1A`: only if UI-visible surface truth is what still prevents the decision
+1. `COMP-1A` remains event-gated until new external client traffic creates a meaningfully new evidence window.
+2. `DOC-2A` is the only bounded autonomous fallback when one real high-churn orientation gap is demonstrable.
 
 ## Latest supporting package
 
+- `2026-07-27`: refreshed `COMP-1A` against explicit live `server_start_id 2026-07-27T03:10:26.042Z`. Operational `openai-mcp 1.0.0` remains `initialize_only` with `8` successful responses and `0` `server/discover` entries. The shared child-server helper now isolates audit output, and the report selects and attributes a named live window without deleting historical test evidence.
+- `2026-07-27`: completed one bounded `DOC-2A` fallback for the high-churn CBM integration boundary. `scripts/generate_directory_docs.js` now owns `src/integrations/DIRECTORY.md` and `src/integrations/codebase_memory/DIRECTORY.md`; generator and operator-contract guards preserve the map and its repository/runtime/index truth boundary.
+- `2026-07-27`: closed test-harness control-state pollution. Self-test no longer starts the restart controller or writes tool-surface state; every smoke child-server now uses hermetic surface/restart/rate paths; the restored operational `tool-surface-state.json` remains at 84 tools and `server_start_id = 2026-07-27T03:10:26.042Z` across standalone harnesses, self-test, and the full suite. No additional restart was required.
+- `2026-07-27`: completed final live load for CBM reliability hardening and native-cache repair. The refreshed runtime exposes stdin transport, duplicate change normalization, fail-fast startup configuration, operator-neutral executable fallback, fail-closed ADR snapshot gating, shared OAuth/HTTP helpers, and repaired v0.9.0 cache schemas at unchanged 84-tool identity. Live delete verification returned `deleted` then `cbm_project_not_found`; full offline smoke is GREEN at `7 + 265`. Report: `docs/CBM_RELIABILITY_HARDENING_REPORT.md`.
+- `2026-07-26`: completed the initial live CBM v0.9.0 surface rollout. The refreshed connector exposed `state_handle`; two-phase deletion returned `deleted`; a fresh second challenge returned `cbm_project_not_found`; `_tests/fixtures/cbm-live-fixture` remained intact; combined fingerprint is `6a1329e3b3892b9c`.
+- `2026-07-26`: completed the isolated fresh-cache v0.9.0 CBM rebaseline across `mcp-tests`, `papers-memory-mcp`, and `autonomous_llm_handbook`; report: `docs/CBM_V0_9_0_REBASELINE_REPORT.md`. Native path scoping, recursion handling, ambiguity handling, and concurrency improved; bridge compensations now cover output bounding, scope enforcement, ADR restoration, trace placeholder warnings, and project-not-found classification.
 - `2026-07-17`: read-only remote-site flows (`list`, `read`, runtime status, retention preview) no longer create remote ops directories as a side effect. Guarded by `smoke_remote_site_lifecycle` and the full `run_all_smokes --skip-network` suite.
 - `2026-07-17`: refreshed `COMP-1A` evidence still shows live OAuth21 `/mcp` current-window traffic as `initialize_only` for `codex-mcp-client 0.145.0-alpha.18`, with the retained blocker already present in `1d` and `2d` operational windows.
 - `2026-07-17`: completed `DOC-2A` by extending bounded directory-map coverage into the runtime-owned control-plane backup roots and live prune bundle docs, while keeping the next package inferable from workflow docs alone.

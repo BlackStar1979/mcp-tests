@@ -7,6 +7,7 @@ const os = require("node:os");
 const path = require("node:path");
 const { spawn, spawnSync } = require("node:child_process");
 const { resolveAuthBootstrapConfig } = require("../src/runtime/auth_bootstrap_config_resolver");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 const ROOT = path.join(__dirname, "..");
 const TOKEN = "stage12-bootstrap-runtime-token-0123456789abcdef";
@@ -77,13 +78,14 @@ async function callTool({ port, headers = {}, name, args = {} }) {
 
 async function withServer({ argv = [], env = {}, assertFn }) {
   const port = await getFreePort();
+  const controlRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-bootstrap-child-"));
   assert.notEqual(port, 3009, "test child must not bind active public fallback port 3009");
   const child = spawn(process.execPath, ["server.js", ...argv, "--port", String(port)], {
     cwd: ROOT,
-    env: cleanEnv({
+    env: withHermeticServerControlEnv(cleanEnv({
       ...env,
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
-    }),
+    }), controlRoot),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -96,6 +98,7 @@ async function withServer({ argv = [], env = {}, assertFn }) {
     await assertFn({ port, health, output });
   } finally {
     child.kill();
+    fs.rmSync(controlRoot, { recursive: true, force: true });
   }
 }
 
@@ -116,6 +119,15 @@ function assertFailsClosed(args, pattern) {
   fs.writeFileSync(tokenFile, TOKEN, { encoding: "utf8", mode: 0o600 });
 
   try {
+    {
+      const hermeticProbeRoot = path.join(tmp, "hermetic-probe");
+      const defaultHermeticEnv = withHermeticServerControlEnv({}, hermeticProbeRoot);
+      assert.equal(defaultHermeticEnv.MCP_TEST_AUDIT_LOG, path.join(hermeticProbeRoot, "audit.jsonl"));
+      const explicitAuditLog = path.join(hermeticProbeRoot, "explicit-audit.jsonl");
+      const explicitHermeticEnv = withHermeticServerControlEnv({ MCP_TEST_AUDIT_LOG: explicitAuditLog }, hermeticProbeRoot);
+      assert.equal(explicitHermeticEnv.MCP_TEST_AUDIT_LOG, explicitAuditLog);
+    }
+
     {
       const config = resolveAuthBootstrapConfig({ argv: [], env: cleanEnv() });
       assert.equal(config.authMode, "none");
@@ -172,14 +184,31 @@ function assertFailsClosed(args, pattern) {
     assertFailsClosed(["--auth", "oauth"], /MCP_TEST_OAUTH_ISSUER is required/);
     assertFailsClosed(["--auth", "oauth21"], /OAUTH_OPERATOR_SECRET|operator_secret/);
 
+    const selfTestStateFile = path.join(tmp, "self-test-tool-surface-state.json");
+    const selfTestStateSentinel = `${JSON.stringify({ sentinel: "must-remain-unchanged" }, null, 2)}\n`;
+    const selfTestRestartFile = path.join(tmp, "self-test-restart", "request.json");
+    const selfTestAuditLog = path.join(tmp, "self-test-audit", "audit.jsonl");
+    const selfTestRateLimitState = path.join(tmp, "self-test-rate-limit", "state.json");
+    fs.writeFileSync(selfTestStateFile, selfTestStateSentinel, "utf8");
+
     const selfTest = spawnSync(process.execPath, ["server.js", "--self-test"], {
       cwd: ROOT,
-      env: cleanEnv(),
+      env: cleanEnv({
+        MCP_TEST_TOOL_SURFACE_STATE_FILE: selfTestStateFile,
+        MCP_TEST_ENABLE_RESTART_TRIGGER: "1",
+        MCP_TEST_RESTART_TRIGGER_FILE: selfTestRestartFile,
+        MCP_TEST_AUDIT_LOG: selfTestAuditLog,
+        MCP_TEST_RATE_LIMIT_STATE_FILE: selfTestRateLimitState,
+      }),
       encoding: "utf8",
       timeout: 20000,
     });
     assert.equal(selfTest.status, 0, `self-test must pass\nSTDOUT:\n${selfTest.stdout}\nSTDERR:\n${selfTest.stderr}`);
     assert.match(selfTest.stdout, /self-test ok/);
+    assert.equal(fs.readFileSync(selfTestStateFile, "utf8"), selfTestStateSentinel, "self-test must not mutate operational tool-surface state");
+    assert.equal(fs.existsSync(path.dirname(selfTestRestartFile)), false, "self-test must not start the restart controller or create its directory");
+    assert.equal(fs.existsSync(selfTestAuditLog), false, "self-test must not create the runtime audit log");
+    assert.equal(fs.existsSync(selfTestRateLimitState), false, "self-test must not create persistent rate-limit state");
 
     console.log("smoke_bootstrap_resolver_runtime_integration ok");
   } finally {

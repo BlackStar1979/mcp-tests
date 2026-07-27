@@ -10,6 +10,7 @@ const state = JSON.parse(stateText);
 const readme = read("_workflow", "README.md");
 const canon = read("_workflow", "WORKFLOW_CANON.md");
 const index = read("_workflow", "ACTIVE_WORKFLOW_INDEX.md");
+const operatorState = read("_workflow", "STATE.md");
 const record = read("_workflow", "operator_decisions", "stage14_9_workflow_truth_repair.md");
 const inventory = json("_workflow", "sessionless_inventory.json");
 
@@ -23,8 +24,9 @@ for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliat
 }
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_healthz_and_startup_inventory_69_repo_expected_69_connector_ui_visibility_unverified");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_in_sync");
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
 assert.ok(readme.includes("Do not ask the operator to restart `3008`"));
@@ -35,6 +37,11 @@ assert.ok(canon.includes("initialize_retirement_decision_prep.md"));
 assert.ok(index.includes("stage14_9_workflow_truth_repair.md"));
 assert.ok(index.includes("initialize_retirement_decision_prep.md"));
 assert.ok(index.includes("state.json` is only the compact machine-readable orientation map"));
+assert.equal(operatorState.includes("The current live server process predates these changes"), false);
+assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
+assert.ok(operatorState.includes("no restart or connector refresh is pending"));
+assert.ok(operatorState.includes("`DOC-2A` remains a reusable bounded fallback"));
+assert.ok(index.includes("Fresh client-entry evidence from `2026-07-27` remains `initialize_only` for `openai-mcp 1.0.0`"));
 const restart = inventory.deprecation_ledger.find((item) => item.feature_id === "restart_resilience");
 const sessionStore = inventory.deprecation_ledger.find((item) => item.feature_id === "session_store");
 const roots = inventory.deprecation_ledger.find((item) => item.feature_id === "roots_sampling_logging_deprecation");

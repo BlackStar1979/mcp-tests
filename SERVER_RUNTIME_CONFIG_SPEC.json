@@ -15,7 +15,8 @@
     "src/client_entry_path_diagnostics.js",
     "src/runtime/state_handle_prototype.js",
     "src/runtime/request_metadata_policy.js",
-    "src/runtime/server_discover_message_handler.js"
+    "src/runtime/server_discover_message_handler.js",
+    "src/integrations/codebase_memory/cbm_cli_bridge.js"
   ],
   "cli_flags": [
     "--profile",
@@ -41,12 +42,22 @@
     "/revoke"
   ],
   "env_vars": [
+    "CBM_ALLOWED_ROOT",
+    "CBM_CACHE_DIR",
+    "CBM_CONFIG_DIR",
+    "CBM_EXE_PATH",
     "MCP_TEST_ACCESS_TRUSTED_PROXY",
     "MCP_TEST_ALLOW_PUBLIC_BIND",
     "MCP_TEST_AUDIT_LOG",
     "MCP_TEST_AUDIT_MAX_BYTES",
     "MCP_TEST_AUTH_MODE",
     "MCP_TEST_BEARER_ALLOW_QUERY_TOKEN",
+    "MCP_TEST_CBM_HARD_INDEX_TIMEOUT_MS",
+    "MCP_TEST_CBM_HEAVY_READ_TIMEOUT_MS",
+    "MCP_TEST_CBM_INDEX_TIMEOUT_MS",
+    "MCP_TEST_CBM_MAX_OUTPUT_CHARS",
+    "MCP_TEST_CBM_PROBE_TIMEOUT_MS",
+    "MCP_TEST_CBM_SIMPLE_READ_TIMEOUT_MS",
     "MCP_TEST_CODE_SAMPLE_DEFAULT_MAX_CHARS",
     "MCP_TEST_CODE_SAMPLE_HARD_MAX_CHARS",
     "MCP_TEST_CODE_SAMPLE_MAX_FILE_BYTES",
@@ -58,15 +69,14 @@
     "MCP_TEST_ENABLE_FS_TOOLS",
     "MCP_TEST_ENABLE_NET_TOOLS",
     "MCP_TEST_ENABLE_PROCESS_EXECUTION_TOOL",
-    "MCP_TEST_ENABLE_RESTART_TRIGGER",
     "MCP_TEST_ENABLE_REMOTE_SITE_MUTATION_TOOLS",
     "MCP_TEST_ENABLE_REMOTE_SITE_TOOLS",
+    "MCP_TEST_ENABLE_RESTART_TRIGGER",
     "MCP_TEST_ENABLE_SCIENCE_TOOLS",
-    "MCP_TEST_SCIENCE_TIMEOUT_MS",
     "MCP_TEST_ENABLE_TRUTH_TOOLS",
     "MCP_TEST_ENABLE_WORKSPACE_FS_TOOLS",
-    "MCP_TEST_ENABLE_WORKSPACE_MUTATION_TOOLS",
     "MCP_TEST_ENABLE_WORKSPACE_INDEX_TOOLS",
+    "MCP_TEST_ENABLE_WORKSPACE_MUTATION_TOOLS",
     "MCP_TEST_EXTRA_ROOTS",
     "MCP_TEST_FETCH_CAP_CHARS",
     "MCP_TEST_FS_MAX_FILE_BYTES",
@@ -76,8 +86,8 @@
     "MCP_TEST_HEALTH_FULL",
     "MCP_TEST_HOST",
     "MCP_TEST_LOG_DIR",
-    "MCP_TEST_MAX_WRITE_BYTES",
     "MCP_TEST_MAX_BATCH_ITEMS",
+    "MCP_TEST_MAX_WRITE_BYTES",
     "MCP_TEST_MEMORY_LOG_DIR",
     "MCP_TEST_NET_ALLOWLIST",
     "MCP_TEST_NET_MAX_BYTES",
@@ -90,8 +100,8 @@
     "MCP_TEST_OAUTH_ISSUER",
     "MCP_TEST_OAUTH_JWKS_FILE",
     "MCP_TEST_OAUTH_OPERATOR_SECRET",
-    "MCP_TEST_OAUTH_STORAGE_FILE",
     "MCP_TEST_OAUTH_STATE_FILE",
+    "MCP_TEST_OAUTH_STORAGE_FILE",
     "MCP_TEST_OUTPUT_MODE",
     "MCP_TEST_PORT",
     "MCP_TEST_PROFILE",
@@ -105,11 +115,12 @@
     "MCP_TEST_RATE_LIMIT_TOOL_WINDOW_MS",
     "MCP_TEST_RESTART_EXIT_DELAY_MS",
     "MCP_TEST_RESTART_TRIGGER_FILE",
+    "MCP_TEST_SCIENCE_TIMEOUT_MS",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "MCP_TEST_TOKEN_FILE",
     "MCP_TEST_TOOL_SURFACE_STATE_FILE",
-    "MCP_TEST_WORK_ROOT",
-    "MCP_TEST_WORKSPACE_INDEX_FILE"
+    "MCP_TEST_WORKSPACE_INDEX_FILE",
+    "MCP_TEST_WORK_ROOT"
   ],
   "behavior_refs": {
     "cors": "MCP_TEST_CORS_ALLOW_ORIGIN",
@@ -310,5 +321,25 @@
     "runtime_restart_required_now": false,
     "public_3009_start_required_now": false,
     "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart."
+  },
+  "codebase_memory_cli_contract": {
+    "supported_versions": [
+      "0.9.0"
+    ],
+    "native_tool_count": 14,
+    "connector_tool_count": 15,
+    "contract_manifest": "src/integrations/codebase_memory/contracts/v0.9.0.json",
+    "identity_cache_invalidation": [
+      "path",
+      "size",
+      "mtime_ms"
+    ],
+    "heavy_read_concurrency": 2,
+    "native_containment_env": "CBM_ALLOWED_ROOT",
+    "partial_success_envelope": true,
+    "detect_changes_native_output_limit_chars": 1048576,
+    "detect_changes_returned_item_limit": 200,
+    "adr_snapshot_verify_restore": true,
+    "strict_trace_input_schema": true
   }
 }

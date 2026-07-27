@@ -1,0 +1,68 @@
+# CBM Tool Reference
+
+Load when: selecting or invoking a `cbm_*` tool, interpreting its result envelope, or handling tool-specific limitations.
+
+## Surface
+
+The connector exposes fifteen tools: 14 native operations plus bridge-only `cbm_status`. The verified native contract is codebase-memory v0.9.0.
+
+All native envelopes expose:
+
+- `success`, `error_code`, `error`;
+- `cbm_tool`, `binary_version`, `compatibility_status`;
+- `duration_ms`, `queue_wait_ms`, `execution_ms`;
+- `partial_success`, bounded `warnings`;
+- timeout, exit, signal, and truncation fields;
+- `result`.
+
+Read `warnings` whenever `partial_success` is true. Stable error codes are the primary classification; `diagnostic` is supporting evidence.
+
+## Tool Selection
+
+| Tool | Use | Key inputs | Operational notes |
+|---|---|---|---|
+| `cbm_status` | Bridge and binary health | none | Reports executable identity, v0.9.0 manifest compatibility, 14 native tools, allowed root, heavy-read queue, mutation lock, and timeouts. |
+| `cbm_list_projects` | Enumerate persisted indexes | none | Never starts indexing. Use returned names exactly. |
+| `cbm_index_repository` | Create or synchronize an index | `path`; optional `mode`, `name`, `target_projects`, `persistence` | Mutation. Requires an authorized workspace path and explicit authorization. One CBM mutation runs at a time. The bridge snapshots, verifies, and restores existing ADR content when native reindex loses it. |
+| `cbm_index_status` | Read one persisted index state | `project` | Distinct from `cbm_status`. A missing project may currently surface as `cbm_native_rejected`; confirm with `cbm_list_projects`. |
+| `cbm_get_architecture` | Read architecture graph | `project`; optional `path`, `aspects` | Never starts indexing. `path` scopes the returned graph. |
+| `cbm_search_code` | Graph-augmented text search | `project`, `pattern`; optional file/path filters, regex, mode, context, limit | Never starts indexing. Use `files` mode for discovery and `full` only when context is needed. |
+| `cbm_search_graph` | Discover symbols and graph nodes | `project`; structural, text, semantic, relationship, degree, and pagination filters | Never starts indexing. Prefer exact `qn_pattern` before snippet or trace operations. |
+| `cbm_get_code_snippet` | Read indexed source for one symbol | `project`, `qualified_name`; optional neighbors | Never starts indexing. Discover the qualified name first. |
+| `cbm_trace_path` | Trace calls, data flow, or cross-service paths | `project`, `function_name`; optional direction, depth, mode, parameter, edges, risks, tests | Never starts indexing. Short names can be ambiguous. Parameter-specific data-flow output remains less trustworthy than qualified-name call tracing. |
+| `cbm_get_graph_schema` | Inspect labels, edge types, counts, and properties | `project` | Use before custom Cypher. |
+| `cbm_query_graph` | Execute bounded read-only Cypher | `project`, `query`; optional `max_rows` | Write clauses are rejected. Native `labels()` aggregation can return a suspicious numeric scalar; the bridge marks it partial with a warning. |
+| `cbm_detect_changes` | Map a Git comparison to changed files, symbols, and impact | `project`; optional `scope`, `depth`, `base_branch`, `since` | Bridge applies normalized path-prefix `scope`. Returns at most 200 changed files and 200 impacted symbols while preserving native totals and truncation flags. Empty impacted symbols with changed files means unresolved impact, not no impact. |
+| `cbm_manage_adr` | Read or update project ADR content | `project`; optional `mode`, `content`, `sections` | Conservatively classified as a mutation for every mode. `sections` semantics remain ambiguous; do not invent filtering behavior. |
+| `cbm_ingest_traces` | Submit validated runtime traces | `project`, `traces` | Mutation. Required fields: trace ID, span ID, name, start, and end time. Native v0.9.0 may accept the batch while reporting: `Runtime edge creation from traces not yet implemented`. Treat that as partial success. |
+| `cbm_delete_project` | Remove one persisted index | `project`, then `confirm: true` with `state_handle` | Destructive two-phase operation. The handle is short-lived, authenticated, project-bound, and one-time. Only `project` reaches native CBM; the repository source tree is never deleted. Verify the source path independently. |
+
+## Mutation Rules
+
+- Do not index because a read returned no result.
+- Do not index outside the authorized root.
+- Do not overlap CBM mutations.
+- Do not forward, print, persist, or replay a `state_handle`.
+- Use deletion only for an explicitly named disposable or operator-approved index.
+- After deletion, verify both absence from `cbm_list_projects` and continued source-tree existence.
+
+## Error Semantics
+
+| Error | Meaning and response |
+|---|---|
+| `cbm_binary_unavailable` | Stop CBM work; inspect `cbm_status`. |
+| `cbm_version_incompatible` | Do not trust tool execution; contract version is unsupported. |
+| `cbm_contract_mismatch` | Binary/help surface differs from the checked manifest. |
+| `cbm_timeout` | Operation exceeded its bounded timeout; inspect mutation/index state before retrying. |
+| `cbm_output_limit` | Native output exceeded the bridge limit. Narrow the query or scope. |
+| `cbm_invalid_output` | Native output could not be normalized. |
+| `cbm_native_rejected` | Native CBM rejected the operation; inspect result and diagnostic. |
+| `cbm_project_not_found` | Named delete target does not exist. |
+| `cbm_confirmation_required` | First delete phase succeeded; use the returned `state_handle` once in the same authenticated context. |
+
+## Source-of-Truth References
+
+- Tool descriptors: `src/integrations/codebase_memory/cbm_tools.js`
+- Input/output schemas: `src/schemas/codebase_memory_tools.js`
+- Version manifest: `src/integrations/codebase_memory/contracts/v0.9.0.json`
+- Verified behavior and limitations: `docs/CBM_V0_9_0_REBASELINE_REPORT.md`

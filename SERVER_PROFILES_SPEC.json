@@ -16,6 +16,22 @@
       "tests"
     ],
     "standalone_memory_flag_allowed": false,
+    "codebase_memory_bridge": {
+      "status": "profile_managed_authenticated_surface",
+      "profile": "tests",
+      "surface": "authenticated",
+      "exposure_control": "profile_only",
+      "authenticated_tool_count": 15,
+      "tool_count_when_dependency_unavailable": 15,
+      "dependency_probe_timing": "first_tool_use_cached_for_process_lifetime",
+      "dependency_failure_behavior": "tools remain exposed and return structured cbm_unavailable diagnostics",
+      "public_tool_count_change": 0,
+      "resource_policy_refs": [
+        "codebase_memory_readonly",
+        "codebase_memory_mutation",
+        "codebase_memory_destructive"
+      ]
+    },
     "tools_spec_ref": "SERVER_TOOLS_SPEC.json",
     "decision_ref": "SERVER_AUTHZ_DECISION_SPEC.json",
     "profile_schema_validation": {

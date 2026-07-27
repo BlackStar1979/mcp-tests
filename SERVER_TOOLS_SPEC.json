@@ -25,9 +25,24 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces and intended for model/agent use",
-      "tool_count": 56,
+      "tool_count": 71,
       "tools": [
         "code_sample_js",
+        "cbm_status",
+        "cbm_list_projects",
+        "cbm_index_repository",
+        "cbm_get_architecture",
+        "cbm_search_graph",
+        "cbm_query_graph",
+        "cbm_trace_path",
+        "cbm_get_code_snippet",
+        "cbm_get_graph_schema",
+        "cbm_search_code",
+        "cbm_delete_project",
+        "cbm_index_status",
+        "cbm_detect_changes",
+        "cbm_manage_adr",
+        "cbm_ingest_traces",
         "write_file",
         "append_file",
         "copy_path",
@@ -132,7 +147,7 @@
       ]
     }
   },
-  "total_mcp_callable_tool_count": 69,
+  "total_mcp_callable_tool_count": 84,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -180,6 +195,220 @@
       "auth_required": true,
       "public_safe": false,
       "stage5_surface_reclassification": "moved_from_restricted_core_tools_to_authorized_mcp_tools_to_match_runtime_loader"
+    },
+    "cbm_status": {
+      "name": "cbm_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_list_projects": {
+      "name": "cbm_list_projects",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_index_repository": {
+      "name": "cbm_index_repository",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_get_architecture": {
+      "name": "cbm_get_architecture",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_search_graph": {
+      "name": "cbm_search_graph",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_query_graph": {
+      "name": "cbm_query_graph",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_trace_path": {
+      "name": "cbm_trace_path",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_get_code_snippet": {
+      "name": "cbm_get_code_snippet",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_get_graph_schema": {
+      "name": "cbm_get_graph_schema",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_search_code": {
+      "name": "cbm_search_code",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_delete_project": {
+      "name": "cbm_delete_project",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_destructive",
+      "operation_class": "delete",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated",
+      "confirmation_required": true,
+      "confirmation_kind": "cbm_delete_project_confirmation",
+      "confirmation_ttl_ms": 120000,
+      "source_repository_deletion": false
+    },
+    "cbm_index_status": {
+      "name": "cbm_index_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_detect_changes": {
+      "name": "cbm_detect_changes",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_readonly",
+      "operation_class": "search",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_manage_adr": {
+      "name": "cbm_manage_adr",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
+    },
+    "cbm_ingest_traces": {
+      "name": "cbm_ingest_traces",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "codebase_memory",
+      "resource_class": "codebase_memory_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false,
+      "profile_surface": "tests.authenticated"
     },
     "write_file": {
       "name": "write_file",
@@ -1410,5 +1639,21 @@
     "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart.",
     "sessionless_transition_route_retired_from_active_runtime": true,
     "sessionless_transition_env_retired_from_active_runtime": true
+  },
+  "codebase_memory_bridge_contract": {
+    "native_version": "0.9.0",
+    "native_tool_count": 14,
+    "connector_tool_count": 15,
+    "contract_manifest": "src/integrations/codebase_memory/contracts/v0.9.0.json",
+    "partial_success_envelope": true,
+    "heavy_read_concurrency": 2,
+    "native_containment_env": "CBM_ALLOWED_ROOT",
+    "detect_changes_native_output_limit_chars": 1048576,
+    "detect_changes_returned_item_limit": 200,
+    "detect_changes_scope_enforced_by_bridge": true,
+    "strict_trace_input_schema": true,
+    "adr_snapshot_verify_restore": true,
+    "project_not_found_error_code": "cbm_project_not_found",
+    "labels_aggregation_warning": true
   }
 }

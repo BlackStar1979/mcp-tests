@@ -27,7 +27,7 @@ async function callTool(name, args) {
   assert.ok(symbols.symbol_count > 0);
   assert.equal(symbols.language, "javascript");
 
-  const deps = await callTool("dev_code_dependencies", { path: "tools", recursive: true, max_files: 100 });
+  const deps = await callTool("dev_code_dependencies", { path: "tools", recursive: true, max_files: 500 });
   assert.equal(deps.success, true);
   assert.ok(deps.nodes_count > 0);
   assert.ok(deps.external_workspace_edges_count > 0);

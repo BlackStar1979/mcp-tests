@@ -29,6 +29,8 @@ assert.match(result.stdout, /wrote DIRECTORY\.md/);
 assert.match(result.stdout, /wrote _workflow\\control_plane\\snapshots\\/);
 assert.match(result.stdout, /wrote _workflow\\control_plane\\file_backups\\DIRECTORY\.md/);
 assert.match(result.stdout, /wrote _workflow\\control_plane\\oauth21_prune_backups\\DIRECTORY\.md/);
+assert.match(result.stdout, /wrote src\\integrations\\DIRECTORY\.md/);
+assert.match(result.stdout, /wrote src\\integrations\\codebase_memory\\DIRECTORY\.md/);
 
 const packageJson = read("package.json");
 const scriptSource = read(path.join("scripts", "generate_directory_docs.js"));
@@ -36,6 +38,9 @@ const rootDirectory = read("DIRECTORY.md");
 const workflowDirectory = read("_workflow/DIRECTORY.md");
 const fileBackupsDirectory = read("_workflow/control_plane/file_backups/DIRECTORY.md");
 const pruneBackupsDirectory = read("_workflow/control_plane/oauth21_prune_backups/DIRECTORY.md");
+const srcDirectory = read("src/DIRECTORY.md");
+const integrationsDirectory = read("src/integrations/DIRECTORY.md");
+const codebaseMemoryDirectory = read("src/integrations/codebase_memory/DIRECTORY.md");
 const todayMatch = scriptSource.match(/const TODAY = "([^"]+)";/);
 assert.ok(todayMatch, "generator must declare TODAY constant");
 const today = todayMatch[1];
@@ -46,6 +51,17 @@ assert.ok(fileBackupsDirectory.includes("runtime-owned backup bundles"));
 assert.ok(fileBackupsDirectory.includes("stage8_52d_control_plane_selftest/"));
 assert.ok(pruneBackupsDirectory.includes("explicit OAuth21 prune execute runs"));
 assert.ok(pruneBackupsDirectory.includes("live-prune-2026-07-15/"));
+assert.ok(srcDirectory.includes("Updated: 2026-07-27"));
+assert.ok(srcDirectory.includes("`integrations/`"));
+assert.ok(integrationsDirectory.includes("Updated: 2026-07-27"));
+assert.ok(codebaseMemoryDirectory.includes("Updated: 2026-07-27"));
+assert.ok(integrationsDirectory.includes("`codebase_memory/`"));
+assert.ok(integrationsDirectory.includes("External integration boundaries"));
+assert.ok(codebaseMemoryDirectory.includes("`cbm_cli_bridge.js`"));
+assert.ok(codebaseMemoryDirectory.includes("`cbm_tools.js`"));
+assert.ok(codebaseMemoryDirectory.includes("`cbm_contract_registry.js`"));
+assert.ok(codebaseMemoryDirectory.includes("`contracts/`"));
+assert.ok(codebaseMemoryDirectory.includes("index truth"));
 
 const snapshotDirs = fs
   .readdirSync(SNAPSHOT_ROOT, { withFileTypes: true })

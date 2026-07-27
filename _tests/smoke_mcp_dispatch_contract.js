@@ -19,8 +19,11 @@
 // This test keeps the default authMode=none server and adds no ad hoc auth harness.
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 const PORT = Number(process.env.MCP_TEST_MCP_DISPATCH_PORT || 3097);
 const MCP_URL = `http://127.0.0.1:${PORT}/mcp`;
@@ -41,14 +44,15 @@ async function waitHealth(port) {
 }
 
 async function withServer(envOverrides, fn) {
+  const controlRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-dispatch-child-"));
   const child = spawn(process.execPath, ["server.js"], {
     cwd: process.cwd(),
-    env: {
+    env: withHermeticServerControlEnv({
       ...process.env,
       MCP_TEST_AUTH_MODE: "none",
       MCP_TEST_FS_ROOT: path.join(process.cwd(), "_public_sandbox"),
       ...envOverrides,
-    },
+    }, controlRoot),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -64,6 +68,7 @@ async function withServer(envOverrides, fn) {
     throw error;
   } finally {
     child.kill();
+    fs.rmSync(controlRoot, { recursive: true, force: true });
   }
 }
 

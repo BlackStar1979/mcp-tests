@@ -1,9 +1,12 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const net = require("node:net");
+const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 const { OBSERVABILITY_STATUS_OUTPUT_SCHEMA } = require("../src/schemas/observability_tools");
 const { assertMatchesSchema } = require("../src/output_schema_guard");
 
@@ -40,14 +43,15 @@ async function withMcpUrl(callback) {
   }
 
   const port = await getFreePort();
+  const controlRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-observability-child-"));
   const child = spawn(process.execPath, ["server.js"], {
     cwd: path.join(__dirname, ".."),
-    env: {
+    env: withHermeticServerControlEnv({
       ...process.env,
       MCP_TEST_PORT: String(port),
       MCP_TEST_AUTH_MODE: "none",
       MCP_TEST_FS_ROOT: path.join(__dirname, "..", "_public_sandbox"),
-    },
+    }, controlRoot),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
@@ -57,6 +61,7 @@ async function withMcpUrl(callback) {
   } finally {
     child.kill();
     await new Promise((resolve) => child.once("exit", resolve));
+    fs.rmSync(controlRoot, { recursive: true, force: true });
   }
 }
 

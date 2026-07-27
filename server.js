@@ -35,5 +35,5 @@ try {
   });
 } catch (error) {
   console.error(`MCP TEST SERVER FAILED: ${error && error.message ? error.message : String(error)}`);
-  process.exitCode = 1;
+  process.exitCode = Number.isInteger(error?.exitCode) ? error.exitCode : 1;
 }
