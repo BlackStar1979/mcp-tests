@@ -94,6 +94,8 @@ module.exports = { main };
   const architectureTool = toolByName("cbm_get_architecture");
   const snippetTool = toolByName("cbm_get_code_snippet");
   const traceTool = toolByName("cbm_trace_path");
+  const detectChangesTool = toolByName("cbm_detect_changes");
+  const ingestTracesTool = toolByName("cbm_ingest_traces");
   const deleteTool = toolByName("cbm_delete_project");
 
   try {
@@ -163,6 +165,42 @@ module.exports = { main };
     });
     assertBridgeSuccess(trace, "cbm_trace_path");
     assert.equal(trace.partial_success, false);
+
+    const changes = await detectChangesTool.execute({
+      project_name: PROJECT_NAME,
+      scope: "src",
+      depth: 2,
+    });
+    assertBridgeSuccess(changes, "cbm_detect_changes");
+    assert.equal(changes.result.connector_item_limit, 200);
+    assert.equal(typeof changes.result.native_changed_files_total, "number");
+    assert.equal(typeof changes.result.normalized_changed_files_total, "number");
+    assert.equal(typeof changes.result.changed_files_returned, "number");
+    assert.equal(typeof changes.result.changed_files_omitted, "number");
+    assert.ok(["not_applicable", "resolved", "unknown_or_unresolved"].includes(changes.result.impact_resolution));
+    assert.equal(typeof changes.result.impact_resolution_reason, "string");
+    assert.equal(changes.result.bridge_analysis.item_limit, 200);
+    assert.equal(changes.result.bridge_analysis.impact_resolution, changes.result.impact_resolution);
+    assert.equal(changes.result.bridge_analysis.impact_resolution_reason, changes.result.impact_resolution_reason);
+
+    const ingested = await ingestTracesTool.execute({
+      project_name: PROJECT_NAME,
+      traces: [{
+        trace_id: `trace-${RUN_ID}`,
+        span_id: `span-${RUN_ID}`,
+        name: "cbm-live-stress-probe",
+        start_time_unix_nano: "1",
+        end_time_unix_nano: "2",
+      }],
+    });
+    assertBridgeSuccess(ingested, "cbm_ingest_traces");
+    assert.equal(ingested.partial_success, true);
+    assert.equal(ingested.result.trace_ingestion_status, "accepted");
+    assert.equal(ingested.result.traces_received, 1);
+    assert.equal(ingested.result.runtime_edges_created, 0);
+    assert.equal(ingested.result.runtime_edge_creation, "not_implemented");
+    assert.equal(ingested.result.runtime_edge_creation_supported, false);
+    assert.match(ingested.warnings.join(" "), /not implemented/i);
 
     const finalStatus = await statusTool.execute({});
     assert.equal(finalStatus.mutation_busy, false);

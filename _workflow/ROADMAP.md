@@ -43,7 +43,7 @@ Current derivation:
    Execute only when fresh `COMP-1A` or UI evidence materially changes the decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
-Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`.
+Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metadata is now guarded in `_tests/smoke_cbm_live_bridge_stress.js` and agent-facing CBM interpretation guidance is guarded by `_tests/smoke_cbm_agent_skill.js`.
 
 ## Deferred until justified
 

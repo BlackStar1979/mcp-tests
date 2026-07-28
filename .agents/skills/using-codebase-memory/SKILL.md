@@ -57,7 +57,7 @@ Load `references/tools.md` for arguments, caveats, and error semantics. Load `re
 
 ## Result Interpretation
 
-`success: true` with `partial_success: true` is not full success. Read every warning and preserved total. A nonzero `queue_wait_ms` is scheduling delay, not execution time. Stable bridge errors outrank diagnostic text.
+`success: true` with `partial_success: true` is not full success. Prefer structured fields over warning prose. For `cbm_detect_changes`, read `bridge_analysis`, returned/omitted totals, and `impact_resolution_reason`; bounded or scoped arrays are samples, not whole truth. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` with `runtime_edges_created: 0` means accepted transport only, not created graph edges. A nonzero `queue_wait_ms` is scheduling delay, not execution time. Stable bridge errors outrank diagnostic text.
 
 ## Common Mistakes
 
