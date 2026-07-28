@@ -14,8 +14,8 @@ const expectedCurrentHash = "7b5bfc1bd21386d3";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
 assert.equal(c.connector_map_status, expectedCurrentStatus);
-assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-07-27T03:10:26.042Z");
-assert.equal(c.server_start_id, "2026-07-27T03:10:26.042Z");
+assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-07-28T03:49:00.666Z");
+assert.equal(c.server_start_id, "2026-07-28T03:49:00.666Z");
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 84);
@@ -23,7 +23,7 @@ assert.equal(c.repo_current_expected_tool_count, 84);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_partial_result_metadata");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
 

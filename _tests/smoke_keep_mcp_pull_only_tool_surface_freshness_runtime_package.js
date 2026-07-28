@@ -32,7 +32,7 @@ assert.equal(state.active_target_direction.pull_only_tool_surface_freshness_runt
 assert.equal(state.active_target_direction.stable_list_changed_capability_advertised_now, false);
 assert.equal(state.active_target_direction.sessionless_prototype_subscriptions_listen_active_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_partial_result_metadata");
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_subscriptions_listen_active, false);
 
 assert.equal(inventory.active_target_contract.pull_only_tool_surface_freshness_runtime_package_record, "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md");

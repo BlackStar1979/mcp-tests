@@ -101,7 +101,7 @@ assert.ok(canon.includes("`current_working_course = initialize-retirement-eviden
 assert.ok(canon.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
 assert.ok(canon.includes("`next_secondary = bounded-doc-orientation-maintenance`"));
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_partial_result_metadata");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);
