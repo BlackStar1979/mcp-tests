@@ -13,9 +13,10 @@ const expectedCurrentFingerprint = "6a1329e3b3892b9c";
 const expectedCurrentHash = "7b5bfc1bd21386d3";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
+const currentServerStartId = state.current_runtime_truth.oauth21_3008.server_start_id;
 assert.equal(c.connector_map_status, expectedCurrentStatus);
-assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-07-28T03:49:00.666Z");
-assert.equal(c.server_start_id, "2026-07-28T03:49:00.666Z");
+assert.match(currentServerStartId, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
+assert.equal(c.server_start_id, currentServerStartId);
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 84);
