@@ -33,6 +33,12 @@ const BUILD_INDEX_INPUT_SCHEMA = {
     },
     max_files: { type: "integer", minimum: 1, maximum: 50000, default: 20000 },
     max_dirs: { type: "integer", minimum: 1, maximum: 20000, default: 5000 },
+    profile: {
+      type: "string",
+      enum: ["knowledge", "source", "all"],
+      default: "knowledge",
+      description: "Indexing profile. knowledge indexes documentation and structured project-truth files; source indexes code-like files; all preserves the legacy mixed behavior.",
+    },
   },
 };
 
@@ -109,9 +115,13 @@ const COLLECT_ROMIONSIM_CONTEXT_INPUT_SCHEMA = {
 const INDEX_DOC_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["path", "score", "snippet"],
+  required: ["path", "title", "kind", "authority", "format", "score", "snippet"],
   properties: {
     path: { type: "string" },
+    title: { type: "string" },
+    kind: { type: "string" },
+    authority: { type: "string" },
+    format: { type: "string" },
     score: { type: "number" },
     snippet: { type: "string" },
     role: { type: "string" },
@@ -121,9 +131,13 @@ const INDEX_DOC_SCHEMA = {
 const INDEX_CONTEXT_DOC_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["path", "score", "context"],
+  required: ["path", "title", "kind", "authority", "format", "score", "context"],
   properties: {
     path: { type: "string" },
+    title: { type: "string" },
+    kind: { type: "string" },
+    authority: { type: "string" },
+    format: { type: "string" },
     score: { type: "number" },
     context: { type: "string" },
   },
@@ -132,9 +146,13 @@ const INDEX_CONTEXT_DOC_SCHEMA = {
 const COLLECT_CONTEXT_FILE_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["path", "score", "text"],
+  required: ["path", "title", "kind", "authority", "format", "score", "text"],
   properties: {
     path: { type: "string" },
+    title: { type: "string" },
+    kind: { type: "string" },
+    authority: { type: "string" },
+    format: { type: "string" },
     score: { type: "number" },
     text: { type: "string" },
   },
@@ -155,6 +173,7 @@ const INDEX_SCOPE_SCHEMA = {
 const INDEX_RETRIEVAL_METADATA_REQUIRED = [
   "index_scope",
   "path_filter",
+  "index_profile",
   "index_truncated",
   "index_created_at",
   "index_count",
@@ -163,15 +182,54 @@ const INDEX_RETRIEVAL_METADATA_REQUIRED = [
 const INDEX_RETRIEVAL_METADATA_PROPERTIES = {
   index_scope: INDEX_SCOPE_SCHEMA,
   path_filter: { type: "string" },
+  index_profile: { type: "string" },
   index_truncated: { type: "boolean" },
   index_created_at: { type: "string" },
   index_count: { type: "integer", minimum: 0 },
 };
 
+const INDEX_COUNTER_ITEM_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["name", "count"],
+  properties: {
+    name: { type: "string" },
+    count: { type: "integer", minimum: 0 },
+  },
+};
+
+const INDEX_AUTHORITY_DOC_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["path", "title", "kind", "authority", "modified"],
+  properties: {
+    path: { type: "string" },
+    title: { type: "string" },
+    kind: { type: "string" },
+    authority: { type: "string" },
+    modified: { type: "string" },
+  },
+};
+
+const KNOWLEDGE_SUMMARY_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["profile", "by_kind", "by_authority", "by_format", "top_level_areas", "top_subareas", "top_authority_docs"],
+  properties: {
+    profile: { type: "string" },
+    by_kind: { type: "array", items: INDEX_COUNTER_ITEM_SCHEMA },
+    by_authority: { type: "array", items: INDEX_COUNTER_ITEM_SCHEMA },
+    by_format: { type: "array", items: INDEX_COUNTER_ITEM_SCHEMA },
+    top_level_areas: { type: "array", items: INDEX_COUNTER_ITEM_SCHEMA },
+    top_subareas: { type: "array", items: INDEX_COUNTER_ITEM_SCHEMA },
+    top_authority_docs: { type: "array", items: INDEX_AUTHORITY_DOC_SCHEMA },
+  },
+};
+
 const INDEX_STATUS_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["success", "error", "status", "count", "created_at", "root", "version"],
+  required: ["success", "error", "status", "count", "created_at", "root", "version", "profile", "knowledge_summary"],
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
@@ -194,11 +252,13 @@ const INDEX_STATUS_OUTPUT_SCHEMA = {
       },
     },
     scope: INDEX_SCOPE_SCHEMA,
+    profile: { type: "string" },
     visited_files: { type: "integer", minimum: 0 },
     visited_dirs: { type: "integer", minimum: 0 },
     truncated: { type: "boolean" },
     max_files: { type: "integer", minimum: 0 },
     max_dirs: { type: "integer", minimum: 0 },
+    knowledge_summary: KNOWLEDGE_SUMMARY_SCHEMA,
     skipped: {
       type: "object",
       additionalProperties: false,
@@ -222,10 +282,12 @@ const BUILD_INDEX_OUTPUT_SCHEMA = {
     "count",
     "created_at",
     "roots",
+    "profile",
     "visited_files",
     "visited_dirs",
     "truncated",
     "skipped",
+    "knowledge_summary",
   ],
   properties: {
     success: { type: "boolean" },
@@ -247,11 +309,13 @@ const BUILD_INDEX_OUTPUT_SCHEMA = {
       },
     },
     scope: INDEX_SCOPE_SCHEMA,
+    profile: { type: "string" },
     visited_files: { type: "integer", minimum: 0 },
     visited_dirs: { type: "integer", minimum: 0 },
     truncated: { type: "boolean" },
     max_files: { type: "integer", minimum: 0 },
     max_dirs: { type: "integer", minimum: 0 },
+    knowledge_summary: KNOWLEDGE_SUMMARY_SCHEMA,
     skipped: {
       type: "object",
       additionalProperties: false,

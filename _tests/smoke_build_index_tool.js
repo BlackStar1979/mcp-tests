@@ -35,6 +35,9 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     assert.ok(build.count > 0);
     assert.equal(build.scope.path, ".");
     assert.equal(build.scope.mode, "all_roots");
+    assert.equal(build.profile, "knowledge");
+    assert.ok(build.knowledge_summary.by_kind.length > 0);
+    assert.ok(build.knowledge_summary.by_authority.length > 0);
     assert.equal(build.max_files, 200);
     assert.equal(build.max_dirs, 200);
 
@@ -49,6 +52,8 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     assert.equal(status.max_dirs, 200);
     assert.deepEqual(status.scope, build.scope);
     assert.deepEqual(status.skipped, build.skipped);
+    assert.equal(status.profile, "knowledge");
+    assert.deepEqual(status.knowledge_summary.by_kind, build.knowledge_summary.by_kind);
 
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "workspace-index-archive-skip-"));
     const isolatedIndexFile = path.join(tempRoot, "workspace-index.json");
@@ -68,6 +73,14 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "_workflow", "state.json"), "{\"live_package_marker\":\"live-state-token\"}\n", "utf8");
       await fs.writeFile(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow", "state.json"), "{\"live_package_marker\":\"snapshot-state-token\"}\n", "utf8");
+      await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "records"), { recursive: true });
+      await fs.writeFile(path.join(tempRoot, "_workflow", "control_plane", "records", "record.json"), "{\"control_plane_noise_token\":\"hidden-by-knowledge-profile\"}\n", "utf8");
+      await fs.mkdir(path.join(tempRoot, "src"), { recursive: true });
+      await fs.writeFile(
+        path.join(tempRoot, "src", "client_entry_path_diagnostics.js"),
+        "\"use strict\";\nmodule.exports = { value: 'followup_traffic_without_fresh_entry' };\n",
+        "utf8"
+      );
 
       const isolatedRoots = new Map([["work", tempRoot]]);
       const isolated = await buildWorkspaceIndex({
@@ -78,9 +91,14 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       });
 
       assert.equal(isolated.stats.skipped.directories >= 1, true);
+      assert.equal(isolated.profile, "knowledge");
+      assert.equal(isolated.docs.some((doc) => doc.path.endsWith(".js")), false);
       assert.equal(isolated.docs.some((doc) => doc.path.includes(".archive")), false);
       assert.equal(isolated.docs.some((doc) => doc.path.includes("_repos_with_code_samples")), false);
+      assert.equal(isolated.docs.some((doc) => doc.path.includes("_workflow/control_plane/records")), false);
       assert.equal(isolated.docs.some((doc) => doc.path.includes("_workflow/control_plane/snapshots")), false);
+      assert.ok(isolated.stats.knowledge_summary.by_kind.some((item) => item.name === "state"));
+      assert.ok(isolated.stats.knowledge_summary.by_authority.some((item) => item.name === "source_of_truth"));
 
       const stateSearch = await searchIndex("live_package_marker live-state-token", {
         limit: 10,
@@ -98,8 +116,11 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         assert.equal(filteredSearch.success, true);
         assert.equal(filteredSearch.index_scope.mode, "all_roots");
         assert.equal(filteredSearch.path_filter, "docs");
+        assert.equal(filteredSearch.index_profile, "knowledge");
         assert.equal(filteredSearch.index_truncated, false);
         assert.equal(filteredSearch.index_count, isolated.docs.length);
+        assert.equal(filteredSearch.results[0].kind, "document");
+        assert.equal(filteredSearch.results[0].authority, "supporting");
         assert.equal(filteredSearch.results.every((item) => item.path.startsWith("docs/")), true);
         assert.equal(filteredSearch.results.some((item) => item.path === "docs/live.md"), true);
 
@@ -107,16 +128,20 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         assert.equal(filteredContext.success, true);
         assert.equal(filteredContext.index_scope.mode, "all_roots");
         assert.equal(filteredContext.path_filter, "docs");
+        assert.equal(filteredContext.index_profile, "knowledge");
         assert.equal(filteredContext.index_truncated, false);
         assert.equal(filteredContext.index_count, isolated.docs.length);
+        assert.equal(filteredContext.results[0].kind, "document");
         assert.equal(filteredContext.results.every((item) => item.path.startsWith("docs/")), true);
 
         const filteredCollect = await collectContextTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
         assert.equal(filteredCollect.success, true);
         assert.equal(filteredCollect.index_scope.mode, "all_roots");
         assert.equal(filteredCollect.path_filter, "docs");
+        assert.equal(filteredCollect.index_profile, "knowledge");
         assert.equal(filteredCollect.index_truncated, false);
         assert.equal(filteredCollect.index_count, isolated.docs.length);
+        assert.equal(filteredCollect.files[0].kind, "document");
         assert.equal(filteredCollect.files.every((item) => item.path.startsWith("docs/")), true);
 
         const romionsimCollect = await collectRomionsimContextTool.execute({
@@ -127,6 +152,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         assert.equal(romionsimCollect.success, true);
         assert.equal(romionsimCollect.index_scope.mode, "all_roots");
         assert.equal(romionsimCollect.path_filter, "romionsim/docs");
+        assert.equal(romionsimCollect.index_profile, "knowledge");
         assert.equal(romionsimCollect.index_truncated, false);
         assert.equal(romionsimCollect.index_count, isolated.docs.length);
         assert.equal(romionsimCollect.files.length >= 1, true);
@@ -159,6 +185,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         assert.equal(scopedRomionsimCollect.success, true);
         assert.equal(scopedRomionsimCollect.index_scope.path, "docs");
         assert.equal(scopedRomionsimCollect.path_filter, "romionsim");
+        assert.equal(scopedRomionsimCollect.index_profile, "knowledge");
         assert.equal(scopedRomionsimCollect.index_truncated, false);
         assert.equal(scopedRomionsimCollect.index_count, scoped.docs.length);
         assert.equal(scopedRomionsimCollect.count, 0);
@@ -190,12 +217,6 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(fixtureSearch.success, true);
       assert.equal(fixtureSearch.results.length, 0);
 
-      await fs.mkdir(path.join(tempRoot, "src"), { recursive: true });
-      await fs.writeFile(
-        path.join(tempRoot, "src", "client_entry_path_diagnostics.js"),
-        "\"use strict\";\nmodule.exports = { value: 'followup_traffic_without_fresh_entry' };\n",
-        "utf8"
-      );
       await fs.writeFile(
         path.join(tempRoot, "src", "initialize_response.js"),
         "\"use strict\";\n// client entry path diagnostics initialize response correlation followup_traffic_without_fresh_entry\n",
@@ -205,6 +226,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       await buildWorkspaceIndex({
         roots: isolatedRoots,
         indexFile: isolatedIndexFile,
+        profile: "all",
         max_files: 100,
         max_dirs: 100,
       });

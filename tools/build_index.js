@@ -25,6 +25,7 @@ const buildIndexTool = {
         path: args.path,
         max_files: args.max_files,
         max_dirs: args.max_dirs,
+        profile: args.profile,
       });
       return {
         success: true,
@@ -34,12 +35,22 @@ const buildIndexTool = {
         created_at: String(index.created_at || ""),
         roots: Array.isArray(index.roots) ? index.roots : [],
         scope: index.scope || { path: ".", root_alias: "", display_path: ".", mode: "all_roots" },
+        profile: String(index.profile || index.stats?.profile || "knowledge"),
         visited_files: Number(index.stats?.visited_files || 0),
         visited_dirs: Number(index.stats?.visited_dirs || 0),
         truncated: Boolean(index.stats?.truncated),
         max_files: Number(index.stats?.max_files || 0),
         max_dirs: Number(index.stats?.max_dirs || 0),
         skipped: index.stats?.skipped || { oversized: 0, extension: 0, directories: 0 },
+        knowledge_summary: index.stats?.knowledge_summary || {
+          profile: String(index.profile || "knowledge"),
+          by_kind: [],
+          by_authority: [],
+          by_format: [],
+          top_level_areas: [],
+          top_subareas: [],
+          top_authority_docs: [],
+        },
       };
     } catch (error) {
       return {
@@ -50,12 +61,22 @@ const buildIndexTool = {
         created_at: "",
         roots: [],
         scope: { path: "", root_alias: "", display_path: "", mode: "" },
+        profile: "",
         visited_files: 0,
         visited_dirs: 0,
         truncated: false,
         max_files: 0,
         max_dirs: 0,
         skipped: { oversized: 0, extension: 0, directories: 0 },
+        knowledge_summary: {
+          profile: "",
+          by_kind: [],
+          by_authority: [],
+          by_format: [],
+          top_level_areas: [],
+          top_subareas: [],
+          top_authority_docs: [],
+        },
       };
     }
   },
@@ -63,6 +84,7 @@ const buildIndexTool = {
     return {
       operation: TOOL_NAME,
       path: String(args.path || "."),
+      profile: String(args.profile || "knowledge"),
       max_files: Number(args.max_files || 20000),
       max_dirs: Number(args.max_dirs || 5000),
     };
