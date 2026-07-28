@@ -129,7 +129,7 @@ These current targeted/debt guards are additionally grouped in `run_all_targeted
 ### `manual_cbm_bridge_stress`
 
 - `stress_cbm_bridge_samples.js`
-  Reason: explicit in-process CBM bridge stress harness that indexes selected sample repositories from `_repos_with_code_samples`, repeats every exposed CBM bridge tool, records latency/stability, and deletes its temporary CBM projects.
+  Reason: explicit in-process CBM bridge stress harness that indexes selected sample repositories from `_repos_with_code_samples`, repeats every exposed CBM bridge tool, separately stress-tests lifecycle index/delete coverage through `--lifecycle-rounds`, records exact per-tool call counts plus latency/stability, and deletes its temporary CBM projects.
   Recommendation: keep outside default `run_all`; invoke manually when validating codebase-memory bridge stability, timeout policy, output bounding, or sample-size behavior.
 
 ### `historical_workflow_wrapper`

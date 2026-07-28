@@ -88,7 +88,7 @@ Current top-level non-`run_all` inventory:
 Stress inventory:
 
 - `stress_devtools.js`: manual HTTP stress run for devtools surface
-- `stress_cbm_bridge_samples.js`: manual local CBM bridge stress run against `_repos_with_code_samples`; indexes temporary projects, repeats every CBM bridge tool on several sample repos, records latency/stability, and deletes its temporary CBM indexes
+- `stress_cbm_bridge_samples.js`: manual local CBM bridge stress run against `_repos_with_code_samples`; indexes temporary projects, repeats every CBM bridge tool on several sample repos, separately repeats lifecycle `index_repository`/`delete_project`, records exact per-tool call counts plus latency/stability, and deletes its temporary CBM indexes
 - `stress_plugin_catalog.js`: manual HTTP stress run for plugin catalog read path
 - `stress_plugin_execution.js`: manual HTTP stress run for plugin execution path
 - `stress_plugin_registry.js`: manual HTTP stress run for plugin registry surface

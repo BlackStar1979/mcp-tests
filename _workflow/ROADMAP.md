@@ -15,7 +15,7 @@ Current derivation:
 
 - The hardened CBM v0.9.0 runtime is live at `server_start_id = 2026-07-27T03:10:26.042Z` with `84` tools, fifteen `cbm_*` tools, and unchanged combined fingerprint `6a1329e3b3892b9c`.
 - Stdin native transport, normalized `detect_changes`, fail-fast startup configuration, portable executable resolution, ADR snapshot gating, native-cache schema repair, and shared OAuth/HTTP helpers are live and verified.
-- Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest accepted runs covered `1057` repeated CBM bridge calls across `8` sample-repo indexes with `instability=[]`; volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
+- Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. No restart or connector refresh remains pending.
 - `COMP-1A` remains the highest-leverage protocol package, but it is event-gated again after the July 27 `openai-mcp 1.0.0` window confirmed `8` successful legacy `initialize` responses and `0` `server/discover` entries on the explicit live server identity.
 - `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap.
