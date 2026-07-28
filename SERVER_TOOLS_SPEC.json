@@ -1651,7 +1651,10 @@
     "detect_changes_native_output_limit_chars": 1048576,
     "detect_changes_returned_item_limit": 200,
     "detect_changes_scope_enforced_by_bridge": true,
+    "detect_changes_exact_count_metadata": true,
+    "detect_changes_bridge_analysis_metadata": true,
     "strict_trace_input_schema": true,
+    "trace_runtime_edge_creation_status": true,
     "adr_snapshot_verify_restore": true,
     "project_not_found_error_code": "cbm_project_not_found",
     "labels_aggregation_warning": true

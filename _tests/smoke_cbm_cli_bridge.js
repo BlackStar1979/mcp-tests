@@ -349,6 +349,14 @@ function fixtureOptions(overrides = {}) {
   assert.equal(boundedChanges.result.impacted_symbols.length, 200);
   assert.equal(boundedChanges.result.changed_files_total, 350);
   assert.equal(boundedChanges.result.impacted_symbols_total, 350);
+  assert.equal(boundedChanges.result.changed_files_returned, 200);
+  assert.equal(boundedChanges.result.impacted_symbols_returned, 200);
+  assert.equal(boundedChanges.result.changed_files_omitted, 150);
+  assert.equal(boundedChanges.result.impacted_symbols_omitted, 150);
+  assert.equal(boundedChanges.result.connector_item_limit, 200);
+  assert.equal(boundedChanges.result.bridge_analysis.item_limit, 200);
+  assert.equal(boundedChanges.result.bridge_analysis.changed_files.omitted, 150);
+  assert.equal(boundedChanges.result.bridge_analysis.impacted_symbols.omitted, 150);
   assert.equal(boundedChanges.result.changed_files_truncated, true);
   assert.equal(boundedChanges.result.impacted_symbols_truncated, true);
   assert.match(boundedChanges.warnings.join(" "), /bounded/i);
@@ -358,12 +366,19 @@ function fixtureOptions(overrides = {}) {
   }));
   assert.equal(tracePlaceholder.success, true);
   assert.equal(tracePlaceholder.partial_success, true);
+  assert.equal(tracePlaceholder.result.trace_ingestion_status, "accepted");
+  assert.equal(tracePlaceholder.result.traces_received, 1);
+  assert.equal(tracePlaceholder.result.runtime_edges_created, 0);
+  assert.equal(tracePlaceholder.result.runtime_edge_creation, "not_implemented");
+  assert.equal(tracePlaceholder.result.runtime_edge_creation_supported, false);
   assert.match(tracePlaceholder.warnings.join(" "), /not implemented/i);
 
   const unresolvedChanges = await callCbmTool("detect_changes", { project: "demo", depth: 2 }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "changes_unresolved" } }));
   assert.equal(unresolvedChanges.success, true);
   assert.equal(unresolvedChanges.partial_success, true);
   assert.equal(unresolvedChanges.result.impact_resolution, "unknown_or_unresolved");
+  assert.equal(unresolvedChanges.result.impact_resolution_reason, "native_returned_no_impacted_symbols");
+  assert.equal(unresolvedChanges.result.bridge_analysis.impact_resolution_reason, "native_returned_no_impacted_symbols");
   assert.match(unresolvedChanges.warnings.join(" "), /impact.*unresolved/i);
 
   const scopedChanges = await callCbmTool("detect_changes", { project: "demo", scope: "src/cbm", depth: 2 }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "changes_scoped" } }));
@@ -375,6 +390,15 @@ function fixtureOptions(overrides = {}) {
   assert.equal(scopedChanges.result.changed_count, 1);
   assert.equal(scopedChanges.result.scope_applied_by_bridge, true);
   assert.equal(scopedChanges.result.scope, "src/cbm");
+  assert.equal(scopedChanges.result.changed_files_returned, 1);
+  assert.equal(scopedChanges.result.impacted_symbols_returned, 1);
+  assert.equal(scopedChanges.result.changed_files_omitted, 0);
+  assert.equal(scopedChanges.result.impacted_symbols_omitted, 0);
+  assert.equal(scopedChanges.result.impact_resolution, "resolved");
+  assert.equal(scopedChanges.result.impact_resolution_reason, "impacted_symbols_returned");
+  assert.equal(scopedChanges.result.bridge_analysis.scope_applied, true);
+  assert.equal(scopedChanges.result.bridge_analysis.changed_files.scoped_total, 1);
+  assert.equal(scopedChanges.result.bridge_analysis.impacted_symbols.scoped_total, 1);
 
   const duplicateChanges = await callCbmTool("detect_changes", { project: "demo", depth: 2 }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "duplicate_changes" } }));
   assert.equal(duplicateChanges.success, true);
@@ -385,6 +409,10 @@ function fixtureOptions(overrides = {}) {
   assert.equal(duplicateChanges.result.impacted_symbols_total, 1);
   assert.equal(duplicateChanges.result.native_impacted_symbols_total, 2);
   assert.equal(duplicateChanges.result.changed_count, 2);
+  assert.equal(duplicateChanges.result.duplicate_changed_files_removed, 2);
+  assert.equal(duplicateChanges.result.duplicate_impacted_symbols_removed, 1);
+  assert.equal(duplicateChanges.result.bridge_analysis.duplicates_removed.changed_files, 2);
+  assert.equal(duplicateChanges.result.bridge_analysis.duplicates_removed.impacted_symbols, 1);
   assert.match(duplicateChanges.warnings.join(" "), /duplicate/i);
 
   const suspectAggregate = await callCbmTool("query_graph", { project: "demo", query: "MATCH (n) RETURN labels(n), count(*)" }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "aggregate_suspect" } }));

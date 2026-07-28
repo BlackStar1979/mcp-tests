@@ -163,7 +163,10 @@ assert.equal(toolsSpec.codebase_memory_bridge_contract.partial_success_envelope,
 assert.equal(toolsSpec.codebase_memory_bridge_contract.detect_changes_native_output_limit_chars, 1048576);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.detect_changes_returned_item_limit, 200);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.detect_changes_scope_enforced_by_bridge, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.detect_changes_exact_count_metadata, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.detect_changes_bridge_analysis_metadata, true);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.strict_trace_input_schema, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.trace_runtime_edge_creation_status, true);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.adr_snapshot_verify_restore, true);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.project_not_found_error_code, "cbm_project_not_found");
 assert.equal(toolsSpec.codebase_memory_bridge_contract.labels_aggregation_warning, true);
@@ -185,9 +188,13 @@ assert.deepEqual(dlpSpec.policy.codebase_memory_output_handling, {
   detect_changes_arrays_bounded: true,
   detect_changes_item_limit: 200,
   native_totals_preserved: true,
+  returned_and_omitted_totals_preserved: true,
+  bridge_analysis_metadata_explicit: true,
   scope_filter_metadata_explicit: true,
   unresolved_impact_explicit: true,
+  unresolved_impact_reason_explicit: true,
   trace_placeholder_partial_success: true,
+  trace_runtime_edge_creation_status_explicit: true,
   cypher_aggregation_warning: true,
 });
 

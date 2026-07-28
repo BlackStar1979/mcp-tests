@@ -15,6 +15,7 @@ const VERSION_PATTERN = /^codebase-memory-mcp\s+(\d+\.\d+\.\d+(?:[-+][0-9A-Za-z.
 const DIAGNOSTIC_MAX_CHARS = 2048;
 const DEFAULT_MAX_OUTPUT_CHARS = 250000;
 const HARD_MAX_OUTPUT_CHARS = 1024 * 1024;
+const DETECT_CHANGES_ITEM_LIMIT = 200;
 
 const SAFE_INHERITED_ENV_KEYS = new Set([
   "APPDATA",
@@ -714,7 +715,7 @@ function boundConnectorResult(toolName, result, args = {}) {
   const warnings = [];
   let bounded = sanitizeResultWarnings(result);
   if (toolName === "detect_changes") {
-    bounded = { ...result };
+    bounded = { ...bounded };
     const nativeChangedFiles = Array.isArray(result.changed_files) ? result.changed_files : [];
     const nativeImpactedSymbols = Array.isArray(result.impacted_symbols) ? result.impacted_symbols : [];
     const normalizedChangedFiles = uniqueChangedFiles(nativeChangedFiles);
@@ -724,8 +725,14 @@ function boundConnectorResult(toolName, result, args = {}) {
     const scope = normalizeScopePath(args.scope);
     let changedFiles = normalizedChangedFiles;
     let impactedSymbols = normalizedImpactedSymbols;
+    let scopeUnresolvedImpactedSymbols = 0;
     bounded.native_changed_files_total = nativeChangedFiles.length;
     bounded.native_impacted_symbols_total = nativeImpactedSymbols.length;
+    bounded.normalized_changed_files_total = normalizedChangedFiles.length;
+    bounded.normalized_impacted_symbols_total = normalizedImpactedSymbols.length;
+    bounded.duplicate_changed_files_removed = removedChangedFiles;
+    bounded.duplicate_impacted_symbols_removed = removedImpactedSymbols;
+    bounded.connector_item_limit = DETECT_CHANGES_ITEM_LIMIT;
     if (removedChangedFiles > 0 || removedImpactedSymbols > 0) {
       warnings.push(
         `detect_changes duplicate normalization removed ${removedChangedFiles} changed-file entries and ${removedImpactedSymbols} impacted-symbol entries.`
@@ -735,29 +742,70 @@ function boundConnectorResult(toolName, result, args = {}) {
       changedFiles = normalizedChangedFiles.filter((value) => pathMatchesScope(value, scope));
       const unresolved = normalizedImpactedSymbols.filter((item) => !item || typeof item !== "object" || !item.file_path);
       impactedSymbols = normalizedImpactedSymbols.filter((item) => item && typeof item === "object" && pathMatchesScope(item.file_path, scope));
+      scopeUnresolvedImpactedSymbols = unresolved.length;
       bounded.scope = scope;
       bounded.scope_applied_by_bridge = true;
-      bounded.scope_unresolved_impacted_symbols = unresolved.length;
+      bounded.scope_unresolved_impacted_symbols = scopeUnresolvedImpactedSymbols;
       if (unresolved.length > 0) warnings.push("Some impacted symbols lacked file paths and could not be included in the bridge-applied scope filter.");
     } else {
       bounded.scope_applied_by_bridge = false;
+      bounded.scope_unresolved_impacted_symbols = 0;
     }
     bounded.changed_count = changedFiles.length;
     bounded.changed_files_total = changedFiles.length;
     bounded.impacted_symbols_total = impactedSymbols.length;
-    bounded.changed_files_truncated = changedFiles.length > 200;
-    bounded.impacted_symbols_truncated = impactedSymbols.length > 200;
-    bounded.changed_files = changedFiles.slice(0, 200);
-    bounded.impacted_symbols = impactedSymbols.slice(0, 200);
+    bounded.changed_files_truncated = changedFiles.length > DETECT_CHANGES_ITEM_LIMIT;
+    bounded.impacted_symbols_truncated = impactedSymbols.length > DETECT_CHANGES_ITEM_LIMIT;
+    bounded.changed_files = changedFiles.slice(0, DETECT_CHANGES_ITEM_LIMIT);
+    bounded.impacted_symbols = impactedSymbols.slice(0, DETECT_CHANGES_ITEM_LIMIT);
+    bounded.changed_files_returned = bounded.changed_files.length;
+    bounded.impacted_symbols_returned = bounded.impacted_symbols.length;
+    bounded.changed_files_omitted = Math.max(0, changedFiles.length - bounded.changed_files.length);
+    bounded.impacted_symbols_omitted = Math.max(0, impactedSymbols.length - bounded.impacted_symbols.length);
     if (bounded.changed_files_truncated || bounded.impacted_symbols_truncated) {
       warnings.push("detect_changes result was bounded to 200 changed files and 200 impacted symbols; total counts and truncation flags are included.");
     }
     if (changedFiles.length > 0 && impactedSymbols.length === 0) {
       bounded.impact_resolution = "unknown_or_unresolved";
+      bounded.impact_resolution_reason = scopeUnresolvedImpactedSymbols > 0
+        ? "scoped_impacted_symbols_without_file_paths"
+        : normalizedImpactedSymbols.length > 0
+          ? "impacted_symbols_filtered_by_scope"
+          : "native_returned_no_impacted_symbols";
       warnings.push("detect_changes found changed files but no impacted symbols; impact is unresolved, not confirmed absent.");
     } else {
       bounded.impact_resolution = impactedSymbols.length > 0 ? "resolved" : "not_applicable";
+      bounded.impact_resolution_reason = impactedSymbols.length > 0
+        ? "impacted_symbols_returned"
+        : "no_changed_files";
     }
+    bounded.bridge_analysis = {
+      scope_applied: Boolean(scope),
+      duplicates_removed: {
+        changed_files: removedChangedFiles,
+        impacted_symbols: removedImpactedSymbols,
+      },
+      item_limit: DETECT_CHANGES_ITEM_LIMIT,
+      changed_files: {
+        native_total: nativeChangedFiles.length,
+        normalized_total: normalizedChangedFiles.length,
+        scoped_total: changedFiles.length,
+        returned: bounded.changed_files_returned,
+        omitted: bounded.changed_files_omitted,
+        truncated: bounded.changed_files_truncated,
+      },
+      impacted_symbols: {
+        native_total: nativeImpactedSymbols.length,
+        normalized_total: normalizedImpactedSymbols.length,
+        scoped_total: impactedSymbols.length,
+        returned: bounded.impacted_symbols_returned,
+        omitted: bounded.impacted_symbols_omitted,
+        truncated: bounded.impacted_symbols_truncated,
+        unresolved_without_file_path: scopeUnresolvedImpactedSymbols,
+      },
+      impact_resolution: bounded.impact_resolution,
+      impact_resolution_reason: bounded.impact_resolution_reason,
+    };
   }
   if (toolName === "query_graph" && Array.isArray(result.columns) && Array.isArray(result.rows)) {
     const labelIndex = result.columns.findIndex((value) => /^labels\(/i.test(String(value)));
@@ -767,6 +815,14 @@ function boundConnectorResult(toolName, result, args = {}) {
     }
   }
   if (toolName === "ingest_traces" && /not yet implemented/i.test(String(result.note || ""))) {
+    bounded = {
+      ...bounded,
+      trace_ingestion_status: String(result.status || "accepted"),
+      traces_received: Number(result.traces_received || 0),
+      runtime_edges_created: 0,
+      runtime_edge_creation: "not_implemented",
+      runtime_edge_creation_supported: false,
+    };
     warnings.push("Native CBM accepted the trace batch, but runtime edge creation is not implemented in this version.");
   }
   return { result: bounded, warnings };

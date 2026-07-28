@@ -24,9 +24,13 @@
       "detect_changes_arrays_bounded": true,
       "detect_changes_item_limit": 200,
       "native_totals_preserved": true,
+      "returned_and_omitted_totals_preserved": true,
+      "bridge_analysis_metadata_explicit": true,
       "scope_filter_metadata_explicit": true,
       "unresolved_impact_explicit": true,
+      "unresolved_impact_reason_explicit": true,
       "trace_placeholder_partial_success": true,
+      "trace_runtime_edge_creation_status_explicit": true,
       "cypher_aggregation_warning": true
     }
   },

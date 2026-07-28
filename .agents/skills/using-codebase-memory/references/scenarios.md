@@ -35,7 +35,7 @@ Request: “What does the change under `src/runtime` affect?”
 Expected sequence:
 
 1. `cbm_detect_changes` with `scope: "src/runtime"` and a bounded depth.
-2. Inspect native totals, returned totals, truncation, `partial_success`, and warnings.
+2. Inspect native totals, scoped totals, returned/omitted totals, truncation, `bridge_analysis`, `partial_success`, and warnings.
 3. Treat zero in-scope results as scoped index evidence only.
 4. Use repository Git truth for final changed-file claims.
 
@@ -63,7 +63,7 @@ Request: “The traces were accepted, so runtime edges are available.”
 Expected response:
 
 - Inspect `partial_success` and warnings; treat the envelope as partial success.
-- The native note `Runtime edge creation from traces not yet implemented` means accepted transport, not materialized runtime edges.
+- `runtime_edge_creation: not_implemented` or the native note `Runtime edge creation from traces not yet implemented` means accepted transport, not materialized runtime edges.
 - Do not query or report runtime edges as created without separate evidence.
 
 ## SCENARIO-6 — Connector count or live-contract dispute
