@@ -3,7 +3,7 @@
 const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const path = require("node:path");
-const { buildWorkRoots, listWorkspaceRoots } = require("./workspace_roots");
+const { buildWorkRoots, listWorkspaceRoots, safeWorkspacePath } = require("./workspace_roots");
 
 const DEFAULT_INDEX_FILE = path.resolve(__dirname, "..", "..", "_control", "workspace-index.json");
 const MAX_INDEX_FILE_BYTES = 512 * 1024;
@@ -20,12 +20,23 @@ const SKIPPED_SCAN_DIRS = new Set([
   ".mcp_backups",
   ".mcp_trash",
   ".temp",
+  ".venv",
+  "__pycache__",
   "node_modules",
   "dist",
   "build",
   ".next",
   "coverage",
+  "target",
+  "vendor",
+  "_backups",
+  "_control",
+  "_docs",
   "_logs",
+  "_public_sandbox",
+  "_repos_with_code_samples",
+  "_stages",
+  "archive",
   ".codebase-memory",
 ]);
 const BLOCKED_TOP_LEVEL_DIRS = new Set([
@@ -122,11 +133,37 @@ async function buildWorkspaceIndex(options = {}) {
   const maxDirs = Number.isInteger(options.max_dirs) ? options.max_dirs : DEFAULT_MAX_DIRS;
   const rootsMap = options.roots || buildWorkRoots();
   const roots = listWorkspaceRoots(rootsMap);
+  const scopePath = String(options.path || ".").trim() || ".";
   const docs = [];
   const skipped = { oversized: 0, extension: 0, directories: 0 };
   let visitedFiles = 0;
   let visitedDirs = 0;
   let truncated = false;
+
+  async function addFileToIndex(root, full) {
+    visitedFiles += 1;
+    if (visitedFiles > maxFiles) {
+      truncated = true;
+      return;
+    }
+    const ext = path.extname(full).toLowerCase();
+    if (!ALLOWED_INDEX_EXTENSIONS.has(ext)) {
+      skipped.extension += 1;
+      return;
+    }
+    const stat = await fsp.stat(full);
+    if (stat.size > MAX_INDEX_FILE_BYTES) {
+      skipped.oversized += 1;
+      return;
+    }
+    const text = await readTextPrefixStream(full, MAX_INDEX_TEXT_CHARS);
+    docs.push({
+      path: displayPathForRoot(root, full),
+      sample: text,
+      bytes: stat.size,
+      modified: stat.mtime.toISOString(),
+    });
+  }
 
   async function walk(root, dir) {
     if (truncated) return;
@@ -149,35 +186,38 @@ async function buildWorkspaceIndex(options = {}) {
         continue;
       }
       if (!entry.isFile()) continue;
-      visitedFiles += 1;
-      if (visitedFiles > maxFiles) {
-        truncated = true;
-        return;
-      }
-      const ext = path.extname(full).toLowerCase();
-      if (!ALLOWED_INDEX_EXTENSIONS.has(ext)) {
-        skipped.extension += 1;
-        continue;
-      }
-      const stat = await fsp.stat(full);
-      if (stat.size > MAX_INDEX_FILE_BYTES) {
-        skipped.oversized += 1;
-        continue;
-      }
-      const text = await readTextPrefixStream(full, MAX_INDEX_TEXT_CHARS);
-      docs.push({
-        path: displayPath,
-        sample: text,
-        bytes: stat.size,
-        modified: stat.mtime.toISOString(),
-      });
+      await addFileToIndex(root, full);
     }
   }
 
   await fsp.mkdir(path.dirname(indexFile), { recursive: true });
-  for (const root of roots) {
-    await walk(root, root.path);
-    if (truncated) break;
+  let scope;
+  if (scopePath === ".") {
+    scope = { path: ".", root_alias: "", display_path: ".", mode: "all_roots" };
+    for (const root of roots) {
+      await walk(root, root.path);
+      if (truncated) break;
+    }
+  } else {
+    const target = safeWorkspacePath(scopePath, { roots: rootsMap });
+    const root = roots.find((item) => item.alias === target.rootAlias);
+    if (!root) {
+      throw new Error(`Unknown workspace root alias: ${target.rootAlias}`);
+    }
+    const stat = await fsp.stat(target.absolutePath);
+    scope = {
+      path: target.requested,
+      root_alias: target.rootAlias,
+      display_path: target.displayPath,
+      mode: stat.isDirectory() ? "directory" : "file",
+    };
+    if (stat.isDirectory()) {
+      await walk(root, target.absolutePath);
+    } else if (stat.isFile()) {
+      await addFileToIndex(root, target.absolutePath);
+    } else {
+      throw new Error(`Path is not a file or directory: ${scopePath}`);
+    }
   }
 
   const index = {
@@ -185,6 +225,7 @@ async function buildWorkspaceIndex(options = {}) {
     created_at: new Date().toISOString(),
     root: ".",
     roots: roots.map((item) => ({ alias: item.alias, path: item.path, primary: item.primary })),
+    scope,
     docs,
     stats: {
       docs: docs.length,
@@ -194,6 +235,7 @@ async function buildWorkspaceIndex(options = {}) {
       truncated,
       max_files: maxFiles,
       max_dirs: maxDirs,
+      scope,
       max_index_file_bytes: MAX_INDEX_FILE_BYTES,
       max_index_text_chars: MAX_INDEX_TEXT_CHARS,
     },
@@ -289,6 +331,7 @@ async function indexStatus(options = {}) {
       root: String(index.root || "."),
       version: Number(index.version || 0),
       roots: Array.isArray(index.roots) ? index.roots : [],
+      scope: stats.scope || index.scope || { path: ".", root_alias: "", display_path: ".", mode: "all_roots" },
       visited_files: Number(stats.visited_files || 0),
       visited_dirs: Number(stats.visited_dirs || 0),
       truncated: Boolean(stats.truncated),
@@ -311,6 +354,7 @@ async function indexStatus(options = {}) {
         root: ".",
         version: 0,
         roots: [],
+        scope: { path: "", root_alias: "", display_path: "", mode: "" },
         visited_files: 0,
         visited_dirs: 0,
         truncated: false,
@@ -328,6 +372,7 @@ async function indexStatus(options = {}) {
       root: ".",
       version: 0,
       roots: [],
+      scope: { path: "", root_alias: "", display_path: "", mode: "" },
       visited_files: 0,
       visited_dirs: 0,
       truncated: false,

@@ -22,6 +22,7 @@ const buildIndexTool = {
   async execute(args = {}) {
     try {
       const index = await buildWorkspaceIndex({
+        path: args.path,
         max_files: args.max_files,
         max_dirs: args.max_dirs,
       });
@@ -32,9 +33,12 @@ const buildIndexTool = {
         count: Array.isArray(index.docs) ? index.docs.length : 0,
         created_at: String(index.created_at || ""),
         roots: Array.isArray(index.roots) ? index.roots : [],
+        scope: index.scope || { path: ".", root_alias: "", display_path: ".", mode: "all_roots" },
         visited_files: Number(index.stats?.visited_files || 0),
         visited_dirs: Number(index.stats?.visited_dirs || 0),
         truncated: Boolean(index.stats?.truncated),
+        max_files: Number(index.stats?.max_files || 0),
+        max_dirs: Number(index.stats?.max_dirs || 0),
         skipped: index.stats?.skipped || { oversized: 0, extension: 0, directories: 0 },
       };
     } catch (error) {
@@ -45,9 +49,12 @@ const buildIndexTool = {
         count: 0,
         created_at: "",
         roots: [],
+        scope: { path: "", root_alias: "", display_path: "", mode: "" },
         visited_files: 0,
         visited_dirs: 0,
         truncated: false,
+        max_files: 0,
+        max_dirs: 0,
         skipped: { oversized: 0, extension: 0, directories: 0 },
       };
     }
@@ -55,6 +62,7 @@ const buildIndexTool = {
   summarizeArgs(args = {}) {
     return {
       operation: TOOL_NAME,
+      path: String(args.path || "."),
       max_files: Number(args.max_files || 20000),
       max_dirs: Number(args.max_dirs || 5000),
     };

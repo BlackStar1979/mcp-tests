@@ -29,6 +29,10 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     assert.equal(build.status, "built");
     assert.equal(build.success, true);
     assert.ok(build.count > 0);
+    assert.equal(build.scope.path, ".");
+    assert.equal(build.scope.mode, "all_roots");
+    assert.equal(build.max_files, 200);
+    assert.equal(build.max_dirs, 200);
 
     const status = await indexStatusTool.execute();
     assert.equal(status.status, "ok");
@@ -39,6 +43,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     assert.equal(status.truncated, build.truncated);
     assert.equal(status.max_files, 200);
     assert.equal(status.max_dirs, 200);
+    assert.deepEqual(status.scope, build.scope);
     assert.deepEqual(status.skipped, build.skipped);
 
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "workspace-index-archive-skip-"));
@@ -48,6 +53,10 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       await fs.mkdir(path.join(tempRoot, ".archive", "docs"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "docs", "live.md"), "# Live doc\nfollowup_traffic_without_fresh_entry\n", "utf8");
       await fs.writeFile(path.join(tempRoot, ".archive", "docs", "archived.md"), "# Archived doc\nfollowup_traffic_without_fresh_entry\n", "utf8");
+      await fs.mkdir(path.join(tempRoot, "other"), { recursive: true });
+      await fs.writeFile(path.join(tempRoot, "other", "outside.md"), "# Outside\nscoped-only-token\n", "utf8");
+      await fs.mkdir(path.join(tempRoot, "_repos_with_code_samples", "sample"), { recursive: true });
+      await fs.writeFile(path.join(tempRoot, "_repos_with_code_samples", "sample", "fixture.md"), "# Fixture\nsample-fixture-token\n", "utf8");
 
       const isolatedRoots = new Map([["work", tempRoot]]);
       const isolated = await buildWorkspaceIndex({
@@ -59,6 +68,20 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
 
       assert.equal(isolated.stats.skipped.directories >= 1, true);
       assert.equal(isolated.docs.some((doc) => doc.path.includes(".archive")), false);
+      assert.equal(isolated.docs.some((doc) => doc.path.includes("_repos_with_code_samples")), false);
+
+      const scoped = await buildWorkspaceIndex({
+        roots: isolatedRoots,
+        indexFile: isolatedIndexFile,
+        path: "docs",
+        max_files: 100,
+        max_dirs: 100,
+      });
+      assert.equal(scoped.scope.path, "docs");
+      assert.equal(scoped.scope.display_path, "docs");
+      assert.equal(scoped.scope.mode, "directory");
+      assert.equal(scoped.docs.some((doc) => doc.path === "docs/live.md"), true);
+      assert.equal(scoped.docs.some((doc) => doc.path === "other/outside.md"), false);
 
       const liveSearch = await searchIndex("followup_traffic_without_fresh_entry", {
         limit: 10,
@@ -68,6 +91,20 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(liveSearch.results.length >= 1, true);
       assert.equal(liveSearch.results.some((item) => item.path.includes(".archive")), false);
       assert.equal(liveSearch.results[0].path, "docs/live.md");
+
+      const outsideSearch = await searchIndex("scoped-only-token", {
+        limit: 10,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(outsideSearch.success, true);
+      assert.equal(outsideSearch.results.length, 0);
+
+      const fixtureSearch = await searchIndex("sample-fixture-token", {
+        limit: 10,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(fixtureSearch.success, true);
+      assert.equal(fixtureSearch.results.length, 0);
 
       await fs.mkdir(path.join(tempRoot, "src"), { recursive: true });
       await fs.writeFile(

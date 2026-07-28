@@ -24,6 +24,13 @@ const BUILD_INDEX_INPUT_SCHEMA = {
   additionalProperties: false,
   required: [],
   properties: {
+    path: {
+      type: "string",
+      minLength: 1,
+      maxLength: 1000,
+      default: ".",
+      description: "Optional workspace-relative file or directory scope. Bare paths resolve under the primary work root; @alias/... selects an explicit extra root.",
+    },
     max_files: { type: "integer", minimum: 1, maximum: 50000, default: 20000 },
     max_dirs: { type: "integer", minimum: 1, maximum: 20000, default: 5000 },
   },
@@ -105,6 +112,18 @@ const COLLECT_CONTEXT_FILE_SCHEMA = {
   },
 };
 
+const INDEX_SCOPE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["path", "root_alias", "display_path", "mode"],
+  properties: {
+    path: { type: "string" },
+    root_alias: { type: "string" },
+    display_path: { type: "string" },
+    mode: { type: "string", enum: ["", "all_roots", "directory", "file"] },
+  },
+};
+
 const INDEX_STATUS_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -130,6 +149,7 @@ const INDEX_STATUS_OUTPUT_SCHEMA = {
         },
       },
     },
+    scope: INDEX_SCOPE_SCHEMA,
     visited_files: { type: "integer", minimum: 0 },
     visited_dirs: { type: "integer", minimum: 0 },
     truncated: { type: "boolean" },
@@ -182,9 +202,12 @@ const BUILD_INDEX_OUTPUT_SCHEMA = {
         },
       },
     },
+    scope: INDEX_SCOPE_SCHEMA,
     visited_files: { type: "integer", minimum: 0 },
     visited_dirs: { type: "integer", minimum: 0 },
     truncated: { type: "boolean" },
+    max_files: { type: "integer", minimum: 0 },
+    max_dirs: { type: "integer", minimum: 0 },
     skipped: {
       type: "object",
       additionalProperties: false,
