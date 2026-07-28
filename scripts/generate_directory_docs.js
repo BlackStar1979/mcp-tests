@@ -76,6 +76,26 @@ const CONFIG = {
     },
     tail: "Keep skills in a flat namespace. Each skill must contain `SKILL.md`; load supporting references only when their `Load when:` condition matches the task.",
   },
+  ".agents/skills/using-codebase-memory": {
+    title: "using-codebase-memory skill directory map",
+    updated: "2026-07-28",
+    entries: {
+      "references/": "Task-routed CBM tool contracts and decision scenarios loaded only when needed.",
+      "SKILL.md": "Entrypoint instructions for using TEST MCP `cbm_*` tools while preserving repository, index, runtime, and client/UI truth boundaries.",
+      "DIRECTORY.md": "Functional map of the `using-codebase-memory` skill boundary.",
+    },
+    tail: "This skill is project-local agent guidance. It must describe how to use CBM evidence safely, but repository files and live runtime probes remain the source of truth for consequential claims.",
+  },
+  ".agents/skills/using-codebase-memory/references": {
+    title: "using-codebase-memory references directory map",
+    updated: "2026-07-28",
+    entries: {
+      "scenarios.md": "Decision examples for selecting CBM tools and interpreting bounded or partial results.",
+      "tools.md": "Per-tool argument, mutation, and caveat reference for the fifteen TEST MCP `cbm_*` tools.",
+      "DIRECTORY.md": "Functional map of the CBM skill references.",
+    },
+    tail: "Load these references only from `SKILL.md` routing. Keep caveats explicit and do not let indexed evidence replace direct repository or runtime verification.",
+  },
   "_workflow": {
     title: "workflow directory map",
     entries: {
@@ -141,7 +161,9 @@ const CONFIG = {
   },
   "scripts": {
     title: "scripts directory map",
+    updated: "2026-07-28",
     entries: {
+      "audit_directory_docs.js": "Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.",
       "request-restart.js": "Writes a bounded restart request for the supervisor-managed runtime path.",
       "server.ps1": "PowerShell helper for controlled local server startup/orchestration.",
       "server.sh": "Shell helper for controlled local server startup/orchestration.",
@@ -230,6 +252,7 @@ const CONFIG = {
       "README.md": "Orientation, inventory, and maintenance rules for the `_tests` tree.",
       "run_all_smokes.js": "Active smoke harness entrypoint.",
       "run_all_smoke_scripts.json": "Default active smoke manifest.",
+      "smoke_directory_docs_audit.js": "Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.",
       "smoke_operator_contract_docs.js": "Guard for operator-facing documentation contract and initial DIRECTORY rollout.",
     },
     tail: "This map is intentionally compact. The complete active inventory remains in `_tests/README.md` and `run_all_smoke_scripts.json`.",

@@ -17,6 +17,8 @@ Updated: 2026-07-17
   Active smoke harness entrypoint.
 - `run_all_smoke_scripts.json`
   Default active smoke manifest.
+- `smoke_directory_docs_audit.js`
+  Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.
 - `smoke_operator_contract_docs.js`
   Guard for operator-facing documentation contract and initial DIRECTORY rollout.
 

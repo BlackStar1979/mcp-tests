@@ -18,14 +18,14 @@ Current derivation:
 - Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. No restart or connector refresh remains pending.
 - `COMP-1A` remains the highest-leverage protocol package, but it is event-gated again after the July 27 `openai-mcp 1.0.0` window confirmed `8` successful legacy `initialize` responses and `0` `server/discover` entries on the explicit live server identity.
-- `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap; the July 28 pass refreshed `_workflow/operator_decisions` and then stopped.
+- `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap; the July 28 passes refreshed `_workflow/operator_decisions` and the project-local `using-codebase-memory` skill boundary, and `scripts/audit_directory_docs.js` now reports no missing maps among the top 20 dirs with churn >= 7.
 
 ## Priority matrix
 
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
 | P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after 2026-07-27 | Legacy `initialize` retirement is the highest-leverage remaining protocol gate, but the fresh July 27 operational window still blocks retirement. | Keep compatibility steady and wait for traffic newer than the current `openai-mcp 1.0.0` evidence. |
-| P1 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Close one current high-churn directory-map gap, then stop. |
+| P1 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Use `scripts/audit_directory_docs.js`; close one current high-churn directory-map gap only when the audit shows one. |
 | P2 | Preserve the hardened CBM and 84-tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, and upstream issue reviews through ordinal 200 are now production support truth. | Reopen CBM work only on a reproduced regression, a failed stress run, a new upstream issue batch with local impact, or an approved capability change. |
 | P3 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P0 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
 | P4 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
@@ -44,7 +44,7 @@ Current derivation:
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metadata is now guarded in `_tests/smoke_cbm_live_bridge_stress.js` and agent-facing CBM interpretation guidance is guarded by `_tests/smoke_cbm_agent_skill.js`.
-Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map on July 28, 2026 without widening into repo-wide documentation churn.
+Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map and project-local `using-codebase-memory` skill maps on July 28, 2026 without widening into repo-wide documentation churn.
 
 ## Deferred until justified
 

@@ -70,9 +70,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=266`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=267`.
 - Public section count: `7`.
-- Authenticated smoke count: `266`.
+- Authenticated smoke count: `267`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -89,7 +89,7 @@ Checkpoint topology:
 - Counts remain aligned at 84 and the hardened connector-visible CBM v0.9.0 contract is live at `server_start_id = 2026-07-28T16:05:12.562Z`; `state_handle` deletion, not-found classification, source preservation, normalized change results, partial-result metadata, semantic-only suppression, source-bearing excluded-route warnings, Windows non-ASCII and whitespace path/project caveats, Cypher shape caveats, repaired ADR storage, and unchanged connector-visible surface are verified. No restart or connector refresh remains pending.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
-- Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` pass refreshed the high-churn `_workflow/operator_decisions` ledger map without starting repo-wide documentation churn.
+- Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map plus the project-local `using-codebase-memory` skill boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 20 tracked dirs with churn >= 7 in the last 30 days.
 
 Recent committed checkpoints:
 

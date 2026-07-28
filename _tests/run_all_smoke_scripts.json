@@ -136,6 +136,7 @@
   "_tests/smoke_baseline_drift_guard.js",
   "_tests/smoke_control_plane_audit_env_awareness.js",
   "_tests/smoke_directory_docs_generator.js",
+  "_tests/smoke_directory_docs_audit.js",
   "_tests/smoke_runtime_snapshot_support.js",
   "_tests/smoke_malformed_json_parse_error_redaction.js",
   "_tests/smoke_bootstrap_resolver_runtime_integration.js",
