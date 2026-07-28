@@ -38,6 +38,8 @@ assert.equal(report.success, true);
 assert.equal(report.mode, "client-entry-path-report");
 assert.equal(report.audit_log.exists, true);
 assert.equal(report.current_server_start_id, "current-start");
+assert.equal(report.latest_entry_server_start.server_start_id, "current-start");
+assert.equal(report.filter.latest_entry_window, false);
 assert.equal(report.current_window_rpc_counts.initialize, 1);
 assert.equal(report.current_window_rpc_counts.server_discover, 1);
 assert.equal(report.current_window_rpc_counts.notifications_initialized, 1);
@@ -139,6 +141,26 @@ assert.equal(explicitLiveWindow.current_window_rpc_counts.server_discover, 1);
 assert.equal(explicitLiveWindow.current_window_rpc_counts.tools_call, 1);
 assert.equal(explicitLiveWindow.diagnostics.status, "mixed_initialize_and_server_discover");
 assert.equal(explicitLiveWindow.filter.server_start_id, "current-start");
+
+const latestEntryWindow = JSON.parse(cp.execFileSync(process.execPath, [
+  SCRIPT,
+  `--audit-log=${contaminatedAuditLog}`,
+  "--latest-entry-window",
+  "--evidence-scope=operational",
+], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: contaminatedAuditLog },
+  encoding: "utf8",
+}));
+
+assert.equal(latestEntryWindow.current_server_start_id, "current-start");
+assert.equal(latestEntryWindow.current_server_start_ts, "2026-07-13T17:42:01.000Z");
+assert.equal(latestEntryWindow.latest_entry_server_start.server_start_id, "current-start");
+assert.equal(latestEntryWindow.current_window_rpc_counts.initialize, 1);
+assert.equal(latestEntryWindow.current_window_rpc_counts.server_discover, 1);
+assert.equal(latestEntryWindow.diagnostics.status, "mixed_initialize_and_server_discover");
+assert.equal(latestEntryWindow.filter.latest_entry_window, true);
+assert.equal(latestEntryWindow.filter.evidence_scope, "operational");
 
 fs.rmSync(tempRoot, { recursive: true, force: true });
 console.log("smoke_client_entry_path_report_script ok");

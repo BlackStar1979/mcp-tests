@@ -196,6 +196,41 @@ The refresh also exposed and closed a test-evidence integrity defect:
 - test child-server audit isolation is guarded by bootstrap, repository-hygiene, report-fixture, standalone hash, and full-suite no-pollution checks;
 - historical test entries remain preserved in the audit log as evidence; no audit-log deletion or rewriting was performed.
 
+## Live evidence refresh on 2026-07-28
+
+Fresher operational client traffic created a new `COMP-1A` evidence point after the July 27 window. The newest live server start itself is currently a stale entry window, so the report now supports selecting the latest server start that contains a real entry event:
+
+- stale latest-runtime command:
+  - `node _workflow/scripts/client_entry_path_report.js --evidence-scope=operational --max-age-days=2 --limit=20`
+- stale latest-runtime result:
+  - `current_server_start_id: "2026-07-28T16:05:12.562Z"`
+  - `initialize_retirement_readiness.status: "stale_entry_window"`
+  - `followup_traffic_without_fresh_entry: true`
+  - latest entry server start: `2026-07-28T03:49:00.666Z`
+- latest-entry command:
+  - `node _workflow/scripts/client_entry_path_report.js --latest-entry-window --client-name=codex-mcp-client --evidence-scope=operational --max-age-days=2 --limit=20`
+- selected entry identity:
+  - `server_start_id: 2026-07-28T03:49:00.666Z`
+  - server start timestamp `2026-07-28T03:49:00.791Z`
+- current entry result for that selected window:
+  - `diagnostics.status: "initialize_only"`
+  - `initialize_retirement_readiness.status: "blocked_initialize_only_current_window"`
+  - `retirement_evidence_summary.status: "blocked_by_operational_initialize_clients"`
+- operational client family:
+  - `codex-mcp-client 0.146.0-alpha.3.1`
+  - protocol version `2025-06-18`
+  - `2` successful legacy `initialize` responses in the selected window
+  - `0` `server/discover` entries in the selected window
+  - latest successful initialize timestamp `2026-07-28T04:11:21.465Z`
+
+The result is stronger than the July 27 retained blocker because it confirms the same compatibility dependency on a newer Codex client line. The newest `2026-07-28T16:05:12.562Z` runtime slice must still be treated as stale for entry-path purposes, while `2026-07-28T03:49:00.666Z` is the freshest selected operational entry window.
+
+The refresh also removes a recurring workflow friction point:
+
+- `_workflow/scripts/client_entry_path_report.js` now accepts `--latest-entry-window`;
+- the option selects the newest server start that contains `initialize_received` or `server_discover_received` after the `client-name`, `evidence-scope`, and `max-age-days` filters;
+- the report always exposes `latest_entry_server_start` so a stale latest runtime can be distinguished from the freshest entry-capable window.
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:

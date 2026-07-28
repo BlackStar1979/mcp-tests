@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { buildClientEntryPathDiagnostics } = require("../../src/client_entry_path_diagnostics");
 const {
+  classifyClientFamily,
   summarizeClientFamilies,
   buildRetirementEvidenceSummary,
   normalizeMaxAgeDays,
@@ -21,12 +22,24 @@ function argValue(name, fallback = "") {
   return hit ? hit.slice(prefix.length) : fallback;
 }
 
+function argFlag(name) {
+  return process.argv.slice(2).includes(`--${name}`);
+}
+
 function normalizeEvidenceScope(value) {
   const normalized = String(value || "all").trim().toLowerCase();
   if (normalized === "operational" || normalized === "synthetic" || normalized === "unknown") {
     return normalized;
   }
   return "all";
+}
+
+function clientMatchesScope(entry, evidenceScope) {
+  const classified = classifyClientFamily(entry.client_name, entry.client_version);
+  if (evidenceScope === "operational") return classified.client_class === "operational_known";
+  if (evidenceScope === "synthetic") return classified.client_class === "synthetic_validation";
+  if (evidenceScope === "unknown") return classified.client_class === "unknown";
+  return true;
 }
 
 function latestAuditTimestamp(entries) {
@@ -75,6 +88,21 @@ function latestServerStart(entries) {
       server_start_id: String(entry.server_start_id || ""),
       ts: String(entry.ts || ""),
     };
+  }
+  return { server_start_id: "", ts: "" };
+}
+
+function latestEntryServerStart(entries, { clientName = "", evidenceScope = "all", sinceTs = "" } = {}) {
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const entry = entries[index];
+    const event = String((entry && entry.event) || "");
+    if (event !== "initialize_received" && event !== "server_discover_received") continue;
+    if (clientName && String(entry.client_name || "") !== clientName) continue;
+    if (sinceTs && String(entry.ts || "") < sinceTs) continue;
+    if (!clientMatchesScope(entry, evidenceScope)) continue;
+    const serverStartId = String(entry.server_start_id || "");
+    if (!serverStartId) continue;
+    return serverStartById(entries, serverStartId);
   }
   return { server_start_id: "", ts: "" };
 }
@@ -162,18 +190,26 @@ function main() {
   const auditLogPath = argValue("audit-log", AuditLog);
   const clientName = argValue("client-name", "");
   const requestedServerStartId = argValue("server-start-id", "").trim();
+  const useLatestEntryWindow = argFlag("latest-entry-window");
   const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "all"));
   const maxAgeDays = normalizeMaxAgeDays(argValue("max-age-days", ""));
   const limit = Math.max(1, Number(argValue("limit", "10")) || 10);
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
+  const latestAuditTs = latestAuditTimestamp(entries);
+  const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, latestAuditTs);
+  const latestEntryStart = latestEntryServerStart(entries, {
+    clientName,
+    evidenceScope,
+    sinceTs: retainedEvidenceSinceTs,
+  });
   const currentServerStart = requestedServerStartId
     ? serverStartById(entries, requestedServerStartId)
-    : latestServerStart(entries);
+    : useLatestEntryWindow && latestEntryStart.server_start_id
+      ? latestEntryStart
+      : latestServerStart(entries);
   const currentServerStartId = requestedServerStartId
     || currentServerStart.server_start_id
     || latestServerStartId(entries);
-  const latestAuditTs = latestAuditTimestamp(entries);
-  const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, latestAuditTs);
   const windowEntries = currentWindowEntries(entries, currentServerStart);
   const matchingClients = filterClientFamiliesByScope(
     summarizeClientFamilies(entries, currentServerStartId, clientName, true),
@@ -208,6 +244,9 @@ function main() {
     },
     current_server_start_id: currentServerStartId,
     current_server_start_ts: currentServerStart.ts || null,
+    latest_entry_server_start: latestEntryStart.server_start_id
+      ? latestEntryStart
+      : null,
     current_window_rpc_counts: countMethods(windowEntries),
     diagnostics,
     retirement_evidence_summary: retirementEvidenceSummary,
@@ -216,6 +255,7 @@ function main() {
     filter: {
       client_name: clientName || null,
       server_start_id: requestedServerStartId || null,
+      latest_entry_window: useLatestEntryWindow,
       evidence_scope: evidenceScope,
       max_age_days: maxAgeDays,
       retained_evidence_since_ts: retainedEvidenceSinceTs || null,
