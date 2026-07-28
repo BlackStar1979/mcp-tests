@@ -130,6 +130,21 @@ const INDEX_STATUS_OUTPUT_SCHEMA = {
         },
       },
     },
+    visited_files: { type: "integer", minimum: 0 },
+    visited_dirs: { type: "integer", minimum: 0 },
+    truncated: { type: "boolean" },
+    max_files: { type: "integer", minimum: 0 },
+    max_dirs: { type: "integer", minimum: 0 },
+    skipped: {
+      type: "object",
+      additionalProperties: false,
+      required: ["oversized", "extension", "directories"],
+      properties: {
+        oversized: { type: "integer", minimum: 0 },
+        extension: { type: "integer", minimum: 0 },
+        directories: { type: "integer", minimum: 0 },
+      },
+    },
   },
 };
 

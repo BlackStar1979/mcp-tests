@@ -21,6 +21,9 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     const missing = await indexStatusTool.execute();
     assert.equal(missing.status, "missing");
     assert.equal(missing.success, true);
+    assert.equal(missing.truncated, false);
+    assert.equal(missing.visited_files, 0);
+    assert.equal(missing.max_files, 0);
 
     const build = await buildIndexTool.execute({ max_files: 200, max_dirs: 200 });
     assert.equal(build.status, "built");
@@ -31,6 +34,12 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     assert.equal(status.status, "ok");
     assert.equal(status.success, true);
     assert.ok(status.count > 0);
+    assert.equal(status.visited_files, build.visited_files);
+    assert.equal(status.visited_dirs, build.visited_dirs);
+    assert.equal(status.truncated, build.truncated);
+    assert.equal(status.max_files, 200);
+    assert.equal(status.max_dirs, 200);
+    assert.deepEqual(status.skipped, build.skipped);
 
     const tempRoot = await fs.mkdtemp(path.join(os.tmpdir(), "workspace-index-archive-skip-"));
     const isolatedIndexFile = path.join(tempRoot, "workspace-index.json");
@@ -123,6 +132,8 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
     const corrupt = await indexStatusTool.execute();
     assert.equal(corrupt.status, "error");
     assert.equal(corrupt.success, false);
+    assert.equal(corrupt.truncated, false);
+    assert.equal(corrupt.visited_files, 0);
     assert.match(corrupt.error, /json|unexpected token|expected property name/i);
     console.log("smoke_build_index_tool ok");
   } finally {

@@ -278,6 +278,8 @@ function importantRomionsimDocs(index) {
 async function indexStatus(options = {}) {
   try {
     const index = await loadWorkspaceIndex(options);
+    const stats = index.stats || {};
+    const skipped = stats.skipped || {};
     return {
       success: true,
       error: "",
@@ -287,6 +289,16 @@ async function indexStatus(options = {}) {
       root: String(index.root || "."),
       version: Number(index.version || 0),
       roots: Array.isArray(index.roots) ? index.roots : [],
+      visited_files: Number(stats.visited_files || 0),
+      visited_dirs: Number(stats.visited_dirs || 0),
+      truncated: Boolean(stats.truncated),
+      max_files: Number(stats.max_files || 0),
+      max_dirs: Number(stats.max_dirs || 0),
+      skipped: {
+        oversized: Number(skipped.oversized || 0),
+        extension: Number(skipped.extension || 0),
+        directories: Number(skipped.directories || 0),
+      },
     };
   } catch (error) {
     if (error?.code !== "ENOENT") {
@@ -299,6 +311,12 @@ async function indexStatus(options = {}) {
         root: ".",
         version: 0,
         roots: [],
+        visited_files: 0,
+        visited_dirs: 0,
+        truncated: false,
+        max_files: 0,
+        max_dirs: 0,
+        skipped: { oversized: 0, extension: 0, directories: 0 },
       };
     }
     return {
@@ -310,6 +328,12 @@ async function indexStatus(options = {}) {
       root: ".",
       version: 0,
       roots: [],
+      visited_files: 0,
+      visited_dirs: 0,
+      truncated: false,
+      max_files: 0,
+      max_dirs: 0,
+      skipped: { oversized: 0, extension: 0, directories: 0 },
     };
   }
 }
