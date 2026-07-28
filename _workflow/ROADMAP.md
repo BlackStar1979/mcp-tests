@@ -18,7 +18,7 @@ Current derivation:
 - Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. No restart or connector refresh remains pending.
 - `COMP-1A` remains the highest-leverage protocol package, but it is event-gated again after the July 27 `openai-mcp 1.0.0` window confirmed `8` successful legacy `initialize` responses and `0` `server/discover` entries on the explicit live server identity.
-- `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap.
+- `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap; the July 28 pass refreshed `_workflow/operator_decisions` and then stopped.
 
 ## Priority matrix
 
@@ -44,6 +44,7 @@ Current derivation:
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metadata is now guarded in `_tests/smoke_cbm_live_bridge_stress.js` and agent-facing CBM interpretation guidance is guarded by `_tests/smoke_cbm_agent_skill.js`.
+Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map on July 28, 2026 without widening into repo-wide documentation churn.
 
 ## Deferred until justified
 

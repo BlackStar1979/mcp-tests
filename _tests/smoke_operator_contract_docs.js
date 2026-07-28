@@ -21,6 +21,7 @@ for (const rel of [
   ["_control", "DIRECTORY.md"],
   ["_logs", "DIRECTORY.md"],
   ["_workflow", "_diagnostics", "DIRECTORY.md"],
+  ["_workflow", "operator_decisions", "DIRECTORY.md"],
   ["_workflow", "NORTHSTAR.md"],
   ["_workflow", "STATE.md"],
   ["_workflow", "READINESS.md"],
@@ -36,6 +37,7 @@ const northstar = read("_workflow", "NORTHSTAR.md");
 const stateDoc = read("_workflow", "STATE.md");
 const readiness = read("_workflow", "READINESS.md");
 const roadmap = read("_workflow", "ROADMAP.md");
+const operatorDecisionsDirectory = read("_workflow", "operator_decisions", "DIRECTORY.md");
 const initializeEvidence = read("_workflow", "operator_decisions", "initialize_client_compatibility_evidence.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
 const rootDirectory = read("DIRECTORY.md");
@@ -61,7 +63,7 @@ assert.ok(readiness.includes("live `ingest_traces` exposes `runtime_edge_creatio
 assert.ok(readiness.includes("Manual multi-repo stress records exact per-tool counts"));
 assert.ok(readiness.includes("covered `663` calls across all fifteen `cbm_*` tools, including lifecycle `index/delete`"));
 assert.ok(readiness.includes("No active CBM integrity blocker remains"));
-assert.ok(readiness.includes("generator-owned maps for `src/integrations` and `src/integrations/codebase_memory`"));
+assert.ok(readiness.includes("the high-churn CBM integration boundary, and the high-churn `_workflow/operator_decisions` ledger"));
 assert.ok(readiness.includes("`openai-mcp 1.0.0` with `8` successful legacy `initialize` responses and `0` `server/discover` entries"));
 assert.ok(roadmap.includes("## Priority matrix"));
 assert.ok(roadmap.includes("Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`"));
@@ -72,6 +74,9 @@ assert.ok(initializeEvidence.includes("## Live evidence refresh on 2026-07-27"))
 assert.ok(initializeEvidence.includes("`8` successful legacy `initialize` responses"));
 assert.ok(initializeEvidence.includes("`0` `server/discover` entries"));
 assert.ok(initializeEvidence.includes("test child-server audit isolation"));
+assert.ok(operatorDecisionsDirectory.includes("Status: active workflow operator decisions directory map"));
+assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
+assert.ok(operatorDecisionsDirectory.includes("This directory is a decision ledger, not the active queue."));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "initialize-retirement-evidence-wait");
 assert.equal(workflowState.workflow_progress_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
 assert.equal(workflowState.workflow_progress_markers.next_secondary, "bounded-doc-orientation-maintenance");
@@ -81,7 +86,7 @@ assert.ok(rootDirectory.includes("npm run docs:directory"));
 assert.ok(workflowReadme.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowReadme.includes("`_workflow/ROADMAP.md`"));
 assert.ok(workflowIndex.includes("Operator-facing documentation contract"));
-assert.ok(workflowIndex.includes("generator-owned maps for `src/integrations` and `src/integrations/codebase_memory`"));
+assert.ok(workflowIndex.includes("the latest bounded `DOC-2A` pass refreshed the high-churn `_workflow/operator_decisions` ledger map"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = initialize-retirement-evidence-wait`"));
 assert.ok(workflowIndex.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
