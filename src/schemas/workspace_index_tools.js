@@ -96,6 +96,13 @@ const COLLECT_ROMIONSIM_CONTEXT_INPUT_SCHEMA = {
     query: { type: "string", minLength: 1, maxLength: 400 },
     limit: { type: "integer", minimum: 1, maximum: 30, default: 12 },
     include_pinned: { type: "boolean", default: true },
+    path: {
+      type: "string",
+      minLength: 1,
+      maxLength: 1000,
+      default: "romionsim",
+      description: "Optional indexed-display-path prefix filter inside romionsim context, for example romionsim/docs.",
+    },
   },
 };
 
@@ -143,6 +150,22 @@ const INDEX_SCOPE_SCHEMA = {
     display_path: { type: "string" },
     mode: { type: "string", enum: ["", "all_roots", "directory", "file"] },
   },
+};
+
+const INDEX_RETRIEVAL_METADATA_REQUIRED = [
+  "index_scope",
+  "path_filter",
+  "index_truncated",
+  "index_created_at",
+  "index_count",
+];
+
+const INDEX_RETRIEVAL_METADATA_PROPERTIES = {
+  index_scope: INDEX_SCOPE_SCHEMA,
+  path_filter: { type: "string" },
+  index_truncated: { type: "boolean" },
+  index_created_at: { type: "string" },
+  index_count: { type: "integer", minimum: 0 },
 };
 
 const INDEX_STATUS_OUTPUT_SCHEMA = {
@@ -245,12 +268,13 @@ const BUILD_INDEX_OUTPUT_SCHEMA = {
 const SEARCH_INDEX_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["success", "error", "status", "query", "results"],
+  required: ["success", "error", "status", "query", ...INDEX_RETRIEVAL_METADATA_REQUIRED, "results"],
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
     status: { type: "string" },
     query: { type: "string" },
+    ...INDEX_RETRIEVAL_METADATA_PROPERTIES,
     results: { type: "array", items: INDEX_DOC_SCHEMA },
   },
 };
@@ -258,12 +282,13 @@ const SEARCH_INDEX_OUTPUT_SCHEMA = {
 const SEARCH_INDEX_CONTEXT_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["success", "error", "status", "query", "results"],
+  required: ["success", "error", "status", "query", ...INDEX_RETRIEVAL_METADATA_REQUIRED, "results"],
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
     status: { type: "string" },
     query: { type: "string" },
+    ...INDEX_RETRIEVAL_METADATA_PROPERTIES,
     results: { type: "array", items: INDEX_CONTEXT_DOC_SCHEMA },
   },
 };
@@ -271,12 +296,13 @@ const SEARCH_INDEX_CONTEXT_OUTPUT_SCHEMA = {
 const COLLECT_CONTEXT_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["success", "error", "status", "query", "files"],
+  required: ["success", "error", "status", "query", ...INDEX_RETRIEVAL_METADATA_REQUIRED, "files"],
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
     status: { type: "string" },
     query: { type: "string" },
+    ...INDEX_RETRIEVAL_METADATA_PROPERTIES,
     files: { type: "array", items: COLLECT_CONTEXT_FILE_SCHEMA },
   },
 };
@@ -284,7 +310,7 @@ const COLLECT_CONTEXT_OUTPUT_SCHEMA = {
 const COLLECT_ROMIONSIM_CONTEXT_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["success", "error", "status", "query", "scope", "mode", "count", "files"],
+  required: ["success", "error", "status", "query", "scope", "mode", ...INDEX_RETRIEVAL_METADATA_REQUIRED, "count", "files"],
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
@@ -292,6 +318,7 @@ const COLLECT_ROMIONSIM_CONTEXT_OUTPUT_SCHEMA = {
     query: { type: "string" },
     scope: { type: "string" },
     mode: { type: "string" },
+    ...INDEX_RETRIEVAL_METADATA_PROPERTIES,
     count: { type: "integer", minimum: 0 },
     files: { type: "array", items: INDEX_DOC_SCHEMA },
   },

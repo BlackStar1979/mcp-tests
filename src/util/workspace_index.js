@@ -85,11 +85,44 @@ function normalizePathFilter(value = "") {
   return normalizeSlashes(value).trim().replace(/\/+$/, "");
 }
 
+function normalizeOutputPathFilter(value = "") {
+  const normalized = normalizePathFilter(value);
+  return normalized || ".";
+}
+
 function pathMatchesFilter(displayPath = "", pathFilter = "") {
   const filter = normalizePathFilter(pathFilter);
   if (!filter || filter === ".") return true;
   const item = normalizePathFilter(displayPath);
   return item === filter || item.startsWith(`${filter}/`);
+}
+
+function defaultIndexScope() {
+  return { path: ".", root_alias: "", display_path: ".", mode: "all_roots" };
+}
+
+function resolveIndexScope(index = {}) {
+  return index.stats?.scope || index.scope || defaultIndexScope();
+}
+
+function retrievalMetadata(index = {}, pathFilter = ".") {
+  return {
+    index_scope: resolveIndexScope(index),
+    path_filter: normalizeOutputPathFilter(pathFilter),
+    index_truncated: Boolean(index.stats?.truncated),
+    index_created_at: String(index.created_at || ""),
+    index_count: Array.isArray(index.docs) ? index.docs.length : 0,
+  };
+}
+
+function retrievalErrorMetadata(pathFilter = ".", fallbackFilter = ".") {
+  return {
+    index_scope: { path: "", root_alias: "", display_path: "", mode: "" },
+    path_filter: normalizeOutputPathFilter(pathFilter || fallbackFilter),
+    index_truncated: false,
+    index_created_at: "",
+    index_count: 0,
+  };
 }
 
 function shouldSkipDirectory(displayPath) {
@@ -315,7 +348,7 @@ function rankDocs(index, query, { limit = 10, romionsimOnly = false, pathFilter 
     .slice(0, limit);
 }
 
-function importantRomionsimDocs(index) {
+function importantRomionsimDocs(index, pathFilter = "romionsim") {
   const wanted = [
     "romionsim/workflow/NEXT_SESSION_START.md",
     "romionsim/workflow/ENGINE_TEST_GRID.md",
@@ -327,6 +360,7 @@ function importantRomionsimDocs(index) {
   ];
   const byPath = new Map((index.docs || []).map((doc) => [doc.path, doc]));
   return wanted
+    .filter((item) => pathMatchesFilter(item, pathFilter))
     .filter((item) => byPath.has(item))
     .map((item) => ({
       path: item,
@@ -350,7 +384,7 @@ async function indexStatus(options = {}) {
       root: String(index.root || "."),
       version: Number(index.version || 0),
       roots: Array.isArray(index.roots) ? index.roots : [],
-      scope: stats.scope || index.scope || { path: ".", root_alias: "", display_path: ".", mode: "all_roots" },
+      scope: stats.scope || index.scope || defaultIndexScope(),
       visited_files: Number(stats.visited_files || 0),
       visited_dirs: Number(stats.visited_dirs || 0),
       truncated: Boolean(stats.truncated),
@@ -404,23 +438,27 @@ async function indexStatus(options = {}) {
 
 async function searchIndex(query, { limit = 10, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
+  const pathFilter = path || ".";
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    results: rankDocs(index, query, { limit, pathFilter: path }),
+    ...retrievalMetadata(index, pathFilter),
+    results: rankDocs(index, query, { limit, pathFilter }),
   };
 }
 
 async function searchIndexContext(query, { limit = 5, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
+  const pathFilter = path || ".";
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    results: rankDocs(index, query, { limit, pathFilter: path }).map((item) => ({
+    ...retrievalMetadata(index, pathFilter),
+    results: rankDocs(index, query, { limit, pathFilter }).map((item) => ({
       path: item.path,
       score: item.score,
       context: item.snippet,
@@ -430,13 +468,15 @@ async function searchIndexContext(query, { limit = 5, indexFile, path } = {}) {
 
 async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
+  const pathFilter = path || ".";
   const byPath = new Map((index.docs || []).map((doc) => [doc.path, doc]));
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    files: rankDocs(index, query, { limit, pathFilter: path }).map((item) => {
+    ...retrievalMetadata(index, pathFilter),
+    files: rankDocs(index, query, { limit, pathFilter }).map((item) => {
       const doc = byPath.get(item.path);
       return {
         path: item.path,
@@ -447,10 +487,11 @@ async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexF
   };
 }
 
-async function collectRomionsimContext(query, { limit = 12, includePinned = true, indexFile } = {}) {
+async function collectRomionsimContext(query, { limit = 12, includePinned = true, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
-  const pinned = includePinned ? importantRomionsimDocs(index) : [];
-  const ranked = rankDocs(index, query, { limit, romionsimOnly: true });
+  const pathFilter = path || "romionsim";
+  const pinned = includePinned ? importantRomionsimDocs(index, pathFilter) : [];
+  const ranked = rankDocs(index, query, { limit, romionsimOnly: true, pathFilter });
   const seen = new Set();
   const files = [];
   for (const item of [...pinned, ...ranked]) {
@@ -465,6 +506,7 @@ async function collectRomionsimContext(query, { limit = 12, includePinned = true
     query: String(query || ""),
     scope: "romionsim/",
     mode: "retrieval_helper_only",
+    ...retrievalMetadata(index, pathFilter),
     count: files.length,
     files,
   };
@@ -477,6 +519,7 @@ module.exports = {
   collectRomionsimContext,
   indexStatus,
   loadWorkspaceIndex,
+  retrievalErrorMetadata,
   searchIndex,
   searchIndexContext,
 };

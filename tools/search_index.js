@@ -3,7 +3,7 @@ const {
   SEARCH_INDEX_INPUT_SCHEMA,
   SEARCH_INDEX_OUTPUT_SCHEMA,
 } = require("../src/schemas/workspace_index_tools");
-const { searchIndex } = require("../src/util/workspace_index");
+const { retrievalErrorMetadata, searchIndex } = require("../src/util/workspace_index");
 
 const TOOL_NAME = "search_index";
 
@@ -21,7 +21,14 @@ const searchIndexTool = {
     try {
       return await searchIndex(args.query, { limit: args.limit, path: args.path });
     } catch (error) {
-      return { success: false, error: error?.message || String(error), status: "error", query: String(args.query || ""), results: [] };
+      return {
+        success: false,
+        error: error?.message || String(error),
+        status: "error",
+        query: String(args.query || ""),
+        ...retrievalErrorMetadata(args.path),
+        results: [],
+      };
     }
   },
   summarizeArgs(args = {}) { return { query_length_chars: String(args.query || "").length, limit: Number(args.limit || 10), path: String(args.path || ".") }; },

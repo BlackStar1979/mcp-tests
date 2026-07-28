@@ -3,7 +3,7 @@ const {
   COLLECT_CONTEXT_OUTPUT_SCHEMA,
   READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS,
 } = require("../src/schemas/workspace_index_tools");
-const { collectContext } = require("../src/util/workspace_index");
+const { collectContext, retrievalErrorMetadata } = require("../src/util/workspace_index");
 
 const TOOL_NAME = "collect_context";
 
@@ -21,7 +21,14 @@ const collectContextTool = {
     try {
       return await collectContext(args.query, { limit: args.limit, maxCharsPerFile: args.max_chars_per_file, path: args.path });
     } catch (error) {
-      return { success: false, error: error?.message || String(error), status: "error", query: String(args.query || ""), files: [] };
+      return {
+        success: false,
+        error: error?.message || String(error),
+        status: "error",
+        query: String(args.query || ""),
+        ...retrievalErrorMetadata(args.path),
+        files: [],
+      };
     }
   },
   summarizeArgs(args = {}) { return { query_length_chars: String(args.query || "").length, limit: Number(args.limit || 8), path: String(args.path || ".") }; },

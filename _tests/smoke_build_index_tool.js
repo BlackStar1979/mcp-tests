@@ -7,6 +7,7 @@ const os = require("node:os");
 
 const { buildIndexTool } = require("../tools/build_index");
 const { collectContextTool } = require("../tools/collect_context");
+const { collectRomionsimContextTool } = require("../tools/collect_romionsim_context");
 const { indexStatusTool } = require("../tools/index_status");
 const { searchIndexContextTool } = require("../tools/search_index_context");
 const { searchIndexTool } = require("../tools/search_index");
@@ -58,6 +59,10 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       await fs.writeFile(path.join(tempRoot, ".archive", "docs", "archived.md"), "# Archived doc\nfollowup_traffic_without_fresh_entry\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "other"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "other", "outside.md"), "# Outside\nscoped-only-token\n", "utf8");
+      await fs.mkdir(path.join(tempRoot, "romionsim", "docs"), { recursive: true });
+      await fs.mkdir(path.join(tempRoot, "romionsim", "workflow"), { recursive: true });
+      await fs.writeFile(path.join(tempRoot, "romionsim", "docs", "README.md"), "# Romionsim docs\nromionsim_graph_context_token\n", "utf8");
+      await fs.writeFile(path.join(tempRoot, "romionsim", "workflow", "NEXT_SESSION_START.md"), "# Romionsim workflow\nromionsim_graph_context_token\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "_repos_with_code_samples", "sample"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "_repos_with_code_samples", "sample", "fixture.md"), "# Fixture\nsample-fixture-token\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow"), { recursive: true });
@@ -80,6 +85,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       const stateSearch = await searchIndex("live_package_marker live-state-token", {
         limit: 10,
         indexFile: isolatedIndexFile,
+        path: "_workflow",
       });
       assert.equal(stateSearch.success, true);
       assert.equal(stateSearch.results[0].path, "_workflow/state.json");
@@ -90,16 +96,41 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       try {
         const filteredSearch = await searchIndexTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
         assert.equal(filteredSearch.success, true);
+        assert.equal(filteredSearch.index_scope.mode, "all_roots");
+        assert.equal(filteredSearch.path_filter, "docs");
+        assert.equal(filteredSearch.index_truncated, false);
+        assert.equal(filteredSearch.index_count, isolated.docs.length);
         assert.equal(filteredSearch.results.every((item) => item.path.startsWith("docs/")), true);
         assert.equal(filteredSearch.results.some((item) => item.path === "docs/live.md"), true);
 
         const filteredContext = await searchIndexContextTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
         assert.equal(filteredContext.success, true);
+        assert.equal(filteredContext.index_scope.mode, "all_roots");
+        assert.equal(filteredContext.path_filter, "docs");
+        assert.equal(filteredContext.index_truncated, false);
+        assert.equal(filteredContext.index_count, isolated.docs.length);
         assert.equal(filteredContext.results.every((item) => item.path.startsWith("docs/")), true);
 
         const filteredCollect = await collectContextTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
         assert.equal(filteredCollect.success, true);
+        assert.equal(filteredCollect.index_scope.mode, "all_roots");
+        assert.equal(filteredCollect.path_filter, "docs");
+        assert.equal(filteredCollect.index_truncated, false);
+        assert.equal(filteredCollect.index_count, isolated.docs.length);
         assert.equal(filteredCollect.files.every((item) => item.path.startsWith("docs/")), true);
+
+        const romionsimCollect = await collectRomionsimContextTool.execute({
+          query: "romionsim_graph_context_token",
+          path: "romionsim/docs",
+          limit: 10,
+        });
+        assert.equal(romionsimCollect.success, true);
+        assert.equal(romionsimCollect.index_scope.mode, "all_roots");
+        assert.equal(romionsimCollect.path_filter, "romionsim/docs");
+        assert.equal(romionsimCollect.index_truncated, false);
+        assert.equal(romionsimCollect.index_count, isolated.docs.length);
+        assert.equal(romionsimCollect.files.length >= 1, true);
+        assert.equal(romionsimCollect.files.every((item) => item.path.startsWith("romionsim/docs/")), true);
       } finally {
         if (previousIndexFileForFilterTools === undefined) delete process.env.MCP_TEST_WORKSPACE_INDEX_FILE;
         else process.env.MCP_TEST_WORKSPACE_INDEX_FILE = previousIndexFileForFilterTools;
@@ -117,6 +148,24 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(scoped.scope.mode, "directory");
       assert.equal(scoped.docs.some((doc) => doc.path === "docs/live.md"), true);
       assert.equal(scoped.docs.some((doc) => doc.path === "other/outside.md"), false);
+
+      const previousIndexFileForScopedRomionsim = process.env.MCP_TEST_WORKSPACE_INDEX_FILE;
+      process.env.MCP_TEST_WORKSPACE_INDEX_FILE = isolatedIndexFile;
+      try {
+        const scopedRomionsimCollect = await collectRomionsimContextTool.execute({
+          query: "romionsim_graph_context_token",
+          limit: 10,
+        });
+        assert.equal(scopedRomionsimCollect.success, true);
+        assert.equal(scopedRomionsimCollect.index_scope.path, "docs");
+        assert.equal(scopedRomionsimCollect.path_filter, "romionsim");
+        assert.equal(scopedRomionsimCollect.index_truncated, false);
+        assert.equal(scopedRomionsimCollect.index_count, scoped.docs.length);
+        assert.equal(scopedRomionsimCollect.count, 0);
+      } finally {
+        if (previousIndexFileForScopedRomionsim === undefined) delete process.env.MCP_TEST_WORKSPACE_INDEX_FILE;
+        else process.env.MCP_TEST_WORKSPACE_INDEX_FILE = previousIndexFileForScopedRomionsim;
+      }
 
       const liveSearch = await searchIndex("followup_traffic_without_fresh_entry", {
         limit: 10,
