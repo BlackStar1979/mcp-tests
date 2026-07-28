@@ -80,7 +80,7 @@ function buildHarnessResult() {
   assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 84);
   assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 84);
   assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-  assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_partial_result_metadata");
+  assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_51_100_caveats");
   assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
   assert.equal(runtimeTopology.runtime_instances.oauth21_3008.port, 3008);
   assert.equal(runtimeTopology.runtime_instances.public_3009.port, 3009);

@@ -208,7 +208,8 @@
       "audit_required": true,
       "auth_required": true,
       "public_safe": false,
-      "profile_surface": "tests.authenticated"
+      "profile_surface": "tests.authenticated",
+      "resident_set_not_absence_proof": true
     },
     "cbm_list_projects": {
       "name": "cbm_list_projects",
@@ -222,7 +223,8 @@
       "audit_required": true,
       "auth_required": true,
       "public_safe": false,
-      "profile_surface": "tests.authenticated"
+      "profile_surface": "tests.authenticated",
+      "resident_set_not_absence_proof": true
     },
     "cbm_index_repository": {
       "name": "cbm_index_repository",
@@ -366,7 +368,8 @@
       "audit_required": true,
       "auth_required": true,
       "public_safe": false,
-      "profile_surface": "tests.authenticated"
+      "profile_surface": "tests.authenticated",
+      "resident_set_not_absence_proof": true
     },
     "cbm_detect_changes": {
       "name": "cbm_detect_changes",
@@ -1658,7 +1661,10 @@
     "adr_snapshot_verify_restore": true,
     "project_not_found_error_code": "cbm_project_not_found",
     "labels_aggregation_warning": true,
+    "cypher_unsupported_shape_warnings": true,
+    "resident_set_discovery_caveat": true,
     "semantic_only_search_graph_structural_suppression": true,
-    "source_bearing_excluded_dir_warning": true
+    "source_bearing_excluded_dir_warning": true,
+    "windows_non_ascii_search_code_warning": true
   }
 }

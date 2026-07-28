@@ -16,10 +16,9 @@ const DIAGNOSTIC_MAX_CHARS = 2048;
 const DEFAULT_MAX_OUTPUT_CHARS = 250000;
 const HARD_MAX_OUTPUT_CHARS = 1024 * 1024;
 const DETECT_CHANGES_ITEM_LIMIT = 200;
+const SOURCE_BEARING_SKIP_BASENAME_PATTERN = "(?:assets|coverage|dist|docs|scripts|tools|examples|static|migrations|integration|env|deploy|deployed|target|temp|tmp|obj|vendor|vendored)";
 const SOURCE_BEARING_EXCLUDED_DIR_PATTERNS = Object.freeze([
-  /(^|\/)pages\/api\/assets(\/|$)/i,
-  /(^|\/)app\/api\/assets(\/|$)/i,
-  /(^|\/)src\/app\/api\/assets(\/|$)/i,
+  new RegExp(`(^|/)(?:pages/api|app/api|src/app/api|src/routes|routes|server/routes|src/server/routes)/${SOURCE_BEARING_SKIP_BASENAME_PATTERN}(/|$)`, "i"),
 ]);
 
 const SAFE_INHERITED_ENV_KEYS = new Set([
@@ -739,6 +738,22 @@ function sourceBearingExcludedDirs(result) {
   return excludedDirs(result).filter((dir) => SOURCE_BEARING_EXCLUDED_DIR_PATTERNS.some((pattern) => pattern.test(dir)));
 }
 
+function hasNonAsciiText(value) {
+  return typeof value === "string" && /[^\x00-\x7F]/.test(value);
+}
+
+function queryContainsInlinePropertyMap(query) {
+  return /\(\s*[A-Za-z_][A-Za-z0-9_]*?(?::[A-Za-z_][A-Za-z0-9_]*)?\s*\{[^}]+}\s*\)/.test(String(query || ""));
+}
+
+function queryContainsUnlabeledSourceRelationship(query) {
+  return /MATCH\s*\(\s*(?:[A-Za-z_][A-Za-z0-9_]*)?\s*\)\s*-\s*\[/i.test(String(query || ""));
+}
+
+function queryContainsTypeFunction(query) {
+  return /\btype\s*\(/i.test(String(query || ""));
+}
+
 function boundConnectorResult(toolName, result, args = {}) {
   if (!result || typeof result !== "object" || Array.isArray(result)) {
     return { result, warnings: [] };
@@ -774,6 +789,20 @@ function boundConnectorResult(toolName, result, args = {}) {
       };
       warnings.push(`Native CBM excluded possible source-bearing framework route directories: ${sourceDirs.slice(0, 5).join(", ")}.`);
     }
+  }
+  if (toolName === "search_code" && process.platform === "win32" && hasNonAsciiText(args.pattern)) {
+    bounded = {
+      ...bounded,
+      non_ascii_search_code_windows_caveat: true,
+      bridge_analysis: {
+        ...(bounded.bridge_analysis && typeof bounded.bridge_analysis === "object" && !Array.isArray(bounded.bridge_analysis)
+          ? bounded.bridge_analysis
+          : {}),
+        non_ascii_pattern: true,
+        windows_search_code_utf8_caveat: true,
+      },
+    };
+    warnings.push("search_code used a non-ASCII pattern on Windows; native CBM v0.9.0 may return false zero matches due to UTF-8/ANSI content pipeline issues. Verify with repository truth or get_code_snippet.");
   }
   if (toolName === "detect_changes") {
     bounded = { ...bounded };
@@ -869,6 +898,30 @@ function boundConnectorResult(toolName, result, args = {}) {
     };
   }
   if (toolName === "query_graph" && Array.isArray(result.columns) && Array.isArray(result.rows)) {
+    const cypherCaveats = [];
+    if (queryContainsInlinePropertyMap(args.query)) {
+      cypherCaveats.push("inline_property_map");
+      bounded = { ...bounded, cypher_inline_property_map_caveat: true };
+      warnings.push("query_graph used an inline property map in MATCH; native CBM v0.9.0 may silently return false empty results for this unsupported shape. Rewrite with WHERE before relying on it.");
+    }
+    if (Number.isInteger(args.max_rows) && queryContainsUnlabeledSourceRelationship(args.query)) {
+      cypherCaveats.push("unlabeled_source_with_max_rows");
+      bounded = { ...bounded, cypher_unlabeled_source_limit_caveat: true };
+      warnings.push("query_graph used max_rows with an unlabeled source relationship pattern; native CBM v0.9.0 may apply the limit to source-candidate enumeration and return a plausible partial result. Add a source label before relying on it.");
+    }
+    if (queryContainsTypeFunction(args.query)) {
+      cypherCaveats.push("type_function");
+      bounded = { ...bounded, cypher_type_function_caveat: true };
+      warnings.push("query_graph used type(); native CBM v0.9.0 may return fabricated scalar values for this unsupported function. Verify relationship types another way.");
+    }
+    if (cypherCaveats.length > 0) {
+      bounded.bridge_analysis = {
+        ...(bounded.bridge_analysis && typeof bounded.bridge_analysis === "object" && !Array.isArray(bounded.bridge_analysis)
+          ? bounded.bridge_analysis
+          : {}),
+        cypher_caveats: cypherCaveats,
+      };
+    }
     const labelIndex = result.columns.findIndex((value) => /^labels\(/i.test(String(value)));
     const countIndex = result.columns.findIndex((value) => /^count\(/i.test(String(value)));
     if (labelIndex >= 0 && countIndex >= 0 && result.rows.some((row) => /^\d+$/.test(String(row?.[labelIndex] || "")))) {

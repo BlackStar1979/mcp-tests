@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-27T16:03:14.741Z",
+  "updated_at": "2026-07-28T15:25:30.678Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -125,7 +125,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
-      "live_3008_server_start_id": "2026-07-28T04:54:53.586Z",
+      "live_3008_server_start_id": "2026-07-28T15:25:30.678Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -280,7 +280,7 @@
       "profile": "internal",
       "expected_tool_count": 84,
       "repo_expected_tool_count": 84,
-      "server_start_id": "2026-07-28T04:54:53.586Z",
+      "server_start_id": "2026-07-28T15:25:30.678Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -289,7 +289,7 @@
       "sessionless_hidden_route_subscriptions_listen_active": false,
       "sessionless_hidden_route_repo_retired_now": true,
       "transport_session_retirement_repo_applied_not_live_loaded_yet": false,
-      "cbm_contract": "live_hardened_v0_9_0_84_in_sync_with_partial_result_metadata"
+      "cbm_contract": "live_hardened_v0_9_0_84_in_sync_with_upstream_51_100_caveats"
     },
     "public_3009": {
       "auth_mode": "none",
@@ -304,11 +304,11 @@
     "oauth21_3008_tools": {
       "tool_count": 84,
       "tool_names_hash": "7b5bfc1bd21386d3",
-      "combined_fingerprint": "6a1329e3b3892b9c",
-      "connector_map_status": "live_hardened_v0_9_0_84_in_sync",
+      "combined_fingerprint": "448efe0e488864b6",
+      "connector_map_status": "live_hardened_v0_9_0_84_in_sync_with_upstream_51_100_caveats",
       "repo_current_expected_tool_count": 84,
-      "evidence_source": "post_restart_cbm_upstream_issue_safeguards_probe",
-      "server_start_id": "2026-07-28T04:54:53.586Z",
+      "evidence_source": "post_restart_cbm_upstream_51_100_caveats_probe",
+      "server_start_id": "2026-07-28T15:25:30.678Z",
       "connector_ui_visibility_verified_now": true,
       "ttl_ms": 0,
       "cache_scope": "private",

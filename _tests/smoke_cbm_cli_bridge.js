@@ -87,6 +87,10 @@ if (mode === "aggregate_suspect") {
   process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({ columns: ["labels(n)", "COUNT(*)"], rows: [["200", "200"]], total: 1 }) }] }));
   return;
 }
+if (mode === "query_empty") {
+  process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({ columns: ["qualified_name"], rows: [], total: 0 }) }] }));
+  return;
+}
 if (mode === "semantic_only_unfiltered") {
   process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({
     semantic_results: [{ qualified_name: "demo.relevant", score: 0.93 }],
@@ -101,10 +105,19 @@ if (mode === "semantic_only_unfiltered") {
 if (mode === "source_bearing_excluded") {
   process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({
     project: "demo",
-    excluded: { dirs: ["node_modules", "pages/api/assets", "public/assets"] },
+    excluded: { dirs: ["node_modules", "pages/api/assets", "src/routes/coverage", "routes/vendor", "public/assets"] },
     nodes: 10,
     edges: 20,
     status: "indexed",
+  }) }] }));
+  return;
+}
+if (mode === "non_ascii_search_code") {
+  process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({
+    results: [],
+    raw_matches: [],
+    total_grep_matches: 0,
+    total_results: 0,
   }) }] }));
   return;
 }
@@ -441,6 +454,44 @@ function fixtureOptions(overrides = {}) {
   assert.equal(suspectAggregate.partial_success, true);
   assert.match(suspectAggregate.warnings.join(" "), /labels.*aggregation/i);
 
+  const inlinePropertyMap = await callCbmTool("query_graph", {
+    project: "demo",
+    query: "MATCH (a)-[:CALLS]->(b {name: 'target'}) RETURN a.qualified_name",
+  }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "query_empty" } }));
+  assert.equal(inlinePropertyMap.success, true);
+  assert.equal(inlinePropertyMap.partial_success, true);
+  assert.equal(inlinePropertyMap.result.cypher_inline_property_map_caveat, true);
+  assert.match(inlinePropertyMap.warnings.join(" "), /inline property map/i);
+
+  const unlabeledSourceWithLimit = await callCbmTool("query_graph", {
+    project: "demo",
+    query: "MATCH (a)-[r:CALLS]->(b) WHERE b.name = 'target' RETURN a.qualified_name",
+    max_rows: 100,
+  }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "query_empty" } }));
+  assert.equal(unlabeledSourceWithLimit.success, true);
+  assert.equal(unlabeledSourceWithLimit.partial_success, true);
+  assert.equal(unlabeledSourceWithLimit.result.cypher_unlabeled_source_limit_caveat, true);
+  assert.deepEqual(unlabeledSourceWithLimit.result.bridge_analysis.cypher_caveats, ["unlabeled_source_with_max_rows"]);
+  assert.match(unlabeledSourceWithLimit.warnings.join(" "), /unlabeled source/i);
+
+  const anonymousSourceWithLimit = await callCbmTool("query_graph", {
+    project: "demo",
+    query: "MATCH ()-[r:CALLS]->(b) RETURN b.qualified_name",
+    max_rows: 10,
+  }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "query_empty" } }));
+  assert.equal(anonymousSourceWithLimit.success, true);
+  assert.equal(anonymousSourceWithLimit.partial_success, true);
+  assert.equal(anonymousSourceWithLimit.result.cypher_unlabeled_source_limit_caveat, true);
+
+  const typeFunction = await callCbmTool("query_graph", {
+    project: "demo",
+    query: "MATCH ()-[r]->() RETURN type(r) AS rel_type",
+  }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "query_empty" } }));
+  assert.equal(typeFunction.success, true);
+  assert.equal(typeFunction.partial_success, true);
+  assert.equal(typeFunction.result.cypher_type_function_caveat, true);
+  assert.match(typeFunction.warnings.join(" "), /type\(\)/i);
+
   const semanticOnly = await callCbmTool("search_graph", { project: "demo", semantic_query: ["activation flow"], limit: 5 }, fixtureOptions({
     env: { FAKE_CBM_CALL_MODE: "semantic_only_unfiltered" },
   }));
@@ -459,9 +510,20 @@ function fixtureOptions(overrides = {}) {
   }));
   assert.equal(sourceBearingExcluded.success, true);
   assert.equal(sourceBearingExcluded.partial_success, true);
-  assert.deepEqual(sourceBearingExcluded.result.source_bearing_excluded_dirs, ["pages/api/assets"]);
-  assert.equal(sourceBearingExcluded.result.source_bearing_excluded_dir_count, 1);
-  assert.match(sourceBearingExcluded.warnings.join(" "), /source-bearing.*pages\/api\/assets/i);
+  assert.deepEqual(sourceBearingExcluded.result.source_bearing_excluded_dirs, ["pages/api/assets", "src/routes/coverage", "routes/vendor"]);
+  assert.equal(sourceBearingExcluded.result.source_bearing_excluded_dir_count, 3);
+  assert.match(sourceBearingExcluded.warnings.join(" "), /source-bearing.*src\/routes\/coverage/i);
+
+  const nonAsciiSearchCode = await callCbmTool("search_code", { project: "demo", pattern: "未來函數" }, fixtureOptions({
+    env: { FAKE_CBM_CALL_MODE: "non_ascii_search_code" },
+  }));
+  assert.equal(nonAsciiSearchCode.success, true);
+  if (process.platform === "win32") {
+    assert.equal(nonAsciiSearchCode.partial_success, true);
+    assert.equal(nonAsciiSearchCode.result.non_ascii_search_code_windows_caveat, true);
+    assert.equal(nonAsciiSearchCode.result.bridge_analysis.windows_search_code_utf8_caveat, true);
+    assert.match(nonAsciiSearchCode.warnings.join(" "), /non-ASCII pattern on Windows/i);
+  }
 
   const missingProject = await callCbmTool("delete_project", { project: "missing" }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "project_not_found" } }));
   assert.equal(missingProject.success, false);

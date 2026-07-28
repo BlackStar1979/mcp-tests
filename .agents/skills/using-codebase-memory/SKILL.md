@@ -7,7 +7,7 @@ description: Use when a task requires inspecting, indexing, searching, querying,
 
 ## Overview
 
-Use CBM as an indexed evidence layer, not as a substitute for repository files or live runtime inspection. Select the narrowest `cbm_*` tool that answers the task and preserve truth-layer boundaries.
+Use CBM as indexed evidence, not a substitute for repository files or live runtime inspection. Select the narrowest `cbm_*` tool and preserve truth-layer boundaries.
 
 ## Core Contract
 
@@ -20,14 +20,14 @@ Use CBM as an indexed evidence layer, not as a substitute for repository files o
 
 ## Default Workflow
 
-1. Call `cbm_status` when compatibility, containment, queue state, or binary identity is uncertain.
+1. Call `cbm_status` when compatibility, queue state, or binary identity is uncertain.
 2. Call `cbm_list_projects`; use the exact persisted project name.
-3. Choose the narrowest read tool. Do not index merely because a project is missing or stale.
+3. Choose the narrowest read tool. Do not index merely because discovery says a project is missing or stale.
 4. Use `cbm_index_repository` only for an authorized path and authorized indexing task.
 5. Inspect `success`, `error_code`, `partial_success`, `warnings`, `queue_wait_ms`, and `execution_ms`.
 6. Verify consequential findings against repository or runtime truth.
 
-Prefer the `project` argument shown by TEST MCP descriptors. The bridge also accepts upstream CBM's `project_name` alias for project-scoped tools, but both fields must match if both are supplied.
+Prefer the descriptor's `project` argument. The bridge also accepts upstream `project_name`; both fields must match if both are supplied.
 
 ## Quick Reference
 
@@ -45,19 +45,19 @@ Prefer the `project` argument shown by TEST MCP descriptors. The bridge also acc
 | ADR or traces | `cbm_manage_adr`, `cbm_ingest_traces` |
 | Remove index | `cbm_delete_project` |
 
-Load `references/tools.md` for arguments, caveats, and error semantics. Load `references/scenarios.md` for decision cases.
+Load `references/tools.md` for arguments and caveats. Load `references/scenarios.md` for decision cases.
 
 ## Safety Boundaries
 
-- Treat indexing, ADR access, trace ingestion, and deletion as mutations under project policy.
-- Delete only a named disposable index. Complete the two-call challenge using `state_handle`; never log or reuse the handle.
+- Treat indexing, ADR access, trace ingestion, and deletion as mutations.
+- Delete only a named disposable index. Use `state_handle`; never log or reuse it.
 - Index deletion never authorizes source deletion.
 - Do not use write Cypher. Treat suspicious `labels()` aggregation as unverified.
 - Do not claim freshness beyond the latest completed index.
 
 ## Result Interpretation
 
-`success: true` with `partial_success: true` is not full success. Prefer structured fields over warning prose. For `cbm_detect_changes`, read `bridge_analysis`, returned/omitted totals, and `impact_resolution_reason`; bounded or scoped arrays are samples, not whole truth. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` with `runtime_edges_created: 0` means accepted transport only, not created graph edges. Treat suppressed semantic-only structural results and `source_bearing_excluded_dirs` as citation and coverage warnings. A nonzero `queue_wait_ms` is scheduling delay, not execution time. Stable bridge errors outrank diagnostic text.
+`success: true` with `partial_success: true` is not full success. Prefer structured fields over warning prose. For `cbm_detect_changes`, read `bridge_analysis`, totals, and `impact_resolution_reason`; bounded arrays are samples. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` means accepted transport only. Treat discovery absence, semantic-only suppression, `source_bearing_excluded_dirs`, Cypher caveats, and Windows non-ASCII `cbm_search_code` caveats as citation and coverage warnings. `queue_wait_ms` is scheduling delay. Stable bridge errors outrank diagnostic text.
 
 ## Common Mistakes
 
