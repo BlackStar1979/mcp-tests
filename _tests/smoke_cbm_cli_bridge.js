@@ -548,6 +548,25 @@ function fixtureOptions(overrides = {}) {
     assert.match(nonAsciiProjectSnippet.warnings.join(" "), /non-ASCII project identifier on Windows/i);
   }
 
+  const spacedIndexPath = await callCbmTool("index_repository", { repo_path: "C:\\Work\\Dev Projects\\demo" }, fixtureOptions());
+  assert.equal(spacedIndexPath.success, true);
+  assert.equal(spacedIndexPath.partial_success, true);
+  assert.equal(spacedIndexPath.result.path_with_space_index_path_caveat, true);
+  assert.equal(spacedIndexPath.result.bridge_analysis.path_with_space_index_path, true);
+  assert.equal(spacedIndexPath.result.bridge_analysis.search_code_path_space_caveat, true);
+  assert.match(spacedIndexPath.warnings.join(" "), /path containing whitespace/i);
+
+  const spacedProjectSearch = await callCbmTool("search_code", {
+    project: "Dev Projects demo",
+    pattern: "function",
+  }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "non_ascii_search_code" } }));
+  assert.equal(spacedProjectSearch.success, true);
+  assert.equal(spacedProjectSearch.partial_success, true);
+  assert.equal(spacedProjectSearch.result.project_with_space_caveat, true);
+  assert.equal(spacedProjectSearch.result.bridge_analysis.project_with_space, true);
+  assert.equal(spacedProjectSearch.result.bridge_analysis.search_code_path_space_caveat, true);
+  assert.match(spacedProjectSearch.warnings.join(" "), /project identifier containing whitespace/i);
+
   const missingProject = await callCbmTool("delete_project", { project: "missing" }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "project_not_found" } }));
   assert.equal(missingProject.success, false);
   assert.equal(missingProject.error_code, "cbm_project_not_found");

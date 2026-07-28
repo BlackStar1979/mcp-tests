@@ -746,6 +746,10 @@ function firstNonAsciiText(...values) {
   return values.find((value) => hasNonAsciiText(value)) || "";
 }
 
+function firstWhitespaceText(...values) {
+  return values.find((value) => typeof value === "string" && /\s/.test(value)) || "";
+}
+
 function withBridgeAnalysis(result, patch) {
   return {
     ...result,
@@ -815,6 +819,16 @@ function boundConnectorResult(toolName, result, args = {}) {
       });
       warnings.push("index_repository used a non-ASCII path on Windows; native CBM v0.9.0 may later report source unavailable or false zero code matches for this project. Prefer an ASCII workspace alias or verify with repository truth.");
     }
+    if (firstWhitespaceText(args.repo_path, args.path)) {
+      bounded = withBridgeAnalysis({
+        ...bounded,
+        path_with_space_index_path_caveat: true,
+      }, {
+        path_with_space_index_path: true,
+        search_code_path_space_caveat: true,
+      });
+      warnings.push("index_repository used a path containing whitespace; native CBM may later return false zero search_code matches for this project on affected platforms. Prefer a no-space workspace alias or verify with graph/source tools.");
+    }
   }
   if (toolName === "search_code" && process.platform === "win32" && hasNonAsciiText(args.pattern)) {
     bounded = withBridgeAnalysis({
@@ -835,6 +849,16 @@ function boundConnectorResult(toolName, result, args = {}) {
       windows_project_utf8_caveat: true,
     });
     warnings.push(`${toolName} used a non-ASCII project identifier on Windows; if the project name came from a non-ASCII path, native CBM v0.9.0 may return false empty or source-unavailable results. Verify against repository truth.`);
+  }
+  if (["search_code", "get_code_snippet"].includes(toolName) && firstWhitespaceText(args.project, args.project_name)) {
+    bounded = withBridgeAnalysis({
+      ...bounded,
+      project_with_space_caveat: true,
+    }, {
+      project_with_space: true,
+      search_code_path_space_caveat: toolName === "search_code",
+    });
+    warnings.push(`${toolName} used a project identifier containing whitespace; if the project name came from a path with spaces, native CBM may return false empty or source-unavailable results. Verify against repository truth or graph tools.`);
   }
   if (toolName === "detect_changes") {
     bounded = { ...bounded };

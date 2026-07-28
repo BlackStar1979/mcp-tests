@@ -62,7 +62,7 @@ const rpcAfterDestroy = rpcStore.read({ handle: rpcCreate.handle, authContext: a
 assert.equal(rpcAfterDestroy.reason, "state_handle_revoked");
 
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats");
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_active, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_repo_retired_now, true);
 

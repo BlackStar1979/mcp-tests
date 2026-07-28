@@ -125,7 +125,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
-      "live_3008_server_start_id": "2026-07-28T15:43:52.823Z",
+      "live_3008_server_start_id": "2026-07-28T16:05:12.562Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -280,7 +280,7 @@
       "profile": "internal",
       "expected_tool_count": 84,
       "repo_expected_tool_count": 84,
-      "server_start_id": "2026-07-28T15:43:52.823Z",
+      "server_start_id": "2026-07-28T16:05:12.562Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -289,7 +289,7 @@
       "sessionless_hidden_route_subscriptions_listen_active": false,
       "sessionless_hidden_route_repo_retired_now": true,
       "transport_session_retirement_repo_applied_not_live_loaded_yet": false,
-      "cbm_contract": "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats"
+      "cbm_contract": "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats"
     },
     "public_3009": {
       "auth_mode": "none",
@@ -305,10 +305,10 @@
       "tool_count": 84,
       "tool_names_hash": "7b5bfc1bd21386d3",
       "combined_fingerprint": "448efe0e488864b6",
-      "connector_map_status": "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats",
+      "connector_map_status": "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats",
       "repo_current_expected_tool_count": 84,
-      "evidence_source": "post_restart_cbm_upstream_101_150_caveats_probe",
-      "server_start_id": "2026-07-28T15:43:52.823Z",
+      "evidence_source": "post_restart_cbm_upstream_151_200_caveats_probe",
+      "server_start_id": "2026-07-28T16:05:12.562Z",
       "connector_ui_visibility_verified_now": true,
       "ttl_ms": 0,
       "cache_scope": "private",

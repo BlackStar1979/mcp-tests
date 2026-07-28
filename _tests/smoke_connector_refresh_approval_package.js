@@ -41,7 +41,7 @@ assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_co
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 84);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "7b5bfc1bd21386d3");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 84);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 

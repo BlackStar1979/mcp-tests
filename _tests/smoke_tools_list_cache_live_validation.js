@@ -8,7 +8,7 @@ const plan = fs.readFileSync(path.join(ROOT, "_workflow", "operator_decisions", 
 const index = fs.readFileSync(path.join(ROOT, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "utf8");
 const canon = fs.readFileSync(path.join(ROOT, "_workflow", "WORKFLOW_CANON.md"), "utf8");
 
-const expectedCurrentStatus = "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats";
+const expectedCurrentStatus = "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats";
 const expectedCurrentFingerprint = "448efe0e488864b6";
 const expectedCurrentHash = "7b5bfc1bd21386d3";
 
@@ -24,7 +24,7 @@ assert.equal(c.repo_current_expected_tool_count, 84);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
 

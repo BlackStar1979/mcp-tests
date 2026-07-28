@@ -57,6 +57,7 @@ for (const marker of [
   "source_bearing_excluded_dirs",
   "Cypher caveats",
   "Windows non-ASCII",
+  "whitespace path/project caveats",
   "Repository truth",
   "Index truth",
   "Runtime truth",
@@ -96,6 +97,7 @@ for (const marker of [
   "200 impacted symbols",
   "labels()",
   "Runtime edge creation from traces not yet implemented",
+  "known native call-attribution bugs",
   "cbm_project_not_found",
   "cbm_native_rejected",
 ]) {
