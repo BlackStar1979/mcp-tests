@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-07-27
+Updated: 2026-07-28
 
 ## Purpose
 
@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=265`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=266`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `265`
+- Latest validated authenticated smoke count: `266`
 
 ## Surface model
 
@@ -72,6 +72,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Repository-side reliability hardening is GREEN and live-loaded on OAuth21 `3008` at `server_start_id = 2026-07-27T03:10:26.042Z`: native payloads use stdin instead of raw JSON argv, `detect_changes` is deduplicated before bounding, runtime output configuration fails before side effects, executable fallback is operator-neutral, and existing-project indexing is blocked when ADR snapshot retrieval fails. Test processes use hermetic control-state paths, and no restart or connector refresh is pending.
 - Fresh isolated-cache evidence is recorded in `docs/CBM_V0_9_0_REBASELINE_REPORT.md`; it confirms native v0.9.0 improvements and bridge compensations for bounded change impact, ADR preservation, trace placeholder semantics, scope enforcement, and stable not-found errors.
 - Project-local CBM operating guidance is available at `.agents/skills/using-codebase-memory/SKILL.md`; its tool reference and six decision scenarios are guarded by `_tests/smoke_cbm_agent_skill.js`.
+- Manual CBM bridge stress coverage is available at `_tests/stress_cbm_bridge_samples.js`; the July 28, 2026 validation covered both the default four-repo sample set (`528` calls, `instability=[]`, max `1195 ms`) and the larger `OVH,useable,docs-develop,NousResearch` set (`529` calls, `instability=[]`, max `18113 ms`). This found and fixed volatile native `search took <ms>` warning leakage in `cbm_search_code` without changing the connector-visible surface.
 - Generator-owned source orientation now includes `src/integrations/DIRECTORY.md` and `src/integrations/codebase_memory/DIRECTORY.md`; the CBM map identifies transport, contract-registry, orchestration, and versioned-contract responsibilities while preserving repository, runtime, and index truth boundaries.
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.

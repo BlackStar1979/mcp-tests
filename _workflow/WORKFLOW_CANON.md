@@ -31,12 +31,13 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=265`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=266`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `265`.
+- Latest validated authenticated smoke count: `266`.
 - Repo current connector-visible authenticated tool target is `84` (`13 public + 71 authorized-visible`), including all fifteen profile-managed `cbm_*` tools; `26` server-internal helpers remain intentionally hidden from MCP schema/tools-list.
 - Live OAuth21 `3008` and the connector enumerate tool count `84`, with current live proof `server_start_id = 2026-07-27T03:10:26.042Z`, `tool_names_hash = 7b5bfc1bd21386d3`, and `combined_fingerprint = 6a1329e3b3892b9c`; the connector-visible hardened CBM v0.9.0 contract, including `state_handle`, is live and verified.
 - CBM reliability hardening is live: stdin payload transport emits no raw-JSON deprecation warning, `detect_changes` normalizes duplicate paths, runtime output configuration fails fast, executable resolution is operator-neutral, ADR snapshot gating fails closed, and all three active cache databases are v0.9.0-compatible. Post-refresh delete verification returned `deleted` then `cbm_project_not_found`; no restart or connector refresh remains pending.
+- CBM bridge sample-repo stress is now a manual regression tool: `_tests/stress_cbm_bridge_samples.js` repeatedly exercises all exposed CBM bridge tools against selected `_repos_with_code_samples`. The latest accepted default and large-repo runs covered `1057` calls across `8` sample-repo indexes with `instability=[]`; volatile native `search took <ms>` warnings no longer affect stable `cbm_search_code` result signatures.
 - Test processes are isolated from operational control state: self-test skips restart-controller startup and tool-surface persistence; every smoke child-server uses `_tests/helpers/hermetic_server_control_env.js`; standalone harnesses, ordinary self-test, and full `run_all` preserve the restored 84-tool `_control/tool-surface-state.json` byte-for-byte. This correction affects newly launched test processes and requires no additional live-server restart.
 - The isolated fresh-cache v0.9.0 rebaseline across `mcp-tests`, `papers-memory-mcp`, and `autonomous_llm_handbook` is complete in `docs/CBM_V0_9_0_REBASELINE_REPORT.md`; v0.8.1 analytical verdicts are historical and must not replace the current matrix.
 - Project-local CBM operating guidance is installed at `.agents/skills/using-codebase-memory/SKILL.md` and guarded by `_tests/smoke_cbm_agent_skill.js`; this documentation package changes neither runtime behavior nor the connector-visible tool surface.
@@ -65,7 +66,7 @@ The active queue is deliberately short. Historical plans are evidence, not curre
 2. Use `DOC-2A` only as a bounded fallback when one real high-churn orientation gap exists.
 3. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence materially changes the decision surface.
 
-Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
+Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, `FINAL-LIVE-LOAD`, and `CBM-BRIDGE-SAMPLE-STRESS`.
 
 Next recommended action: preserve the hardened OAuth21 `3008` and unchanged 84-tool surface. Do not rerun `COMP-1A` until traffic newer than the July 27 `openai-mcp 1.0.0` window creates a meaningfully new entry-path sample. A single bounded `DOC-2A` package is the only autonomous fallback when a current orientation gap is demonstrable. No public `3009` start is required.
 

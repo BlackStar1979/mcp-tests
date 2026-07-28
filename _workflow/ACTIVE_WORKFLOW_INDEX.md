@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-07-27
+Date: 2026-07-28
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`), including fifteen `cbm_*` tools. Hardened CBM v0.9.0 behavior is live at `server_start_id = 2026-07-27T03:10:26.042Z` with unchanged combined fingerprint `6a1329e3b3892b9c`. Native calls use stdin transport without the raw-JSON deprecation warning; `detect_changes` normalizes duplicates; all three active cache databases are v0.9.0-compatible; `manage_adr(get)` succeeds. A post-refresh disposable index was deleted through `state_handle`, a fresh confirmed repeat mapped to `cbm_project_not_found`, and `_tests/fixtures/cbm-live-fixture` remained intact. No restart or connector refresh remains pending. Fresh client-entry evidence from `2026-07-27` remains `initialize_only` for `openai-mcp 1.0.0`: the explicitly selected live server window contains `8` successful legacy `initialize` responses and `0` `server/discover` entries. Refresh again only after newer external traffic creates a meaningfully new window.
+Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`), including fifteen `cbm_*` tools. Hardened CBM v0.9.0 behavior is live at `server_start_id = 2026-07-27T03:10:26.042Z` with unchanged combined fingerprint `6a1329e3b3892b9c`. Native calls use stdin transport without the raw-JSON deprecation warning; `detect_changes` normalizes duplicates; volatile native `search took <ms>` warnings no longer destabilize `cbm_search_code` result signatures; all three active cache databases are v0.9.0-compatible; `manage_adr(get)` succeeds. Manual sample-repo stress now covers default and large `_repos_with_code_samples` sets with `1057` accepted repeated CBM bridge calls and `instability=[]`. A post-refresh disposable index was deleted through `state_handle`, a fresh confirmed repeat mapped to `cbm_project_not_found`, and `_tests/fixtures/cbm-live-fixture` remained intact. No restart or connector refresh remains pending. Fresh client-entry evidence from `2026-07-27` remains `initialize_only` for `openai-mcp 1.0.0`: the explicitly selected live server window contains `8` successful legacy `initialize` responses and `0` `server/discover` entries. Refresh again only after newer external traffic creates a meaningfully new window.
 
 Current workflow markers:
 - `current_working_course = initialize-retirement-evidence-wait`
@@ -70,9 +70,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=265`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=266`.
 - Public section count: `7`.
-- Authenticated smoke count: `265`.
+- Authenticated smoke count: `266`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -408,7 +408,8 @@ Recently completed:
 
 - Closed test-harness control-state pollution on July 27, 2026: self-test no longer starts the restart controller or writes tool-surface state; every smoke child-server uses hermetic surface/restart/rate paths; standalone harnesses, ordinary self-test, and the full suite preserve the restored operational 84-tool state byte-for-byte. No additional restart was required.
 
-- Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026: stdin payload transport, duplicate `detect_changes` normalization, fail-fast runtime output configuration, operator-neutral executable fallback, fail-closed ADR snapshot gating, exact OAuth/HTTP helper consolidation, and transactional migration of all three active cache databases are live at `server_start_id = 2026-07-27T03:10:26.042Z`. `manage_adr(get)` succeeds without reindexing; post-refresh delete verification returned `deleted` then `cbm_project_not_found`; full offline smoke is GREEN at `7 + 265`.
+- Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026: stdin payload transport, duplicate `detect_changes` normalization, fail-fast runtime output configuration, operator-neutral executable fallback, fail-closed ADR snapshot gating, exact OAuth/HTTP helper consolidation, and transactional migration of all three active cache databases are live at `server_start_id = 2026-07-27T03:10:26.042Z`. `manage_adr(get)` succeeds without reindexing; post-refresh delete verification returned `deleted` then `cbm_project_not_found`; full offline smoke is GREEN at `7 + 266`.
+- Completed CBM bridge sample-repo stress closeout on July 28, 2026: `_tests/stress_cbm_bridge_samples.js` validates every exposed CBM bridge tool across selected `_repos_with_code_samples`; accepted default and large-repo runs covered `1057` calls across `8` sample-repo indexes with `instability=[]`, and `cbm_search_code` now filters volatile native search-latency warnings from stable result signatures.
 
 - Applied the bounded surviving-route transport-session retirement package: stable `/mcp` no longer creates transport sessions, no longer emits `Mcp-Session-Id`, ignores session headers on POST, and now reports `protocol_sessions: false` from `server/discover`.
 

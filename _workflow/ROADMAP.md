@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-07-27
+Updated: 2026-07-28
 
 ## Purpose
 
@@ -15,6 +15,7 @@ Current derivation:
 
 - The hardened CBM v0.9.0 runtime is live at `server_start_id = 2026-07-27T03:10:26.042Z` with `84` tools, fifteen `cbm_*` tools, and unchanged combined fingerprint `6a1329e3b3892b9c`.
 - Stdin native transport, normalized `detect_changes`, fail-fast startup configuration, portable executable resolution, ADR snapshot gating, native-cache schema repair, and shared OAuth/HTTP helpers are live and verified.
+- Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest accepted runs covered `1057` repeated CBM bridge calls across `8` sample-repo indexes with `instability=[]`; volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. No restart or connector refresh remains pending.
 - `COMP-1A` remains the highest-leverage protocol package, but it is event-gated again after the July 27 `openai-mcp 1.0.0` window confirmed `8` successful legacy `initialize` responses and `0` `server/discover` entries on the explicit live server identity.
 - `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap.
@@ -25,7 +26,7 @@ Current derivation:
 | --- | --- | --- | --- | --- |
 | P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after 2026-07-27 | Legacy `initialize` retirement is the highest-leverage remaining protocol gate, but the fresh July 27 operational window still blocks retirement. | Keep compatibility steady and wait for traffic newer than the current `openai-mcp 1.0.0` evidence. |
 | P1 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Close one current high-churn directory-map gap, then stop. |
-| P2 | Preserve the hardened CBM and 84-tool surface | stable live runtime | The repaired bridge, indexes, and connector identity are now production truth. | Reopen CBM work only on a reproduced regression or approved capability change. |
+| P2 | Preserve the hardened CBM and 84-tool surface | stable live runtime | The repaired bridge, indexes, connector identity, and manual multi-repo stress harness are now production support truth. | Reopen CBM work only on a reproduced regression, a failed stress run, or an approved capability change. |
 | P3 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P0 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
 | P4 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
 | P5 | Keep OAuth21 runtime hardening bounded and explicit | stable OAuth21 auth | Prevent durable-state or public-route controls from drifting back into hidden behavior. | Retain smoke coverage and explicit apply/rollback boundaries. |
@@ -42,6 +43,7 @@ Current derivation:
    Execute only when fresh `COMP-1A` or UI evidence materially changes the decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
+Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`.
 
 ## Deferred until justified
 
