@@ -43,6 +43,13 @@ const SEARCH_INDEX_INPUT_SCHEMA = {
   properties: {
     query: { type: "string", minLength: 1, maxLength: 400 },
     limit: { type: "integer", minimum: 1, maximum: 50, default: 10 },
+    path: {
+      type: "string",
+      minLength: 1,
+      maxLength: 1000,
+      default: ".",
+      description: "Optional indexed-display-path prefix filter, for example mcp-tests/src or @alias/path.",
+    },
   },
 };
 
@@ -53,6 +60,13 @@ const SEARCH_INDEX_CONTEXT_INPUT_SCHEMA = {
   properties: {
     query: { type: "string", minLength: 1, maxLength: 400 },
     limit: { type: "integer", minimum: 1, maximum: 20, default: 5 },
+    path: {
+      type: "string",
+      minLength: 1,
+      maxLength: 1000,
+      default: ".",
+      description: "Optional indexed-display-path prefix filter, for example mcp-tests/src or @alias/path.",
+    },
   },
 };
 
@@ -64,6 +78,13 @@ const COLLECT_CONTEXT_INPUT_SCHEMA = {
     query: { type: "string", minLength: 1, maxLength: 400 },
     limit: { type: "integer", minimum: 1, maximum: 20, default: 8 },
     max_chars_per_file: { type: "integer", minimum: 500, maximum: 30000, default: 8000 },
+    path: {
+      type: "string",
+      minLength: 1,
+      maxLength: 1000,
+      default: ".",
+      description: "Optional indexed-display-path prefix filter, for example mcp-tests/src or @alias/path.",
+    },
   },
 };
 

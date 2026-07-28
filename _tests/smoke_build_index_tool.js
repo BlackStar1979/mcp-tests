@@ -6,7 +6,10 @@ const path = require("node:path");
 const os = require("node:os");
 
 const { buildIndexTool } = require("../tools/build_index");
+const { collectContextTool } = require("../tools/collect_context");
 const { indexStatusTool } = require("../tools/index_status");
+const { searchIndexContextTool } = require("../tools/search_index_context");
+const { searchIndexTool } = require("../tools/search_index");
 const { buildWorkspaceIndex, searchIndex } = require("../src/util/workspace_index");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -57,6 +60,9 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       await fs.writeFile(path.join(tempRoot, "other", "outside.md"), "# Outside\nscoped-only-token\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "_repos_with_code_samples", "sample"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "_repos_with_code_samples", "sample", "fixture.md"), "# Fixture\nsample-fixture-token\n", "utf8");
+      await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow"), { recursive: true });
+      await fs.writeFile(path.join(tempRoot, "_workflow", "state.json"), "{\"live_package_marker\":\"live-state-token\"}\n", "utf8");
+      await fs.writeFile(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow", "state.json"), "{\"live_package_marker\":\"snapshot-state-token\"}\n", "utf8");
 
       const isolatedRoots = new Map([["work", tempRoot]]);
       const isolated = await buildWorkspaceIndex({
@@ -69,6 +75,35 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(isolated.stats.skipped.directories >= 1, true);
       assert.equal(isolated.docs.some((doc) => doc.path.includes(".archive")), false);
       assert.equal(isolated.docs.some((doc) => doc.path.includes("_repos_with_code_samples")), false);
+      assert.equal(isolated.docs.some((doc) => doc.path.includes("_workflow/control_plane/snapshots")), false);
+
+      const stateSearch = await searchIndex("live_package_marker live-state-token", {
+        limit: 10,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(stateSearch.success, true);
+      assert.equal(stateSearch.results[0].path, "_workflow/state.json");
+      assert.equal(stateSearch.results.some((item) => item.path.includes("_workflow/control_plane/snapshots")), false);
+
+      const previousIndexFileForFilterTools = process.env.MCP_TEST_WORKSPACE_INDEX_FILE;
+      process.env.MCP_TEST_WORKSPACE_INDEX_FILE = isolatedIndexFile;
+      try {
+        const filteredSearch = await searchIndexTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
+        assert.equal(filteredSearch.success, true);
+        assert.equal(filteredSearch.results.every((item) => item.path.startsWith("docs/")), true);
+        assert.equal(filteredSearch.results.some((item) => item.path === "docs/live.md"), true);
+
+        const filteredContext = await searchIndexContextTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
+        assert.equal(filteredContext.success, true);
+        assert.equal(filteredContext.results.every((item) => item.path.startsWith("docs/")), true);
+
+        const filteredCollect = await collectContextTool.execute({ query: "followup_traffic_without_fresh_entry", path: "docs", limit: 10 });
+        assert.equal(filteredCollect.success, true);
+        assert.equal(filteredCollect.files.every((item) => item.path.startsWith("docs/")), true);
+      } finally {
+        if (previousIndexFileForFilterTools === undefined) delete process.env.MCP_TEST_WORKSPACE_INDEX_FILE;
+        else process.env.MCP_TEST_WORKSPACE_INDEX_FILE = previousIndexFileForFilterTools;
+      }
 
       const scoped = await buildWorkspaceIndex({
         roots: isolatedRoots,

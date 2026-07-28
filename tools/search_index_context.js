@@ -19,12 +19,12 @@ const searchIndexContextTool = {
   },
   async execute(args = {}) {
     try {
-      return await searchIndexContext(args.query, { limit: args.limit });
+      return await searchIndexContext(args.query, { limit: args.limit, path: args.path });
     } catch (error) {
       return { success: false, error: error?.message || String(error), status: "error", query: String(args.query || ""), results: [] };
     }
   },
-  summarizeArgs(args = {}) { return { query_length_chars: String(args.query || "").length, limit: Number(args.limit || 5) }; },
+  summarizeArgs(args = {}) { return { query_length_chars: String(args.query || "").length, limit: Number(args.limit || 5), path: String(args.path || ".") }; },
   resultStats(payload = {}) { return { result_count: Array.isArray(payload.results) ? payload.results.length : 0, result_chars: JSON.stringify(payload || {}).length }; },
 };
 

@@ -19,12 +19,12 @@ const collectContextTool = {
   },
   async execute(args = {}) {
     try {
-      return await collectContext(args.query, { limit: args.limit, maxCharsPerFile: args.max_chars_per_file });
+      return await collectContext(args.query, { limit: args.limit, maxCharsPerFile: args.max_chars_per_file, path: args.path });
     } catch (error) {
       return { success: false, error: error?.message || String(error), status: "error", query: String(args.query || ""), files: [] };
     }
   },
-  summarizeArgs(args = {}) { return { query_length_chars: String(args.query || "").length, limit: Number(args.limit || 8) }; },
+  summarizeArgs(args = {}) { return { query_length_chars: String(args.query || "").length, limit: Number(args.limit || 8), path: String(args.path || ".") }; },
   resultStats(payload = {}) { return { result_count: Array.isArray(payload.files) ? payload.files.length : 0, result_chars: JSON.stringify(payload || {}).length }; },
 };
 

@@ -42,6 +42,11 @@ const SKIPPED_SCAN_DIRS = new Set([
 const BLOCKED_TOP_LEVEL_DIRS = new Set([
   "mcp-tests/.codebase-memory",
 ]);
+const BLOCKED_SUBTREE_PATHS = [
+  "/_workflow/control_plane/snapshots/",
+  "/_workflow/control_plane/retired_root_backups/",
+  "/_workflow/historical/",
+];
 const ALLOWED_INDEX_EXTENSIONS = new Set([
   ".md", ".txt", ".json", ".yaml", ".yml", ".js", ".cjs", ".mjs", ".ts", ".tsx", ".jsx", ".py",
   ".toml", ".ini", ".cfg", ".ps1", ".sh", ".bat", ".cmd", ".css", ".html", ".xml", ".sql",
@@ -76,9 +81,22 @@ function basenameInfo(displayPath = "") {
   return { base, stem, segments };
 }
 
+function normalizePathFilter(value = "") {
+  return normalizeSlashes(value).trim().replace(/\/+$/, "");
+}
+
+function pathMatchesFilter(displayPath = "", pathFilter = "") {
+  const filter = normalizePathFilter(pathFilter);
+  if (!filter || filter === ".") return true;
+  const item = normalizePathFilter(displayPath);
+  return item === filter || item.startsWith(`${filter}/`);
+}
+
 function shouldSkipDirectory(displayPath) {
   const normalized = normalizeSlashes(displayPath || ".");
   if (BLOCKED_TOP_LEVEL_DIRS.has(normalized)) return true;
+  const wrapped = `/${normalized}/`;
+  if (BLOCKED_SUBTREE_PATHS.some((blocked) => wrapped.includes(blocked))) return true;
   const parts = normalized.split("/").filter(Boolean);
   return parts.some((part) => SKIPPED_SCAN_DIRS.has(part));
 }
@@ -283,9 +301,10 @@ function buildSnippet(doc, query, maxLen = 700) {
   return sample.slice(start, start + maxLen).replace(/\s+/g, " ").trim();
 }
 
-function rankDocs(index, query, { limit = 10, romionsimOnly = false } = {}) {
+function rankDocs(index, query, { limit = 10, romionsimOnly = false, pathFilter = "" } = {}) {
   return (index.docs || [])
     .filter((doc) => !romionsimOnly || String(doc.path || "").startsWith("romionsim/"))
+    .filter((doc) => pathMatchesFilter(doc.path, pathFilter))
     .map((doc) => ({
       path: doc.path,
       score: scoreDoc(doc, query),
@@ -383,25 +402,25 @@ async function indexStatus(options = {}) {
   }
 }
 
-async function searchIndex(query, { limit = 10, indexFile } = {}) {
+async function searchIndex(query, { limit = 10, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    results: rankDocs(index, query, { limit }),
+    results: rankDocs(index, query, { limit, pathFilter: path }),
   };
 }
 
-async function searchIndexContext(query, { limit = 5, indexFile } = {}) {
+async function searchIndexContext(query, { limit = 5, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    results: rankDocs(index, query, { limit }).map((item) => ({
+    results: rankDocs(index, query, { limit, pathFilter: path }).map((item) => ({
       path: item.path,
       score: item.score,
       context: item.snippet,
@@ -409,7 +428,7 @@ async function searchIndexContext(query, { limit = 5, indexFile } = {}) {
   };
 }
 
-async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexFile } = {}) {
+async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   const byPath = new Map((index.docs || []).map((doc) => [doc.path, doc]));
   return {
@@ -417,7 +436,7 @@ async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexF
     error: "",
     status: "ok",
     query: String(query || ""),
-    files: rankDocs(index, query, { limit }).map((item) => {
+    files: rankDocs(index, query, { limit, pathFilter: path }).map((item) => {
       const doc = byPath.get(item.path);
       return {
         path: item.path,
