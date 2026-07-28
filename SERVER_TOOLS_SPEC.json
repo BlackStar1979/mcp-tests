@@ -1657,6 +1657,8 @@
     "trace_runtime_edge_creation_status": true,
     "adr_snapshot_verify_restore": true,
     "project_not_found_error_code": "cbm_project_not_found",
-    "labels_aggregation_warning": true
+    "labels_aggregation_warning": true,
+    "semantic_only_search_graph_structural_suppression": true,
+    "source_bearing_excluded_dir_warning": true
   }
 }

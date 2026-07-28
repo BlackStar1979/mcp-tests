@@ -170,6 +170,8 @@ assert.equal(toolsSpec.codebase_memory_bridge_contract.trace_runtime_edge_creati
 assert.equal(toolsSpec.codebase_memory_bridge_contract.adr_snapshot_verify_restore, true);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.project_not_found_error_code, "cbm_project_not_found");
 assert.equal(toolsSpec.codebase_memory_bridge_contract.labels_aggregation_warning, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.semantic_only_search_graph_structural_suppression, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.source_bearing_excluded_dir_warning, true);
 assert.equal(toolsSpec.tool_catalog.cbm_delete_project.confirmation_required, true);
 assert.equal(toolsSpec.tool_catalog.cbm_delete_project.confirmation_kind, "cbm_delete_project_confirmation");
 assert.equal(toolsSpec.tool_catalog.cbm_delete_project.confirmation_ttl_ms, 120000);
@@ -196,6 +198,8 @@ assert.deepEqual(dlpSpec.policy.codebase_memory_output_handling, {
   trace_placeholder_partial_success: true,
   trace_runtime_edge_creation_status_explicit: true,
   cypher_aggregation_warning: true,
+  semantic_only_structural_results_suppressed: true,
+  source_bearing_excluded_dir_warning: true,
 });
 
 console.log("smoke_cbm_specs ok");

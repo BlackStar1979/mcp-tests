@@ -53,6 +53,7 @@ for (const marker of [
   "bridge_analysis",
   "impact_resolution_reason",
   "runtime_edge_creation",
+  "source_bearing_excluded_dirs",
   "Repository truth",
   "Index truth",
   "Runtime truth",

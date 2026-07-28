@@ -16,6 +16,11 @@ const DIAGNOSTIC_MAX_CHARS = 2048;
 const DEFAULT_MAX_OUTPUT_CHARS = 250000;
 const HARD_MAX_OUTPUT_CHARS = 1024 * 1024;
 const DETECT_CHANGES_ITEM_LIMIT = 200;
+const SOURCE_BEARING_EXCLUDED_DIR_PATTERNS = Object.freeze([
+  /(^|\/)pages\/api\/assets(\/|$)/i,
+  /(^|\/)app\/api\/assets(\/|$)/i,
+  /(^|\/)src\/app\/api\/assets(\/|$)/i,
+]);
 
 const SAFE_INHERITED_ENV_KEYS = new Set([
   "APPDATA",
@@ -708,12 +713,68 @@ function sanitizeResultWarnings(result) {
   return sanitized;
 }
 
+function isSemanticOnlySearchGraph(args = {}) {
+  const semanticQuery = Array.isArray(args.semantic_query) ? args.semantic_query.filter((value) => String(value || "").trim()) : [];
+  if (semanticQuery.length === 0) return false;
+  return [
+    "query",
+    "label",
+    "name_pattern",
+    "qn_pattern",
+    "file_pattern",
+    "relationship",
+    "min_degree",
+    "max_degree",
+    "exclude_entry_points",
+    "include_connected",
+  ].every((key) => args[key] === undefined || args[key] === null || args[key] === "");
+}
+
+function excludedDirs(result) {
+  const dirs = result?.excluded?.dirs;
+  return Array.isArray(dirs) ? dirs.map((value) => normalizeScopePath(value)).filter(Boolean) : [];
+}
+
+function sourceBearingExcludedDirs(result) {
+  return excludedDirs(result).filter((dir) => SOURCE_BEARING_EXCLUDED_DIR_PATTERNS.some((pattern) => pattern.test(dir)));
+}
+
 function boundConnectorResult(toolName, result, args = {}) {
   if (!result || typeof result !== "object" || Array.isArray(result)) {
     return { result, warnings: [] };
   }
   const warnings = [];
   let bounded = sanitizeResultWarnings(result);
+  if (toolName === "search_graph" && isSemanticOnlySearchGraph(args)) {
+    const structuralResults = Array.isArray(result.results) ? result.results : [];
+    if (structuralResults.length > 0) {
+      bounded = {
+        ...bounded,
+        results: [],
+        semantic_only_structural_results_suppressed: true,
+        semantic_only_structural_results_total: structuralResults.length,
+        bridge_analysis: {
+          ...(bounded.bridge_analysis && typeof bounded.bridge_analysis === "object" && !Array.isArray(bounded.bridge_analysis)
+            ? bounded.bridge_analysis
+            : {}),
+          semantic_only_search: true,
+          structural_results_suppressed: structuralResults.length,
+        },
+      };
+      warnings.push("search_graph semantic-only request returned unfiltered structural results; the bridge suppressed them and preserved semantic_results.");
+    }
+  }
+  if (toolName === "index_repository") {
+    const sourceDirs = sourceBearingExcludedDirs(result);
+    if (sourceDirs.length > 0) {
+      bounded = {
+        ...bounded,
+        source_bearing_excluded_dirs: sourceDirs,
+        source_bearing_excluded_dir_count: sourceDirs.length,
+      };
+      warnings.push(`Native CBM excluded possible source-bearing framework route directories: ${sourceDirs.slice(0, 5).join(", ")}.`);
+    }
+  }
   if (toolName === "detect_changes") {
     bounded = { ...bounded };
     const nativeChangedFiles = Array.isArray(result.changed_files) ? result.changed_files : [];

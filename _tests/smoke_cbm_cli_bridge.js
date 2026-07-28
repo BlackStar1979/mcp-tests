@@ -87,6 +87,27 @@ if (mode === "aggregate_suspect") {
   process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({ columns: ["labels(n)", "COUNT(*)"], rows: [["200", "200"]], total: 1 }) }] }));
   return;
 }
+if (mode === "semantic_only_unfiltered") {
+  process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({
+    semantic_results: [{ qualified_name: "demo.relevant", score: 0.93 }],
+    results: [
+      { qualified_name: "demo.unfiltered.1", label: "Yaml" },
+      { qualified_name: "demo.unfiltered.2", label: "Function" },
+    ],
+    total: 2,
+  }) }] }));
+  return;
+}
+if (mode === "source_bearing_excluded") {
+  process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({
+    project: "demo",
+    excluded: { dirs: ["node_modules", "pages/api/assets", "public/assets"] },
+    nodes: 10,
+    edges: 20,
+    status: "indexed",
+  }) }] }));
+  return;
+}
 if (mode === "large_detect") {
   const changed_files = Array.from({ length: 350 }, (_, index) => "src/file-" + index + ".js");
   const impacted_symbols = Array.from({ length: 350 }, (_, index) => ({ qualified_name: "demo.symbol." + index, depth: index % 3 }));
@@ -419,6 +440,28 @@ function fixtureOptions(overrides = {}) {
   assert.equal(suspectAggregate.success, true);
   assert.equal(suspectAggregate.partial_success, true);
   assert.match(suspectAggregate.warnings.join(" "), /labels.*aggregation/i);
+
+  const semanticOnly = await callCbmTool("search_graph", { project: "demo", semantic_query: ["activation flow"], limit: 5 }, fixtureOptions({
+    env: { FAKE_CBM_CALL_MODE: "semantic_only_unfiltered" },
+  }));
+  assert.equal(semanticOnly.success, true);
+  assert.equal(semanticOnly.partial_success, true);
+  assert.deepEqual(semanticOnly.result.semantic_results, [{ qualified_name: "demo.relevant", score: 0.93 }]);
+  assert.deepEqual(semanticOnly.result.results, []);
+  assert.equal(semanticOnly.result.semantic_only_structural_results_suppressed, true);
+  assert.equal(semanticOnly.result.semantic_only_structural_results_total, 2);
+  assert.equal(semanticOnly.result.bridge_analysis.semantic_only_search, true);
+  assert.equal(semanticOnly.result.bridge_analysis.structural_results_suppressed, 2);
+  assert.match(semanticOnly.warnings.join(" "), /semantic-only.*suppressed/i);
+
+  const sourceBearingExcluded = await callCbmTool("index_repository", { repo_path: "C:\\Work\\demo" }, fixtureOptions({
+    env: { FAKE_CBM_CALL_MODE: "source_bearing_excluded" },
+  }));
+  assert.equal(sourceBearingExcluded.success, true);
+  assert.equal(sourceBearingExcluded.partial_success, true);
+  assert.deepEqual(sourceBearingExcluded.result.source_bearing_excluded_dirs, ["pages/api/assets"]);
+  assert.equal(sourceBearingExcluded.result.source_bearing_excluded_dir_count, 1);
+  assert.match(sourceBearingExcluded.warnings.join(" "), /source-bearing.*pages\/api\/assets/i);
 
   const missingProject = await callCbmTool("delete_project", { project: "missing" }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "project_not_found" } }));
   assert.equal(missingProject.success, false);

@@ -31,7 +31,9 @@
       "unresolved_impact_reason_explicit": true,
       "trace_placeholder_partial_success": true,
       "trace_runtime_edge_creation_status_explicit": true,
-      "cypher_aggregation_warning": true
+      "cypher_aggregation_warning": true,
+      "semantic_only_structural_results_suppressed": true,
+      "source_bearing_excluded_dir_warning": true
     }
   },
   "current_repo_bindings": [
