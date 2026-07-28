@@ -525,6 +525,29 @@ function fixtureOptions(overrides = {}) {
     assert.match(nonAsciiSearchCode.warnings.join(" "), /non-ASCII pattern on Windows/i);
   }
 
+  const nonAsciiIndexPath = await callCbmTool("index_repository", { repo_path: "C:\\Work\\未來\\demo" }, fixtureOptions());
+  assert.equal(nonAsciiIndexPath.success, true);
+  if (process.platform === "win32") {
+    assert.equal(nonAsciiIndexPath.partial_success, true);
+    assert.equal(nonAsciiIndexPath.result.non_ascii_index_path_windows_caveat, true);
+    assert.equal(nonAsciiIndexPath.result.bridge_analysis.non_ascii_index_path, true);
+    assert.equal(nonAsciiIndexPath.result.bridge_analysis.windows_path_utf8_caveat, true);
+    assert.match(nonAsciiIndexPath.warnings.join(" "), /non-ASCII path on Windows/i);
+  }
+
+  const nonAsciiProjectSnippet = await callCbmTool("get_code_snippet", {
+    project: "未來-project",
+    qualified_name: "demo.symbol",
+  }, fixtureOptions());
+  assert.equal(nonAsciiProjectSnippet.success, true);
+  if (process.platform === "win32") {
+    assert.equal(nonAsciiProjectSnippet.partial_success, true);
+    assert.equal(nonAsciiProjectSnippet.result.non_ascii_project_windows_caveat, true);
+    assert.equal(nonAsciiProjectSnippet.result.bridge_analysis.non_ascii_project, true);
+    assert.equal(nonAsciiProjectSnippet.result.bridge_analysis.windows_project_utf8_caveat, true);
+    assert.match(nonAsciiProjectSnippet.warnings.join(" "), /non-ASCII project identifier on Windows/i);
+  }
+
   const missingProject = await callCbmTool("delete_project", { project: "missing" }, fixtureOptions({ env: { FAKE_CBM_CALL_MODE: "project_not_found" } }));
   assert.equal(missingProject.success, false);
   assert.equal(missingProject.error_code, "cbm_project_not_found");

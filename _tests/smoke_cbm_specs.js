@@ -175,6 +175,8 @@ assert.equal(toolsSpec.codebase_memory_bridge_contract.resident_set_discovery_ca
 assert.equal(toolsSpec.codebase_memory_bridge_contract.semantic_only_search_graph_structural_suppression, true);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.source_bearing_excluded_dir_warning, true);
 assert.equal(toolsSpec.codebase_memory_bridge_contract.windows_non_ascii_search_code_warning, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.windows_non_ascii_index_path_warning, true);
+assert.equal(toolsSpec.codebase_memory_bridge_contract.windows_non_ascii_project_warning, true);
 assert.equal(toolsSpec.tool_catalog.cbm_list_projects.resident_set_not_absence_proof, true);
 assert.equal(toolsSpec.tool_catalog.cbm_index_status.resident_set_not_absence_proof, true);
 assert.equal(toolsSpec.tool_catalog.cbm_delete_project.confirmation_required, true);
@@ -208,6 +210,8 @@ assert.deepEqual(dlpSpec.policy.codebase_memory_output_handling, {
   semantic_only_structural_results_suppressed: true,
   source_bearing_excluded_dir_warning: true,
   windows_non_ascii_search_code_warning: true,
+  windows_non_ascii_index_path_warning: true,
+  windows_non_ascii_project_warning: true,
 });
 
 console.log("smoke_cbm_specs ok");

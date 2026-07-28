@@ -57,7 +57,7 @@ Load `references/tools.md` for arguments and caveats. Load `references/scenarios
 
 ## Result Interpretation
 
-`success: true` with `partial_success: true` is not full success. Prefer structured fields over warning prose. For `cbm_detect_changes`, read `bridge_analysis`, totals, and `impact_resolution_reason`; bounded arrays are samples. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` means accepted transport only. Treat discovery absence, semantic-only suppression, `source_bearing_excluded_dirs`, Cypher caveats, and Windows non-ASCII `cbm_search_code` caveats as citation and coverage warnings. `queue_wait_ms` is scheduling delay. Stable bridge errors outrank diagnostic text.
+`success: true` with `partial_success: true` is not full success. Prefer structured fields over warning prose. For `cbm_detect_changes`, read `bridge_analysis`, totals, and `impact_resolution_reason`; bounded arrays are samples. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` means accepted transport only. Treat discovery absence, semantic-only suppression, `source_bearing_excluded_dirs`, Cypher caveats, and Windows non-ASCII pattern, path, or project caveats as citation and coverage warnings. `queue_wait_ms` is scheduling delay. Stable bridge errors outrank diagnostic text.
 
 ## Common Mistakes
 

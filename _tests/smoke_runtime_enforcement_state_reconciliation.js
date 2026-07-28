@@ -36,7 +36,7 @@ assert.equal(state.policy_layers.runtime_policy_gate.live_3008_status, "live_loa
 assert.equal(state.policy_layers.runtime_policy_gate.public_3009_status, "not_currently_live");
 assert.equal(state.current_runtime_truth.oauth21_3008.runtime_gate_live_loaded_from_repo_applied_runtime_gate, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_51_100_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_101_150_caveats");
 assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(Object.hasOwn(state, "runtime_enforcement_reconciliation"), false);

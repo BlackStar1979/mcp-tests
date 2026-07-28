@@ -742,6 +742,22 @@ function hasNonAsciiText(value) {
   return typeof value === "string" && /[^\x00-\x7F]/.test(value);
 }
 
+function firstNonAsciiText(...values) {
+  return values.find((value) => hasNonAsciiText(value)) || "";
+}
+
+function withBridgeAnalysis(result, patch) {
+  return {
+    ...result,
+    bridge_analysis: {
+      ...(result.bridge_analysis && typeof result.bridge_analysis === "object" && !Array.isArray(result.bridge_analysis)
+        ? result.bridge_analysis
+        : {}),
+      ...patch,
+    },
+  };
+}
+
 function queryContainsInlinePropertyMap(query) {
   return /\(\s*[A-Za-z_][A-Za-z0-9_]*?(?::[A-Za-z_][A-Za-z0-9_]*)?\s*\{[^}]+}\s*\)/.test(String(query || ""));
 }
@@ -789,20 +805,36 @@ function boundConnectorResult(toolName, result, args = {}) {
       };
       warnings.push(`Native CBM excluded possible source-bearing framework route directories: ${sourceDirs.slice(0, 5).join(", ")}.`);
     }
+    if (process.platform === "win32" && firstNonAsciiText(args.repo_path, args.path)) {
+      bounded = withBridgeAnalysis({
+        ...bounded,
+        non_ascii_index_path_windows_caveat: true,
+      }, {
+        non_ascii_index_path: true,
+        windows_path_utf8_caveat: true,
+      });
+      warnings.push("index_repository used a non-ASCII path on Windows; native CBM v0.9.0 may later report source unavailable or false zero code matches for this project. Prefer an ASCII workspace alias or verify with repository truth.");
+    }
   }
   if (toolName === "search_code" && process.platform === "win32" && hasNonAsciiText(args.pattern)) {
-    bounded = {
+    bounded = withBridgeAnalysis({
       ...bounded,
       non_ascii_search_code_windows_caveat: true,
-      bridge_analysis: {
-        ...(bounded.bridge_analysis && typeof bounded.bridge_analysis === "object" && !Array.isArray(bounded.bridge_analysis)
-          ? bounded.bridge_analysis
-          : {}),
-        non_ascii_pattern: true,
-        windows_search_code_utf8_caveat: true,
-      },
-    };
+    }, {
+      non_ascii_pattern: true,
+      windows_search_code_utf8_caveat: true,
+    });
     warnings.push("search_code used a non-ASCII pattern on Windows; native CBM v0.9.0 may return false zero matches due to UTF-8/ANSI content pipeline issues. Verify with repository truth or get_code_snippet.");
+  }
+  if (["search_code", "get_code_snippet"].includes(toolName) && process.platform === "win32" && firstNonAsciiText(args.project, args.project_name)) {
+    bounded = withBridgeAnalysis({
+      ...bounded,
+      non_ascii_project_windows_caveat: true,
+    }, {
+      non_ascii_project: true,
+      windows_project_utf8_caveat: true,
+    });
+    warnings.push(`${toolName} used a non-ASCII project identifier on Windows; if the project name came from a non-ASCII path, native CBM v0.9.0 may return false empty or source-unavailable results. Verify against repository truth.`);
   }
   if (toolName === "detect_changes") {
     bounded = { ...bounded };

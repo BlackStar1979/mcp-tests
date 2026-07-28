@@ -36,7 +36,9 @@
       "resident_set_discovery_caveat": true,
       "semantic_only_structural_results_suppressed": true,
       "source_bearing_excluded_dir_warning": true,
-      "windows_non_ascii_search_code_warning": true
+      "windows_non_ascii_search_code_warning": true,
+      "windows_non_ascii_index_path_warning": true,
+      "windows_non_ascii_project_warning": true
     }
   },
   "current_repo_bindings": [
