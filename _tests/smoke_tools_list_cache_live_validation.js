@@ -35,7 +35,9 @@ assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43
 assert.ok(index.includes("profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools"));
 assert.ok(index.includes("Fresh client-entry evidence from `2026-07-28` keeps retirement blocked"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
-assert.ok(index.includes("Hardened CBM v0.9.0 behavior, including snippet source-integrity validation, is live"));
+assert.ok(index.includes("Hardened CBM v0.9.0 behavior"));
+assert.ok(index.includes("snippet source-integrity recovery"));
+assert.ok(index.includes("canonical PKCE validation are live"));
 assert.ok(index.includes("No restart or connector refresh remains pending"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `84`"));
 assert.ok(canon.includes("tool count `84`"));

@@ -178,8 +178,9 @@
     "pkce_required_for_public_clients": true,
     "code_challenge_method_required": "S256",
     "plain_code_challenge_forbidden": true,
-    "code_challenge_syntax": "43*128unreserved",
+    "code_challenge_syntax": "S256 base64url output: exactly 43 characters from ALPHA / DIGIT / '-' / '_'",
     "code_verifier_syntax": "43*128unreserved",
+    "pkce_rejections_audited_without_verifier_or_challenge_values": true,
     "authorization_request_requirements": [
       "response_type=code",
       "client_id",
@@ -285,7 +286,8 @@
     "guards": [
       "_tests/smoke_oauth21_bootstrap_config.js",
       "_tests/smoke_oauth21_host_header.js",
-      "_tests/smoke_oauth21_local_as_flow.js"
+      "_tests/smoke_oauth21_local_as_flow.js",
+      "_tests/smoke_oauth21_pkce_input_validation.js"
     ],
     "target_runtime_role": "primary_authenticated_oauth21_test_server",
     "paired_public_instance": {

@@ -8,8 +8,9 @@ assert.equal(policy.grant_type,"authorization_code");
 assert.equal(policy.pkce_required_for_public_clients,true);
 assert.equal(policy.code_challenge_method_required,"S256");
 assert.equal(policy.plain_code_challenge_forbidden,true);
-assert.equal(policy.code_challenge_syntax,"43*128unreserved");
+assert.equal(policy.code_challenge_syntax,"S256 base64url output: exactly 43 characters from ALPHA / DIGIT / '-' / '_'");
 assert.equal(policy.code_verifier_syntax,"43*128unreserved");
+assert.equal(policy.pkce_rejections_audited_without_verifier_or_challenge_values,true);
 for(const item of ["response_type=code","client_id","redirect_uri","scope","state","code_challenge","code_challenge_method=S256","resource"]){assert.ok(policy.authorization_request_requirements.includes(item),`auth request missing ${item}`);}
 for(const item of ["grant_type=authorization_code","code","redirect_uri","client_id","code_verifier","resource"]){assert.ok(policy.token_request_requirements.includes(item),`token request missing ${item}`);}
 assert.equal(policy.state_parameter_required,true);

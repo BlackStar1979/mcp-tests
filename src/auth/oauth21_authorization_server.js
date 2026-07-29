@@ -39,7 +39,8 @@ const DEFAULT_STATE_LOCK_TIMEOUT_MS = 5000;
 const DEFAULT_STATE_LOCK_STALE_MS = 30000;
 const STATE_LOCK_RETRY_MS = 25;
 const SUPPORTED_SCOPES = new Set(["mcp:tools"]);
-const PKCE_RE = /^[A-Za-z0-9._~-]{43,128}$/;
+const PKCE_VERIFIER_RE = /^[A-Za-z0-9._~-]{43,128}$/;
+const PKCE_S256_CHALLENGE_RE = /^[A-Za-z0-9_-]{43}$/;
 
 function escapeHtml(value) {
   return String(value || "")
@@ -160,8 +161,12 @@ function hasOnlySupportedScopes(scopes = []) {
     && scopes.every((scope) => SUPPORTED_SCOPES.has(String(scope || "").trim()));
 }
 
-function isValidPkceValue(value) {
-  return PKCE_RE.test(String(value || ""));
+function isValidPkceVerifier(value) {
+  return PKCE_VERIFIER_RE.test(String(value || ""));
+}
+
+function isValidPkceS256Challenge(value) {
+  return PKCE_S256_CHALLENGE_RE.test(String(value || ""));
 }
 
 function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, clientRegistryLimit = DEFAULT_CLIENT_REGISTRY_LIMIT, warnLogger = console.warn } = {}) {
@@ -743,9 +748,18 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     const scopes = normalizeScopeTokens(query.scope || "mcp:tools");
     if (!client.redirect_uris.some((item) => matchesRegisteredRedirectUri(item, redirectUri))) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
-    if (String(query.code_challenge_method || "") !== "S256") return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
-    if (!query.code_challenge) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
-    if (!isValidPkceValue(query.code_challenge)) return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_invalid" } };
+    if (String(query.code_challenge_method || "") !== "S256") {
+      auditOAuth("oauth21_authorize_rejected", { reason: "pkce_s256_required", client_id: client.client_id });
+      return { status: 400, body: { error: "invalid_request", error_description: "pkce_s256_required" } };
+    }
+    if (!query.code_challenge) {
+      auditOAuth("oauth21_authorize_rejected", { reason: "code_challenge_required", client_id: client.client_id });
+      return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_required" } };
+    }
+    if (!isValidPkceS256Challenge(query.code_challenge)) {
+      auditOAuth("oauth21_authorize_rejected", { reason: "code_challenge_invalid", client_id: client.client_id });
+      return { status: 400, body: { error: "invalid_request", error_description: "code_challenge_invalid" } };
+    }
     if (!state) return { status: 400, body: { error: "invalid_request", error_description: "state_required" } };
     if (!String(query.resource || "").trim()) {
       auditOAuth("oauth21_authorize_rejected", { reason: "resource_required", client_id: client.client_id });
@@ -870,8 +884,14 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
         auditOAuth("oauth21_token_rejected", { reason: "resource_mismatch", grant_type: "authorization_code", client_id: client.client_id });
         return { status: 400, body: { error: "invalid_target", error_description: "resource_mismatch" } };
       }
-      if (!isValidPkceValue(body.code_verifier)) return { status: 400, body: { error: "invalid_grant", error_description: "code_verifier_invalid" } };
-      if (sha256Base64Url(body.code_verifier || "") !== code.codeChallenge) return { status: 400, body: { error: "invalid_grant", error_description: "pkce_verification_failed" } };
+      if (!isValidPkceVerifier(body.code_verifier)) {
+        auditOAuth("oauth21_token_rejected", { reason: "code_verifier_invalid", grant_type: "authorization_code", client_id: client.client_id });
+        return { status: 400, body: { error: "invalid_grant", error_description: "code_verifier_invalid" } };
+      }
+      if (sha256Base64Url(body.code_verifier || "") !== code.codeChallenge) {
+        auditOAuth("oauth21_token_rejected", { reason: "pkce_verification_failed", grant_type: "authorization_code", client_id: client.client_id });
+        return { status: 400, body: { error: "invalid_grant", error_description: "pkce_verification_failed" } };
+      }
       code.used = true;
       const issued = issue(client.client_id, code.scope, code.resource);
       if (issued?.error) return { status: 500, body: issued };
