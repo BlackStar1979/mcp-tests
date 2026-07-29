@@ -11,6 +11,8 @@ Updated: 2026-07-29
   Review of current upstream codebase-memory-mcp issues 101-150 and local mcp-tests impact.
 - `CBM_UPSTREAM_ISSUES_151_200_REVIEW.md`
   Review of current upstream codebase-memory-mcp issues 151-200 and local mcp-tests impact.
+- `CBM_UPSTREAM_ISSUES_201_277_REVIEW.md`
+  Review of current upstream codebase-memory-mcp issues 201-277 and local mcp-tests impact.
 - `CBM_UPSTREAM_ISSUES_51_100_REVIEW.md`
   Review of upstream issues 51-100 and local bridge safeguards derived from them.
 - `CBM_UPSTREAM_ISSUES_FIRST50_REVIEW.md`

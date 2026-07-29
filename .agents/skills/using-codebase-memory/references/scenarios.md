@@ -76,3 +76,15 @@ Expected reasoning:
 - Use `cbm_status` for binary and compatibility truth.
 - Use connector enumeration or audit evidence for Client/UI truth.
 - Require fresh external evidence before claiming a client refresh, runtime reload, or changed connector surface.
+
+## SCENARIO-7 — Documentation or workflow question
+
+Request: “What does the project documentation/workflow say about the next task?”
+
+Expected sequence:
+
+1. Use `workbench` `index_status` or `build_index` with `profile=knowledge`.
+2. Read the cited `_workflow/`, `docs/`, root spec, or `DIRECTORY.md` files when the answer is consequential.
+3. Use CBM only if the question turns from documentation into code-symbol discovery or call/data-flow analysis.
+
+Reject: treating a CBM `search_code` or `search_graph` miss as proof that Markdown body text, frontmatter descriptions, ADR files, or workflow state is absent.

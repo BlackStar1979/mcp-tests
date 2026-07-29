@@ -24,6 +24,8 @@ assert.ok(index.includes("`COMP-1A` — event-gated"));
 assert.ok(index.includes("`DOC-2A` — bounded fallback"));
 assert.ok(index.includes("`COMP-1B` / `SURF-1A`"));
 assert.ok(index.includes("Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026"));
+assert.ok(index.includes("Completed upstream issue review through ordinals 201-277 on July 29, 2026"));
+assert.ok(index.includes("documentation/workflow retrieval to `workbench` `profile=knowledge`"));
 assert.ok(index.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(index.includes("connector_runtime_callable_surface_revalidation.md"));
 assert.ok(index.includes("adjacent_sep_watchlist_review.md"));
@@ -101,7 +103,7 @@ assert.ok(canon.includes("`current_working_course = initialize-retirement-eviden
 assert.ok(canon.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
 assert.ok(canon.includes("`next_secondary = bounded-doc-orientation-maintenance`"));
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);

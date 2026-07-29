@@ -6,6 +6,8 @@ Load when: selecting or invoking a `cbm_*` tool, interpreting its result envelop
 
 The connector exposes fifteen tools: 14 native operations plus bridge-only `cbm_status`. The verified native contract is codebase-memory v0.9.0.
 
+CBM is the code-graph layer. It is not the documentation/workflow retrieval layer. For project state, workflow files, reports, specs, ADR text on disk, Markdown prose, or `DIRECTORY.md` orientation, use the `workbench` workspace index with `profile=knowledge` and verify against repository files when consequential.
+
 All native envelopes expose:
 
 - `success`, `error_code`, `error`;
@@ -43,6 +45,7 @@ Use `project` as the canonical argument name. `project_name` is accepted as a co
 
 - Do not index because a read returned no result.
 - Do not index outside the authorized root.
+- Do not use CBM code-search misses as proof that documentation prose, frontmatter, ADR files, or workflow state does not exist.
 - Do not overlap CBM mutations.
 - Do not forward, print, persist, or replay a `state_handle`.
 - Use deletion only for an explicitly named disposable or operator-approved index.

@@ -62,6 +62,9 @@ for (const marker of [
   "Index truth",
   "Runtime truth",
   "Client/UI truth",
+  "Knowledge index truth",
+  "workbench",
+  "profile=knowledge",
 ]) {
   assert.ok(skill.includes(marker), `missing operational marker: ${marker}`);
 }
@@ -98,6 +101,9 @@ for (const marker of [
   "labels()",
   "Runtime edge creation from traces not yet implemented",
   "known native call-attribution bugs",
+  "documentation/workflow retrieval layer",
+  "frontmatter",
+  "ADR files",
   "cbm_project_not_found",
   "cbm_native_rejected",
 ]) {
@@ -111,6 +117,7 @@ for (const scenario of [
   "SCENARIO-4",
   "SCENARIO-5",
   "SCENARIO-6",
+  "SCENARIO-7",
 ]) {
   assert.ok(scenarios.includes(scenario), `scenario reference missing ${scenario}`);
 }
@@ -121,6 +128,8 @@ for (const marker of [
   "disposable fixture",
   "partial success",
   "fresh external evidence",
+  "Documentation or workflow question",
+  "Markdown body text",
 ]) {
   assert.ok(scenarios.includes(marker), `scenario reference missing marker: ${marker}`);
 }

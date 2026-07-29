@@ -289,7 +289,7 @@
       "sessionless_hidden_route_subscriptions_listen_active": false,
       "sessionless_hidden_route_repo_retired_now": true,
       "transport_session_retirement_repo_applied_not_live_loaded_yet": false,
-      "cbm_contract": "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats"
+      "cbm_contract": "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats"
     },
     "public_3009": {
       "auth_mode": "none",
@@ -305,9 +305,9 @@
       "tool_count": 84,
       "tool_names_hash": "7b5bfc1bd21386d3",
       "combined_fingerprint": "448efe0e488864b6",
-      "connector_map_status": "live_hardened_v0_9_0_84_in_sync_with_upstream_151_200_caveats",
+      "connector_map_status": "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats",
       "repo_current_expected_tool_count": 84,
-      "evidence_source": "post_restart_cbm_upstream_151_200_caveats_probe",
+      "evidence_source": "post_restart_cbm_upstream_201_277_caveats_probe",
       "server_start_id": "2026-07-28T16:05:12.562Z",
       "connector_ui_visibility_verified_now": true,
       "ttl_ms": 0,

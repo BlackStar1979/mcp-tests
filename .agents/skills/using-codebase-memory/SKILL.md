@@ -7,12 +7,13 @@ description: Use when a task requires inspecting, indexing, searching, querying,
 
 ## Overview
 
-Use CBM as indexed evidence, not a substitute for repository files or live runtime inspection. Select the narrowest `cbm_*` tool and preserve truth-layer boundaries.
+Use CBM as indexed code evidence, not a substitute for repository files, live runtime inspection, or documentation/workflow retrieval. Select the narrowest tool and preserve truth-layer boundaries.
 
 ## Core Contract
 
 - **Repository truth:** current files and Git state.
-- **Index truth:** the latest completed CBM index; it may be stale.
+- **Index truth:** the latest completed CBM code graph; it may be stale.
+- **Knowledge index truth:** `workbench` documentation/workflow retrieval; use it for docs, plans, specs, and project-state questions.
 - **Runtime truth:** active bridge, executable, queues, and mutation lock.
 - **Client/UI truth:** connector enumeration and approval behavior.
 - Read operations never index implicitly.
@@ -33,6 +34,7 @@ Prefer the descriptor's `project` argument. The bridge also accepts upstream `pr
 
 | Need | Tool path |
 |---|---|
+| Documentation or workflow state | `workbench` `index_status` / `build_index(profile=knowledge)` |
 | Health or compatibility | `cbm_status` |
 | Existing indexes | `cbm_list_projects` → `cbm_index_status` |
 | Architecture | `cbm_get_architecture` |
