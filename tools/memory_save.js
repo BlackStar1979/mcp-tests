@@ -39,7 +39,7 @@ const memorySaveTool = {
                  "so other agents can retrieve them later via memory_search.",
     inputSchema:  MEMORY_SAVE_INPUT_SCHEMA,
     outputSchema: MEMORY_SAVE_OUTPUT_SCHEMA,
-    annotations:  MEMORY_WRITE_ANNOTATIONS,
+    annotations:  { ...MEMORY_WRITE_ANNOTATIONS, openWorldHint: true },
   },
   execute,
   summarizeArgs(args = {}) {

@@ -65,7 +65,7 @@ const MEMORY_SEARCH_INPUT_SCHEMA = {
       type: "string",
       minLength: 2,
       maxLength: 512,
-      description: "Natural-language query. Scored by term overlap against stored content.",
+      description: "Natural-language query. Scored by term overlap and optional embedding similarity.",
     },
     agent_name: {
       ...AGENT_NAME_PROP,

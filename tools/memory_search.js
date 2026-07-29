@@ -36,12 +36,12 @@ const memorySearchTool = {
   descriptor: {
     name:        TOOL_NAME,
     title:       "Search agent memory",
-    description: "Keyword search over the shared agent memory store. " +
-                 "Results are ranked by term-overlap score (0–1). " +
+    description: "Hybrid search over the shared agent memory store. " +
+                 "Results use term overlap with an optional externally generated embedding score (0–1). " +
                  "Use this at the start of a session to retrieve context from a previous agent's work.",
     inputSchema:  MEMORY_SEARCH_INPUT_SCHEMA,
     outputSchema: MEMORY_SEARCH_OUTPUT_SCHEMA,
-    annotations:  MEMORY_READ_ANNOTATIONS,
+    annotations:  { ...MEMORY_READ_ANNOTATIONS, openWorldHint: true },
   },
   execute,
   summarizeArgs(args = {}) {

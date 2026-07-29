@@ -41,6 +41,12 @@
       "windows_non_ascii_project_warning": true,
       "path_with_space_index_path_warning": true,
       "project_with_space_warning": true
+    },
+    "memory_embedding_output_handling": {
+      "embedding_vectors_in_tool_output_forbidden": true,
+      "embedding_provider_token_in_output_or_audit_forbidden": true,
+      "embedding_cache_plaintext_forbidden": true,
+      "memory_content_remains_authoritative_only_in_memory_store": true
     }
   },
   "current_repo_bindings": [

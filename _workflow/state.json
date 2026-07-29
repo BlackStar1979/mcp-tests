@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-29T18:22:20.600Z",
+  "updated_at": "2026-07-29T18:57:01.393Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "initialize-retirement-evidence-wait",
-    "next_primary": "comp-1a-on-fresh-external-client-traffic",
-    "next_secondary": "bounded-doc-orientation-maintenance",
+    "current_working_course": "memory-embedding-runtime-activation-gate",
+    "next_primary": "mem-1-live-provider-activation-and-quality-proof",
+    "next_secondary": "oauth21-safe-recurring-prune-redesign",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -125,7 +125,7 @@
       "runtime_enforced": true,
       "repo_applied_commit": "d299cfa",
       "live_3008_status": "live_loaded_from_repo_applied_runtime_gate",
-      "live_3008_server_start_id": "2026-07-29T18:21:15.570Z",
+      "live_3008_server_start_id": "2026-07-29T18:53:50.174Z",
       "public_3009_status": "not_currently_live",
       "live_denial_probe": "not_injected"
     },
@@ -181,7 +181,7 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 79,
+    "env_var_count": 83,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -280,7 +280,7 @@
       "profile": "internal",
       "expected_tool_count": 84,
       "repo_expected_tool_count": 84,
-      "server_start_id": "2026-07-29T18:21:15.570Z",
+      "server_start_id": "2026-07-29T18:53:50.174Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -304,15 +304,16 @@
     "oauth21_3008_tools": {
       "tool_count": 84,
       "tool_names_hash": "7b5bfc1bd21386d3",
-      "combined_fingerprint": "a44365ca2b2e5445",
-      "connector_map_status": "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity",
+      "combined_fingerprint": "673f28e12afea85c",
+      "connector_map_status": "live_84_descriptor_refresh_pending",
       "repo_current_expected_tool_count": 84,
-      "evidence_source": "post_restart_pkce_canonical_validation_and_live_connector_probe",
-      "server_start_id": "2026-07-29T18:21:15.570Z",
-      "connector_ui_visibility_verified_now": true,
+      "evidence_source": "post_restart_memory_keyword_fallback_and_live_connector_probe",
+      "server_start_id": "2026-07-29T18:53:50.174Z",
+      "connector_ui_visibility_verified_now": false,
+      "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,
       "cache_scope": "private",
-      "connector_refresh_required_now": false
+      "connector_refresh_required_now": true
     }
   }
 }

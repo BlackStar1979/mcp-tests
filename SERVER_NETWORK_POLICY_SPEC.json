@@ -39,6 +39,23 @@
       "image/svg+xml"
     ]
   },
+  "internal_service_egress": {
+    "memory_embeddings": {
+      "description": "Optional server-owned embedding request for authenticated memory save/search. This is not a caller-configurable network tool.",
+      "endpoint": "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/embeddings",
+      "method": "POST",
+      "default_enabled": false,
+      "explicit_egress_opt_in_required": true,
+      "server_owned_auth_only": true,
+      "caller_supplied_url_forbidden": true,
+      "caller_supplied_headers_forbidden": true,
+      "model": "bge-m3",
+      "dimensions": 1024,
+      "timeout_ms": 5000,
+      "max_response_bytes": 262144,
+      "failure_mode": "keyword_search_fallback"
+    }
+  },
   "network_scopes": {
     "allowlisted_https_fetch": {
       "description": "Read-only HTTPS GET on the configured allowlist with response byte cap, timeout, redirect and SSRF guards.",

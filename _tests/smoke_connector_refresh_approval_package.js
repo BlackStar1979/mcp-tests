@@ -41,9 +41,10 @@ assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_co
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 84);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "7b5bfc1bd21386d3");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 84);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_84_descriptor_refresh_pending");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.status, "prepared_no_execution");
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.record, "_workflow/operator_decisions/connector_refresh_approval_package.md");

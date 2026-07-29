@@ -48,7 +48,11 @@ function auditRuntimeConfig(findings){
   const cbmSafeEnv = safeEnvBlock ? [...safeEnvBlock[1].matchAll(/"(CBM_[A-Z0-9_]+)"/g)].map(m=>m[1]) : [];
   const env = uniq(
     [...codeText.matchAll(/MCP_TEST_[A-Z0-9_]+/g)].map(m=>m[0])
-      .concat([...codeText.matchAll(/process\.env\.(CBM_[A-Z0-9_]+)/g)].map(m=>m[1]), cbmSafeEnv)
+      .concat(
+        [...codeText.matchAll(/process\.env\.(CBM_[A-Z0-9_]+)/g)].map(m=>m[1]),
+        [...codeText.matchAll(/env\.(OVH_[A-Z0-9_]+)/g)].map(m=>m[1]),
+        cbmSafeEnv,
+      )
   );
   const specEnv = (spec.env_vars||[]).slice().sort();
   const missingEnv = env.filter(x=>!specEnv.includes(x));

@@ -51,9 +51,10 @@ assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_harden
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 84);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "7b5bfc1bd21386d3");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 84);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_84_descriptor_refresh_pending");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
 assert.ok(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence);
 assert.equal(pluginSpec.hotplug_lifecycle_readiness.status, "hpl1_to_hpl4_reconciled_hpl5_gated");

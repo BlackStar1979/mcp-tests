@@ -4,12 +4,12 @@ Status: active navigation index
 Date: 2026-07-29
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`), including fifteen `cbm_*` tools. Hardened CBM v0.9.0 behavior and canonical PKCE validation are live at `server_start_id = 2026-07-29T18:21:15.570Z` with unchanged connector-visible surface. Live `get_code_snippet` recovered verified `searchIndex` lines `1073-1084`, preserved incorrect native lines `898-909`, and exposed `source_integrity: bridge_recovered` plus `source_reliable: true`; unrecoverable mismatches are explicitly unreliable. Native calls use stdin, change and trace results expose structured partial-result metadata, path/project and Cypher caveats remain explicit, all active cache databases are v0.9.0-compatible, and `manage_adr(get)` succeeds. Upstream issue reviews cover ordinals 1-277, while `docs/UPSTREAM_REPO_PATTERN_LAB.md` records exact upstream pins, production-source evidence, dependency costs, and second-pass transplant decisions. The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index, whose latest validated baseline is `252` docs, `514` internal links, all `36` source-of-truth docs linked, and `40` unresolved-reference samples. Manual sample-repo stress covered `663` calls across all fifteen `cbm_*` tools with `instability=[]`. No restart or connector refresh remains pending. Fresh client-entry evidence from `2026-07-28` keeps retirement blocked: the current runtime has no newer external entry evidence, and `--latest-entry-window` still selects `server_start_id = 2026-07-28T03:49:00.666Z`, where `codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries. Refresh again only after newer external traffic creates a meaningfully new window.
+Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`), including fifteen `cbm_*` tools. Hardened CBM v0.9.0 behavior, canonical PKCE validation, and the keyword-safe memory embedding package are live at `server_start_id = 2026-07-29T18:53:50.174Z`. Live `get_code_snippet` recovered verified `searchIndex` lines `1073-1084`, preserved incorrect native lines `898-909`, and exposed `source_integrity: bridge_recovered` plus `source_reliable: true`; unrecoverable mismatches are explicitly unreliable. Native calls use stdin, change and trace results expose structured partial-result metadata, path/project and Cypher caveats remain explicit, all active cache databases are v0.9.0-compatible, and `manage_adr(get)` succeeds. Upstream issue reviews cover ordinals 1-277, while `docs/UPSTREAM_REPO_PATTERN_LAB.md` records exact upstream pins, production-source evidence, dependency costs, and second-pass transplant decisions. The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index, whose latest validated baseline is `252` docs, `514` internal links, all `36` source-of-truth docs linked, and `40` unresolved-reference samples. Manual sample-repo stress covered `663` calls across all fifteen `cbm_*` tools with `instability=[]`. Controlled restart `manual-1785351228729` is complete; tool names remain unchanged, own-connector `get_info` and `memory_search` are callable, and memory retrieval remains keyword-only because provider configuration is absent. Descriptor-only fingerprint drift requires a later connector metadata refresh/review, but it does not block tool calls. Fresh client-entry evidence from `2026-07-28` keeps retirement blocked: the current runtime has no newer external entry evidence, and `--latest-entry-window` still selects `server_start_id = 2026-07-28T03:49:00.666Z`, where `codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries. Refresh again only after newer external traffic creates a meaningfully new window.
 
 Current workflow markers:
-- `current_working_course = initialize-retirement-evidence-wait`
-- `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = bounded-doc-orientation-maintenance`
+- `current_working_course = memory-embedding-runtime-activation-gate`
+- `next_primary = mem-1-live-provider-activation-and-quality-proof`
+- `next_secondary = oauth21-safe-recurring-prune-redesign`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -70,9 +70,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=268`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=269`.
 - Public section count: `7`.
-- Authenticated smoke count: `268`.
+- Authenticated smoke count: `269`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -82,11 +82,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 84 connector-visible tools at `server_start_id = 2026-07-29T18:21:15.570Z`; current `COMP-1A` evidence remains `initialize_only` on the July 28 latest-entry window for `codex-mcp-client 0.146.0-alpha.3.1`;
+- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 84 connector-visible tools at `server_start_id = 2026-07-29T18:53:50.174Z`; current `COMP-1A` evidence remains `initialize_only` on the July 28 latest-entry window for `codex-mcp-client 0.146.0-alpha.3.1`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Counts remain aligned at 84 and the hardened connector-visible CBM v0.9.0 plus canonical PKCE contracts are live at `server_start_id = 2026-07-29T18:21:15.570Z`; `state_handle` deletion, not-found classification, source preservation, normalized partial-result metadata, semantic-only suppression, path/project and Cypher caveats, repaired ADR storage, snippet source-integrity recovery, and unchanged connector-visible surface are verified. No restart or connector refresh remains pending.
+- Counts remain aligned at 84 and the hardened connector-visible CBM v0.9.0, canonical PKCE, and keyword-safe memory contracts are live at `server_start_id = 2026-07-29T18:53:50.174Z`; `state_handle` deletion, not-found classification, source preservation, normalized partial-result metadata, semantic-only suppression, path/project and Cypher caveats, repaired ADR storage, snippet source-integrity recovery, and own-connector memory fallback are verified. No restart remains pending; descriptor-only metadata refresh/review remains pending because `openWorldHint` changed without a tool-name or schema change.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.

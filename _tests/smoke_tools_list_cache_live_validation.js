@@ -8,8 +8,8 @@ const plan = fs.readFileSync(path.join(ROOT, "_workflow", "operator_decisions", 
 const index = fs.readFileSync(path.join(ROOT, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "utf8");
 const canon = fs.readFileSync(path.join(ROOT, "_workflow", "WORKFLOW_CANON.md"), "utf8");
 
-const expectedCurrentStatus = "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity";
-const expectedCurrentFingerprint = "a44365ca2b2e5445";
+const expectedCurrentStatus = "live_84_descriptor_refresh_pending";
+const expectedCurrentFingerprint = "673f28e12afea85c";
 const expectedCurrentHash = "7b5bfc1bd21386d3";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
@@ -21,8 +21,9 @@ assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 84);
 assert.equal(c.repo_current_expected_tool_count, 84);
-assert.equal(c.connector_refresh_required_now, false);
-assert.equal(c.connector_ui_visibility_verified_now, true);
+assert.equal(c.connector_refresh_required_now, true);
+assert.equal(c.connector_ui_visibility_verified_now, false);
+assert.equal(c.model_runtime_callable_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
@@ -37,11 +38,11 @@ assert.ok(index.includes("Fresh client-entry evidence from `2026-07-28` keeps re
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
 assert.ok(index.includes("Hardened CBM v0.9.0 behavior"));
 assert.ok(index.includes("snippet source-integrity recovery"));
-assert.ok(index.includes("canonical PKCE validation are live"));
-assert.ok(index.includes("No restart or connector refresh remains pending"));
+assert.ok(index.includes("canonical PKCE validation, and the keyword-safe memory embedding package are live"));
+assert.ok(index.includes("descriptor-only metadata refresh/review remains pending"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `84`"));
 assert.ok(canon.includes("tool count `84`"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
-assert.ok(canon.includes("no restart or connector refresh remains pending"));
+assert.ok(canon.includes("descriptor-only connector metadata refresh/review remains pending"));
 
 console.log("smoke_tools_list_cache_live_validation ok");

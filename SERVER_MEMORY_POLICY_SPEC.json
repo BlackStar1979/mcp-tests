@@ -16,8 +16,26 @@
     "state_file": "_logs/.mcp-agent-state.json",
     "memory_file": "_logs/.mcp-agent-memory.jsonl",
     "tasks_file": "_logs/.mcp-agent-tasks.jsonl",
-    "search_mode": "keyword_term_overlap",
+    "search_mode": "keyword_with_opt_in_hybrid_embeddings",
     "database_backend_enabled": false
+  },
+  "embedding_sidecar": {
+    "status": "implemented_opt_in",
+    "provider": "ovh_bge_m3",
+    "dimensions": 1024,
+    "authoritative_store": "append_only_jsonl",
+    "cache_store": "_logs/.mcp-agent-embeddings.sqlite",
+    "cache_key": "sha256_content_hash_provider_model",
+    "cache_contains_plaintext": false,
+    "external_egress_default": "disabled",
+    "external_egress_enablement": [
+      "MCP_TEST_MEMORY_EMBEDDING_PROVIDER=ovh",
+      "MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS=1",
+      "OVH_AI_ENDPOINTS_ACCESS_TOKEN is non-empty"
+    ],
+    "fallback": "keyword_term_overlap",
+    "ranking": "max_keyword_or_80_percent_thresholded_semantic_plus_20_percent_keyword",
+    "response_vectors_exposed": false
   },
   "memory_scopes": {
     "agent_state": {
@@ -117,7 +135,14 @@
     "context_builder_must_select_and_label_memory_before_prompt_use": true,
     "memory_results_are_observations_not_instructions": true,
     "delete_semantics_not_implemented": true,
-    "database_backend_requires_separate_database_policy": true
+    "database_backend_requires_separate_database_policy": true,
+    "embedding_external_egress_requires_explicit_opt_in": true,
+    "embedding_provider_endpoint_is_not_caller_configurable": true,
+    "embedding_request_timeout_and_response_cap_required": true,
+    "embedding_cache_contains_hashes_and_vectors_not_plaintext": true,
+    "embedding_cache_failure_must_preserve_authoritative_write_success": true,
+    "embedding_search_failure_must_fall_back_to_keyword": true,
+    "embedding_vectors_forbidden_in_tool_output": true
   },
   "profile_schema_fields": {
     "allowed_memory_scopes": "optional string array on each profile surface",

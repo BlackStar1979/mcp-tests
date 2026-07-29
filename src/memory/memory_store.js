@@ -8,13 +8,23 @@
  *   .mcp-agent-memory.jsonl — append-only JSONL of memory entries
  *   .mcp-agent-tasks.jsonl  — append-only JSONL of task entries
  *
- * Search: keyword term-overlap scoring (no external deps).
- * Writes are atomic: temp-file + rename to avoid partial reads.
+ * Search: keyword scoring with an opt-in OVH embedding sidecar.
+ * Memory writes are append-only; task rewrites use temp-file + rename.
  */
 
 const fsp  = require("node:fs/promises");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const {
+  BGE_M3_DIMENSIONS,
+  createEmbeddingClient,
+  cosineSimilarity,
+} = require("./embedding_client");
+const {
+  contentHash,
+  loadCachedEmbeddings,
+  storeCachedEmbedding,
+} = require("./embedding_cache");
 
 function getLogsDir() {
   return process.env.MCP_TEST_MEMORY_LOG_DIR
@@ -113,6 +123,22 @@ async function saveMemory({ agent_name, content, type = "fact", category = "" })
   const filePath = memoryFile();
   await fsp.mkdir(path.dirname(filePath), { recursive: true });
   await fsp.appendFile(filePath, JSON.stringify(entry) + "\n", "utf8");
+
+  const generated = await createEmbeddingClient().generate(content);
+  if (generated.status === "ok") {
+    try {
+      storeCachedEmbedding({
+        logDir: getLogsDir(),
+        text: content,
+        provider: generated.provider,
+        model: generated.model,
+        dimensions: generated.dimensions,
+        vector: generated.vector,
+      });
+    } catch {
+      // The append-only memory entry is authoritative; cache failure must not invite a duplicate retry.
+    }
+  }
   return entry;
 }
 
@@ -128,8 +154,13 @@ function scoreEntry(entry, tokens) {
   return hits / tokens.length;
 }
 
+function semanticRelevance(similarity) {
+  const floor = 0.45;
+  return Math.max(0, Math.min(1, (similarity - floor) / (1 - floor)));
+}
+
 /**
- * Keyword search over non-archived memory entries.
+ * Hybrid search over non-archived memory entries.
  * Returns scored results sorted descending, capped at top_k.
  */
 async function searchMemory({ query, agent_name, top_k = 5, min_score = 0.1 }) {
@@ -139,9 +170,33 @@ async function searchMemory({ query, agent_name, top_k = 5, min_score = 0.1 }) {
   const pool   = agent_name ? active.filter((e) => e.agent_name === agent_name) : active;
 
   const tokens = query.toLowerCase().split(/\s+/).filter((t) => t.length > 1);
+  const lexicalScores = new Map(pool.map((entry) => [entry.id, scoreEntry(entry, tokens)]));
+  const generated = await createEmbeddingClient().generate(query);
+  let cached = new Map();
+  if (generated.status === "ok") {
+    try {
+      cached = loadCachedEmbeddings({
+        logDir: getLogsDir(),
+        texts: pool.map((entry) => entry.content),
+        provider: generated.provider,
+        model: generated.model,
+        dimensions: BGE_M3_DIMENSIONS,
+      });
+    } catch {
+      cached = new Map();
+    }
+  }
 
   const scored = pool
-    .map((e) => ({ ...e, score: scoreEntry(e, tokens) }))
+    .map((entry) => {
+      const lexicalScore = lexicalScores.get(entry.id) || 0;
+      const cachedVector = cached.get(contentHash(entry.content));
+      if (!cachedVector || generated.status !== "ok") return { ...entry, score: lexicalScore };
+
+      const semanticScore = semanticRelevance(cosineSimilarity(generated.vector, cachedVector));
+      const hybridScore = (0.8 * semanticScore) + (0.2 * lexicalScore);
+      return { ...entry, score: Math.max(lexicalScore, hybridScore) };
+    })
     .filter((e) => e.score >= min_score)
     .sort((a, b) => b.score - a.score)
     .slice(0, top_k);

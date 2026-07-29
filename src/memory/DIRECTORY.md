@@ -1,7 +1,11 @@
 # DIRECTORY
 
 Status: source memory directory map
-Updated: 2026-07-12
+Updated: 2026-07-29
 
 - `memory_store.js`
-  Shared memory-state storage helper used by the memory subsystem.
+  Authoritative JSON/JSONL memory-state storage plus keyword and optional hybrid semantic retrieval.
+- `embedding_client.js`
+  Fail-closed OVH `bge-m3` client with explicit external-egress opt-in, bounded timeout/response size, and strict vector validation.
+- `embedding_cache.js`
+  Non-authoritative SQLite sidecar storing content hashes and versioned vectors without memory plaintext.

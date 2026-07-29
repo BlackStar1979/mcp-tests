@@ -18,7 +18,9 @@
     "arbitrary_connection_string_allowed": false,
     "database_backend_enabled": true,
     "current_oauth21_state_backend": "sqlite_runtime_store_with_legacy_json_override_support",
-    "current_memory_backend": "file_based_logs_store",
+    "current_memory_backend": "file_based_logs_store_with_sqlite_embedding_cache",
+    "memory_embedding_cache_authoritative": false,
+    "memory_embedding_cache_plaintext": false,
     "current_plugin_visibility_state_mode": "preview_pipeline_existing_runtime",
     "current_audit_backend": "_logs/.mcp-tests-audit.jsonl"
   },
