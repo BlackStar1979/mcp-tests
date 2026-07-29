@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-07-29T16:46:29.496Z",
+  "updated_at": "2026-07-29T16:54:49.916Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [

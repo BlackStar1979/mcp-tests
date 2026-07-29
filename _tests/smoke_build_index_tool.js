@@ -112,8 +112,10 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
           "# Active Workflow Index",
           "",
           "Current queue.",
+          "Read first: [`READINESS.md`](READINESS.md) and [`ROADMAP.md`](ROADMAP.md).",
           "Default next package: COMP-1A is event-gated until newer external client traffic.",
           "Fallback: DOC-2A only when a real high-churn orientation gap appears.",
+          "Historical note: `missing_decision.md` is intentionally unresolved in this fixture.",
           "",
         ].join("\n"),
         "utf8"
@@ -201,6 +203,18 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.item_count, 2);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.items[0].priority, "P0");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.documentation_gaps.length, 0);
+      assert.equal(isolated.stats.knowledge_summary.document_graph.node_count, isolated.docs.length);
+      assert.equal(isolated.stats.knowledge_summary.document_graph.internal_link_count >= 2, true);
+      assert.equal(isolated.stats.knowledge_summary.document_graph.linked_node_count >= 3, true);
+      assert.ok(isolated.stats.knowledge_summary.document_graph.top_linked_docs.some((item) => item.path === "_workflow/READINESS.md"));
+      assert.ok(isolated.stats.knowledge_summary.document_graph.top_linked_docs.some((item) => item.path === "_workflow/ROADMAP.md"));
+      assert.deepEqual(isolated.stats.knowledge_summary.document_graph.active_entrypoint_links[0], {
+        path: "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+        outgoing: ["_workflow/READINESS.md", "_workflow/ROADMAP.md"],
+      });
+      assert.ok(isolated.stats.knowledge_summary.document_graph.unresolved_references_sample.some((item) => (
+        item.source === "_workflow/ACTIVE_WORKFLOW_INDEX.md" && item.target === "_workflow/missing_decision.md"
+      )));
 
       const planningQuery = "what is the current next recommended action and why COMP-1A is blocked";
       const planningSearch = await searchIndex(planningQuery, {

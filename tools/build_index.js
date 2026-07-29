@@ -45,6 +45,20 @@ function emptyWorkflowSummary() {
   };
 }
 
+function emptyDocumentGraph() {
+  return {
+    node_count: 0,
+    linked_node_count: 0,
+    internal_link_count: 0,
+    unresolved_reference_count: 0,
+    source_of_truth_linked_count: 0,
+    source_of_truth_total_count: 0,
+    top_linked_docs: [],
+    active_entrypoint_links: [],
+    unresolved_references_sample: [],
+  };
+}
+
 function emptyKnowledgeSummary(profile = "") {
   return {
     profile,
@@ -55,6 +69,7 @@ function emptyKnowledgeSummary(profile = "") {
     top_subareas: [],
     top_authority_docs: [],
     workflow_summary: emptyWorkflowSummary(),
+    document_graph: emptyDocumentGraph(),
   };
 }
 

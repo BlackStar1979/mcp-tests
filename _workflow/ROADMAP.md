@@ -19,7 +19,7 @@ Current derivation:
 - Post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. No restart or connector refresh remains pending.
 - `COMP-1A` remains the highest-leverage protocol package, but it is event-gated again after the July 28 `codex-mcp-client 0.146.0-alpha.3.1` latest-entry window confirmed `2` successful legacy `initialize` responses and `0` `server/discover` entries; the latest runtime start itself currently contains follow-up traffic only and must be treated as stale for entry-path purposes.
 - `DOC-2A` remains the autonomous fallback class, but the current July 29 pass closed the active documentation gap: `docs/superpowers`, `docs/superpowers/plans`, and `docs/superpowers/specs` now have generator-owned maps, and `scripts/audit_directory_docs.js` reports no missing maps among the top 25 dirs with churn >= 5.
-- `RETR-1` retrieval now exposes workflow facts directly and ranks active workflow truth ahead of historical decision records for natural planning questions. Live `workbench` probes after restart `manual-1785343566402` returned `_workflow/ACTIVE_WORKFLOW_INDEX.md`, `_workflow/READINESS.md`, and `_workflow/ROADMAP.md` as the top workflow-orientation context for "what next / why COMP-1A is blocked" style queries.
+- `RETR-1` retrieval now exposes workflow facts directly, ranks active workflow truth ahead of historical decision records for natural planning questions, and includes a deterministic document graph for internal doc references. The graph is intentionally local and dependency-free: it maps Markdown/backtick document references, linked-node coverage, active entrypoint outgoing links, top linked docs, and unresolved-reference samples without adding vector databases or LLM-based extraction.
 
 ## Priority matrix
 
@@ -48,6 +48,7 @@ Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metad
 Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map and project-local `using-codebase-memory` skill maps on July 28, 2026, then added generator-owned `docs/superpowers` plan/spec maps and raised the audit guard to top25/churn>=5 on July 29, 2026 without widening into repo-wide documentation churn.
 Completed upstream review extension: `CBM-UPSTREAM-201-277` records the remaining July 29, 2026 open-issue batch and updates the project-local skill boundary so documentation/workflow retrieval uses `workbench` `profile=knowledge` while CBM remains the indexed code graph.
 Completed retrieval quality pass: `RETR-1-ACTIVE-WORKFLOW-RANKING` guards that active workflow documents outrank historical decision records for natural planning questions in `search_index`, `search_index_context`, and `collect_context`; live `workbench` validation after restart `manual-1785343566402` confirms the same behavior on the running connector.
+Completed structural document graph pass: `RETR-1-DOCUMENT-GRAPH` exposes deterministic document-link topology in `knowledge_summary.document_graph`; live validation on July 29, 2026 reports `251` docs, `505` internal document links, all `36` source-of-truth docs linked, and `22` unresolved-reference samples after wildcard/glob noise filtering.
 
 ## Deferred until justified
 

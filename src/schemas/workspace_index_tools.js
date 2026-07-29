@@ -211,6 +211,66 @@ const INDEX_AUTHORITY_DOC_SCHEMA = {
   },
 };
 
+const DOCUMENT_GRAPH_LINKED_DOC_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["path", "title", "kind", "authority", "incoming_count"],
+  properties: {
+    path: { type: "string" },
+    title: { type: "string" },
+    kind: { type: "string" },
+    authority: { type: "string" },
+    incoming_count: { type: "integer", minimum: 0 },
+  },
+};
+
+const DOCUMENT_GRAPH_ENTRYPOINT_LINKS_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["path", "outgoing"],
+  properties: {
+    path: { type: "string" },
+    outgoing: { type: "array", items: { type: "string" } },
+  },
+};
+
+const DOCUMENT_GRAPH_UNRESOLVED_REFERENCE_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["source", "target"],
+  properties: {
+    source: { type: "string" },
+    target: { type: "string" },
+  },
+};
+
+const DOCUMENT_GRAPH_SUMMARY_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "node_count",
+    "linked_node_count",
+    "internal_link_count",
+    "unresolved_reference_count",
+    "source_of_truth_linked_count",
+    "source_of_truth_total_count",
+    "top_linked_docs",
+    "active_entrypoint_links",
+    "unresolved_references_sample",
+  ],
+  properties: {
+    node_count: { type: "integer", minimum: 0 },
+    linked_node_count: { type: "integer", minimum: 0 },
+    internal_link_count: { type: "integer", minimum: 0 },
+    unresolved_reference_count: { type: "integer", minimum: 0 },
+    source_of_truth_linked_count: { type: "integer", minimum: 0 },
+    source_of_truth_total_count: { type: "integer", minimum: 0 },
+    top_linked_docs: { type: "array", items: DOCUMENT_GRAPH_LINKED_DOC_SCHEMA },
+    active_entrypoint_links: { type: "array", items: DOCUMENT_GRAPH_ENTRYPOINT_LINKS_SCHEMA },
+    unresolved_references_sample: { type: "array", items: DOCUMENT_GRAPH_UNRESOLVED_REFERENCE_SCHEMA },
+  },
+};
+
 const WORKFLOW_CANONICAL_DOC_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -410,6 +470,7 @@ const KNOWLEDGE_SUMMARY_SCHEMA = {
     "top_subareas",
     "top_authority_docs",
     "workflow_summary",
+    "document_graph",
   ],
   properties: {
     profile: { type: "string" },
@@ -420,6 +481,7 @@ const KNOWLEDGE_SUMMARY_SCHEMA = {
     top_subareas: { type: "array", items: INDEX_COUNTER_ITEM_SCHEMA },
     top_authority_docs: { type: "array", items: INDEX_AUTHORITY_DOC_SCHEMA },
     workflow_summary: WORKFLOW_SUMMARY_SCHEMA,
+    document_graph: DOCUMENT_GRAPH_SUMMARY_SCHEMA,
   },
 };
 

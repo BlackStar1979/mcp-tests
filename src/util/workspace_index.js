@@ -287,6 +287,151 @@ function findDocBySuffix(docs, suffix) {
   return docs.find((doc) => docPathEndsWith(doc, suffix));
 }
 
+function repoPrefixForPath(displayPath = "") {
+  const normalized = normalizeSlashes(displayPath);
+  const parts = normalized.split("/").filter(Boolean);
+  return parts.length > 0 ? parts[0] : "";
+}
+
+function normalizeDocReferenceTarget(sourcePath = "", rawTarget = "") {
+  let target = normalizeSlashes(String(rawTarget || "").trim());
+  if (!target) return "";
+  target = target.replace(/^<|>$/g, "");
+  if (/^[a-z][a-z0-9+.-]*:/i.test(target)) return "";
+  target = target.split("#")[0].split("?")[0].trim();
+  if (!target) return "";
+  if (/[*{},]/.test(target)) return "";
+
+  const source = normalizeSlashes(sourcePath);
+  const sourcePrefix = repoPrefixForPath(source);
+  const sourceDir = path.posix.dirname(source);
+  const rootLike = /^(?:_workflow|_tests|docs|src|tools|scripts|profiles|plugins|docker|\.agents)\//.test(target)
+    || /^SERVER_[A-Z0-9_]+_SPEC\.json$/i.test(target)
+    || /^(?:README|DIRECTORY|GITHUB_PUBLISHING|package(?:-lock)?)\.(?:md|json)$/i.test(target);
+
+  if (target.startsWith("./") || target.startsWith("../")) {
+    return path.posix.normalize(path.posix.join(sourceDir, target));
+  }
+  if (target.startsWith("/")) {
+    return sourcePrefix ? `${sourcePrefix}${target}` : target.replace(/^\/+/, "");
+  }
+  if (rootLike && sourcePrefix) {
+    return path.posix.normalize(`${sourcePrefix}/${target}`);
+  }
+  return path.posix.normalize(path.posix.join(sourceDir, target));
+}
+
+function extractDocumentReferences(doc) {
+  const sample = String(doc?.sample || "");
+  const refs = new Set();
+  for (const match of sample.matchAll(/\[[^\]]+\]\(([^)\s]+)(?:\s+"[^"]*")?\)/g)) {
+    const target = normalizeDocReferenceTarget(doc.path, match[1]);
+    if (target) refs.add(target);
+  }
+  for (const match of sample.matchAll(/`([^`]+\.(?:md|json|ya?ml|toml|txt))`/gi)) {
+    const target = normalizeDocReferenceTarget(doc.path, match[1]);
+    if (target) refs.add(target);
+  }
+  return [...refs].sort();
+}
+
+function buildDocumentGraphSummary(docs) {
+  const docPaths = new Map(docs.map((doc) => [normalizeSlashes(doc.path || "").toLowerCase(), doc]));
+  const uniqueBasenames = new Map();
+  const duplicateBasenames = new Set();
+  for (const doc of docs) {
+    const docPath = normalizeSlashes(doc.path || "");
+    const base = path.posix.basename(docPath).toLowerCase();
+    if (!base) continue;
+    if (uniqueBasenames.has(base)) {
+      duplicateBasenames.add(base);
+      continue;
+    }
+    uniqueBasenames.set(base, docPath);
+  }
+  for (const base of duplicateBasenames) uniqueBasenames.delete(base);
+  const outgoingByPath = new Map();
+  const incomingCounts = new Map();
+  const unresolved = [];
+  let internalLinkCount = 0;
+
+  for (const doc of docs) {
+    const source = normalizeSlashes(doc.path || "");
+    const links = [];
+    for (const target of extractDocumentReferences(doc)) {
+      let resolvedTarget = target;
+      let key = resolvedTarget.toLowerCase();
+      if (!docPaths.has(key)) {
+        const basenameMatch = uniqueBasenames.get(path.posix.basename(resolvedTarget).toLowerCase());
+        if (basenameMatch) {
+          resolvedTarget = basenameMatch;
+          key = resolvedTarget.toLowerCase();
+        }
+      }
+      if (docPaths.has(key)) {
+        links.push(resolvedTarget);
+        internalLinkCount += 1;
+        incomingCounts.set(resolvedTarget, (incomingCounts.get(resolvedTarget) || 0) + 1);
+      } else {
+        unresolved.push({ source, target: resolvedTarget });
+      }
+    }
+    if (links.length > 0) outgoingByPath.set(source, links);
+  }
+
+  const topLinkedDocs = [...incomingCounts.entries()]
+    .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+    .slice(0, 20)
+    .map(([docPath, incoming_count]) => {
+      const doc = docPaths.get(docPath.toLowerCase()) || {};
+      return {
+        path: docPath,
+        title: String(doc.title || ""),
+        kind: String(doc.kind || "document"),
+        authority: String(doc.authority || "supporting"),
+        incoming_count,
+      };
+    });
+
+  const activeEntrypointLinks = [
+    "mcp-tests/_workflow/ACTIVE_WORKFLOW_INDEX.md",
+    "mcp-tests/_workflow/READINESS.md",
+    "mcp-tests/_workflow/ROADMAP.md",
+    "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+    "_workflow/READINESS.md",
+    "_workflow/ROADMAP.md",
+  ]
+    .filter((item, index, items) => items.indexOf(item) === index)
+    .map((docPath) => ({
+      path: docPath,
+      outgoing: (outgoingByPath.get(docPath) || []).slice(0, 20),
+    }))
+    .filter((item) => item.outgoing.length > 0);
+
+  const sourceOfTruthPaths = docs
+    .filter((doc) => doc.authority === "source_of_truth")
+    .map((doc) => normalizeSlashes(doc.path || ""))
+    .sort();
+  const linkedSourceOfTruth = sourceOfTruthPaths.filter((docPath) => {
+    if ((incomingCounts.get(docPath) || 0) > 0) return true;
+    return (outgoingByPath.get(docPath) || []).length > 0;
+  });
+
+  return {
+    node_count: docs.length,
+    linked_node_count: new Set([...outgoingByPath.keys(), ...incomingCounts.keys()]).size,
+    internal_link_count: internalLinkCount,
+    unresolved_reference_count: unresolved.length,
+    source_of_truth_linked_count: linkedSourceOfTruth.length,
+    source_of_truth_total_count: sourceOfTruthPaths.length,
+    top_linked_docs: topLinkedDocs,
+    active_entrypoint_links: activeEntrypointLinks,
+    unresolved_references_sample: unresolved
+      .sort((a, b) => a.source.localeCompare(b.source) || a.target.localeCompare(b.target))
+      .slice(0, 20),
+  };
+}
+
 function safeJsonParse(text) {
   try {
     const parsed = JSON.parse(String(text || ""));
@@ -582,6 +727,7 @@ function summarizeIndexKnowledge(index = {}) {
     top_subareas: sortedCounterItems(bySubarea),
     top_authority_docs: topAuthorityDocs,
     workflow_summary: buildWorkflowKnowledgeSummary(docs),
+    document_graph: buildDocumentGraphSummary(docs),
   };
 }
 
