@@ -31,9 +31,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=267`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=268`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `267`.
+- Latest validated authenticated smoke count: `268`.
 - Repo current connector-visible authenticated tool target is `84` (`13 public + 71 authorized-visible`), including all fifteen profile-managed `cbm_*` tools; `26` server-internal helpers remain intentionally hidden from MCP schema/tools-list.
 - Live OAuth21 `3008` and the connector enumerate tool count `84`, with current live proof `server_start_id = 2026-07-28T16:05:12.562Z`; the connector-visible hardened CBM v0.9.0 contract, including `state_handle`, partial-result metadata, semantic-only suppression, source-bearing excluded-route warnings, Windows non-ASCII and whitespace path/project caveats, and Cypher shape caveats, is live and verified without connector-visible surface change.
 - CBM reliability hardening is live: stdin payload transport emits no raw-JSON deprecation warning, `detect_changes` normalizes duplicate paths and exposes exact returned/omitted totals, `bridge_analysis`, and `impact_resolution_reason`, `ingest_traces` exposes `runtime_edge_creation` and `runtime_edges_created`, semantic-only `search_graph` suppresses unfiltered structural `results`, `index_repository` warns on source-bearing excluded route directories, `search_code` warns on Windows non-ASCII patterns, `query_graph` warns on unsupported Cypher shapes, runtime output configuration fails fast, executable resolution is operator-neutral, ADR snapshot gating fails closed, and all three active cache databases are v0.9.0-compatible. Post-refresh delete verification returned `deleted` then `cbm_project_not_found`; no restart or connector refresh remains pending.
