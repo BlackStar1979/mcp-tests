@@ -251,6 +251,263 @@ function topTwoLevelArea(displayPath) {
   return parts.length >= 2 ? `${parts[0]}/${parts[1]}` : (parts[0] || ".");
 }
 
+function docPathEndsWith(doc, suffix) {
+  return normalizeSlashes(doc?.path || "").toLowerCase().endsWith(normalizeSlashes(suffix).toLowerCase());
+}
+
+function findDocBySuffix(docs, suffix) {
+  return docs.find((doc) => docPathEndsWith(doc, suffix));
+}
+
+function safeJsonParse(text) {
+  try {
+    const parsed = JSON.parse(String(text || ""));
+    return parsed && typeof parsed === "object" ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function extractJsonValueByKey(text, key) {
+  const source = String(text || "");
+  const keyMatch = new RegExp(`"${key.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}"\\s*:\\s*`).exec(source);
+  if (!keyMatch) return undefined;
+  const start = keyMatch.index + keyMatch[0].length;
+  const opening = source[start];
+  const closing = opening === "{" ? "}" : opening === "[" ? "]" : "";
+  if (!closing) return undefined;
+  let depth = 0;
+  let inString = false;
+  let escaped = false;
+  for (let index = start; index < source.length; index += 1) {
+    const char = source[index];
+    if (inString) {
+      if (escaped) {
+        escaped = false;
+      } else if (char === "\\") {
+        escaped = true;
+      } else if (char === "\"") {
+        inString = false;
+      }
+      continue;
+    }
+    if (char === "\"") {
+      inString = true;
+      continue;
+    }
+    if (char === opening) depth += 1;
+    if (char === closing) {
+      depth -= 1;
+      if (depth === 0) {
+        return source.slice(start, index + 1);
+      }
+    }
+  }
+  return undefined;
+}
+
+function parseWorkflowStateSample(text) {
+  const parsed = safeJsonParse(text);
+  if (Object.keys(parsed).length > 0) return parsed;
+  const state = {};
+  for (const key of ["server_identity", "runtime_topology", "tool_surfaces", "workflow_progress_markers"]) {
+    const valueText = extractJsonValueByKey(text, key);
+    const value = safeJsonParse(valueText);
+    if (Object.keys(value).length > 0) state[key] = value;
+  }
+  return state;
+}
+
+function cleanMarkdownCell(value) {
+  return String(value || "")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\*\*([^*]+)\*\*/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function splitMarkdownTableLine(line) {
+  return String(line || "")
+    .trim()
+    .replace(/^\|/, "")
+    .replace(/\|$/, "")
+    .split("|")
+    .map(cleanMarkdownCell);
+}
+
+function parseMarkdownTable(text, wantedHeaders = []) {
+  const rows = [];
+  const lines = String(text || "").split(/\r?\n/);
+  for (let index = 0; index < lines.length - 1; index += 1) {
+    const headerLine = lines[index];
+    const separatorLine = lines[index + 1];
+    if (!headerLine.trim().startsWith("|") || !/^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(separatorLine)) {
+      continue;
+    }
+    const headers = splitMarkdownTableLine(headerLine).map((item) => item.toLowerCase());
+    if (wantedHeaders.length > 0 && !wantedHeaders.every((wanted) => headers.includes(wanted))) {
+      continue;
+    }
+    for (let rowIndex = index + 2; rowIndex < lines.length; rowIndex += 1) {
+      const line = lines[rowIndex];
+      if (!line.trim().startsWith("|")) break;
+      const cells = splitMarkdownTableLine(line);
+      const row = {};
+      headers.forEach((header, cellIndex) => {
+        row[header] = cells[cellIndex] || "";
+      });
+      rows.push(row);
+    }
+    break;
+  }
+  return rows;
+}
+
+function extractStatusLine(text) {
+  const match = String(text || "").match(/^Status:\s*(.+)$/mi);
+  return match ? cleanMarkdownCell(match[1]) : "";
+}
+
+function extractUpdatedLine(text) {
+  const match = String(text || "").match(/^Updated:\s*(.+)$/mi);
+  return match ? cleanMarkdownCell(match[1]) : "";
+}
+
+function parseReadinessComponents(doc) {
+  const rows = parseMarkdownTable(doc?.sample, ["id", "component", "maturity"]).slice(0, 20);
+  return rows.map((row) => ({
+    id: row.id || "",
+    component: row.component || "",
+    maturity: row.maturity || "",
+    northstar_role: row["northstar role"] || "",
+    depends_on: row["depends on"] || "",
+    current_evidence: row["current evidence"] || "",
+    main_blocker: row["main blocker"] || "",
+    default_next_package: row["default next bounded package"] || "",
+    done_signal: row["done signal"] || "",
+  }));
+}
+
+function parseRoadmapItems(doc) {
+  const rows = parseMarkdownTable(doc?.sample, ["priority", "item", "current action"]).slice(0, 20);
+  return rows.map((row) => ({
+    priority: row.priority || "",
+    item: row.item || "",
+    depends_on: row["depends on"] || "",
+    why_now: row["why it matters now"] || "",
+    current_action: row["current action"] || "",
+  }));
+}
+
+function canonicalDocEntry(id, docs, suffix) {
+  const doc = findDocBySuffix(docs, suffix);
+  return {
+    id,
+    path: doc ? String(doc.path || "") : suffix,
+    present: Boolean(doc),
+    kind: String(doc?.kind || ""),
+    authority: String(doc?.authority || ""),
+    modified: String(doc?.modified || ""),
+  };
+}
+
+function buildWorkflowKnowledgeSummary(docs) {
+  const northstarDoc = findDocBySuffix(docs, "_workflow/NORTHSTAR.md");
+  const stateDoc = findDocBySuffix(docs, "_workflow/STATE.md");
+  const stateJsonDoc = findDocBySuffix(docs, "_workflow/state.json");
+  const readinessDoc = findDocBySuffix(docs, "_workflow/READINESS.md");
+  const roadmapDoc = findDocBySuffix(docs, "_workflow/ROADMAP.md");
+  const workflowCanonDoc = findDocBySuffix(docs, "_workflow/WORKFLOW_CANON.md");
+  const activeIndexDoc = findDocBySuffix(docs, "_workflow/ACTIVE_WORKFLOW_INDEX.md");
+  const state = parseWorkflowStateSample(stateJsonDoc?.sample);
+  const serverIdentity = state.server_identity || {};
+  const runtimeTopology = state.runtime_topology || {};
+  const toolSurfaces = state.tool_surfaces || {};
+  const progressMarkers = state.workflow_progress_markers || {};
+  const canonicalDocs = [
+    canonicalDocEntry("northstar", docs, "_workflow/NORTHSTAR.md"),
+    canonicalDocEntry("state", docs, "_workflow/STATE.md"),
+    canonicalDocEntry("state_json", docs, "_workflow/state.json"),
+    canonicalDocEntry("readiness", docs, "_workflow/READINESS.md"),
+    canonicalDocEntry("roadmap", docs, "_workflow/ROADMAP.md"),
+    canonicalDocEntry("workflow_canon", docs, "_workflow/WORKFLOW_CANON.md"),
+    canonicalDocEntry("active_workflow_index", docs, "_workflow/ACTIVE_WORKFLOW_INDEX.md"),
+  ];
+  const serverSpecs = docs
+    .filter((doc) => doc.kind === "server_spec")
+    .map((doc) => String(doc.path || ""))
+    .sort();
+  const readinessComponents = parseReadinessComponents(readinessDoc);
+  const roadmapItems = parseRoadmapItems(roadmapDoc);
+  const documentationGaps = [];
+  for (const entry of canonicalDocs) {
+    if (!entry.present) {
+      documentationGaps.push({
+        severity: "high",
+        area: entry.id,
+        issue: "missing_canonical_doc",
+        detail: entry.path,
+      });
+    }
+  }
+  if (serverSpecs.length === 0) {
+    documentationGaps.push({
+      severity: "medium",
+      area: "server_specs",
+      issue: "missing_server_specs",
+      detail: "No SERVER_*_SPEC.json document was indexed.",
+    });
+  }
+
+  return {
+    canonical_docs: canonicalDocs,
+    server_specs: {
+      count: serverSpecs.length,
+      sample_paths: serverSpecs.slice(0, 12),
+    },
+    workflow_markers: {
+      current_working_course: String(progressMarkers.current_working_course || ""),
+      next_primary: String(progressMarkers.next_primary || ""),
+      next_secondary: String(progressMarkers.next_secondary || ""),
+      stage_labels: Array.isArray(progressMarkers.stage_labels) ? progressMarkers.stage_labels.map(String).slice(0, 8) : [],
+    },
+    runtime_identity: {
+      server_name: String(serverIdentity.name || ""),
+      server_version: String(serverIdentity.version || ""),
+      connector_shape_version: String(serverIdentity.connector_shape_version || ""),
+      output_mode: String(serverIdentity.output_mode || ""),
+      public_port: Number(runtimeTopology.public?.port || 0),
+      authorized_port: Number(runtimeTopology.authorized?.port || 0),
+      public_tool_count: Number(toolSurfaces.public_mcp_tools?.count || runtimeTopology.public?.expected_tool_count || 0),
+      authorized_tool_count: Number(toolSurfaces.authorized_mcp_tools?.count || 0),
+      authenticated_total_tool_count: Number(toolSurfaces.authenticated_total?.count || runtimeTopology.authorized?.expected_tool_count || 0),
+    },
+    readiness: {
+      status: extractStatusLine(readinessDoc?.sample),
+      updated: extractUpdatedLine(readinessDoc?.sample),
+      component_count: readinessComponents.length,
+      components: readinessComponents,
+    },
+    roadmap: {
+      status: extractStatusLine(roadmapDoc?.sample),
+      updated: extractUpdatedLine(roadmapDoc?.sample),
+      item_count: roadmapItems.length,
+      items: roadmapItems,
+    },
+    documentation_gaps: documentationGaps,
+    health: {
+      has_northstar: Boolean(northstarDoc),
+      has_state: Boolean(stateDoc && stateJsonDoc),
+      has_readiness: Boolean(readinessDoc),
+      has_roadmap: Boolean(roadmapDoc),
+      has_workflow_canon: Boolean(workflowCanonDoc && activeIndexDoc),
+      has_runtime_identity: Boolean(serverIdentity.name && serverIdentity.version),
+      source_of_truth_count: docs.filter((doc) => doc.authority === "source_of_truth").length,
+    },
+  };
+}
+
 function summarizeIndexKnowledge(index = {}) {
   const docs = Array.isArray(index.docs) ? index.docs : [];
   const byKind = new Map();
@@ -296,6 +553,7 @@ function summarizeIndexKnowledge(index = {}) {
     top_level_areas: sortedCounterItems(byArea),
     top_subareas: sortedCounterItems(bySubarea),
     top_authority_docs: topAuthorityDocs,
+    workflow_summary: buildWorkflowKnowledgeSummary(docs),
   };
 }
 
@@ -569,6 +827,7 @@ async function indexStatus(options = {}) {
     const index = await loadWorkspaceIndex(options);
     const stats = index.stats || {};
     const skipped = stats.skipped || {};
+    const knowledgeSummary = stats.knowledge_summary?.workflow_summary ? stats.knowledge_summary : summarizeIndexKnowledge(index);
     return {
       success: true,
       error: "",
@@ -585,7 +844,7 @@ async function indexStatus(options = {}) {
       truncated: Boolean(stats.truncated),
       max_files: Number(stats.max_files || 0),
       max_dirs: Number(stats.max_dirs || 0),
-      knowledge_summary: stats.knowledge_summary || summarizeIndexKnowledge(index),
+      knowledge_summary: knowledgeSummary,
       skipped: {
         oversized: Number(skipped.oversized || 0),
         extension: Number(skipped.extension || 0),

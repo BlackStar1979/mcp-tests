@@ -19,6 +19,7 @@ Current derivation:
 - Post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. No restart or connector refresh remains pending.
 - `COMP-1A` remains the highest-leverage protocol package, but it is event-gated again after the July 28 `codex-mcp-client 0.146.0-alpha.3.1` latest-entry window confirmed `2` successful legacy `initialize` responses and `0` `server/discover` entries; the latest runtime start itself currently contains follow-up traffic only and must be treated as stale for entry-path purposes.
 - `DOC-2A` is the only autonomous fallback and must remain bounded to a real high-churn orientation gap; the July 28 passes refreshed `_workflow/operator_decisions` and the project-local `using-codebase-memory` skill boundary, and `scripts/audit_directory_docs.js` now reports no missing maps among the top 20 dirs with churn >= 7.
+- `RETR-1` retrieval now exposes workflow facts directly: `knowledge_summary.workflow_summary` reports canonical docs, runtime identity, workflow markers, parsed readiness components, parsed roadmap priorities, server-spec count, health flags, and documentation gaps.
 
 ## Priority matrix
 

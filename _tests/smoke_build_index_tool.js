@@ -71,7 +71,72 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       await fs.mkdir(path.join(tempRoot, "_repos_with_code_samples", "sample"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "_repos_with_code_samples", "sample", "fixture.md"), "# Fixture\nsample-fixture-token\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow"), { recursive: true });
-      await fs.writeFile(path.join(tempRoot, "_workflow", "state.json"), "{\"live_package_marker\":\"live-state-token\"}\n", "utf8");
+      await fs.writeFile(path.join(tempRoot, "_workflow", "NORTHSTAR.md"), "# NorthStar\nTarget contract.\n", "utf8");
+      await fs.writeFile(path.join(tempRoot, "_workflow", "STATE.md"), "# State\nAs-is contract.\n", "utf8");
+      await fs.writeFile(
+        path.join(tempRoot, "_workflow", "READINESS.md"),
+        [
+          "# Readiness",
+          "",
+          "Status: active technical component readiness report",
+          "Updated: 2026-07-28",
+          "",
+          "| ID | Component | Maturity | NorthStar role | Depends on | Current evidence | Main blocker | Default next bounded package | Done signal |",
+          "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
+          "| DOC-1 | Documentation contract | 3/4 | Keep workflow legible | none | Canonical docs exist | Needs direct workflow extraction | Add workflow summary | Agent can choose next package |",
+          "| RETR-1 | Retrieval ergonomics | 3/4 | Reduce execution friction | DOC-1 | Knowledge profile exists | Summary is too shallow | Parse docs into workflow facts | Orientation query returns queue facts |",
+          "",
+        ].join("\n"),
+        "utf8"
+      );
+      await fs.writeFile(
+        path.join(tempRoot, "_workflow", "ROADMAP.md"),
+        [
+          "# Roadmap",
+          "",
+          "Status: active dependency-aware roadmap",
+          "Updated: 2026-07-28",
+          "",
+          "| Priority | Item | Depends on | Why it matters now | Current action |",
+          "| --- | --- | --- | --- | --- |",
+          "| P0 | Refresh COMP-1A only on newer external client traffic | fresh evidence | Highest protocol gate remains event-gated | Wait for newer traffic |",
+          "| P1 | Execute bounded DOC-2A fallback | P0 externally blocked | Keeps handoff cost low | Close one real orientation gap |",
+          "",
+        ].join("\n"),
+        "utf8"
+      );
+      await fs.writeFile(path.join(tempRoot, "_workflow", "WORKFLOW_CANON.md"), "# Workflow Canon\nRules.\n", "utf8");
+      await fs.writeFile(path.join(tempRoot, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "# Active Workflow Index\nCurrent queue.\n", "utf8");
+      await fs.writeFile(
+        path.join(tempRoot, "_workflow", "state.json"),
+        JSON.stringify({
+          live_package_marker: "live-state-token",
+          server_identity: {
+            name: "mcp-tests-response-shape",
+            version: "0.40.0",
+            connector_shape_version: "2025-05-strict-v1",
+            output_mode: "structured",
+          },
+          runtime_topology: {
+            public: { port: 3009, expected_tool_count: 13 },
+            authorized: { port: 3008, expected_tool_count: 84 },
+          },
+          tool_surfaces: {
+            public_mcp_tools: { count: 13 },
+            authorized_mcp_tools: { count: 71 },
+            authenticated_total: { count: 84 },
+          },
+          workflow_progress_markers: {
+            current_working_course: "initialize-retirement-evidence-wait",
+            next_primary: "comp-1a-on-fresh-external-client-traffic",
+            next_secondary: "bounded-doc-orientation-maintenance",
+            stage_labels: ["Stage test"],
+          },
+          large_notes: Array.from({ length: 4000 }, (_, index) => `filler-${index}`),
+        }, null, 2),
+        "utf8"
+      );
+      await fs.writeFile(path.join(tempRoot, "SERVER_TOOLS_SPEC.json"), "{\"schema_version\":\"server-tools-spec\"}\n", "utf8");
       await fs.writeFile(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow", "state.json"), "{\"live_package_marker\":\"snapshot-state-token\"}\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "records"), { recursive: true });
       await fs.writeFile(path.join(tempRoot, "_workflow", "control_plane", "records", "record.json"), "{\"control_plane_noise_token\":\"hidden-by-knowledge-profile\"}\n", "utf8");
@@ -99,6 +164,19 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(isolated.docs.some((doc) => doc.path.includes("_workflow/control_plane/snapshots")), false);
       assert.ok(isolated.stats.knowledge_summary.by_kind.some((item) => item.name === "state"));
       assert.ok(isolated.stats.knowledge_summary.by_authority.some((item) => item.name === "source_of_truth"));
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_northstar, true);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_state, true);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_readiness, true);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_roadmap, true);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_workflow_canon, true);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.runtime_identity.server_name, "mcp-tests-response-shape");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.runtime_identity.authenticated_total_tool_count, 84);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.workflow_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.component_count, 2);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.components[1].id, "RETR-1");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.item_count, 2);
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.items[0].priority, "P0");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.documentation_gaps.length, 0);
 
       const stateSearch = await searchIndex("live_package_marker live-state-token", {
         limit: 10,
