@@ -93,6 +93,34 @@ function basenameInfo(displayPath = "") {
   return { base, stem, segments };
 }
 
+function hasAnyTerm(terms, wanted) {
+  return terms.some((term) => wanted.has(term));
+}
+
+function activeWorkflowIntentScore(doc, terms) {
+  const planningTerms = new Set([
+    "active", "action", "blocked", "blocker", "blockers", "current", "default", "dependency", "next",
+    "p0", "p1", "package", "priority", "queue", "recommended", "roadmap", "readiness", "workflow",
+    "blokada", "blokady", "dalej", "dlaczego", "kolejka", "kolejke", "nastepne", "nastepny",
+    "priorytet", "zablokowany",
+  ]);
+  if (!hasAnyTerm(terms, planningTerms)) return 0;
+
+  const normalizedPath = normalizeSlashes(doc?.path || "").toLowerCase();
+  if (!normalizedPath.includes("/_workflow/") && !normalizedPath.startsWith("_workflow/")) return 0;
+
+  const base = path.posix.basename(normalizedPath);
+  if (base === "active_workflow_index.md") return 210;
+  if (base === "readiness.md") return 140;
+  if (base === "roadmap.md") return 130;
+  if (base === "state.json") return 90;
+  if (base === "state.md") return 80;
+  if (base === "workflow_canon.md") return 70;
+  if (base === "northstar.md") return 45;
+  if (String(doc?.kind || "") === "operator_decision") return -25;
+  return 0;
+}
+
 function normalizeIndexProfile(value) {
   const normalized = String(value || DEFAULT_INDEX_PROFILE).trim().toLowerCase();
   if (normalized === "all" || normalized === "source" || normalized === "knowledge") return normalized;
@@ -759,6 +787,7 @@ function scoreDoc(doc, query) {
   if (doc.authority === "source_of_truth") score += 18;
   if (doc.authority === "operational_guidance") score += 10;
   if (doc.kind === "northstar" || doc.kind === "state" || doc.kind === "readiness" || doc.kind === "roadmap") score += 18;
+  score += activeWorkflowIntentScore(doc, terms);
   if (p.startsWith("romionsim/")) score += 8;
   if (p.includes("readme")) score += 4;
   if (p.startsWith("mcp-tests/src/")) score += 2;

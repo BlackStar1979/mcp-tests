@@ -106,7 +106,18 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         "utf8"
       );
       await fs.writeFile(path.join(tempRoot, "_workflow", "WORKFLOW_CANON.md"), "# Workflow Canon\nRules.\n", "utf8");
-      await fs.writeFile(path.join(tempRoot, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "# Active Workflow Index\nCurrent queue.\n", "utf8");
+      await fs.writeFile(
+        path.join(tempRoot, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"),
+        [
+          "# Active Workflow Index",
+          "",
+          "Current queue.",
+          "Default next package: COMP-1A is event-gated until newer external client traffic.",
+          "Fallback: DOC-2A only when a real high-churn orientation gap appears.",
+          "",
+        ].join("\n"),
+        "utf8"
+      );
       await fs.writeFile(
         path.join(tempRoot, "_workflow", "state.json"),
         JSON.stringify({
@@ -134,6 +145,19 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
           },
           large_notes: Array.from({ length: 4000 }, (_, index) => `filler-${index}`),
         }, null, 2),
+        "utf8"
+      );
+      await fs.mkdir(path.join(tempRoot, "_workflow", "operator_decisions"), { recursive: true });
+      await fs.writeFile(
+        path.join(tempRoot, "_workflow", "operator_decisions", "old_comp1a_blocked_decision.md"),
+        [
+          "# Old COMP-1A Blocked Decision",
+          "",
+          "Historical operator decision: current next recommended action and why COMP-1A is blocked.",
+          "This old decision repeats current next recommended action blocked blocker workflow roadmap readiness terms many times.",
+          "current next recommended action blocked blocker workflow roadmap readiness current next recommended action blocked blocker workflow roadmap readiness",
+          "",
+        ].join("\n"),
         "utf8"
       );
       await fs.writeFile(path.join(tempRoot, "SERVER_TOOLS_SPEC.json"), "{\"schema_version\":\"server-tools-spec\"}\n", "utf8");
@@ -178,6 +202,19 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.items[0].priority, "P0");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.documentation_gaps.length, 0);
 
+      const planningQuery = "what is the current next recommended action and why COMP-1A is blocked";
+      const planningSearch = await searchIndex(planningQuery, {
+        limit: 5,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(planningSearch.success, true);
+      assert.deepEqual(planningSearch.results.slice(0, 3).map((item) => item.path), [
+        "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+        "_workflow/READINESS.md",
+        "_workflow/ROADMAP.md",
+      ]);
+      assert.notEqual(planningSearch.results[0].kind, "operator_decision");
+
       const stateSearch = await searchIndex("live_package_marker live-state-token", {
         limit: 10,
         indexFile: isolatedIndexFile,
@@ -221,6 +258,29 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         assert.equal(filteredCollect.index_count, isolated.docs.length);
         assert.equal(filteredCollect.files[0].kind, "document");
         assert.equal(filteredCollect.files.every((item) => item.path.startsWith("docs/")), true);
+
+        const planningContext = await searchIndexContextTool.execute({
+          query: planningQuery,
+          limit: 5,
+        });
+        assert.equal(planningContext.success, true);
+        assert.deepEqual(planningContext.results.slice(0, 3).map((item) => item.path), [
+          "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+          "_workflow/READINESS.md",
+          "_workflow/ROADMAP.md",
+        ]);
+
+        const planningCollect = await collectContextTool.execute({
+          query: planningQuery,
+          limit: 5,
+          max_chars_per_file: 800,
+        });
+        assert.equal(planningCollect.success, true);
+        assert.deepEqual(planningCollect.files.slice(0, 3).map((item) => item.path), [
+          "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+          "_workflow/READINESS.md",
+          "_workflow/ROADMAP.md",
+        ]);
 
         const romionsimCollect = await collectRomionsimContextTool.execute({
           query: "romionsim_graph_context_token",
