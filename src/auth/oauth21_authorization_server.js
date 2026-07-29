@@ -19,6 +19,7 @@ const {
 } = require("./oauth21_utils");
 const { buildOAuth21PrunePreview, collectReferencedClientIds } = require("./oauth21_prune_preview");
 const { createOAuth21PersistenceStore } = require("./oauth21_persistence_store");
+const { runOAuth21StartupPrune } = require("./oauth21_startup_prune");
 const {
   choosePreferredRefreshToken,
   parseOAuthStateBody,
@@ -169,7 +170,7 @@ function isValidPkceS256Challenge(value) {
   return PKCE_S256_CHALLENGE_RE.test(String(value || ""));
 }
 
-function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, clientRegistryLimit = DEFAULT_CLIENT_REGISTRY_LIMIT, warnLogger = console.warn } = {}) {
+function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, clientRegistryLimit = DEFAULT_CLIENT_REGISTRY_LIMIT, startupPruneEnabled = false, startupPruneBackupDir = "", warnLogger = console.warn } = {}) {
   issuer = trimSlash(issuer);
   resource = trimSlash(resource || `${issuer}/mcp`);
   operatorSecret = String(operatorSecret || "");
@@ -422,6 +423,17 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       }
     }
   }
+
+  const startupPrune = oauthStorageFile && startupPruneEnabled
+    ? runOAuth21StartupPrune({
+      storageFile: oauthStorageFile,
+      backupDir: startupPruneBackupDir || path.join(path.dirname(oauthStorageFile), "oauth21-prune-backups"),
+      nowMs: now(),
+      deadClientMinAgeMs: CLIENT_PRUNE_RETENTION_MS,
+      onAudit: (name, payload) => auditOAuth(name, payload),
+      warnLogger,
+    })
+    : { success: true, status: "disabled", deleted: null };
 
   const persistenceStore = oauthStorageFile
     ? createOAuth21PersistenceStore({
@@ -1204,6 +1216,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       oauth_storage_file: persistenceStore ? persistenceStore.storageFile : null,
       oauth_state_file: persistenceStore ? persistenceStore.oauthStatePath : oauthStatePath,
       oauth_clients_file: persistenceStore ? persistenceStore.clientsPath : clientsPath,
+      startup_prune: startupPrune,
       active_grants: activeGrantCount,
       dead_clients: deadClientCount,
       orphan_access_tokens: orphanAccessTokens,

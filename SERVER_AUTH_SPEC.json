@@ -269,6 +269,23 @@
     "dcr_public": true,
     "pkce_required": true,
     "pkce_method": "S256",
+    "startup_prune": {
+      "default_enabled_for_runtime_bootstrap": true,
+      "execution_order": "before persistence store creation and RAM state load",
+      "interval_hours": 24,
+      "dead_client_min_age_days": 14,
+      "removes": [
+        "clients older than the retention window without token references",
+        "access, refresh, and used-refresh tokens whose client no longer exists"
+      ],
+      "rollback_guards": [
+        "BEGIN IMMEDIATE coordination",
+        "logical SQLite backup verified before deletion",
+        "rollback receipt written before deletion",
+        "apply receipt written after commit",
+        "backup or transaction failure preserves the live store"
+      ]
+    },
     "resource_parameter_canonical_value": "https://mcp-tests-oauth21.romionologic.dev/mcp",
     "resource_parameter_legacy_aliases": [
       "https://mcp-tests-oauth21.romionologic.dev"
@@ -286,8 +303,9 @@
     "guards": [
       "_tests/smoke_oauth21_bootstrap_config.js",
       "_tests/smoke_oauth21_host_header.js",
-      "_tests/smoke_oauth21_local_as_flow.js",
-      "_tests/smoke_oauth21_pkce_input_validation.js"
+    "_tests/smoke_oauth21_local_as_flow.js",
+    "_tests/smoke_oauth21_pkce_input_validation.js",
+    "_tests/smoke_oauth21_startup_prune.js"
     ],
     "target_runtime_role": "primary_authenticated_oauth21_test_server",
     "paired_public_instance": {

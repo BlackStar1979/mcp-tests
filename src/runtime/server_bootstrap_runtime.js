@@ -88,6 +88,9 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
       resource: mcpResourceUrl,
       operatorSecret: secretConfig.operatorSecret,
       storageFile: oauth21StorageFile || undefined,
+      startupPruneEnabled: env.MCP_TEST_OAUTH_STARTUP_PRUNE_ENABLED !== "0",
+      startupPruneBackupDir: env.MCP_TEST_OAUTH_STARTUP_PRUNE_BACKUP_DIR
+        || (oauth21StorageFile ? path.join(path.dirname(oauth21StorageFile), "oauth21-prune-backups") : ""),
       trustedProxyHeaders: bootstrapConfig.trustedProxy === true,
     });
   }

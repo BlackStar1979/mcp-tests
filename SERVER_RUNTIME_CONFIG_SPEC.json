@@ -103,6 +103,8 @@
     "MCP_TEST_OAUTH_ISSUER",
     "MCP_TEST_OAUTH_JWKS_FILE",
     "MCP_TEST_OAUTH_OPERATOR_SECRET",
+    "MCP_TEST_OAUTH_STARTUP_PRUNE_BACKUP_DIR",
+    "MCP_TEST_OAUTH_STARTUP_PRUNE_ENABLED",
     "MCP_TEST_OAUTH_STATE_FILE",
     "MCP_TEST_OAUTH_STORAGE_FILE",
     "MCP_TEST_OUTPUT_MODE",
@@ -280,7 +282,17 @@
         "~/.romion/tests_oauth_state.json",
         "~/.romion/tests_oauth_clients.json"
       ],
-      "purpose": "preserve connector authorization across controlled process restarts while allowing explicit legacy JSON override for isolated tests and maintenance flows"
+      "purpose": "preserve connector authorization across controlled process restarts while allowing explicit legacy JSON override for isolated tests and maintenance flows",
+      "startup_prune": {
+        "enabled_env": "MCP_TEST_OAUTH_STARTUP_PRUNE_ENABLED",
+        "default_enabled": true,
+        "backup_dir_env": "MCP_TEST_OAUTH_STARTUP_PRUNE_BACKUP_DIR",
+        "default_backup_dir": "oauth21-prune-backups beside the SQLite store",
+        "interval_hours": 24,
+        "dead_client_min_age_days": 14,
+        "coordination": "BEGIN IMMEDIATE before RAM state load",
+        "rollback": "transaction-bound logical SQLite backup plus rollback and apply receipts"
+      }
     }
   },
   "tool_surface_state_runtime": {

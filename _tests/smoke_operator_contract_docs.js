@@ -55,8 +55,8 @@ assert.ok(northstar.includes("Single-route on `/mcp`"));
 assert.ok(northstar.includes("Streamable HTTP only"));
 assert.ok(stateDoc.includes("Server version: `0.40.0`"));
 assert.ok(stateDoc.includes("target connector-visible tools `84`"));
-assert.ok(stateDoc.includes("tests_authenticated=269"));
-assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `269`"));
+assert.ok(stateDoc.includes("tests_authenticated=270"));
+assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `270`"));
 assert.ok(stateDoc.includes("`mcp__workbench` is callable again"));
 assert.ok(stateDoc.includes("`src/integrations/codebase_memory/DIRECTORY.md`"));
 assert.ok(stateDoc.includes("`codex-mcp-client 0.146.0-alpha.3.1`"));
@@ -104,7 +104,7 @@ assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-me
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "memory-embedding-runtime-activation-gate");
 assert.equal(workflowState.workflow_progress_markers.next_primary, "mem-1-live-provider-activation-and-quality-proof");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "oauth21-safe-recurring-prune-redesign");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "descriptor-refresh-impact-review");
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -119,7 +119,7 @@ assert.ok(workflowIndex.includes("routes documentation/workflow questions to the
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = memory-embedding-runtime-activation-gate`"));
 assert.ok(workflowIndex.includes("`next_primary = mem-1-live-provider-activation-and-quality-proof`"));
-assert.ok(workflowIndex.includes("`next_secondary = oauth21-safe-recurring-prune-redesign`"));
+assert.ok(workflowIndex.includes("`next_secondary = descriptor-refresh-impact-review`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

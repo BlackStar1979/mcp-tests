@@ -192,6 +192,26 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_startup_prune_skipped",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_startup_prune_completed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_startup_prune_applied",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_startup_prune_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_startup_prune_receipt_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_access_token_accepted",
       "status": "active_code_event"
     },

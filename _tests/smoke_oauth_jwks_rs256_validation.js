@@ -29,7 +29,9 @@ const noExp=signRs({iss:issuer,aud:audience,scope:"mcp:tools"},privateKey);
 assert.equal(policy.authenticate({headers:{authorization:"Bearer "+noExp},url:"/mcp"}).error,"token_exp_required");
 const hs=signHs({iss:issuer,aud:audience,scope:"mcp:tools",exp:now+60},"x".repeat(48));
 assert.equal(policy.authenticate({headers:{authorization:"Bearer "+hs},url:"/mcp"}).error,"unsupported_jwt_alg");
- const tampered=good.slice(0,-2)+"xx";
+ const tokenParts=good.split(".");
+ tokenParts[2]=(tokenParts[2][0]==="A"?"B":"A")+tokenParts[2].slice(1);
+ const tampered=tokenParts.join(".");
  assert.equal(policy.authenticate({headers:{authorization:"Bearer "+tampered},url:"/mcp"}).error,"invalid_jwt_signature");
  console.log("smoke_oauth_jwks_rs256_validation ok");
 }finally{fs.rmSync(tmp,{recursive:true,force:true});}

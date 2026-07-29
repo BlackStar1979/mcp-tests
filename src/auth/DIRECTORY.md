@@ -9,6 +9,8 @@ Updated: 2026-07-16
   OAuth and token-verification support modules, including bounded OAuth21 request-body parsing.
 - `oauth21_persistence_store.js`
   SQLite-backed durable store for OAuth21 clients and token state, including legacy JSON bootstrap.
+- `oauth21_startup_prune.js`
+  Transaction-coordinated startup maintenance for stale OAuth clients and orphan tokens, with verified rollback backups and receipts.
 - `oauth21_authorization_server.js`
   Main OAuth21 authorization server implementation, public-route throttling, bounded DCR client-registry growth, and durable-state orchestration.
 - `oauth21_prune_preview.js`, `oauth21_prune_receipt.js`, `oauth21_prune_apply_gate.js`, `oauth21_prune_apply_package_draft.js`, `oauth21_prune_apply.js`

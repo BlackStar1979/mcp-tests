@@ -9,7 +9,7 @@ Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and
 Current workflow markers:
 - `current_working_course = memory-embedding-runtime-activation-gate`
 - `next_primary = mem-1-live-provider-activation-and-quality-proof`
-- `next_secondary = oauth21-safe-recurring-prune-redesign`
+- `next_secondary = descriptor-refresh-impact-review`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -70,9 +70,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=269`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=270`.
 - Public section count: `7`.
-- Authenticated smoke count: `269`.
+- Authenticated smoke count: `270`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.

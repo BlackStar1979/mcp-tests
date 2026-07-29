@@ -22,6 +22,7 @@ Current derivation:
 - `DOC-2A` remains the autonomous fallback class, but the current July 29 pass closed the active documentation gap: `docs/superpowers`, `docs/superpowers/plans`, and `docs/superpowers/specs` now have generator-owned maps, and `scripts/audit_directory_docs.js` reports no missing maps among the top 25 dirs with churn >= 5.
 - `RETR-1` retrieval now exposes workflow facts directly, ranks active workflow truth ahead of historical decision records for natural planning questions, and includes a deterministic document graph for internal doc references. The graph is intentionally local and dependency-free: it maps Markdown/backtick document references, linked-node coverage, active entrypoint outgoing links, top linked docs, and unresolved-reference samples without adding vector databases or LLM-based extraction.
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
+- OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
 
 ## Priority matrix
 
@@ -33,7 +34,7 @@ Current derivation:
 | P3 | Preserve the hardened CBM and 84-tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
 | P4 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P1 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
 | P5 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
-| P6 | Keep OAuth21 runtime hardening bounded and explicit | live canonical PKCE validation | Prevent auth controls from drifting back into permissive parsing or unaudited rejection behavior. | Preserve the new PKCE boundary and audit guard; reopen auth only on reproduced evidence or a current standards delta. |
+| P6 | Hold OAuth21 runtime hardening steady | live PKCE and startup-prune validation | Prevent stable auth from becoming a source of speculative churn. | Preserve PKCE, durable-state, startup-prune, backup, and audit guards; reopen only on reproduced evidence or a current standards delta. |
 
 ## Bounded package queue
 

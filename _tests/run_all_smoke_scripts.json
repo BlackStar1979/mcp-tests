@@ -228,6 +228,7 @@
   "_tests/smoke_oauth21_prune_apply_package_draft.js",
   "_tests/smoke_oauth21_prune_apply.js",
   "_tests/smoke_oauth21_prune_control_plane_script.js",
+  "_tests/smoke_oauth21_startup_prune.js",
   "_tests/smoke_docs_malformed_uri.js",
   "_tests/smoke_sampling_capability_gate.js",
   "_tests/smoke_get_sse_stream.js",

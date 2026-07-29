@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=269`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=270`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `269`
+- Latest validated authenticated smoke count: `270`
 
 ## Surface model
 
@@ -49,7 +49,7 @@ Summarize the current validated product state in one operator-facing place witho
 
 - `current_working_course = memory-embedding-runtime-activation-gate`
 - `next_primary = mem-1-live-provider-activation-and-quality-proof`
-- `next_secondary = oauth21-safe-recurring-prune-redesign`
+- `next_secondary = descriptor-refresh-impact-review`
 
 ## Verified documentation authorities
 
@@ -92,4 +92,4 @@ Summarize the current validated product state in one operator-facing place witho
 - Public unauthenticated OAuth21 routes now have bounded per-IP throttling, and oversized OAuth21 request bodies are force-aborted before they can continue streaming in-process.
 - OAuth21 DCR registration now enforces a bounded client-registry cap and opportunistically prunes retention-expired `dead_clients` before admitting new public registrations.
 - OAuth21 PKCE validation distinguishes the RFC 7636 verifier grammar (`43..128` unreserved characters) from the canonical `S256` challenge representation (exactly 43 base64url characters). PKCE rejection audit events expose bounded reason/client/grant metadata without verifier or challenge values. Full offline validation is GREEN at `7 + 268`; controlled restart `manual-1785349273914` loaded the change, a live 44-character challenge returned `code_challenge_invalid`, and `workbench.get_info` remained callable.
-- Memory embeddings are live-loaded but provider-disabled at `server_start_id = 2026-07-29T18:53:50.174Z`. `_logs/.mcp-agent-memory.jsonl` remains authoritative; optional OVH `bge-m3` vectors use a non-authoritative SQLite cache keyed by content hash/provider/model and containing no plaintext. External egress requires explicit provider, egress, and token configuration. Own-connector `memory_search` succeeded after restart, no embedding cache was created, and provider/cache failures preserve keyword search. Vectors never enter JSONL or tool output, `_tests/smoke_memory_embeddings.js` raises the current full offline baseline to `7 + 269`, and live PL/EN semantic quality has not yet been claimed.
+- Memory embeddings are live-loaded but provider-disabled at `server_start_id = 2026-07-29T18:53:50.174Z`. `_logs/.mcp-agent-memory.jsonl` remains authoritative; optional OVH `bge-m3` vectors use a non-authoritative SQLite cache keyed by content hash/provider/model and containing no plaintext. External egress requires explicit provider, egress, and token configuration. Own-connector `memory_search` succeeded after restart, no embedding cache was created, and provider/cache failures preserve keyword search. Vectors never enter JSONL or tool output, `_tests/smoke_memory_embeddings.js` is covered by the current full offline baseline of `7 + 270`, and live PL/EN semantic quality has not yet been claimed.
