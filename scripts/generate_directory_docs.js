@@ -198,6 +198,51 @@ const CONFIG = {
     },
     tail: "This directory is runtime-owned and high-churn. Treat the generated files as operational evidence, not canonical product/workflow truth.",
   },
+  "docs": {
+    title: "documentation directory map",
+    updated: "2026-07-29",
+    entries: {
+      "superpowers/": "Imported or adapted Superpowers planning/specification material used by local workflow documentation.",
+      "CBM_RELIABILITY_HARDENING_REPORT.md": "Reliability hardening notes for the CBM bridge and its operational guardrails.",
+      "CBM_UPSTREAM_ISSUES_101_150_REVIEW.md": "Review of current upstream codebase-memory-mcp issues 101-150 and local mcp-tests impact.",
+      "CBM_UPSTREAM_ISSUES_151_200_REVIEW.md": "Review of current upstream codebase-memory-mcp issues 151-200 and local mcp-tests impact.",
+      "CBM_UPSTREAM_ISSUES_51_100_REVIEW.md": "Review of upstream issues 51-100 and local bridge safeguards derived from them.",
+      "CBM_UPSTREAM_ISSUES_FIRST50_REVIEW.md": "Initial upstream issue review for the first 50 open codebase-memory-mcp issues.",
+      "CBM_V0_9_0_REBASELINE_REPORT.md": "Rebaseline report for the codebase-memory v0.9.0 bridge contract and compatibility state.",
+    },
+    tail: "This directory holds supporting reports and imported planning references. Current project truth remains in `_workflow/` and root `SERVER_*_SPEC.json` files.",
+  },
+  "docs/superpowers": {
+    title: "superpowers documentation directory map",
+    updated: "2026-07-29",
+    entries: {
+      "plans/": "Execution-plan documents generated while applying structured development workflows.",
+      "specs/": "Design/specification documents paired with the execution plans.",
+    },
+    tail: "Treat this area as supporting workflow material. It can inform implementation, but it does not replace `_workflow/READINESS.md`, `_workflow/ROADMAP.md`, or root server specs.",
+  },
+  "docs/superpowers/plans": {
+    title: "superpowers plans directory map",
+    updated: "2026-07-29",
+    entries: {
+      "2026-07-26-cbm-cli-bridge-mvp.md": "Execution plan for the CBM CLI bridge MVP package.",
+      "2026-07-26-cbm-full-tool-surface.md": "Execution plan for the full CBM tool-surface package.",
+      "2026-07-26-cbm-reliability-hardening.md": "Execution plan for CBM bridge reliability hardening.",
+      "2026-07-26-cbm-v0-9-0-compatibility-hardening.md": "Execution plan for CBM v0.9.0 compatibility hardening.",
+    },
+    tail: "Keep these plans bounded to historical or supporting package execution. Active priority still comes from `_workflow/ROADMAP.md`.",
+  },
+  "docs/superpowers/specs": {
+    title: "superpowers specs directory map",
+    updated: "2026-07-29",
+    entries: {
+      "2026-07-26-cbm-cli-bridge-design.md": "Design specification for the CBM CLI bridge MVP package.",
+      "2026-07-26-cbm-full-tool-surface-design.md": "Design specification for the full CBM tool-surface package.",
+      "2026-07-26-cbm-reliability-hardening-design.md": "Design specification for CBM bridge reliability hardening.",
+      "2026-07-26-cbm-v0-9-0-compatibility-hardening-design.md": "Design specification for CBM v0.9.0 compatibility hardening.",
+    },
+    tail: "Use these specs as supporting design evidence only. Current runtime and connector behavior must still be verified through tests, live probes, and canonical specs.",
+  },
   "src": {
     title: "src directory map",
     updated: "2026-07-27",

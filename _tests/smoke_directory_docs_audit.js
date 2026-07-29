@@ -15,21 +15,23 @@ function run(args) {
   });
 }
 
-const jsonResult = run(["--json", "--since=30 days ago", "--limit=20", "--min-churn=7", "--fail-on-missing"]);
+const jsonResult = run(["--json", "--since=30 days ago", "--limit=25", "--min-churn=5", "--fail-on-missing"]);
 assert.equal(jsonResult.status, 0, `directory docs audit must pass\nSTDOUT:\n${jsonResult.stdout}\nSTDERR:\n${jsonResult.stderr}`);
 
 const report = JSON.parse(jsonResult.stdout);
 assert.equal(report.ok, true);
 assert.equal(report.since, "30 days ago");
-assert.equal(report.limit, 20);
-assert.equal(report.min_churn, 7);
+assert.equal(report.limit, 25);
+assert.equal(report.min_churn, 5);
 assert.equal(report.missing_count, 0);
 assert.ok(report.rows.length > 0);
 assert.ok(report.rows.some((row) => row.dir === "_workflow/operator_decisions" && row.has_directory === true));
 assert.ok(report.rows.some((row) => row.dir === ".agents/skills/using-codebase-memory/references" && row.has_directory === true));
+assert.ok(report.rows.some((row) => row.dir === "docs/superpowers/plans" && row.has_directory === true));
+assert.ok(report.rows.some((row) => row.dir === "docs/superpowers/specs" && row.has_directory === true));
 assert.deepEqual(report.rows.filter((row) => !row.has_directory), []);
 
-const textResult = run(["--since=30 days ago", "--limit=5", "--min-churn=7"]);
+const textResult = run(["--since=30 days ago", "--limit=5", "--min-churn=5"]);
 assert.equal(textResult.status, 0, `text audit must succeed\nSTDOUT:\n${textResult.stdout}\nSTDERR:\n${textResult.stderr}`);
 assert.match(textResult.stdout, /Directory documentation audit/);
 assert.match(textResult.stdout, /missing: 0/);

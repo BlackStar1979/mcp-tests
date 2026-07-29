@@ -34,6 +34,9 @@ assert.match(result.stdout, /wrote _workflow\\control_plane\\oauth21_prune_backu
 assert.match(result.stdout, /wrote _workflow\\operator_decisions\\DIRECTORY\.md/);
 assert.match(result.stdout, /wrote src\\integrations\\DIRECTORY\.md/);
 assert.match(result.stdout, /wrote src\\integrations\\codebase_memory\\DIRECTORY\.md/);
+assert.match(result.stdout, /wrote docs\\superpowers\\DIRECTORY\.md/);
+assert.match(result.stdout, /wrote docs\\superpowers\\plans\\DIRECTORY\.md/);
+assert.match(result.stdout, /wrote docs\\superpowers\\specs\\DIRECTORY\.md/);
 
 const packageJson = read("package.json");
 const scriptSource = read(path.join("scripts", "generate_directory_docs.js"));
@@ -49,6 +52,10 @@ const testsDirectory = read("_tests/DIRECTORY.md");
 const srcDirectory = read("src/DIRECTORY.md");
 const integrationsDirectory = read("src/integrations/DIRECTORY.md");
 const codebaseMemoryDirectory = read("src/integrations/codebase_memory/DIRECTORY.md");
+const docsDirectory = read("docs/DIRECTORY.md");
+const superpowersDirectory = read("docs/superpowers/DIRECTORY.md");
+const superpowersPlansDirectory = read("docs/superpowers/plans/DIRECTORY.md");
+const superpowersSpecsDirectory = read("docs/superpowers/specs/DIRECTORY.md");
 const todayMatch = scriptSource.match(/const TODAY = "([^"]+)";/);
 assert.ok(todayMatch, "generator must declare TODAY constant");
 const today = todayMatch[1];
@@ -72,6 +79,14 @@ assert.ok(pruneBackupsDirectory.includes("explicit OAuth21 prune execute runs"))
 assert.ok(pruneBackupsDirectory.includes("live-prune-2026-07-15/"));
 assert.ok(srcDirectory.includes("Updated: 2026-07-27"));
 assert.ok(testsDirectory.includes("`smoke_directory_docs_audit.js`"));
+assert.ok(docsDirectory.includes("Status: active documentation directory map"));
+assert.ok(docsDirectory.includes("Imported or adapted Superpowers planning/specification material"));
+assert.ok(superpowersDirectory.includes("Status: active superpowers documentation directory map"));
+assert.ok(superpowersDirectory.includes("supporting workflow material"));
+assert.ok(superpowersPlansDirectory.includes("Status: active superpowers plans directory map"));
+assert.ok(superpowersPlansDirectory.includes("2026-07-26-cbm-full-tool-surface.md"));
+assert.ok(superpowersSpecsDirectory.includes("Status: active superpowers specs directory map"));
+assert.ok(superpowersSpecsDirectory.includes("2026-07-26-cbm-full-tool-surface-design.md"));
 assert.ok(srcDirectory.includes("`integrations/`"));
 assert.ok(integrationsDirectory.includes("Updated: 2026-07-27"));
 assert.ok(codebaseMemoryDirectory.includes("Updated: 2026-07-27"));

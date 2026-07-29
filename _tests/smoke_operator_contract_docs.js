@@ -22,6 +22,9 @@ for (const rel of [
   ["_tests", "DIRECTORY.md"],
   ["_control", "DIRECTORY.md"],
   ["_logs", "DIRECTORY.md"],
+  ["docs", "superpowers", "DIRECTORY.md"],
+  ["docs", "superpowers", "plans", "DIRECTORY.md"],
+  ["docs", "superpowers", "specs", "DIRECTORY.md"],
   ["_workflow", "_diagnostics", "DIRECTORY.md"],
   ["_workflow", "operator_decisions", "DIRECTORY.md"],
   ["_workflow", "NORTHSTAR.md"],
@@ -70,7 +73,8 @@ assert.ok(readiness.includes("No active CBM integrity blocker remains"));
 assert.ok(readiness.includes("the high-churn CBM integration boundary"));
 assert.ok(readiness.includes("the high-churn `_workflow/operator_decisions` ledger"));
 assert.ok(readiness.includes("the project-local `using-codebase-memory` skill boundary"));
-assert.ok(readiness.includes("no missing `DIRECTORY.md` files among the top 20 tracked dirs with churn >= 7"));
+assert.ok(readiness.includes("the `docs/superpowers` plan/spec support boundary"));
+assert.ok(readiness.includes("no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5"));
 assert.ok(readiness.includes("`codex-mcp-client 0.146.0-alpha.3.1` with `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
 assert.ok(roadmap.includes("## Priority matrix"));
 assert.ok(roadmap.includes("Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`"));
@@ -101,7 +105,8 @@ assert.ok(rootDirectory.includes("npm run docs:directory"));
 assert.ok(workflowReadme.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowReadme.includes("`_workflow/ROADMAP.md`"));
 assert.ok(workflowIndex.includes("Operator-facing documentation contract"));
-assert.ok(workflowIndex.includes("the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map plus the project-local `using-codebase-memory` skill boundary"));
+assert.ok(workflowIndex.includes("the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary"));
+assert.ok(workflowIndex.includes("no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = initialize-retirement-evidence-wait`"));
 assert.ok(workflowIndex.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));

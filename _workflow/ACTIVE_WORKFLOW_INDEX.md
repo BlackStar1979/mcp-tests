@@ -89,7 +89,7 @@ Checkpoint topology:
 - Counts remain aligned at 84 and the hardened connector-visible CBM v0.9.0 contract is live at `server_start_id = 2026-07-28T16:05:12.562Z`; `state_handle` deletion, not-found classification, source preservation, normalized change results, partial-result metadata, semantic-only suppression, source-bearing excluded-route warnings, Windows non-ASCII and whitespace path/project caveats, Cypher shape caveats, repaired ADR storage, and unchanged connector-visible surface are verified. No restart or connector refresh remains pending.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
-- Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map plus the project-local `using-codebase-memory` skill boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 20 tracked dirs with churn >= 7 in the last 30 days.
+- Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
 
 Recent committed checkpoints:
 
@@ -387,7 +387,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the hardened OAuth21 `3008` and 84-tool surface stable. Do not refresh `COMP-1A` again until traffic newer than the July 28 `codex-mcp-client 0.146.0-alpha.3.1` entry window creates a meaningfully new entry-path sample. Select one bounded `DOC-2A` orientation package only when a current high-churn gap is demonstrable.
+Next recommended action: keep the hardened OAuth21 `3008` and 84-tool surface stable. Do not refresh `COMP-1A` again until traffic newer than the July 29 `codex-mcp-client 0.146.0-alpha.3.1` entry window creates a meaningfully new entry-path sample. Select another bounded `DOC-2A` orientation package only when a current high-churn gap is demonstrable.
 
 Readiness-derived default next package queue:
 
@@ -395,7 +395,7 @@ Readiness-derived default next package queue:
    Resume only when a new external-client evidence window exists.
 
 2. `DOC-2A` — bounded fallback
-   Close one real high-churn orientation gap, then stop.
+   Current top25/churn>=5 audit is clean. Reopen only when a fresh audit exposes one real high-churn orientation gap, then stop.
 
 3. `COMP-1B` / `SURF-1A`
    Execute only when fresh evidence materially changes the decision surface.
@@ -407,6 +407,8 @@ Recently completed:
 - Refreshed `COMP-1A` on July 27, 2026 against explicit live `server_start_id = 2026-07-27T03:10:26.042Z`: operational `openai-mcp 1.0.0` on protocol `2025-11-25` remains `initialize_only` with `8` successful responses and `0` `server/discover` entries. The shared child-server helper now isolates audit output, and the report can select and attribute a named live window without rewriting historical audit evidence.
 
 - Completed one bounded `DOC-2A` fallback on July 27, 2026: `scripts/generate_directory_docs.js` now owns generator-owned maps for `src/integrations` and `src/integrations/codebase_memory`; the child map names native transport, contract registry, runtime orchestration, versioned contracts, and the repository/runtime/index truth boundary.
+
+- Completed one bounded `DOC-2A` fallback on July 29, 2026: `scripts/generate_directory_docs.js` now owns generator-owned maps for `docs/superpowers`, `docs/superpowers/plans`, and `docs/superpowers/specs`; `_tests/smoke_directory_docs_audit.js` now guards top25/churn>=5, and the current audit reports no missing maps in that bounded scope.
 
 - Closed test-harness control-state pollution on July 27, 2026: self-test no longer starts the restart controller or writes tool-surface state; every smoke child-server uses hermetic surface/restart/rate paths; standalone harnesses, ordinary self-test, and the full suite preserve the restored operational 84-tool state byte-for-byte. No additional restart was required.
 
