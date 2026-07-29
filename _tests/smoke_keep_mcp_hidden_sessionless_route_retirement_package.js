@@ -34,7 +34,7 @@ assert.equal(state.active_target_direction.hidden_sessionless_route_retirement_p
 assert.equal(state.active_target_direction.hidden_sessionless_route_live_verification_record, "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md");
 assert.equal(state.active_target_direction.hidden_sessionless_route_repo_retired_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_active, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_repo_retired_now, true);
 

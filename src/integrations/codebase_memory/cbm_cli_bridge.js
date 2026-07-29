@@ -16,6 +16,8 @@ const DIAGNOSTIC_MAX_CHARS = 2048;
 const DEFAULT_MAX_OUTPUT_CHARS = 250000;
 const HARD_MAX_OUTPUT_CHARS = 1024 * 1024;
 const DETECT_CHANGES_ITEM_LIMIT = 200;
+const SNIPPET_RECOVERY_MAX_FILE_BYTES = 4 * 1024 * 1024;
+const SNIPPET_RECOVERY_MAX_LINES = 240;
 const SOURCE_BEARING_SKIP_BASENAME_PATTERN = "(?:assets|coverage|dist|docs|scripts|tools|examples|static|migrations|integration|env|deploy|deployed|target|temp|tmp|obj|vendor|vendored)";
 const SOURCE_BEARING_EXCLUDED_DIR_PATTERNS = Object.freeze([
   new RegExp(`(^|/)(?:pages/api|app/api|src/app/api|src/routes|routes|server/routes|src/server/routes)/${SOURCE_BEARING_SKIP_BASENAME_PATTERN}(/|$)`, "i"),
@@ -774,7 +776,165 @@ function queryContainsTypeFunction(query) {
   return /\btype\s*\(/i.test(String(query || ""));
 }
 
-function boundConnectorResult(toolName, result, args = {}) {
+function escapeRegExp(value) {
+  return String(value || "").replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function snippetSymbolName(result, args = {}) {
+  const explicit = String(result?.name || "").trim();
+  if (explicit) return explicit;
+  const qualified = String(result?.qualified_name || args.qualified_name || "").trim();
+  if (!qualified) return "";
+  return qualified.split(/::|[./#]/).filter(Boolean).at(-1) || "";
+}
+
+function lineDeclarationScore(line, symbolName) {
+  const escaped = escapeRegExp(symbolName);
+  if (!escaped) return 0;
+  const checks = [
+    [new RegExp(`\\b(?:async\\s+)?function\\s+${escaped}\\b`), 120],
+    [new RegExp(`\\b(?:async\\s+)?def\\s+${escaped}\\b`), 120],
+    [new RegExp(`\\b(?:class|interface|enum|struct|trait)\\s+${escaped}\\b`), 115],
+    [new RegExp(`\\b(?:fn|func)\\s+${escaped}\\b`), 115],
+    [new RegExp(`\\b(?:const|let|var)\\s+${escaped}\\s*=`), 110],
+    [new RegExp(`\\b${escaped}\\s*[:=]\\s*(?:async\\s*)?\\([^)]*\\)\\s*=>`), 105],
+    [new RegExp(`\\b${escaped}\\s*\\([^;]*\\)\\s*(?:\\{|:)`), 80],
+    [new RegExp(`\\b${escaped}\\b`), 10],
+  ];
+  for (const [pattern, score] of checks) {
+    if (pattern.test(line)) return score;
+  }
+  return 0;
+}
+
+function recoverSnippetSource(result, args = {}, options = {}) {
+  const symbolName = snippetSymbolName(result, args);
+  const nativeSource = String(result?.source || result?.code || "");
+  const symbolPattern = symbolName
+    ? new RegExp(`(^|[^A-Za-z0-9_$])${escapeRegExp(symbolName)}([^A-Za-z0-9_$]|$)`)
+    : null;
+  if (!symbolName || (symbolPattern && symbolPattern.test(nativeSource))) {
+    return { result, warnings: [] };
+  }
+
+  const mismatchBase = withBridgeAnalysis({
+    ...result,
+    native_source_integrity: "symbol_name_missing",
+    source_reliable: false,
+  }, {
+    snippet_source_validation: {
+      status: "native_mismatch",
+      expected_symbol: symbolName,
+      recovery_attempted: false,
+      recovery_succeeded: false,
+    },
+  });
+  const filePath = String(result?.file_path || "").trim();
+  if (!filePath) {
+    return {
+      result: mismatchBase,
+      warnings: [`get_code_snippet source did not contain ${symbolName}; no file_path was available for bounded recovery.`],
+    };
+  }
+
+  try {
+    const allowedRoot = fs.realpathSync(defaultAllowedRoot(options));
+    const candidatePath = path.resolve(filePath);
+    if (!pathWithinRoot(allowedRoot, candidatePath)) {
+      throw new Error("snippet file path is outside the authorized workspace root");
+    }
+    const candidateStats = fs.lstatSync(candidatePath);
+    if (candidateStats.isSymbolicLink() || !candidateStats.isFile()) {
+      throw new Error("snippet file path is not a regular non-symlink file");
+    }
+    const realPath = fs.realpathSync(candidatePath);
+    if (!pathWithinRoot(allowedRoot, realPath)) {
+      throw new Error("snippet real path escapes the authorized workspace root");
+    }
+    if (candidateStats.size > SNIPPET_RECOVERY_MAX_FILE_BYTES) {
+      throw new Error(`snippet file exceeds ${SNIPPET_RECOVERY_MAX_FILE_BYTES} bytes`);
+    }
+
+    const lines = fs.readFileSync(realPath, "utf8").split(/\r?\n/);
+    const nativeStart = Number(result.start_line || 0);
+    const candidates = [];
+    for (let index = 0; index < lines.length; index += 1) {
+      const score = lineDeclarationScore(lines[index], symbolName);
+      if (score > 0) {
+        candidates.push({
+          index,
+          score,
+          distance: nativeStart > 0 ? Math.abs(index + 1 - nativeStart) : 0,
+        });
+      }
+    }
+    candidates.sort((left, right) => right.score - left.score || left.distance - right.distance || left.index - right.index);
+    const best = candidates[0];
+    if (!best || best.score < 80) {
+      throw new Error("no declaration-like symbol occurrence was found");
+    }
+
+    const nativeEnd = Number(result.end_line || 0);
+    const declaredLineCount = Number(result.lines || 0);
+    const spanLineCount = nativeStart > 0 && nativeEnd >= nativeStart
+      ? nativeEnd - nativeStart + 1
+      : 0;
+    const lineCount = Math.max(
+      1,
+      Math.min(SNIPPET_RECOVERY_MAX_LINES, declaredLineCount || spanLineCount || 40)
+    );
+    const neighborPadding = args.include_neighbors ? 5 : 0;
+    const startIndex = Math.max(0, best.index - neighborPadding);
+    const endIndexExclusive = Math.min(lines.length, best.index + lineCount + neighborPadding);
+    const recoveredSource = lines.slice(startIndex, endIndexExclusive).join("\n");
+    if (!symbolPattern.test(recoveredSource)) {
+      throw new Error("recovered source still does not contain the expected symbol");
+    }
+
+    return {
+      result: withBridgeAnalysis({
+        ...result,
+        native_start_line: nativeStart,
+        native_end_line: nativeEnd,
+        start_line: startIndex + 1,
+        end_line: endIndexExclusive,
+        source: recoveredSource,
+        native_source_integrity: "symbol_name_missing",
+        source_integrity: "bridge_recovered",
+        source_reliable: true,
+        source_recovered_by_bridge: true,
+      }, {
+        snippet_source_validation: {
+          status: "bridge_recovered",
+          expected_symbol: symbolName,
+          recovery_attempted: true,
+          recovery_succeeded: true,
+          declaration_line: best.index + 1,
+          declaration_score: best.score,
+        },
+      }),
+      warnings: [`get_code_snippet native source did not contain ${symbolName}; the bridge recovered a bounded source range from the verified workspace file.`],
+    };
+  } catch (error) {
+    return {
+      result: withBridgeAnalysis({
+        ...mismatchBase,
+        source_integrity: "native_mismatch_unrecovered",
+      }, {
+        snippet_source_validation: {
+          status: "native_mismatch_unrecovered",
+          expected_symbol: symbolName,
+          recovery_attempted: true,
+          recovery_succeeded: false,
+          reason: String(error?.message || error).slice(0, 300),
+        },
+      }),
+      warnings: [`get_code_snippet source did not contain ${symbolName}; bounded recovery failed: ${String(error?.message || error).slice(0, 300)}.`],
+    };
+  }
+}
+
+function boundConnectorResult(toolName, result, args = {}, options = {}) {
   if (!result || typeof result !== "object" || Array.isArray(result)) {
     return { result, warnings: [] };
   }
@@ -859,6 +1019,11 @@ function boundConnectorResult(toolName, result, args = {}) {
       search_code_path_space_caveat: toolName === "search_code",
     });
     warnings.push(`${toolName} used a project identifier containing whitespace; if the project name came from a path with spaces, native CBM may return false empty or source-unavailable results. Verify against repository truth or graph tools.`);
+  }
+  if (toolName === "get_code_snippet") {
+    const verifiedSnippet = recoverSnippetSource(bounded, args, options);
+    bounded = verifiedSnippet.result;
+    warnings.push(...verifiedSnippet.warnings);
   }
   if (toolName === "detect_changes") {
     bounded = { ...bounded };
@@ -1164,7 +1329,7 @@ async function callCbmTool(toolName, args = {}, options = {}) {
       });
     }
 
-    const bounded = boundConnectorResult(toolName, normalized.result, args);
+    const bounded = boundConnectorResult(toolName, normalized.result, args, options);
     const warnings = [...normalizeWarnings(bounded.result), ...bounded.warnings].slice(0, 40);
     return {
       success: true,

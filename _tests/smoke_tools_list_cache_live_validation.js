@@ -8,8 +8,8 @@ const plan = fs.readFileSync(path.join(ROOT, "_workflow", "operator_decisions", 
 const index = fs.readFileSync(path.join(ROOT, "_workflow", "ACTIVE_WORKFLOW_INDEX.md"), "utf8");
 const canon = fs.readFileSync(path.join(ROOT, "_workflow", "WORKFLOW_CANON.md"), "utf8");
 
-const expectedCurrentStatus = "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats";
-const expectedCurrentFingerprint = "448efe0e488864b6";
+const expectedCurrentStatus = "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity";
+const expectedCurrentFingerprint = "a44365ca2b2e5445";
 const expectedCurrentHash = "7b5bfc1bd21386d3";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
@@ -24,7 +24,7 @@ assert.equal(c.repo_current_expected_tool_count, 84);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
 
@@ -35,7 +35,7 @@ assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43
 assert.ok(index.includes("profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools"));
 assert.ok(index.includes("Fresh client-entry evidence from `2026-07-28` keeps retirement blocked"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
-assert.ok(index.includes("Hardened CBM v0.9.0 behavior is live"));
+assert.ok(index.includes("Hardened CBM v0.9.0 behavior, including snippet source-integrity validation, is live"));
 assert.ok(index.includes("No restart or connector refresh remains pending"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `84`"));
 assert.ok(canon.includes("tool count `84`"));

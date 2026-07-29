@@ -155,6 +155,8 @@ module.exports = { main };
     });
     assertBridgeSuccess(snippet, "cbm_get_code_snippet");
     assert.match(snippet.result.source || snippet.result.code || JSON.stringify(snippet.result), /formatMessage/);
+    assert.match(snippet.result.source || snippet.result.code || JSON.stringify(snippet.result), /function greetUnicode/);
+    assert.notEqual(snippet.result.source_integrity, "native_mismatch_unrecovered");
 
     const trace = await traceTool.execute({
       project_name: PROJECT_NAME,

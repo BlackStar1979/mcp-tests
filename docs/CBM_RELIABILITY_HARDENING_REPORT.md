@@ -213,3 +213,33 @@ Post-refresh validation confirmed:
 - no restart or connector refresh remains pending.
 
 Client metadata caveat: the generated function signature visible in this conversation still displayed legacy `confirmation_token` wording, while the repository schema, runtime challenge, and successful confirmed call used `state_handle`. This is a client-presentation cache issue, not a live server contract failure.
+
+## Snippet source-integrity hardening
+
+Follow-up validation on July 29 reproduced a native v0.9.0 integrity defect after an explicit moderate reindex of `C-Work-mcp-tests`: `get_code_snippet` reported `searchIndex` at native lines `898-909`, but the requested declaration was at repository lines `1073-1084`. The native index claimed the current Git revision and `detect_changes` reported no changes, so freshness metadata alone was not sufficient evidence that the source span was correct.
+
+The bridge now validates that a snippet contains the requested symbol. On mismatch it attempts bounded, fail-closed recovery from the verified workspace file:
+
+- the file must remain inside the authorized workspace root after real-path resolution;
+- symlinks, non-files, files larger than 4 MiB, and path escapes are rejected;
+- declaration candidates are ranked by language-neutral declaration patterns;
+- recovered output is capped at 240 lines;
+- native and recovered line ranges remain separately visible;
+- `source_integrity: bridge_recovered` and `source_reliable: true` identify successful recovery;
+- `source_integrity: native_mismatch_unrecovered` and `source_reliable: false` prevent an unverified native span from being treated as exact source.
+
+Hermetic coverage reproduces both successful recovery and an out-of-root fail-closed result. The live bridge stress guard now requires the requested declaration rather than accepting a neighboring symbol from the same file. The project-local `using-codebase-memory` skill instructs agents to inspect these structured fields and verify any unreliable result directly against repository truth.
+
+Controlled restart `manual-1785348037500` loaded the package at `server_start_id = 2026-07-29T18:00:39.162Z`. A direct call through the active `workbench` connector returned:
+
+```text
+qualified_name: C-Work-mcp-tests.src.util.workspace_index.searchIndex
+native_start_line: 898
+native_end_line: 909
+start_line: 1073
+end_line: 1084
+source_integrity: bridge_recovered
+source_reliable: true
+```
+
+The recovered source contains the requested `async function searchIndex(...)` declaration. The connector-visible surface remains 84 tools with tool-name hash `7b5bfc1bd21386d3`; no connector refresh was required.

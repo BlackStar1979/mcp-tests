@@ -24,9 +24,9 @@ for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliat
 }
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_in_sync_with_upstream_201_277_caveats");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
 assert.ok(readme.includes("Do not ask the operator to restart `3008`"));

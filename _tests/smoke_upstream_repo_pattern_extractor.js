@@ -31,6 +31,9 @@ try {
     "server.registerTool('search_graph', async () => ({}));",
     "const storage = 'sqlite wal json';",
     "const retrieval = 'semantic vector hybrid rerank mmr';",
+    "function buildTree(markdown) { return markdown.split('##'); }",
+    "function searchDocuments(query) { return computeBM25(query); }",
+    "function graphMemoryStore(node, edge) { return { node, edge }; }",
   ].join("\n"), "utf8");
 
   const repo = analyzeRepository(fixtureRoot, {
@@ -38,6 +41,7 @@ try {
     path: "fixture-doc-graph",
     upstream: "https://example.test/fixture",
     role: "test fixture",
+    candidate_ids: ["bounded_tree_navigation", "local_graph_memory"],
   });
 
   assert.equal(repo.present, true);
@@ -49,12 +53,19 @@ try {
   assert.ok(repo.package_scripts.some((item) => item.name === "index"));
   assert.ok(repo.transplant_candidates.some((item) => item.id === "bounded_tree_navigation"));
   assert.ok(repo.transplant_candidates.some((item) => item.id === "local_graph_memory"));
+  assert.equal(repo.transplant_candidates.some((item) => item.id === "doc_code_entity_merge"), false);
+  assert.ok(repo.transplant_candidates
+    .find((item) => item.id === "bounded_tree_navigation")
+    .evidence.some((item) => item.path === "src/index.js" && item.line > 0));
+  assert.equal(repo.git.present, false);
+  assert.equal(repo.dependencies.manifest, "package.json");
 
   const report = buildReport(fixtureRoot, [{
     id: "fixture",
     path: "fixture-doc-graph",
     upstream: "https://example.test/fixture",
     role: "test fixture",
+    candidate_ids: ["bounded_tree_navigation", "local_graph_memory"],
   }]);
   assert.equal(report.repository_count, 1);
   assert.equal(report.present_count, 1);
@@ -63,7 +74,11 @@ try {
   const markdown = renderMarkdown(report);
   assert.ok(markdown.includes("# Upstream Repo Pattern Lab"));
   assert.ok(markdown.includes("fixture-doc-graph"));
+  assert.ok(markdown.includes("dependency_cost"));
+  assert.ok(markdown.includes("src/index.js"));
   assert.ok(markdown.includes("Next Transplant Queue"));
+  assert.ok(markdown.includes("Second-Pass Decisions"));
+  assert.ok(markdown.includes("adopt_patterns_only"));
 
   console.log("smoke_upstream_repo_pattern_extractor ok");
 } finally {

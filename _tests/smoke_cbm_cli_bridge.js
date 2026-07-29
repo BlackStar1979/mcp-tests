@@ -121,6 +121,20 @@ if (mode === "non_ascii_search_code") {
   }) }] }));
   return;
 }
+if (mode === "snippet_misaligned") {
+  process.stdout.write(JSON.stringify({ content: [{ type: "text", text: JSON.stringify({
+    name: "searchIndex",
+    qualified_name: "demo.workspace_index.searchIndex",
+    label: "Function",
+    file_path: process.env.FAKE_SNIPPET_PATH,
+    start_line: 1,
+    end_line: 4,
+    source: "function unrelatedHelper() {\\n  return true;\\n}\\n",
+    lines: 4,
+    signature: "(query)",
+  }) }] }));
+  return;
+}
 if (mode === "large_detect") {
   const changed_files = Array.from({ length: 350 }, (_, index) => "src/file-" + index + ".js");
   const impacted_symbols = Array.from({ length: 350 }, (_, index) => ({ qualified_name: "demo.symbol." + index, depth: index % 3 }));
@@ -547,6 +561,67 @@ function fixtureOptions(overrides = {}) {
     assert.equal(nonAsciiProjectSnippet.result.bridge_analysis.windows_project_utf8_caveat, true);
     assert.match(nonAsciiProjectSnippet.warnings.join(" "), /non-ASCII project identifier on Windows/i);
   }
+
+  const snippetSourcePath = path.join(tempRoot, "workspace_index.js");
+  fs.writeFileSync(
+    snippetSourcePath,
+    [
+      "\"use strict\";",
+      "",
+      "function unrelatedHelper() {",
+      "  return true;",
+      "}",
+      "",
+      "async function searchIndex(query) {",
+      "  const normalized = String(query || \"\");",
+      "  return { query: normalized };",
+      "}",
+      "",
+    ].join("\n"),
+    "utf8"
+  );
+  const recoveredSnippet = await callCbmTool("get_code_snippet", {
+    project: "demo",
+    qualified_name: "demo.workspace_index.searchIndex",
+    include_neighbors: false,
+  }, fixtureOptions({
+    allowedRoot: tempRoot,
+    env: {
+      FAKE_CBM_CALL_MODE: "snippet_misaligned",
+      FAKE_SNIPPET_PATH: snippetSourcePath,
+    },
+  }));
+  assert.equal(recoveredSnippet.success, true);
+  assert.equal(recoveredSnippet.partial_success, true);
+  assert.equal(recoveredSnippet.result.source_integrity, "bridge_recovered");
+  assert.equal(recoveredSnippet.result.source_reliable, true);
+  assert.equal(recoveredSnippet.result.source_recovered_by_bridge, true);
+  assert.equal(recoveredSnippet.result.native_source_integrity, "symbol_name_missing");
+  assert.equal(recoveredSnippet.result.native_start_line, 1);
+  assert.equal(recoveredSnippet.result.start_line, 7);
+  assert.match(recoveredSnippet.result.source, /async function searchIndex\(query\)/);
+  assert.doesNotMatch(recoveredSnippet.result.source, /unrelatedHelper/);
+  assert.equal(recoveredSnippet.result.bridge_analysis.snippet_source_validation.recovery_succeeded, true);
+  assert.match(recoveredSnippet.warnings.join(" "), /recovered a bounded source range/i);
+
+  const blockedSnippetRoot = path.join(tempRoot, "blocked-root");
+  fs.mkdirSync(blockedSnippetRoot, { recursive: true });
+  const unrecoveredSnippet = await callCbmTool("get_code_snippet", {
+    project: "demo",
+    qualified_name: "demo.workspace_index.searchIndex",
+  }, fixtureOptions({
+    allowedRoot: blockedSnippetRoot,
+    env: {
+      FAKE_CBM_CALL_MODE: "snippet_misaligned",
+      FAKE_SNIPPET_PATH: snippetSourcePath,
+    },
+  }));
+  assert.equal(unrecoveredSnippet.success, true);
+  assert.equal(unrecoveredSnippet.partial_success, true);
+  assert.equal(unrecoveredSnippet.result.source_integrity, "native_mismatch_unrecovered");
+  assert.equal(unrecoveredSnippet.result.source_reliable, false);
+  assert.equal(unrecoveredSnippet.result.bridge_analysis.snippet_source_validation.recovery_succeeded, false);
+  assert.match(unrecoveredSnippet.warnings.join(" "), /outside the authorized workspace root/i);
 
   const spacedIndexPath = await callCbmTool("index_repository", { repo_path: "C:\\Work\\Dev Projects\\demo" }, fixtureOptions());
   assert.equal(spacedIndexPath.success, true);

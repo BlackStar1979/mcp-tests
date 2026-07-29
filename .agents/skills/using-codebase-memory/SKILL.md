@@ -59,12 +59,13 @@ Load `references/tools.md` for arguments and caveats. Load `references/scenarios
 
 ## Result Interpretation
 
-`success: true` with `partial_success: true` is not full success. Prefer structured fields over warning prose. For `cbm_detect_changes`, read `bridge_analysis`, totals, and `impact_resolution_reason`; bounded arrays are samples. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` means accepted transport only. Treat discovery absence, semantic-only suppression, `source_bearing_excluded_dirs`, Cypher caveats, Windows non-ASCII, and whitespace path/project caveats as citation and coverage warnings. `queue_wait_ms` is scheduling delay. Stable bridge errors outrank diagnostic text.
+`success: true` with `partial_success: true` is not full success. Prefer structured fields. For `cbm_detect_changes`, read `bridge_analysis`, totals, and `impact_resolution_reason`; arrays are samples. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` means accepted transport only. Snippets must contain the requested symbol. `source_integrity: bridge_recovered` is repository-backed; `source_reliable: false` requires file verification. Treat discovery absence, semantic-only suppression, `source_bearing_excluded_dirs`, Cypher caveats, Windows non-ASCII, and whitespace path/project caveats as coverage warnings. `queue_wait_ms` is scheduling delay.
 
 ## Common Mistakes
 
 - Inventing a project name instead of listing projects.
 - Using short ambiguous symbols when a qualified name is available.
+- Trusting snippet line metadata when the returned source does not contain the requested symbol.
 - Treating an empty scoped result as proof that no repository change exists.
 - Treating accepted trace ingestion as created runtime edges.
 - Confusing fifteen `cbm_*` tools with fourteen native CBM operations.

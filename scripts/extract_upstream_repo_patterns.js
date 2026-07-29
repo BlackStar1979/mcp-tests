@@ -1,5 +1,6 @@
 "use strict";
 
+const childProcess = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
 
@@ -12,42 +13,49 @@ const DEFAULT_REPOSITORIES = [
     path: "codebase-memory-mcp-main",
     upstream: "https://github.com/DeusData/codebase-memory-mcp",
     role: "structural code memory baseline",
+    candidate_ids: ["doc_code_entity_merge", "local_graph_memory", "watcher_as_optional_projection"],
   },
   {
     id: "doctree-mcp",
     path: "joesaby-doctree-mcp",
     upstream: "https://github.com/joesaby/doctree-mcp",
     role: "BM25 plus document tree navigation",
+    candidate_ids: ["bounded_tree_navigation"],
   },
   {
     id: "repo-graphrag-mcp",
     path: "yumeiriowl-repo-graphrag-mcp",
     upstream: "https://github.com/yumeiriowl/repo-graphrag-mcp",
     role: "code and docs graph retrieval",
+    candidate_ids: ["doc_code_entity_merge", "dependency_cost_gate"],
   },
   {
     id: "docs-mcp-server",
     path: "arabold-docs-mcp-server",
     upstream: "https://github.com/arabold/docs-mcp-server",
     role: "grounded documentation indexing",
+    candidate_ids: ["version_grounded_docs", "watcher_as_optional_projection", "dependency_cost_gate"],
   },
   {
     id: "graph-mem-mcp",
     path: "arnokamphuis-graph-mem-mcp",
     upstream: "https://github.com/arnokamphuis/graph-mem-mcp",
     role: "agent memory graph",
+    candidate_ids: ["local_graph_memory"],
   },
   {
     id: "obsidian-mcp-server",
     path: "obsidian-mcp-server-master",
     upstream: "https://github.com/cyanheads/obsidian-mcp-server",
     role: "markdown link and vault structure",
+    candidate_ids: ["watcher_as_optional_projection"],
   },
   {
     id: "markdown-rag-mcp",
     path: "mohllal-markdown-rag-mcp",
     upstream: "https://github.com/mohllal/markdown-rag-mcp",
     role: "markdown RAG pipeline",
+    candidate_ids: ["watcher_as_optional_projection", "dependency_cost_gate"],
   },
 ];
 
@@ -152,37 +160,79 @@ const TRANSPLANTS = [
   {
     id: "bounded_tree_navigation",
     signal: "tree navigation, BM25, glossary, row lookup",
-    applies_when: ["retrieval", "parser"],
+    evidence_patterns: [
+      /\bbuildTree\b/,
+      /\bnavigateTree\b/,
+      /\bgetNodeContent\b/,
+      /\bsearchDocuments\b/,
+      /\bexpandQueryTerms\b/,
+      /\bcomputeBM25\b/,
+    ],
+    default_status: "evaluate",
+    dependency_cost: "low",
     recommendation: "Add navigation primitives before semantic expansion: tree/list/glossary facets should reduce prompt load without adding embeddings.",
   },
   {
     id: "doc_code_entity_merge",
     signal: "Tree-sitter plus docs graph",
-    applies_when: ["graph", "parser"],
+    evidence_patterns: [
+      /\bmerge_doc_and_code\b/,
+      /\bmergeDocAndCode\b/,
+      /\bdoc(?:ument)?[_ -]?code[_ -]?entit/i,
+      /\bentity[_ -]?merg/i,
+    ],
+    default_status: "defer",
+    dependency_cost: "high",
     recommendation: "Extend deterministic document_graph toward doc-to-code edges only after current doc graph quality becomes a blocker.",
   },
   {
     id: "version_grounded_docs",
     signal: "version-aware external docs",
-    applies_when: ["retrieval", "storage"],
+    evidence_patterns: [
+      /\bversion(?:ed|ing)?[_ -]?(?:docs|source|package)/i,
+      /\b(?:docs|source|package)[_ -]?version/i,
+      /\bpackageVersion\b/,
+    ],
+    default_status: "evaluate",
+    dependency_cost: "medium",
     recommendation: "Keep external-doc ingestion version-scoped and source-attributed; avoid one undifferentiated global docs cache.",
   },
   {
     id: "local_graph_memory",
     signal: "project/domain scoped graph memory",
-    applies_when: ["graph", "storage"],
+    evidence_patterns: [
+      /\bknowledge[_ -]?graph\b/i,
+      /\bgraph[_ -]?(?:store|storage|memory)\b/i,
+      /\bgraph(?:Store|Storage|Memory)/,
+      /\b(?:node|edge)[_ -]?(?:store|storage|memory)\b/i,
+    ],
+    default_status: "evaluate",
+    dependency_cost: "medium",
     recommendation: "Prefer scoped graph records with explicit source and supersession over free-form extracted memory blobs.",
   },
   {
     id: "watcher_as_optional_projection",
     signal: "file watcher and incremental refresh",
-    applies_when: ["updates"],
+    evidence_patterns: [
+      /\bwatch(?:er|Files?)?\b/,
+      /\bincremental(?:ly)?\b/i,
+      /\brefreshIndex\b/,
+      /\breindexChanged\b/,
+    ],
+    default_status: "adopt_as_guardrail",
+    dependency_cost: "low",
     recommendation: "Treat live watchers as optional projections; primary truth should remain rebuildable from files and specs.",
   },
   {
     id: "dependency_cost_gate",
     signal: "vector DB or external embedding dependency",
-    applies_when: ["retrieval"],
+    dependency_patterns: [
+      /(?:faiss|torch|transformers|sentence-transformers|lightrag)/i,
+      /(?:qdrant|milvus|falkordb|chroma|lancedb)/i,
+      /(?:openai|anthropic|google-genai)/i,
+    ],
+    default_status: "adopt_as_guardrail",
+    dependency_cost: "avoid_until_blocked",
     recommendation: "Require a reproduced retrieval-quality or scale blocker before adding Qdrant, Milvus, FalkorDB, Chroma, LanceDB, or external embeddings.",
   },
 ];
@@ -257,7 +307,12 @@ function classifyRole(relPath) {
   const name = path.basename(relPath).toLowerCase();
   const normalized = normalizeRel(relPath).toLowerCase();
   if (name === "readme.md") return "readme";
-  if (normalized.includes("/test") || normalized.includes("/spec") || normalized.includes("_tests/")) return "tests";
+  if (
+    /^(?:_?tests?|specs?)(?:\/|$)/.test(normalized)
+    || normalized.includes("/test")
+    || normalized.includes("/spec")
+    || normalized.includes("_tests/")
+  ) return "tests";
   if (normalized.includes("/doc") || normalized.endsWith(".md")) return "docs";
   if (["package.json", "pyproject.toml", "cargo.toml", "go.mod", "makefile", "docker-compose.yml"].includes(name)) return "manifest";
   if ([".js", ".ts", ".py", ".go", ".rs", ".c", ".cpp"].includes(path.extname(name))) return "source";
@@ -298,6 +353,104 @@ function readMakeTargets(repoDir) {
   return [...new Set(targets)].slice(0, 20);
 }
 
+function runGit(repoDir, args) {
+  try {
+    return childProcess.execFileSync("git", ["-C", repoDir, ...args], {
+      encoding: "utf8",
+      timeout: 3000,
+      windowsHide: true,
+      stdio: ["ignore", "pipe", "ignore"],
+    }).trim();
+  } catch {
+    return "";
+  }
+}
+
+function readGitMetadata(repoDir) {
+  const topLevel = runGit(repoDir, ["rev-parse", "--show-toplevel"]);
+  if (!topLevel || path.resolve(topLevel) !== path.resolve(repoDir)) {
+    return {
+      present: false,
+      head: "",
+      branch: "",
+      origin: "",
+      dirty: false,
+    };
+  }
+  const head = runGit(repoDir, ["rev-parse", "HEAD"]);
+  if (!head) {
+    return {
+      present: false,
+      head: "",
+      branch: "",
+      origin: "",
+      dirty: false,
+    };
+  }
+  return {
+    present: true,
+    head,
+    branch: runGit(repoDir, ["branch", "--show-current"]),
+    origin: runGit(repoDir, ["remote", "get-url", "origin"]),
+    dirty: Boolean(runGit(repoDir, ["status", "--short"])),
+  };
+}
+
+function normalizeDependencyName(value) {
+  const match = String(value || "").trim().match(/^([A-Za-z0-9_.-]+)/);
+  return match ? match[1] : "";
+}
+
+function readDependencyMetadata(repoDir) {
+  const packagePath = path.join(repoDir, "package.json");
+  if (fs.existsSync(packagePath)) {
+    try {
+      const parsed = JSON.parse(fs.readFileSync(packagePath, "utf8"));
+      const runtime = Object.keys(parsed.dependencies || {}).sort();
+      const development = Object.keys(parsed.devDependencies || {}).sort();
+      return {
+        manifest: "package.json",
+        package_name: String(parsed.name || ""),
+        package_version: String(parsed.version || ""),
+        license: String(parsed.license || ""),
+        runtime,
+        development,
+      };
+    } catch {
+      // Continue to another supported manifest.
+    }
+  }
+
+  const pyprojectPath = path.join(repoDir, "pyproject.toml");
+  if (fs.existsSync(pyprojectPath)) {
+    const text = safeReadText(pyprojectPath);
+    const dependencyBlock = text.match(/dependencies\s*=\s*\[([\s\S]*?)\]/);
+    const runtime = dependencyBlock
+      ? [...dependencyBlock[1].matchAll(/["']([^"']+)["']/g)]
+        .map((match) => normalizeDependencyName(match[1]))
+        .filter(Boolean)
+        .sort()
+      : [];
+    return {
+      manifest: "pyproject.toml",
+      package_name: text.match(/^\s*name\s*=\s*["']([^"']+)["']/m)?.[1] || "",
+      package_version: text.match(/^\s*version\s*=\s*["']([^"']+)["']/m)?.[1] || "",
+      license: text.match(/^\s*license\s*=\s*\{\s*text\s*=\s*["']([^"']+)["']/m)?.[1] || "",
+      runtime,
+      development: [],
+    };
+  }
+
+  return {
+    manifest: "",
+    package_name: "",
+    package_version: "",
+    license: "",
+    runtime: [],
+    development: [],
+  };
+}
+
 function scanSignals(files, repoDir) {
   const byCategory = {};
   const evidence = {};
@@ -330,12 +483,81 @@ function scanSignals(files, repoDir) {
   return { byCategory, evidence };
 }
 
-function deriveTransplants(signalCounts) {
+function scanImplementationEvidence(files, repoDir, repo, dependencies) {
+  const allowedCandidateIds = new Set(
+    Array.isArray(repo.candidate_ids) && repo.candidate_ids.length
+      ? repo.candidate_ids
+      : TRANSPLANTS.map((item) => item.id)
+  );
+  const evidence = Object.fromEntries(TRANSPLANTS.map((item) => [item.id, []]));
+  for (const filePath of files) {
+    const rel = normalizeRel(path.relative(repoDir, filePath));
+    if (classifyRole(rel) !== "source") continue;
+    let text = "";
+    try {
+      text = safeReadText(filePath);
+    } catch {
+      continue;
+    }
+    const lines = text.split(/\r?\n/);
+    for (const transplant of TRANSPLANTS) {
+      if (!allowedCandidateIds.has(transplant.id) || !transplant.evidence_patterns) continue;
+      const bucket = evidence[transplant.id];
+      for (let index = 0; index < lines.length; index += 1) {
+        const line = lines[index];
+        if (transplant.evidence_patterns.some((pattern) => pattern.test(line))) {
+          bucket.push({
+            path: rel,
+            line: index + 1,
+            text: line.trim().slice(0, 220),
+          });
+        }
+      }
+    }
+  }
+
+  for (const transplant of TRANSPLANTS) {
+    evidence[transplant.id] = evidence[transplant.id]
+      .sort((left, right) => implementationEvidenceScore(right) - implementationEvidenceScore(left)
+        || left.path.localeCompare(right.path)
+        || left.line - right.line)
+      .slice(0, 8);
+  }
+
+  const dependencyNames = [...dependencies.runtime, ...dependencies.development];
+  const dependencyGate = TRANSPLANTS.find((item) => item.id === "dependency_cost_gate");
+  if (allowedCandidateIds.has("dependency_cost_gate")) {
+    evidence.dependency_cost_gate = dependencyNames
+      .filter((name) => dependencyGate.dependency_patterns.some((pattern) => pattern.test(name)))
+      .slice(0, 12)
+      .map((name) => ({ path: dependencies.manifest, line: 0, text: name }));
+  }
+  return evidence;
+}
+
+function implementationEvidenceScore(item) {
+  let score = 0;
+  if (/^(?:src|lib|app|repo_graphrag)\//.test(item.path)) score += 4;
+  if (/\b(?:export\s+)?(?:async\s+)?function\s+\w+|\b(?:async\s+)?def\s+\w+|\bclass\s+\w+/.test(item.text)) score += 6;
+  if (/^\s*(?:from|import)\b/.test(item.text)) score -= 4;
+  if (/\b(?:test|fixture|example|standalone)\b/i.test(item.path)) score -= 3;
+  return score;
+}
+
+function deriveTransplants(repo, implementationEvidence) {
+  const allowedCandidateIds = new Set(
+    Array.isArray(repo.candidate_ids) && repo.candidate_ids.length
+      ? repo.candidate_ids
+      : TRANSPLANTS.map((item) => item.id)
+  );
   return TRANSPLANTS
-    .filter((item) => item.applies_when.some((category) => signalCounts[category] > 0))
+    .filter((item) => allowedCandidateIds.has(item.id) && implementationEvidence[item.id]?.length > 0)
     .map((item) => ({
       id: item.id,
       signal: item.signal,
+      status: item.default_status,
+      dependency_cost: item.dependency_cost,
+      evidence: implementationEvidence[item.id],
       recommendation: item.recommendation,
     }));
 }
@@ -352,8 +574,11 @@ function analyzeRepository(corpusRoot, repo) {
       role_counts: [],
       package_scripts: [],
       make_targets: [],
+      git: { present: false, head: "", branch: "", origin: "", dirty: false },
+      dependencies: { manifest: "", package_name: "", package_version: "", license: "", runtime: [], development: [] },
       signals: {},
       signal_evidence: {},
+      implementation_evidence: {},
       transplant_candidates: [],
     };
   }
@@ -366,6 +591,8 @@ function analyzeRepository(corpusRoot, repo) {
     increment(roles, classifyRole(rel));
   }
   const signalScan = scanSignals(files, repoDir);
+  const dependencies = readDependencyMetadata(repoDir);
+  const implementationEvidence = scanImplementationEvidence(files, repoDir, repo, dependencies);
   return {
     ...repo,
     present: true,
@@ -375,9 +602,12 @@ function analyzeRepository(corpusRoot, repo) {
     role_counts: sortedCounts(roles),
     package_scripts: readPackageScripts(repoDir).slice(0, 20),
     make_targets: readMakeTargets(repoDir),
+    git: readGitMetadata(repoDir),
+    dependencies,
     signals: signalScan.byCategory,
     signal_evidence: signalScan.evidence,
-    transplant_candidates: deriveTransplants(signalScan.byCategory),
+    implementation_evidence: implementationEvidence,
+    transplant_candidates: deriveTransplants(repo, implementationEvidence),
   };
 }
 
@@ -405,6 +635,40 @@ function buildReport(corpusRoot = DEFAULT_CORPUS_ROOT, repositories = DEFAULT_RE
         priority: "P2",
         item: "Use corpus extraction reports as the default upstream-memory substrate before manually porting behavior.",
         evidence: "The extractor makes repo dissection repeatable and keeps transplant candidates auditable.",
+      },
+    ],
+    second_pass_decisions: [
+      {
+        repository: "doctree-mcp",
+        verdict: "adopt_patterns_only",
+        patterns: [
+          "heading hierarchy with stable section identity and source line spans",
+          "glossary-assisted query expansion and facet prefiltering",
+          "bounded match positions and density-oriented snippets",
+        ],
+        rationale: "The implementation is dependency-light, but its monolithic search routine should be decomposed before any local adaptation.",
+        reopen_when: "A benchmark reproduces navigation or snippet-quality loss in the current deterministic knowledge index.",
+      },
+      {
+        repository: "repo-graphrag-mcp",
+        verdict: "defer",
+        patterns: [
+          "documentation-to-code entity reconciliation",
+          "batched graph enrichment",
+        ],
+        rationale: "The current pin carries 26 runtime dependencies, including embedding, model-provider, Torch, Transformers, and FAISS layers. That cost is unjustified while deterministic document links answer current workflow questions.",
+        reopen_when: "Exact path, symbol, and document-link joins fail a measured retrieval-quality criterion.",
+      },
+      {
+        repository: "all tracked repositories",
+        verdict: "adopt_guardrail",
+        patterns: [
+          "pin every inspected upstream revision",
+          "require source-level implementation evidence",
+          "record dependency cost before transplanting behavior",
+        ],
+        rationale: "Repository names, README claims, and keyword counts are discovery signals, not implementation evidence.",
+        reopen_when: "Always active for future upstream reviews.",
       },
     ],
   };
@@ -445,6 +709,9 @@ function renderMarkdown(report) {
       lines.push("");
       continue;
     }
+    lines.push(`- Upstream pin: \`${repo.git.head || "unavailable"}\`${repo.git.branch ? ` on \`${repo.git.branch}\`` : ""}${repo.git.dirty ? " (dirty)" : ""}`);
+    lines.push(`- Manifest: \`${repo.dependencies.manifest || "unavailable"}\`; package \`${repo.dependencies.package_name || "unknown"}@${repo.dependencies.package_version || "unknown"}\`; license \`${repo.dependencies.license || "unknown"}\``);
+    lines.push(`- Runtime dependencies: \`${repo.dependencies.runtime.length}\`${repo.dependencies.runtime.length ? ` (${repo.dependencies.runtime.slice(0, 12).join(", ")})` : ""}`);
     lines.push(`- Top extensions: ${repo.extension_counts.map((item) => `\`${item.name}:${item.count}\``).join(", ") || "none"}`);
     lines.push(`- Role counts: ${repo.role_counts.map((item) => `\`${item.name}:${item.count}\``).join(", ") || "none"}`);
     lines.push(`- Signals: ${Object.entries(repo.signals).map(([name, count]) => `\`${name}:${count}\``).join(", ")}`);
@@ -464,8 +731,14 @@ function renderMarkdown(report) {
     if (repo.transplant_candidates.length) {
       lines.push("- Transplant candidates:");
       for (const item of repo.transplant_candidates.slice(0, 5)) {
-        lines.push(`  - \`${item.id}\`: ${item.recommendation}`);
+        lines.push(`  - \`${item.id}\` [status=\`${item.status}\`, dependency_cost=\`${item.dependency_cost}\`]: ${item.recommendation}`);
+        for (const evidenceItem of item.evidence.slice(0, 4)) {
+          const location = evidenceItem.line > 0 ? `${evidenceItem.path}:${evidenceItem.line}` : evidenceItem.path;
+          lines.push(`    - Evidence: \`${location}\` -> \`${evidenceItem.text}\``);
+        }
       }
+    } else {
+      lines.push("- Transplant candidates: none with source-level evidence in the current pin.");
     }
     lines.push("");
   }
@@ -476,6 +749,17 @@ function renderMarkdown(report) {
     lines.push(`  Evidence: ${item.evidence}`);
   }
   lines.push("");
+  lines.push("## Second-Pass Decisions");
+  lines.push("");
+  for (const item of report.second_pass_decisions) {
+    lines.push(`### ${item.repository}`);
+    lines.push("");
+    lines.push(`- Verdict: \`${item.verdict}\``);
+    lines.push(`- Patterns: ${item.patterns.map((pattern) => `\`${pattern}\``).join(", ")}`);
+    lines.push(`- Rationale: ${item.rationale}`);
+    lines.push(`- Reopen when: ${item.reopen_when}`);
+    lines.push("");
+  }
   lines.push("## Operating Rule");
   lines.push("");
   lines.push("Before adding retrieval or memory behavior to `mcp-tests`, run this extractor, inspect the relevant upstream repo locally, and save only distilled lessons or adopted decisions to persistent memory.");
