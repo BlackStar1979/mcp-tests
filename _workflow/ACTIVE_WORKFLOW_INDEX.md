@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-01
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`) at `server_start_id = 2026-08-01T19:48:43.083Z`. The additive retrieval contract is live with combined fingerprint `73c0bc08dad53e8c`; no OAuth relogin was required. The v3 knowledge index contains `259` documents, visited `1122` files and `50` directories, reports freshness `fresh`, extracts all `11` readiness components, and ranks active workflow, maturity, and `MEM-1` proof authorities first. Hardened CBM v0.9.0 behavior, snippet source-integrity recovery, canonical PKCE, and accepted OVH-backed memory retrieval remain live. Manual CBM sample stress covered `663` calls with `instability=[]`; Upstream issue reviews cover ordinals 1-277. Fresh client-entry evidence from `2026-07-28` keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries.
+Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`) at `server_start_id = 2026-08-01T20:29:11.207Z`. The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live: modern requests have final metadata/header/result/error semantics while legacy clients retain isolated initialize-era behavior. The additive retrieval contract remains live with combined fingerprint `73c0bc08dad53e8c`; no OAuth relogin was required. The v3 knowledge index contains `260` documents, visited `1124` files and `50` directories, reports freshness `fresh`, extracts all `11` readiness components, and ranks active workflow, maturity, and `MEM-1` proof authorities first. Fresh August 1 evidence keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.9.2` has `2` legacy `initialize` entries and `0` `server/discover` entries.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
@@ -83,11 +83,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 84 connector-visible tools at `server_start_id = 2026-08-01T19:48:43.083Z`; current `COMP-1A` evidence remains `initialize_only` on the July 28 latest-entry window for `codex-mcp-client 0.146.0-alpha.3.1`;
+- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 84 connector-visible tools at `server_start_id = 2026-08-01T20:29:11.207Z`; the final `2026-07-28` adapter is live and current `COMP-1A` evidence remains `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Counts remain aligned at 84 and the hardened CBM v0.9.0, canonical PKCE, activated memory, and freshness-aware retrieval contracts are live at `server_start_id = 2026-08-01T19:48:43.083Z`; direct calls survived the supervised takeover and no connector refresh is pending.
+- Counts remain aligned at 84 and the hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, and final dual-era protocol contracts are live at `server_start_id = 2026-08-01T20:29:11.207Z`; direct calls survived the supervised restart and no connector refresh is pending.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
@@ -388,7 +388,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the hardened OAuth21 `3008` and 84-tool surface stable. Do not refresh `COMP-1A` again until traffic newer than the July 29 `codex-mcp-client 0.146.0-alpha.3.1` entry window creates a meaningfully new entry-path sample. Select another bounded `DOC-2A` orientation package only when a current high-churn gap is demonstrable.
+Next recommended action: keep the hardened OAuth21 `3008`, 84-tool surface, and final dual-era adapter stable. Do not refresh `COMP-1A` again until traffic newer than the August 1 `codex-mcp-client 0.146.0-alpha.9.2` entry window creates a meaningfully new entry-path sample. Select `DOC-2A` only when a current high-churn gap is demonstrable.
 
 Readiness-derived default next package queue:
 
@@ -402,6 +402,10 @@ Readiness-derived default next package queue:
    Execute only when fresh evidence materially changes the decision surface.
 
 Recently completed:
+
+- Completed `MCP-2026-DUAL-ERA` on August 1, 2026: final MCP `2026-07-28` request metadata, mirrored headers, result envelopes, server identity metadata, error codes, cache directives, and DCR `application_type` compatibility are live behind explicit era and auth gates. Full validation is `7 + 270`; restart `manual-1785616149554` loaded `server_start_id 2026-08-01T20:29:11.207Z`, and direct `workbench.get_info` succeeded without relogin. Fresh `codex-mcp-client 0.146.0-alpha.9.2` evidence still blocks initialize retirement.
+
+- Refreshed `COMP-1A` on August 1, 2026 with `--latest-entry-window`: selected entry window `2026-08-01T17:51:19.986Z` shows operational `codex-mcp-client 0.146.0-alpha.9.2` remains `initialize_only` with `2` legacy entries and `0` `server/discover` entries.
 
 - Refreshed `COMP-1A` on July 28, 2026 with `--latest-entry-window`: latest live runtime `2026-07-28T16:05:12.562Z` is stale for entry-path purposes, while selected entry window `2026-07-28T03:49:00.666Z` shows operational `codex-mcp-client 0.146.0-alpha.3.1` remains `initialize_only` with `2` successful legacy responses and `0` `server/discover` entries.
 

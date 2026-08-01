@@ -15,6 +15,7 @@
     "src/client_entry_path_diagnostics.js",
     "src/runtime/state_handle_prototype.js",
     "src/runtime/request_metadata_policy.js",
+    "src/runtime/modern_protocol_adapter.js",
     "src/runtime/server_discover_message_handler.js",
     "src/integrations/codebase_memory/cbm_cli_bridge.js"
   ],
@@ -160,15 +161,31 @@
     "http_method": "POST",
     "server_discover_supported": true,
     "server_discover_requires_per_request_metadata": true,
-    "required_http_header": "MCP-Protocol-Version",
+    "required_http_headers_2026": [
+      "MCP-Protocol-Version",
+      "Mcp-Method",
+      "Mcp-Name for named operations"
+    ],
     "required_meta_keys": [
       "io.modelcontextprotocol/protocolVersion",
-      "io.modelcontextprotocol/clientInfo",
       "io.modelcontextprotocol/clientCapabilities"
     ],
+    "optional_meta_keys": [
+      "io.modelcontextprotocol/clientInfo"
+    ],
     "supported_per_request_versions": [
+      "2026-07-28",
       "2025-06-18"
     ],
+    "modern_result_contract": {
+      "result_type": "complete",
+      "server_info_meta_key": "io.modelcontextprotocol/serverInfo",
+      "header_mismatch_error": -32020,
+      "missing_client_capability_error": -32021,
+      "unsupported_protocol_version_error": -32022,
+      "unknown_method_http_status": 404,
+      "batch_supported": false
+    },
     "legacy_initialize_still_supported": true,
     "stable_protocol_sessions": false,
     "initialize_creates_transport_session": false,
@@ -194,6 +211,8 @@
     "initialize_method_supported_when_enabled": false
   },
   "protocol_versions": [
+    "2026-07-28",
+    "2025-11-25",
     "2025-06-18",
     "2025-03-26"
   ],

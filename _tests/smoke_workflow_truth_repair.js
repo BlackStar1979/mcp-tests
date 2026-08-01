@@ -42,8 +42,8 @@ assert.equal(operatorState.includes("The current live server process predates th
 assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
 assert.ok(operatorState.includes("no restart or manual connector refresh is pending"));
 assert.ok(operatorState.includes("`DOC-2A` remains a reusable bounded fallback"));
-assert.ok(index.includes("Fresh client-entry evidence from `2026-07-28` keeps retirement blocked"));
-assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
+assert.ok(index.includes("Fresh August 1 evidence keeps retirement blocked"));
+assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.9.2` has `2` legacy `initialize` entries and `0` `server/discover` entries"));
 const restart = inventory.deprecation_ledger.find((item) => item.feature_id === "restart_resilience");
 const sessionStore = inventory.deprecation_ledger.find((item) => item.feature_id === "session_store");
 const roots = inventory.deprecation_ledger.find((item) => item.feature_id === "roots_sampling_logging_deprecation");

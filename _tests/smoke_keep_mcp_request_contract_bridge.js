@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { Readable } = require("node:stream");
 const { createMcpRuntimeHandlers } = require("../src/runtime/mcp_runtime_handlers");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -10,18 +11,14 @@ const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
 const readJson = (rel) => JSON.parse(read(rel));
 
 function req(body, headers = {}) {
-  return {
-    method: "POST",
-    headers: {
-      accept: "application/json",
-      "content-type": "application/json",
-      ...headers,
-    },
-    on() {},
-    [Symbol.asyncIterator]: async function* () {
-      yield Buffer.from(JSON.stringify(body), "utf8");
-    },
+  const request = Readable.from([Buffer.from(JSON.stringify(body), "utf8")]);
+  request.method = "POST";
+  request.headers = {
+    accept: "application/json",
+    "content-type": "application/json",
+    ...headers,
   };
+  return request;
 }
 
 function res() {
@@ -52,6 +49,29 @@ function discoverBody(version = "2025-06-18") {
         "io.modelcontextprotocol/clientCapabilities": {},
       },
     },
+  };
+}
+
+function modernBody(method = "server/discover", params = {}) {
+  return {
+    jsonrpc: "2.0",
+    id: 12,
+    method,
+    params: {
+      ...params,
+      _meta: {
+        "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+        "io.modelcontextprotocol/clientCapabilities": {},
+      },
+    },
+  };
+}
+
+function modernHeaders(method, extra = {}) {
+  return {
+    "mcp-protocol-version": "2026-07-28",
+    "mcp-method": method,
+    ...extra,
   };
 }
 
@@ -108,6 +128,70 @@ function discoverBody(version = "2025-06-18") {
     item.data.response_bytes > 0
   ));
 
+  const modern = res();
+  await runtimeHandlers.handleMcp(req(modernBody(), modernHeaders("server/discover")), modern);
+  assert.equal(modern.statusCode, 200);
+  const modernResult = JSON.parse(modern.body()).result;
+  assert.equal(modernResult.resultType, "complete");
+  assert.deepEqual(modernResult.supportedVersions, ["2026-07-28"]);
+  assert.equal(modernResult.ttlMs, 0);
+  assert.equal(modernResult.cacheScope, "private");
+  assert.equal(modernResult.serverInfo, undefined);
+  assert.equal(modernResult._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+  assert.equal(modernResult._meta["io.modelcontextprotocol/serverInfo"].version, "0.40.0");
+
+  const modernList = res();
+  await runtimeHandlers.handleMcp(req(modernBody("tools/list"), modernHeaders("tools/list")), modernList);
+  assert.equal(modernList.statusCode, 200);
+  const modernListResult = JSON.parse(modernList.body()).result;
+  assert.equal(modernListResult.resultType, "complete");
+  assert.ok(Array.isArray(modernListResult.tools));
+  assert.equal(modernListResult._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+
+  const missingMethod = res();
+  await runtimeHandlers.handleMcp(req(modernBody(), { "mcp-protocol-version": "2026-07-28" }), missingMethod);
+  assert.equal(missingMethod.statusCode, 400);
+  assert.equal(JSON.parse(missingMethod.body()).error.code, -32020);
+  assert.equal(JSON.parse(missingMethod.body()).error.data.reason, "method_header_required");
+
+  const mismatchedMethod = res();
+  await runtimeHandlers.handleMcp(req(modernBody(), modernHeaders("tools/list")), mismatchedMethod);
+  assert.equal(JSON.parse(mismatchedMethod.body()).error.code, -32020);
+  assert.equal(JSON.parse(mismatchedMethod.body()).error.data.reason, "method_header_mismatch");
+
+  const encodedName = res();
+  const unicodeToolName = "narzędzie";
+  await runtimeHandlers.handleMcp(req(
+    modernBody("tools/call", { name: unicodeToolName, arguments: {} }),
+    modernHeaders("tools/call", {
+      "mcp-name": `=?base64?${Buffer.from(unicodeToolName, "utf8").toString("base64")}?=`,
+    })
+  ), encodedName);
+  assert.notEqual(JSON.parse(encodedName.body()).error.code, -32020);
+
+  const malformedName = res();
+  await runtimeHandlers.handleMcp(req(
+    modernBody("tools/call", { name: unicodeToolName, arguments: {} }),
+    modernHeaders("tools/call", { "mcp-name": "=?base64?not-valid?=" })
+  ), malformedName);
+  assert.equal(JSON.parse(malformedName.body()).error.code, -32020);
+  assert.equal(JSON.parse(malformedName.body()).error.data.reason, "invalid_base64_sentinel");
+
+  const missingCapabilitiesBody = modernBody();
+  delete missingCapabilitiesBody.params._meta["io.modelcontextprotocol/clientCapabilities"];
+  const missingCapabilities = res();
+  await runtimeHandlers.handleMcp(req(missingCapabilitiesBody, modernHeaders("server/discover")), missingCapabilities);
+  assert.equal(JSON.parse(missingCapabilities.body()).error.code, -32021);
+
+  const unsupported = res();
+  await runtimeHandlers.handleMcp(req(modernBody(), {
+    "mcp-protocol-version": "2099-01-01",
+    "mcp-method": "server/discover",
+  }), unsupported);
+  assert.equal(unsupported.statusCode, 400);
+  assert.equal(JSON.parse(unsupported.body()).error.code, -32022);
+  assert.ok(JSON.parse(unsupported.body()).error.data.supported.includes("2026-07-28"));
+
   const bad = res();
   await runtimeHandlers.handleMcp(req(discoverBody()), bad);
   assert.equal(bad.statusCode, 400);
@@ -119,11 +203,9 @@ function discoverBody(version = "2025-06-18") {
     item.data.response_mode === "json" &&
     item.data.has_result === false &&
     item.data.has_error === true &&
-    item.data.error_code === -32600
+    item.data.error_code === -32020
   ));
   assert.ok(canon.includes("Request-contract bridge clarification"));
-  assert.equal(canon.includes("Next recommended action: prepare the bounded request-contract migration package"), false);
-  assert.ok(canon.includes("Next recommended action: use `_workflow/operator_decisions/keep_mcp_transport_session_retirement_package.md` together with `_workflow/operator_decisions/single_route_no_sse_migration_debt_inventory.md`"));
 
   console.log("smoke_keep_mcp_request_contract_bridge ok");
 })().catch((error) => {

@@ -15,6 +15,8 @@ function handleResourceTemplatesListMessage(id, options = {}) {
 
   return rpcResult(id, {
     resourceTemplates: [],
+    ttlMs: 0,
+    cacheScope: "private",
   });
 }
 

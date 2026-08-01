@@ -3,6 +3,7 @@
 const { assertToolSchemas, buildToolSurfaceFingerprint } = require("../schema_compat");
 const { rpcResult } = require("./rpc_responses");
 const { SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS } = require("./request_metadata_policy");
+const { MODERN_PROTOCOL_VERSION, isModernProtocolVersion } = require("./protocol_version_policy");
 
 function handleServerDiscoverMessage({
   id,
@@ -37,7 +38,6 @@ function handleServerDiscoverMessage({
     : SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS[0];
 
   const legacyInitializeSupported = disableLegacyInitialize !== true;
-
   if (typeof auditLog === "function") {
     auditLog("server_discover_received", {
       request_id: requestId,
@@ -52,8 +52,34 @@ function handleServerDiscoverMessage({
     });
   }
 
+  if (isModernProtocolVersion(resolvedProtocolVersion)) {
+    return rpcResult(id, {
+      supportedVersions: [MODERN_PROTOCOL_VERSION],
+      capabilities: {
+        tools: {},
+        resources: {},
+        prompts: {},
+      },
+      instructions:
+        "TEST MCP workbench server for connector compatibility, bounded code sampling, and controlled network tools.",
+      ttlMs: 0,
+      cacheScope: "private",
+      _meta: {
+        "mcp-tests/connectorShapeVersion": connectorShapeVersion,
+        "mcp-tests/outputMode": outputMode,
+        "mcp-tests/authMode": authMode,
+        "mcp-tests/profile": profile,
+        "mcp-tests/serverStartId": typeof serverStartId === "string" ? serverStartId : "",
+        "mcp-tests/enabledTools": enabledTools,
+        "mcp-tests/toolSurface": toolSurface,
+        "mcp-tests/schemaCompatibility": introspection?.schemaCompatibility || assertToolSchemas(sourceTools),
+        "mcp-tests/legacyInitializeSupported": legacyInitializeSupported,
+      },
+    });
+  }
+
   return rpcResult(id, {
-    supportedVersions: [...SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS],
+    supportedVersions: [resolvedProtocolVersion],
     capabilities: {
       tools: {
         listChanged: false,

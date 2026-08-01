@@ -8,7 +8,9 @@ const { validateRpcMessage } = require("./rpc_protocol_validator");
 const { shouldReturnNoRpcResponse } = require("./rpc_no_response");
 const { dispatchRpcMessage } = require("./rpc_message_dispatcher");
 const { createSessionReplayTracker } = require("./session_tracker");
-const { validatePerRequestMetadata } = require("./request_metadata_policy");
+const { validateModernHttpHeaders, validatePerRequestMetadata } = require("./request_metadata_policy");
+const { isModernProtocolVersion } = require("./protocol_version_policy");
+const { decorateModernRpcResponse } = require("./modern_protocol_adapter");
 
 function createMcpRuntimeHandlers({
   serverName,
@@ -51,12 +53,9 @@ function createMcpRuntimeHandlers({
       return rpcError(prelude.id, -32600, "Invalid Request", { reason: replay.reason });
     }
 
-    if (shouldReturnNoRpcResponse(prelude.id, prelude.method)) {
-      return undefined;
-    }
-
     const enrichedContext = { ...context };
-    if (prelude.method === "server/discover") {
+    const modernRequest = isModernProtocolVersion(context.protocolVersion);
+    if (modernRequest || prelude.method === "server/discover") {
       const requestMetadata = validatePerRequestMetadata({
         protocolVersionHeader: context.protocolVersionHeader,
         message,
@@ -73,7 +72,24 @@ function createMcpRuntimeHandlers({
       enrichedContext.requestMetadata = requestMetadata;
     }
 
-    return dispatchRpcMessage({
+    if (modernRequest) {
+      const standardHeaders = validateModernHttpHeaders({ headers: context.requestHeaders, message });
+      if (!standardHeaders.ok) {
+        auditLog("rpc_protocol_error", {
+          request_id: context.requestId,
+          session_id: context.sessionId || "",
+          reason: standardHeaders.reason,
+          method: prelude.method,
+        });
+        return standardHeaders.response;
+      }
+    }
+
+    if (shouldReturnNoRpcResponse(prelude.id, prelude.method)) {
+      return undefined;
+    }
+
+    const response = await dispatchRpcMessage({
       prelude,
       context: enrichedContext,
       serverName,
@@ -90,6 +106,10 @@ function createMcpRuntimeHandlers({
       rateLimiter,
       serverStartId,
       disableLegacyInitialize,
+    });
+    return decorateModernRpcResponse(response, {
+      protocolVersion: context.protocolVersion,
+      serverInfo: { name: serverName, version: serverVersion },
     });
   }
 

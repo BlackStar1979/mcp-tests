@@ -1,7 +1,7 @@
 {
   "schema_version": "mcp-tests-auth-spec-v1",
   "spec_mode": "oauth-resource-server-contract",
-  "mcp_authorization_spec_version": "2025-06-18",
+  "mcp_authorization_spec_version": "2026-07-28",
   "resource_server": {
     "role": "oauth_2_1_resource_server",
     "protected_resource_metadata_required": true,
@@ -167,8 +167,12 @@
     "operator_approval_required_for_untrusted_public_clients": true,
     "registration_metadata_requirements": [
       "redirect_uris",
-      "token_endpoint_auth_method"
+      "token_endpoint_auth_method",
+      "application_type=native|web"
     ],
+    "legacy_application_type_compatibility": "infer native for loopback-only redirect URIs, otherwise web",
+    "client_id_metadata_documents_supported": false,
+    "dcr_deprecation_posture": "retained for backward compatibility until operational clients support Client ID Metadata Documents",
     "guard": "_tests/smoke_oauth_dcr_policy.js"
   },
   "pkce_client_flow_policy": {

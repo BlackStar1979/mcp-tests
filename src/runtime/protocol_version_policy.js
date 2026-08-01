@@ -1,8 +1,17 @@
 "use strict";
 
-const CURRENT_PROTOCOL_VERSION = "2025-06-18";
+const MODERN_PROTOCOL_VERSION = "2026-07-28";
+const CURRENT_PROTOCOL_VERSION = "2025-11-25";
 const LEGACY_PROTOCOL_VERSION = "2025-03-26";
-const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze([CURRENT_PROTOCOL_VERSION, LEGACY_PROTOCOL_VERSION]);
+const SUPPORTED_LEGACY_PROTOCOL_VERSIONS = Object.freeze([
+  CURRENT_PROTOCOL_VERSION,
+  "2025-06-18",
+  LEGACY_PROTOCOL_VERSION,
+]);
+const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze([
+  MODERN_PROTOCOL_VERSION,
+  ...SUPPORTED_LEGACY_PROTOCOL_VERSIONS,
+]);
 const PROTOCOL_VERSION_RE = /^\d{4}-\d{2}-\d{2}$/;
 
 function normalizeHeaderValue(value) {
@@ -15,9 +24,13 @@ function isSupportedProtocolVersion(value) {
   return SUPPORTED_PROTOCOL_VERSIONS.includes(value);
 }
 
+function isModernProtocolVersion(value) {
+  return value === MODERN_PROTOCOL_VERSION;
+}
+
 function negotiateInitializeProtocolVersion(clientVersion) {
   const requested = typeof clientVersion === "string" && clientVersion.trim() ? clientVersion.trim() : CURRENT_PROTOCOL_VERSION;
-  if (isSupportedProtocolVersion(requested)) {
+  if (SUPPORTED_LEGACY_PROTOCOL_VERSIONS.includes(requested)) {
     return { ok: true, protocolVersion: requested, requested };
   }
   return { ok: true, protocolVersion: CURRENT_PROTOCOL_VERSION, requested, fallback: true };
@@ -42,8 +55,11 @@ function evaluateProtocolVersionHeader(req = {}, { requireHeader = false } = {})
 module.exports = {
   CURRENT_PROTOCOL_VERSION,
   LEGACY_PROTOCOL_VERSION,
+  MODERN_PROTOCOL_VERSION,
+  SUPPORTED_LEGACY_PROTOCOL_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
   evaluateProtocolVersionHeader,
+  isModernProtocolVersion,
   isSupportedProtocolVersion,
   negotiateInitializeProtocolVersion,
 };

@@ -7,6 +7,7 @@ const { rpcMethodSummary } = require("./rpc_audit_summary");
 const { auditJsonRpcResponseSent, auditEmptyRpcResponseSent } = require("./rpc_response_audit");
 const { byteLength } = require("./runtime_helpers");
 const { skipResponseWriteIfNeeded } = require("./response_write_guard");
+const { modernHttpStatusForResponse } = require("./modern_protocol_adapter");
 
 async function handleSinglePayload({
   payload,
@@ -18,6 +19,7 @@ async function handleSinglePayload({
   session,
   protocolVersion,
   protocolVersionHeader,
+  requestHeaders,
   responseMode = "json",
   httpMethod,
   abortSignal,
@@ -53,7 +55,7 @@ async function handleSinglePayload({
     return;
   }
 
-  const response = await handleRpcMessage(payload || {}, { requestId, sessionId, session, protocolVersion, protocolVersionHeader, abortSignal, authResult });
+  const response = await handleRpcMessage(payload || {}, { requestId, sessionId, session, protocolVersion, protocolVersionHeader, requestHeaders, abortSignal, authResult });
 
   if (response === undefined) {
     if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_no_response" })) {
@@ -71,8 +73,9 @@ async function handleSinglePayload({
   }
 
   if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_json_response" })) {
-    auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 200, response, phase: "single_json_response" });
-    jsonResponse(res, 200, response);
+    const statusCode = modernHttpStatusForResponse(protocolVersion, response);
+    auditJsonRpcResponseSent(auditLog, { requestId, statusCode, response, phase: "single_json_response" });
+    jsonResponse(res, statusCode, response);
   }
 }
 

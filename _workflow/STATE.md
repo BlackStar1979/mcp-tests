@@ -42,7 +42,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `71`
 - Authenticated repo target for profile `tests`: `84`
-- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, activated OVH-backed memory, and freshness-aware retrieval contracts are live at `server_start_id = 2026-08-01T19:48:43.083Z`. The v3 knowledge index is fresh, complete for all `11` readiness rows, and passes current-state acceptance queries; no restart or manual connector refresh is pending.
+- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, activated OVH-backed memory, freshness-aware retrieval, and final dual-era protocol contracts are live at `server_start_id = 2026-08-01T20:29:11.207Z`. The v3 knowledge index is fresh, complete for all `11` readiness rows, and passes current-state acceptance queries; no restart or manual connector refresh is pending.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
@@ -82,8 +82,8 @@ Summarize the current validated product state in one operator-facing place witho
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
-- Client-entry reporting distinguishes current follow-up traffic from the newest real entry window. Current live `server_start_id 2026-07-29T18:53:50.174Z` has no newer external entry evidence, while `--latest-entry-window` still selects `server_start_id 2026-07-28T03:49:00.666Z` and shows `initialize_only` for `codex-mcp-client 0.146.0-alpha.3.1` on protocol `2025-06-18`, with `2` successful legacy `initialize` responses and `0` `server/discover` entries.
-- Test child-server audit isolation, explicit report selection, and latest-entry-window selection are now guarded; historical synthetic starts remain preserved but no longer displace the selected live window. Because the July 28, 2026 `COMP-1A` refresh still blocks retirement, another refresh is allowed only after newer external client traffic creates a meaningfully new evidence window.
+- The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live at `server_start_id 2026-08-01T20:29:11.207Z`. Modern requests use per-request metadata, `Mcp-Method`/`Mcp-Name` validation, final error codes, modern result envelopes, and server identity metadata; legacy initialize-era traffic remains isolated from that adapter.
+- Fresh `COMP-1A` evidence selects `server_start_id 2026-08-01T17:51:19.986Z` and shows `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2` on protocol `2025-06-18`, with `2` legacy entries and `0` `server/discover` entries. Server capability is ready, but retirement remains blocked by client behavior.
 - The July 28 `_workflow/operator_decisions` directory-map instance of `DOC-2A` is complete. `DOC-2A` remains a reusable bounded fallback, not a permanently open task, and may run again only for a demonstrable current high-churn orientation gap.
 - Live `observability_status` now exposes the same retained blocker-matrix view as the workflow helper, so current-window entry evidence and `1d`/`2d`/`7d`/`30d`/`all` blocker framing no longer depend on a script-only code path.
 - `state.json` is an orientation map, not a progress log.

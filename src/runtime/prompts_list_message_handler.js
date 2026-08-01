@@ -15,6 +15,8 @@ function handlePromptsListMessage(id, options = {}) {
 
   return rpcResult(id, {
     prompts: [],
+    ttlMs: 0,
+    cacheScope: "private",
   });
 }
 

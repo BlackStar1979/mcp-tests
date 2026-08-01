@@ -12,24 +12,45 @@ const goodLocalhost=server.registerClient({
   token_endpoint_auth_method:"none",
 });
 assert.equal(goodLocalhost.status,201);
+assert.equal(goodLocalhost.body.application_type,"native");
 
 const goodLoopback=server.registerClient({
   redirect_uris:["http://127.0.0.1:43121/cb"],
   token_endpoint_auth_method:"none",
 });
 assert.equal(goodLoopback.status,201);
+assert.equal(goodLoopback.body.application_type,"native");
 
 const goodLoopbackIpv6=server.registerClient({
   redirect_uris:["http://[::1]:43121/cb"],
   token_endpoint_auth_method:"none",
 });
 assert.equal(goodLoopbackIpv6.status,201);
+assert.equal(goodLoopbackIpv6.body.application_type,"native");
 
 const goodHttps=server.registerClient({
   redirect_uris:["https://client.example/callback"],
   token_endpoint_auth_method:"none",
+  application_type:"web",
 });
 assert.equal(goodHttps.status,201);
+assert.equal(goodHttps.body.application_type,"web");
+
+const explicitNative=server.registerClient({
+  redirect_uris:["http://127.0.0.1:43122/callback"],
+  token_endpoint_auth_method:"none",
+  application_type:"native",
+});
+assert.equal(explicitNative.status,201);
+assert.equal(explicitNative.body.application_type,"native");
+
+const invalidApplicationType=server.registerClient({
+  redirect_uris:["https://client.example/callback"],
+  token_endpoint_auth_method:"none",
+  application_type:"desktop",
+});
+assert.equal(invalidApplicationType.status,400);
+assert.equal(invalidApplicationType.body.error_description,"application_type_invalid");
 
 for (const [uri, reason] of [
   ["file:///tmp/callback","redirect_uri_file_forbidden"],

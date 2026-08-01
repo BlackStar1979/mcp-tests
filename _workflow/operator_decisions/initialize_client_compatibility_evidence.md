@@ -231,6 +231,19 @@ The refresh also removes a recurring workflow friction point:
 - the option selects the newest server start that contains `initialize_received` or `server_discover_received` after the `client-name`, `evidence-scope`, and `max-age-days` filters;
 - the report always exposes `latest_entry_server_start` so a stale latest runtime can be distinguished from the freshest entry-capable window.
 
+## Live evidence refresh on 2026-08-01
+
+Fresh operational traffic now supersedes the July 28 client sample:
+
+- command: `node _workflow/scripts/client_entry_path_report.js --latest-entry-window --client-name=codex-mcp-client --evidence-scope=operational --max-age-days=2 --limit=20`
+- selected entry identity: `server_start_id 2026-08-01T17:51:19.986Z`
+- client: `codex-mcp-client 0.146.0-alpha.9.2`
+- protocol version: `2025-06-18`
+- selected-window result: `2` legacy `initialize` entries and `0` `server/discover` entries
+- retirement verdict: `blocked_by_operational_initialize_clients`
+
+The final `2026-07-28` server adapter is implemented and regression-covered in `_workflow/operator_decisions/mcp_2026_07_28_dual_era_closeout.md`, but operational Codex behavior still requires the compatibility shim.
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:

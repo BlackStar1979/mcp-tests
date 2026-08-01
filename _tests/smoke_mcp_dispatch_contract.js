@@ -102,6 +102,13 @@ function postJson(value) {
       "io.modelcontextprotocol/clientCapabilities": {},
     },
   };
+  const modernMeta = {
+    _meta: {
+      "io.modelcontextprotocol/protocolVersion": "2026-07-28",
+      "io.modelcontextprotocol/clientCapabilities": {},
+      "io.modelcontextprotocol/clientInfo": { name: "step95-modern-smoke", version: "1" },
+    },
+  };
 
   await withServer({ MCP_TEST_PORT: String(PORT) }, async () => {
     await waitHealth(PORT);
@@ -235,6 +242,40 @@ function postJson(value) {
       assert.equal(body.result.cacheScope, "private", "tools/list cacheScope");
     }
 
+    // 9a. Final 2026-07-28 discovery and list responses use the modern envelope.
+    {
+      const discoverResponse = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 31,
+        method: "server/discover",
+        params: modernMeta,
+      }), {
+        "mcp-protocol-version": "2026-07-28",
+        "mcp-method": "server/discover",
+      });
+      assert.equal(discoverResponse.status, 200, "modern server/discover status");
+      const discover = await discoverResponse.json();
+      assert.equal(discover.result.resultType, "complete");
+      assert.deepEqual(discover.result.supportedVersions, ["2026-07-28"]);
+      assert.equal(discover.result._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+      assert.equal(discover.result.serverInfo, undefined);
+
+      const listResponse = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 32,
+        method: "tools/list",
+        params: modernMeta,
+      }), {
+        "mcp-protocol-version": "2026-07-28",
+        "mcp-method": "tools/list",
+      });
+      assert.equal(listResponse.status, 200, "modern tools/list status");
+      const list = await listResponse.json();
+      assert.equal(list.result.resultType, "complete");
+      assert.equal(list.result.ttlMs, 0);
+      assert.equal(list.result.cacheScope, "private");
+    }
+
     // 10. tools/call works on stable /mcp without prior initialize.
     {
       const response = await postRawWithHeaders(JSON.stringify({
@@ -255,6 +296,50 @@ function postJson(value) {
       const parsed = JSON.parse(text);
       assert.equal(parsed.success, true, "tools/call parsed success");
       assert.equal(parsed.kind, "file", "tools/call parsed kind");
+    }
+
+    // 10a. Modern tools/call requires mirrored method/name headers and decorates results.
+    {
+      const body = {
+        jsonrpc: "2.0",
+        id: 33,
+        method: "tools/call",
+        params: {
+          name: "fs_get_public_info",
+          arguments: { path: "docs/hello.txt" },
+          ...modernMeta,
+        },
+      };
+      const missingName = await postRawWithHeaders(JSON.stringify(body), {
+        "mcp-protocol-version": "2026-07-28",
+        "mcp-method": "tools/call",
+      });
+      assert.equal((await missingName.json()).error.code, -32020, "modern missing Mcp-Name code");
+
+      const response = await postRawWithHeaders(JSON.stringify(body), {
+        "mcp-protocol-version": "2026-07-28",
+        "mcp-method": "tools/call",
+        "mcp-name": "fs_get_public_info",
+      });
+      assert.equal(response.status, 200, "modern tools/call status");
+      const result = (await response.json()).result;
+      assert.equal(result.resultType, "complete");
+      assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+    }
+
+    // 10b. Methods removed from the modern era return HTTP 404 with JSON-RPC -32601.
+    {
+      const response = await postRawWithHeaders(JSON.stringify({
+        jsonrpc: "2.0",
+        id: 34,
+        method: "ping",
+        params: modernMeta,
+      }), {
+        "mcp-protocol-version": "2026-07-28",
+        "mcp-method": "ping",
+      });
+      assert.equal(response.status, 404, "modern removed method HTTP status");
+      assert.equal((await response.json()).error.code, -32601);
     }
 
     // 11. Initialize over HTTP remains available as legacy compatibility.

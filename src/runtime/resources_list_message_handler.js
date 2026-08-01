@@ -15,6 +15,8 @@ function handleResourcesListMessage(id, options = {}) {
 
   return rpcResult(id, {
     resources: [],
+    ttlMs: 0,
+    cacheScope: "private",
   });
 }
 

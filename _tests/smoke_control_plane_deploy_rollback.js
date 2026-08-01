@@ -9,6 +9,16 @@ const deployRoot = path.join(root, "_workflow", "control_plane", "deploy_records
 const deployFileBackupRoot = path.join(root, "_workflow", "control_plane", "file_backups");
 const deploymentId = "stage8_52d_control_plane_selftest";
 
+function cleanupSelftestArtifacts() {
+  fs.rmSync(path.join(stageDir, "target.txt"), { force: true });
+  fs.rmSync(path.join(deployFileBackupRoot, deploymentId), { recursive: true, force: true });
+  for (const suffix of ["prepare", "executed", "rollback", "rollback-dry-run"]) {
+    fs.rmSync(path.join(deployRoot, `${deploymentId}.${suffix}.json`), { force: true });
+  }
+}
+
+process.on("exit", cleanupSelftestArtifacts);
+
 function run(args) {
   const result = spawnSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", ...args], {
     cwd: root,
@@ -75,5 +85,10 @@ assert.equal(rollback.status, "rolled_back");
 assert.equal(rollback.files[0].action, "delete_new_file");
 assert.equal(rollback.files[0].applied, true);
 assert.equal(fs.existsSync(path.join(stageDir, "target.txt")), false, "real rollback must remove new target");
+
+cleanupSelftestArtifacts();
+process.removeListener("exit", cleanupSelftestArtifacts);
+assert.equal(fs.existsSync(path.join(stageDir, "target.txt")), false, "self-test target must be removed");
+assert.equal(fs.existsSync(path.join(deployFileBackupRoot, deploymentId)), false, "self-test backup must be removed");
 
 console.log("smoke_control_plane_deploy_rollback ok");

@@ -54,7 +54,7 @@ for (const m of routeSources.matchAll(/(?:url\.pathname|pathname)\s*===\s*"([^"]
 for (const m of routeSources.matchAll(/pathname\.startsWith\("\/docs\/"\)/g)) routesFromCode.add("/docs/<id>");
 for (const route of routesFromCode) assert.ok(spec.http_routes.includes(route), `missing code route in runtime config spec: ${route}`);
 
-assert.deepEqual(spec.protocol_versions, ["2025-06-18", "2025-03-26"]);
+assert.deepEqual(spec.protocol_versions, ["2026-07-28", "2025-11-25", "2025-06-18", "2025-03-26"]);
 assert.equal(spec.behavior_refs.cors, "MCP_TEST_CORS_ALLOW_ORIGIN");
 assert.equal(spec.behavior_refs.health_full, "MCP_TEST_HEALTH_FULL");
 assert.equal(spec.behavior_refs.batch_limit, "MCP_TEST_MAX_BATCH_ITEMS");
@@ -79,7 +79,11 @@ assert.equal(spec.stable_mcp_request_contract_bridge.route, "/mcp");
 assert.equal(spec.stable_mcp_request_contract_bridge.http_method, "POST");
 assert.equal(spec.stable_mcp_request_contract_bridge.server_discover_supported, true);
 assert.equal(spec.stable_mcp_request_contract_bridge.server_discover_requires_per_request_metadata, true);
-assert.deepEqual(spec.stable_mcp_request_contract_bridge.supported_per_request_versions, ["2025-06-18"]);
+assert.deepEqual(spec.stable_mcp_request_contract_bridge.supported_per_request_versions, ["2026-07-28", "2025-06-18"]);
+assert.deepEqual(spec.stable_mcp_request_contract_bridge.required_http_headers_2026, ["MCP-Protocol-Version", "Mcp-Method", "Mcp-Name for named operations"]);
+assert.equal(spec.stable_mcp_request_contract_bridge.modern_result_contract.result_type, "complete");
+assert.equal(spec.stable_mcp_request_contract_bridge.modern_result_contract.header_mismatch_error, -32020);
+assert.equal(spec.stable_mcp_request_contract_bridge.modern_result_contract.unknown_method_http_status, 404);
 assert.equal(spec.stable_mcp_request_contract_bridge.legacy_initialize_still_supported, true);
 assert.equal(spec.stable_mcp_request_contract_bridge.stable_protocol_sessions, false);
 assert.equal(spec.stable_mcp_request_contract_bridge.initialize_creates_transport_session, false);

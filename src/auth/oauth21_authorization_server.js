@@ -104,6 +104,24 @@ function validateRedirectUri(value) {
   return { ok: false, reason: "redirect_uri_scheme_not_allowed" };
 }
 
+function resolveApplicationType(value, redirectUris = []) {
+  const explicit = String(value || "").trim().toLowerCase();
+  if (explicit && explicit !== "native" && explicit !== "web") {
+    return { ok: false, reason: "application_type_invalid" };
+  }
+  if (explicit) return { ok: true, value: explicit, inferred: false };
+
+  const loopbackOnly = redirectUris.length > 0 && redirectUris.every((redirectUri) => {
+    try {
+      const parsed = new URL(redirectUri);
+      return parsed.protocol === "http:" && isLoopbackHostname(parsed.hostname);
+    } catch (_) {
+      return false;
+    }
+  });
+  return { ok: true, value: loopbackOnly ? "native" : "web", inferred: true };
+}
+
 function matchesResource(value, expectedResource) {
   return String(value || "").trim() === String(expectedResource || "").trim();
 }
@@ -716,6 +734,13 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     if (invalidRedirectUri) {
       return { status: 400, body: { error: "invalid_client_metadata", error_description: invalidRedirectUri.reason || "redirect_uri_invalid" } };
     }
+    const applicationType = resolveApplicationType(
+      body.application_type,
+      redirectUris.map((item) => item.value)
+    );
+    if (!applicationType.ok) {
+      return { status: 400, body: { error: "invalid_client_metadata", error_description: applicationType.reason } };
+    }
     const method = String(body.token_endpoint_auth_method || "none");
     if (method !== "none") return { status: 400, body: { error: "invalid_client_metadata", error_description: "only_public_clients_supported" } };
     const prunedClients = pruneDeadClientsForRegistration();
@@ -737,6 +762,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       grant_types: ["authorization_code", "refresh_token"],
       response_types: ["code"],
       scope: "mcp:tools",
+      application_type: applicationType.value,
     };
     clients.set(clientId, client);
     try {

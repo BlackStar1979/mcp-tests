@@ -10,7 +10,11 @@ const { handleRpcHandlerException } = require("./rpc_handler_exception_handler")
 const { jsonResponse } = require("./http_responses");
 const { rpcError } = require("./rpc_responses");
 const { evaluateGetAccept, evaluatePostAccept } = require("./accept_policy");
-const { evaluateProtocolVersionHeader, negotiateInitializeProtocolVersion } = require("./protocol_version_policy");
+const {
+  SUPPORTED_PROTOCOL_VERSIONS,
+  evaluateProtocolVersionHeader,
+  negotiateInitializeProtocolVersion,
+} = require("./protocol_version_policy");
 const { createRequestAbortSignal } = require("./request_cancellation");
 
 async function dispatchMcpEntry({
@@ -66,7 +70,16 @@ async function dispatchMcpEntry({
   const protocolVersion = evaluateProtocolVersionHeader(req);
   if (!protocolVersion.ok) {
     auditLog("streamable_http_preflight", { request_id: requestId, http_method: req.method, protocol_version_ok: false, reason: protocolVersion.reason });
-    jsonResponse(res, 400, rpcError(null, -32600, "Invalid Request", { reason: protocolVersion.reason }));
+    const unsupported = protocolVersion.reason === "unsupported_mcp_protocol_version";
+    jsonResponse(res, 400, rpcError(
+      null,
+      unsupported ? -32022 : -32600,
+      unsupported ? "Unsupported Protocol Version" : "Invalid Request",
+      {
+        reason: protocolVersion.reason,
+        ...(unsupported ? { supported: [...SUPPORTED_PROTOCOL_VERSIONS] } : {}),
+      }
+    ));
     return;
   }
 
@@ -101,8 +114,9 @@ async function dispatchMcpEntry({
   const protocolVersionHeader = req.headers?.["mcp-protocol-version"];
   const isInitialize = !Array.isArray(payload) && payload && payload.method === "initialize";
   const effectiveProtocolVersion = isInitialize
-    ? negotiateInitializeProtocolVersion(payload.params?.protocolVersion).protocolVersion
-    : protocolVersion.protocolVersion;
+    && !protocolVersionHeader
+      ? negotiateInitializeProtocolVersion(payload.params?.protocolVersion).protocolVersion
+      : protocolVersion.protocolVersion;
 
   try {
     const batchHandled = await handleBatchPayloadIfNeeded({
@@ -115,6 +129,7 @@ async function dispatchMcpEntry({
       session: null,
       protocolVersion: effectiveProtocolVersion,
       protocolVersionHeader,
+      requestHeaders: req.headers || {},
       responseMode: "json",
       httpMethod: req.method,
       abortSignal,
@@ -136,6 +151,7 @@ async function dispatchMcpEntry({
       session: null,
       protocolVersion: effectiveProtocolVersion,
       protocolVersionHeader,
+      requestHeaders: req.headers || {},
       responseMode: "json",
       httpMethod: req.method,
       abortSignal,

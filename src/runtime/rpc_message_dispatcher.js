@@ -9,6 +9,7 @@ const { handlePingMessage } = require("./ping_message_handler");
 const { handleServerDiscoverMessage } = require("./server_discover_message_handler");
 const { handleToolsCall } = require("./tools_call_handler");
 const { buildMethodNotFoundResponse } = require("./method_not_found_response");
+const { isModernProtocolVersion } = require("./protocol_version_policy");
 
 async function dispatchRpcMessage({
   prelude,
@@ -46,7 +47,7 @@ async function dispatchRpcMessage({
 
   switch (method) {
     case "initialize": {
-      if (disableLegacyInitialize === true) {
+      if (disableLegacyInitialize === true || isModernProtocolVersion(context.protocolVersion)) {
         return buildMethodNotFoundResponse(id, method);
       }
       return handleInitializeMessage({
@@ -68,6 +69,7 @@ async function dispatchRpcMessage({
     }
 
     case "ping": {
+      if (isModernProtocolVersion(context.protocolVersion)) return buildMethodNotFoundResponse(id, method);
       return handlePingMessage(id);
     }
 

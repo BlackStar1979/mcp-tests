@@ -7,6 +7,7 @@ const { auditJsonRpcResponseSent, auditEmptyRpcResponseSent } = require("./rpc_r
 const { isJsonRpcResponse, resolvePendingResponse } = require("./outbound_request_manager");
 const { byteLength } = require("./runtime_helpers");
 const { skipResponseWriteIfNeeded } = require("./response_write_guard");
+const { isModernProtocolVersion } = require("./protocol_version_policy");
 
 const DEFAULT_MAX_BATCH_ITEMS = 25;
 
@@ -25,6 +26,7 @@ async function handleBatchPayloadIfNeeded({
   session,
   protocolVersion,
   protocolVersionHeader,
+  requestHeaders,
   httpMethod,
   responseMode = "json",
   abortSignal,
@@ -33,6 +35,14 @@ async function handleBatchPayloadIfNeeded({
 }) {
   if (!Array.isArray(payload)) {
     return false;
+  }
+
+  if (isModernProtocolVersion(protocolVersion)) {
+    const response = rpcError(null, -32600, "Invalid Request", { reason: "modern_http_batch_not_supported" });
+    auditLog("rpc_protocol_error", { request_id: requestId, reason: "modern_http_batch_not_supported" });
+    auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, batch: true, phase: "modern_http_batch_unsupported" });
+    jsonResponse(res, 400, response);
+    return true;
   }
 
   const maxBatchItems = getMaxBatchItems();
@@ -114,7 +124,7 @@ async function handleBatchPayloadIfNeeded({
   const responses = [];
 
   for (const item of payload) {
-    const response = await handleRpcMessage(item || {}, { requestId, sessionId, session, protocolVersion, protocolVersionHeader, abortSignal, authResult });
+    const response = await handleRpcMessage(item || {}, { requestId, sessionId, session, protocolVersion, protocolVersionHeader, requestHeaders, abortSignal, authResult });
 
     if (response !== undefined) {
       responses.push(response);
