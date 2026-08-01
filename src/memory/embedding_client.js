@@ -147,6 +147,7 @@ function cosineSimilarity(left, right) {
 
 module.exports = {
   BGE_M3_DIMENSIONS,
+  OVH_MODEL,
   OVH_EMBEDDINGS_URL,
   createEmbeddingClient,
   cosineSimilarity,

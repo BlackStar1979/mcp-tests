@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "memory-embedding-runtime-activation-gate",
-    "next_primary": "mem-1-live-provider-activation-and-quality-proof",
-    "next_secondary": "mem-1-credential-provision-and-quality-proof",
+    "current_working_course": "protocol-compatibility-evidence-gate",
+    "next_primary": "comp-1a-on-fresh-external-client-traffic",
+    "next_secondary": "doc-2a-on-demonstrated-orientation-gap",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -280,7 +280,7 @@
       "profile": "internal",
       "expected_tool_count": 84,
       "repo_expected_tool_count": 84,
-      "server_start_id": "2026-08-01T18:25:49.624Z",
+      "server_start_id": "2026-08-01T18:52:13.024Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -308,7 +308,7 @@
       "connector_map_status": "live_84_descriptor_current",
       "repo_current_expected_tool_count": 84,
       "evidence_source": "live_codex_tools_list_and_direct_call",
-      "server_start_id": "2026-08-01T18:25:49.624Z",
+      "server_start_id": "2026-08-01T18:52:13.024Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

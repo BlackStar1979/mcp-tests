@@ -26,6 +26,13 @@ const {
   storeCachedEmbedding,
 } = require("./embedding_cache");
 
+const LEXICAL_QUERY_STOP_WORDS = new Set([
+  "a", "an", "and", "are", "as", "at", "be", "by", "for", "from", "how", "in", "is", "it",
+  "of", "on", "or", "that", "the", "this", "to", "was", "what", "when", "where", "which", "who", "with",
+  "aby", "albo", "ale", "bo", "byc", "być", "co", "czy", "do", "gdzie", "i", "jak", "jest", "na",
+  "nie", "o", "od", "oraz", "po", "przy", "sie", "się", "to", "w", "z", "za", "ze",
+]);
+
 function getLogsDir() {
   return process.env.MCP_TEST_MEMORY_LOG_DIR
     ? path.resolve(process.env.MCP_TEST_MEMORY_LOG_DIR)
@@ -149,9 +156,15 @@ async function saveMemory({ agent_name, content, type = "fact", category = "" })
  */
 function scoreEntry(entry, tokens) {
   if (!tokens.length) return 0;
-  const haystack = (entry.content + " " + (entry.category || "")).toLowerCase();
-  const hits = tokens.reduce((n, t) => n + (haystack.includes(t) ? 1 : 0), 0);
+  const haystack = new Set(tokenizeSearchText(entry.content + " " + (entry.category || "")));
+  const hits = tokens.reduce((n, token) => n + (haystack.has(token) ? 1 : 0), 0);
   return hits / tokens.length;
+}
+
+function tokenizeSearchText(text, { removeStopWords = false } = {}) {
+  return [...new Set(String(text || "").toLowerCase().match(/[\p{L}\p{N}]+/gu) || [])]
+    .filter((token) => token.length > 1)
+    .filter((token) => !removeStopWords || !LEXICAL_QUERY_STOP_WORDS.has(token));
 }
 
 function semanticRelevance(similarity) {
@@ -169,7 +182,7 @@ async function searchMemory({ query, agent_name, top_k = 5, min_score = 0.1 }) {
   const active = all.filter((e) => !e.is_archived);
   const pool   = agent_name ? active.filter((e) => e.agent_name === agent_name) : active;
 
-  const tokens = query.toLowerCase().split(/\s+/).filter((t) => t.length > 1);
+  const tokens = tokenizeSearchText(query, { removeStopWords: true });
   const lexicalScores = new Map(pool.map((entry) => [entry.id, scoreEntry(entry, tokens)]));
   const generated = await createEmbeddingClient().generate(query);
   let cached = new Map();

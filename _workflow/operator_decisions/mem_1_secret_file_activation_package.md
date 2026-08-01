@@ -1,6 +1,6 @@
 # MEM-1 Secret-File Activation Package
 
-Status: GREEN / LIVE LOADED / CREDENTIAL PROVISIONING PENDING
+Status: GREEN / LIVE ACTIVATED / QUALITY VERIFIED / BACKFILL COMPLETE
 Date: 2026-08-01
 
 ## Delivered
@@ -23,12 +23,15 @@ Date: 2026-08-01
 - Live runtime: `server_start_id = 2026-08-01T18:25:49.624Z`, OAuth21/internal, `84` tools, unchanged combined fingerprint `673f28e12afea85c`.
 - Direct own-connector `memory_search` succeeded after restart.
 - Post-restart secret-safe audit: target verified, no provider/egress/token source, no conflict, no cache, `activation_ready = false`, and `secret_values_exposed = false`.
+- The operator provisioned the real token through the restricted-ACL helper without exposing its value or path.
+- Supervisor takeover and controlled reload produced live PID `24132`, `server_start_id = 2026-08-01T18:52:13.024Z`, `activation_ready = true`, and the unchanged `84`-tool surface.
+- Live EN-to-PL and PL-to-EN probes ranked the intended cross-language entries first with scores `0.27563825236035094` and `0.3169951525979191`.
+- A controlled missing-token-file probe returned the intended entry through lexical fallback with score `1`, restored the file in `finally`, and retained `activation_ready = true` afterwards.
+- The cache contains `67` `ovh/bge-m3` vectors with `1024` dimensions. Its schema contains only content hashes, provider/model metadata, dimensions, vector BLOBs, and timestamps; controlled plaintext probes were absent.
+- Bounded backfill stored all `64` previously missing active-memory vectors and finished with `remaining = 0`.
 
-## Remaining controlled operation
+## Completion
 
-1. Provision the real OVH token with `scripts/provision-memory-embedding-token.ps1` through its secure prompt.
-2. Start/take over the supervisor with provider `ovh`, external egress `1`, and the provisioned token-file path.
-3. Require `activation_ready = true` before any quality claim.
-4. Run bounded related/unrelated Polish and English probes, verify cache contains no plaintext, and verify keyword fallback under provider failure before any backfill.
+The planned provisioning, activation, quality, confidentiality, fallback, and backfill operations are complete. The live probe also exposed lexical substring/stop-word noise that outranked a valid cross-language semantic result; full-word Unicode tokenization, bounded EN/PL query stop words, and a regression with non-perfect cosine similarity now guard that defect.
 
 No connector refresh or tool-surface change is required.

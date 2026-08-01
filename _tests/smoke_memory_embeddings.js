@@ -11,10 +11,17 @@ const {
   createEmbeddingClient,
   cosineSimilarity,
 } = require("../src/memory/embedding_client");
+const { backfillMemoryEmbeddings } = require("../src/memory/embedding_backfill");
 
 function vectorAt(index, value = 1) {
   const vector = Array(BGE_M3_DIMENSIONS).fill(0);
   vector[index] = value;
+  return vector;
+}
+
+function vectorWithCosine(primaryIndex, secondaryIndex, cosine) {
+  const vector = vectorAt(primaryIndex, cosine);
+  vector[secondaryIndex] = Math.sqrt(1 - (cosine * cosine));
   return vector;
 }
 
@@ -44,9 +51,9 @@ function responseFor(vector) {
     path.join(__dirname, "..", "_workflow", "operator_decisions", "mem_1_secret_file_activation_package.md"),
     "utf8",
   );
-  assert.ok(activationPackage.includes("Status: GREEN / LIVE LOADED / CREDENTIAL PROVISIONING PENDING"));
-  assert.ok(activationPackage.includes("server_start_id = 2026-08-01T18:25:49.624Z"));
-  assert.ok(activationPackage.includes("`activation_ready = false`"));
+  assert.ok(activationPackage.includes("Status: GREEN / LIVE ACTIVATED / QUALITY VERIFIED / BACKFILL COMPLETE"));
+  assert.ok(activationPackage.includes("server_start_id = 2026-08-01T18:52:13.024Z"));
+  assert.ok(activationPackage.includes("`activation_ready = true`"));
 
   if (process.platform === "win32") {
     const smokeSecret = "smoke-secret-must-not-leak";
@@ -258,9 +265,16 @@ function responseFor(vector) {
     process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN = "test-token";
 
     const filmVector = vectorAt(1);
+    const multilingualQueryVector = vectorAt(2);
+    const multilingualTargetVector = vectorWithCosine(2, 3, 0.64);
+    const lexicalSubstringDistractorVector = vectorAt(4);
     globalThis.fetch = async (_url, options) => {
       const input = JSON.parse(options.body).input;
-      if (input.includes("film")) return responseFor(filmVector);
+      const normalizedInput = input.toLowerCase();
+      if (normalizedInput.includes("film")) return responseFor(filmVector);
+      if (normalizedInput.includes("green bicycle")) return responseFor(multilingualQueryVector);
+      if (normalizedInput.includes("zielony rower")) return responseFor(multilingualTargetVector);
+      if (normalizedInput.includes("unrelated deployment artifact")) return responseFor(lexicalSubstringDistractorVector);
       return responseFor(leadVector);
     };
 
@@ -294,6 +308,27 @@ function responseFor(vector) {
     assert.ok(search.results[0].score > 0.7);
     assert.equal("embedding_v1" in search.results[0], false);
 
+    const multilingualTarget = await saveMemory({
+      agent_name: "codex",
+      content: "Zielony rower jest przechowywany w szklanej oranżerii obok fontanny.",
+      type: "fact",
+      category: "quality-probe",
+    });
+    await saveMemory({
+      agent_name: "codex",
+      content: "Somewhere this another note asks: where is the unrelated deployment artifact?",
+      type: "fact",
+      category: "quality-probe",
+    });
+    const multilingualSearch = await searchMemory({
+      query: "Where is the green bicycle kept near the fountain?",
+      agent_name: "codex",
+      top_k: 5,
+      min_score: 0.1,
+    });
+    assert.equal(multilingualSearch.results[0].id, multilingualTarget.id);
+    assert.ok(multilingualSearch.results[0].score > 0.27);
+
     const memoryText = fs.readFileSync(path.join(tempRoot, ".mcp-agent-memory.jsonl"), "utf8");
     assert.equal(memoryText.includes("embedding_v1"), false);
     assert.equal(fs.existsSync(path.join(tempRoot, ".mcp-agent-embeddings.sqlite")), true);
@@ -309,6 +344,41 @@ function responseFor(vector) {
       else process.env[name] = value;
     }
     fs.rmSync(tempRoot, { recursive: true, force: true });
+  }
+
+  const backfillRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-backfill-"));
+  try {
+    fs.writeFileSync(
+      path.join(backfillRoot, ".mcp-agent-memory.jsonl"),
+      [
+        { id: "a", content: "first active memory", is_archived: false },
+        { id: "b", content: "second active memory", is_archived: false },
+        { id: "c", content: "archived memory", is_archived: true },
+        { id: "d", content: "first active memory", is_archived: false },
+      ].map((entry) => JSON.stringify(entry)).join("\n") + "\n",
+      "utf8",
+    );
+    const embeddingClient = { generate: async () => ({
+      status: "ok",
+      provider: "ovh",
+      model: "bge-m3",
+      dimensions: BGE_M3_DIMENSIONS,
+      vector: vectorAt(7),
+    }) };
+    const firstBackfill = await backfillMemoryEmbeddings({ logDir: backfillRoot, embeddingClient });
+    assert.deepEqual(
+      { active: firstBackfill.active_unique, attempted: firstBackfill.attempted, stored: firstBackfill.stored, remaining: firstBackfill.remaining },
+      { active: 2, attempted: 2, stored: 2, remaining: 0 },
+    );
+    const secondBackfill = await backfillMemoryEmbeddings({ logDir: backfillRoot, embeddingClient });
+    assert.deepEqual(
+      { cached: secondBackfill.cached_before, attempted: secondBackfill.attempted, stored: secondBackfill.stored },
+      { cached: 2, attempted: 0, stored: 0 },
+    );
+    assert.equal(firstBackfill.plaintext_exposed, false);
+    assert.equal(firstBackfill.vector_exposed, false);
+  } finally {
+    fs.rmSync(backfillRoot, { recursive: true, force: true });
   }
 
   const cacheFailureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-cache-failure-"));

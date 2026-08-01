@@ -83,7 +83,7 @@ assert.ok(readiness.includes("the local skill routes documentation/workflow ques
 assert.ok(readiness.includes("`codex-mcp-client 0.146.0-alpha.3.1` with `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
 assert.ok(roadmap.includes("## Priority matrix"));
 assert.ok(roadmap.includes("Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`"));
-assert.ok(roadmap.includes("`MEM-1-LIVE` — current course"));
+assert.ok(roadmap.includes("Completed memory activation: `MEM-1-LIVE`"));
 assert.ok(roadmap.includes("`COMP-1A` — event-gated protocol course"));
 assert.ok(roadmap.includes("`DOC-2A` — bounded fallback"));
 assert.ok(roadmap.includes("the July 28 `codex-mcp-client 0.146.0-alpha.3.1` latest-entry window"));
@@ -102,9 +102,9 @@ assert.ok(cbmSkillDirectory.includes("Status: active using-codebase-memory skill
 assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
-assert.equal(workflowState.workflow_progress_markers.current_working_course, "memory-embedding-runtime-activation-gate");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "mem-1-live-provider-activation-and-quality-proof");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "mem-1-credential-provision-and-quality-proof");
+assert.equal(workflowState.workflow_progress_markers.current_working_course, "protocol-compatibility-evidence-gate");
+assert.equal(workflowState.workflow_progress_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "doc-2a-on-demonstrated-orientation-gap");
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -117,9 +117,9 @@ assert.ok(workflowIndex.includes("no missing `DIRECTORY.md` files among the top 
 assert.ok(workflowIndex.includes("Upstream issue reviews cover ordinals 1-277"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
-assert.ok(workflowIndex.includes("`current_working_course = memory-embedding-runtime-activation-gate`"));
-assert.ok(workflowIndex.includes("`next_primary = mem-1-live-provider-activation-and-quality-proof`"));
-assert.ok(workflowIndex.includes("`next_secondary = mem-1-credential-provision-and-quality-proof`"));
+assert.ok(workflowIndex.includes("`current_working_course = protocol-compatibility-evidence-gate`"));
+assert.ok(workflowIndex.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
+assert.ok(workflowIndex.includes("`next_secondary = doc-2a-on-demonstrated-orientation-gap`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

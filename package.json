@@ -14,6 +14,7 @@
   "scripts": {
     "docs:directory:audit": "node scripts/audit_directory_docs.js",
     "docs:directory": "node scripts/generate_directory_docs.js",
+    "memory:embeddings:backfill": "node scripts/backfill-memory-embeddings.js",
     "start": "node server.js",
     "self-test": "node server.js --self-test",
     "test": "node _tests/run_all_smokes.js --skip-network",
