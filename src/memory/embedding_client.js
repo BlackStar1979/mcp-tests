@@ -1,10 +1,13 @@
 "use strict";
 
+const fs = require("node:fs");
+
 const OVH_EMBEDDINGS_URL = "https://oai.endpoints.kepler.ai.cloud.ovh.net/v1/embeddings";
 const OVH_MODEL = "bge-m3";
 const BGE_M3_DIMENSIONS = 1024;
 const DEFAULT_TIMEOUT_MS = 5000;
 const MAX_RESPONSE_BYTES = 256 * 1024;
+const MAX_TOKEN_FILE_BYTES = 16 * 1024;
 
 function boundedInteger(value, fallback, minimum, maximum) {
   const parsed = Number(value);
@@ -39,10 +42,16 @@ async function readJsonBounded(response) {
   return JSON.parse(body);
 }
 
-function createEmbeddingClient({ env = process.env, fetchImpl = globalThis.fetch } = {}) {
+function createEmbeddingClient({
+  env = process.env,
+  fetchImpl = globalThis.fetch,
+  readFileImpl = fs.readFileSync,
+  statFileImpl = fs.statSync,
+} = {}) {
   const provider = String(env.MCP_TEST_MEMORY_EMBEDDING_PROVIDER || "disabled").trim().toLowerCase();
   const externalEgressEnabled = env.MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS === "1";
-  const token = String(env.OVH_AI_ENDPOINTS_ACCESS_TOKEN || "");
+  const inlineToken = String(env.OVH_AI_ENDPOINTS_ACCESS_TOKEN || "").trim();
+  const tokenFile = String(env.MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE || "").trim();
   const timeoutMs = boundedInteger(
     env.MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS,
     DEFAULT_TIMEOUT_MS,
@@ -54,6 +63,21 @@ function createEmbeddingClient({ env = process.env, fetchImpl = globalThis.fetch
     if (provider === "disabled" || !provider) return disabledResult("disabled");
     if (provider !== "ovh") return disabledResult("unsupported_provider", provider);
     if (!externalEgressEnabled) return disabledResult("external_egress_disabled", provider, OVH_MODEL);
+    if (inlineToken && tokenFile) return disabledResult("token_source_conflict", provider, OVH_MODEL);
+
+    let token = inlineToken;
+    if (tokenFile) {
+      try {
+        const stat = statFileImpl(tokenFile);
+        if (!stat.isFile() || stat.size <= 0 || stat.size > MAX_TOKEN_FILE_BYTES) {
+          return disabledResult("token_file_invalid", provider, OVH_MODEL);
+        }
+        token = String(readFileImpl(tokenFile, "utf8") || "").replace(/^\uFEFF/, "").trim();
+      } catch {
+        return disabledResult("token_file_unreadable", provider, OVH_MODEL);
+      }
+      if (!token) return disabledResult("token_file_empty", provider, OVH_MODEL);
+    }
     if (!token) return disabledResult("token_missing", provider, OVH_MODEL);
     if (typeof fetchImpl !== "function") return disabledResult("fetch_unavailable", provider, OVH_MODEL);
 

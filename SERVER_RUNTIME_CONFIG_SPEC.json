@@ -91,6 +91,7 @@
     "MCP_TEST_MEMORY_LOG_DIR",
     "MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS",
     "MCP_TEST_MEMORY_EMBEDDING_PROVIDER",
+    "MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE",
     "MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS",
     "MCP_TEST_NET_ALLOWLIST",
     "MCP_TEST_NET_MAX_BYTES",
@@ -232,6 +233,9 @@
       "--port",
       "--token-file",
       "--oauth-secret-file",
+      "--memory-embedding-provider",
+      "--memory-embedding-external-egress",
+      "--memory-embedding-token-file",
       "--restart-trigger",
       "--trigger-file",
       "--restart-codes",
@@ -241,7 +245,18 @@
     "arg_formats": [
       "--key value",
       "--key=value"
-    ]
+    ],
+    "memory_embedding": {
+      "provider_env": "MCP_SUPERVISOR_MEMORY_EMBEDDING_PROVIDER",
+      "external_egress_env": "MCP_SUPERVISOR_MEMORY_EMBEDDING_EXTERNAL_EGRESS",
+      "token_file_env": "MCP_SUPERVISOR_MEMORY_EMBEDDING_TOKEN_FILE",
+      "runtime_token_file_env": "MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE",
+      "preferred_token_source": "secret_file",
+      "legacy_inline_token_env": "OVH_AI_ENDPOINTS_ACCESS_TOKEN",
+      "token_source_conflict": "fail_before_child_start",
+      "token_file_max_bytes": 16384,
+      "token_values_logged": false
+    }
   },
   "rate_limit_quota_runtime": {
     "source_refs": [

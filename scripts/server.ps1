@@ -183,6 +183,9 @@ while ($i -lt $args.Count) {
       'port' { $Cli.Port = $value }
       'token-file' { $Cli.TokenFile = $value }
       'oauth-secret-file' { $Cli.OAuthSecretFile = $value }
+      'memory-embedding-provider' { $Cli.MemoryEmbeddingProvider = $value }
+      'memory-embedding-external-egress' { $Cli.MemoryEmbeddingExternalEgress = $value }
+      'memory-embedding-token-file' { $Cli.MemoryEmbeddingTokenFile = $value }
       'restart-trigger' { $Cli.RestartTrigger = $value }
       'trigger-file' { $Cli.TriggerFile = $value }
       'restart-codes' { $Cli.RestartCodes = $value }
@@ -203,6 +206,37 @@ $DelaySeconds = if ($Cli.DelaySeconds) { [int]$Cli.DelaySeconds } elseif ($env:M
 $Port = if ($Cli.Port) { $Cli.Port } elseif ($env:MCP_SUPERVISOR_PORT) { $env:MCP_SUPERVISOR_PORT } else { $null }
 $TokenFile = if ($Cli.TokenFile) { $Cli.TokenFile } elseif ($env:MCP_SUPERVISOR_TOKEN_FILE) { $env:MCP_SUPERVISOR_TOKEN_FILE } else { $null }
 $OAuthSecretFile = if ($Cli.OAuthSecretFile) { $Cli.OAuthSecretFile } elseif ($env:MCP_SUPERVISOR_OAUTH_SECRET_FILE) { $env:MCP_SUPERVISOR_OAUTH_SECRET_FILE } else { $null }
+$MemoryEmbeddingProvider = if ($Cli.MemoryEmbeddingProvider) { $Cli.MemoryEmbeddingProvider } elseif ($env:MCP_SUPERVISOR_MEMORY_EMBEDDING_PROVIDER) { $env:MCP_SUPERVISOR_MEMORY_EMBEDDING_PROVIDER } else { $env:MCP_TEST_MEMORY_EMBEDDING_PROVIDER }
+$MemoryEmbeddingExternalEgress = if ($Cli.MemoryEmbeddingExternalEgress) { $Cli.MemoryEmbeddingExternalEgress } elseif ($env:MCP_SUPERVISOR_MEMORY_EMBEDDING_EXTERNAL_EGRESS) { $env:MCP_SUPERVISOR_MEMORY_EMBEDDING_EXTERNAL_EGRESS } else { $env:MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS }
+$MemoryEmbeddingTokenFile = if ($Cli.MemoryEmbeddingTokenFile) { $Cli.MemoryEmbeddingTokenFile } elseif ($env:MCP_SUPERVISOR_MEMORY_EMBEDDING_TOKEN_FILE) { $env:MCP_SUPERVISOR_MEMORY_EMBEDDING_TOKEN_FILE } else { $env:MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE }
+
+if ($MemoryEmbeddingProvider -and $MemoryEmbeddingProvider.Trim().ToLowerInvariant() -notin @('disabled', 'ovh')) {
+  Write-Error 'Memory embedding provider must be disabled or ovh.'
+  exit 2
+}
+if ($MemoryEmbeddingExternalEgress -and $MemoryEmbeddingExternalEgress -notin @('0', '1')) {
+  Write-Error 'Memory embedding external egress must be 0 or 1.'
+  exit 2
+}
+if ($MemoryEmbeddingTokenFile) {
+  if ($env:OVH_AI_ENDPOINTS_ACCESS_TOKEN) {
+    Write-Error 'Memory embedding token file conflicts with OVH_AI_ENDPOINTS_ACCESS_TOKEN.'
+    exit 2
+  }
+  try {
+    $tokenFileItem = Get-Item -LiteralPath $MemoryEmbeddingTokenFile -ErrorAction Stop
+  } catch {
+    Write-Error 'Memory embedding token file is unavailable.'
+    exit 2
+  }
+  if ($tokenFileItem.PSIsContainer -or $tokenFileItem.Length -le 0 -or $tokenFileItem.Length -gt 16384) {
+    Write-Error 'Memory embedding token file must be a non-empty regular file no larger than 16384 bytes.'
+    exit 2
+  }
+  $env:MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE = $tokenFileItem.FullName
+}
+if ($MemoryEmbeddingProvider) { $env:MCP_TEST_MEMORY_EMBEDDING_PROVIDER = $MemoryEmbeddingProvider }
+if ($MemoryEmbeddingExternalEgress) { $env:MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS = $MemoryEmbeddingExternalEgress }
 
 $env:MCP_TEST_ENABLE_RESTART_TRIGGER = if ($Cli.RestartTrigger) { $Cli.RestartTrigger } elseif ($env:MCP_TEST_ENABLE_RESTART_TRIGGER) { $env:MCP_TEST_ENABLE_RESTART_TRIGGER } else { '1' }
 $env:MCP_TEST_RESTART_TRIGGER_FILE = if ($Cli.TriggerFile) { $Cli.TriggerFile } elseif ($env:MCP_TEST_RESTART_TRIGGER_FILE) { $env:MCP_TEST_RESTART_TRIGGER_FILE } else { Join-Path $RootDir '_control\restart-request.json' }

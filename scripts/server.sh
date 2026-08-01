@@ -74,6 +74,9 @@ AUTH="${MCP_SUPERVISOR_AUTH:-none}"
 PORT="${MCP_SUPERVISOR_PORT:-}"
 TOKEN_FILE="${MCP_SUPERVISOR_TOKEN_FILE:-}"
 OAUTH_SECRET_FILE="${MCP_SUPERVISOR_OAUTH_SECRET_FILE:-}"
+MEMORY_EMBEDDING_PROVIDER="${MCP_SUPERVISOR_MEMORY_EMBEDDING_PROVIDER:-${MCP_TEST_MEMORY_EMBEDDING_PROVIDER:-}}"
+MEMORY_EMBEDDING_EXTERNAL_EGRESS="${MCP_SUPERVISOR_MEMORY_EMBEDDING_EXTERNAL_EGRESS:-${MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS:-}}"
+MEMORY_EMBEDDING_TOKEN_FILE="${MCP_SUPERVISOR_MEMORY_EMBEDDING_TOKEN_FILE:-${MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE:-}}"
 RESTART_CODES="${MCP_SUPERVISOR_RESTART_CODES:-42 43 44}"
 DELAY_SECONDS="${MCP_SUPERVISOR_RESTART_DELAY_SECONDS:-1}"
 RESTART_TRIGGER="${MCP_TEST_ENABLE_RESTART_TRIGGER:-1}"
@@ -93,6 +96,9 @@ while [[ $# -gt 0 ]]; do
     --port) PORT="$value" ;;
     --token-file) TOKEN_FILE="$value" ;;
     --oauth-secret-file) OAUTH_SECRET_FILE="$value" ;;
+    --memory-embedding-provider) MEMORY_EMBEDDING_PROVIDER="$value" ;;
+    --memory-embedding-external-egress) MEMORY_EMBEDDING_EXTERNAL_EGRESS="$value" ;;
+    --memory-embedding-token-file) MEMORY_EMBEDDING_TOKEN_FILE="$value" ;;
     --restart-trigger) RESTART_TRIGGER="$value" ;;
     --trigger-file) TRIGGER_FILE="$value" ;;
     --restart-codes) RESTART_CODES="$value" ;;
@@ -101,6 +107,33 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
+
+case "${MEMORY_EMBEDDING_PROVIDER,,}" in
+  ""|disabled|ovh) ;;
+  *) echo "Memory embedding provider must be disabled or ovh." >&2; exit 2 ;;
+esac
+case "$MEMORY_EMBEDDING_EXTERNAL_EGRESS" in
+  ""|0|1) ;;
+  *) echo "Memory embedding external egress must be 0 or 1." >&2; exit 2 ;;
+esac
+if [[ -n "$MEMORY_EMBEDDING_TOKEN_FILE" ]]; then
+  if [[ -n "${OVH_AI_ENDPOINTS_ACCESS_TOKEN:-}" ]]; then
+    echo "Memory embedding token file conflicts with OVH_AI_ENDPOINTS_ACCESS_TOKEN." >&2
+    exit 2
+  fi
+  if [[ ! -f "$MEMORY_EMBEDDING_TOKEN_FILE" ]]; then
+    echo "Memory embedding token file must be a readable regular file." >&2
+    exit 2
+  fi
+  token_file_bytes="$(wc -c < "$MEMORY_EMBEDDING_TOKEN_FILE")"
+  if [[ "$token_file_bytes" -le 0 || "$token_file_bytes" -gt 16384 ]]; then
+    echo "Memory embedding token file must be non-empty and no larger than 16384 bytes." >&2
+    exit 2
+  fi
+  export MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE="$MEMORY_EMBEDDING_TOKEN_FILE"
+fi
+if [[ -n "$MEMORY_EMBEDDING_PROVIDER" ]]; then export MCP_TEST_MEMORY_EMBEDDING_PROVIDER="$MEMORY_EMBEDDING_PROVIDER"; fi
+if [[ -n "$MEMORY_EMBEDDING_EXTERNAL_EGRESS" ]]; then export MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS="$MEMORY_EMBEDDING_EXTERNAL_EGRESS"; fi
 
 export MCP_TEST_ENABLE_RESTART_TRIGGER="$RESTART_TRIGGER"
 export MCP_TEST_RESTART_TRIGGER_FILE="$TRIGGER_FILE"

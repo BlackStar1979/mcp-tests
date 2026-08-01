@@ -193,6 +193,7 @@ Add-Type -TypeDefinition $readerSource -Language CSharp
 $allowlist = @(
   'MCP_TEST_MEMORY_EMBEDDING_PROVIDER',
   'MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS',
+  'MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE',
   'OVH_AI_ENDPOINTS_ACCESS_TOKEN',
   'MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS'
 )
@@ -206,7 +207,8 @@ function Get-AllowlistedValue {
 
 $provider = Get-AllowlistedValue -Name 'MCP_TEST_MEMORY_EMBEDDING_PROVIDER'
 $egress = Get-AllowlistedValue -Name 'MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS'
-$token = Get-AllowlistedValue -Name 'OVH_AI_ENDPOINTS_ACCESS_TOKEN'
+$tokenFile = Get-AllowlistedValue -Name 'MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE'
+$legacyToken = Get-AllowlistedValue -Name 'OVH_AI_ENDPOINTS_ACCESS_TOKEN'
 $timeout = Get-AllowlistedValue -Name 'MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS'
 $normalizedProvider = $provider.Trim().ToLowerInvariant()
 $timeoutNumber = 0
@@ -216,13 +218,32 @@ $timeoutValid = (-not $timeout) -or (
   $timeoutNumber -le 15000
 )
 $cache = Get-Item -LiteralPath $CachePath -ErrorAction SilentlyContinue
+$tokenFileReady = $false
+if ($tokenFile) {
+  try {
+    $tokenFileItem = Get-Item -LiteralPath $tokenFile -ErrorAction Stop
+    if (-not $tokenFileItem.PSIsContainer -and $tokenFileItem.Length -gt 0 -and $tokenFileItem.Length -le 16384) {
+      $tokenFileReady = -not [string]::IsNullOrWhiteSpace(
+        [IO.File]::ReadAllText($tokenFileItem.FullName)
+      )
+    }
+  } catch {
+    $tokenFileReady = $false
+  }
+}
+$legacyTokenPresent = -not [string]::IsNullOrWhiteSpace($legacyToken)
+$tokenSourceConflict = $legacyTokenPresent -and (-not [string]::IsNullOrWhiteSpace($tokenFile))
 
 $config = [ordered]@{
   provider_present = -not [string]::IsNullOrWhiteSpace($provider)
   provider_supported = $normalizedProvider -eq 'ovh'
   external_egress_present = -not [string]::IsNullOrWhiteSpace($egress)
   external_egress_enabled = $egress -eq '1'
-  token_present = -not [string]::IsNullOrWhiteSpace($token)
+  token_file_configured = -not [string]::IsNullOrWhiteSpace($tokenFile)
+  token_file_ready = $tokenFileReady
+  legacy_token_present = $legacyTokenPresent
+  token_source_conflict = $tokenSourceConflict
+  token_present = (-not $tokenSourceConflict) -and ($tokenFileReady -or $legacyTokenPresent)
   timeout_override_present = -not [string]::IsNullOrWhiteSpace($timeout)
   timeout_effective_valid = $timeoutValid
 }

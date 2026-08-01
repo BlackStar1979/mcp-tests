@@ -95,5 +95,9 @@ assert.equal(spec.stable_mcp_request_contract_bridge.transport_session_retiremen
 assert.match(spec.tool_surface_state_runtime.purpose, /pull-only tools\/list freshness diagnostics/);
 assert.equal(Object.hasOwn(spec, "sessionless_prototype"), false);
 assert.equal(spec.retired_sessionless_transition.status, "retired_from_active_repo_and_live_3008");
+assert.equal(spec.restart_supervisor.memory_embedding.runtime_token_file_env, "MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE");
+assert.equal(spec.restart_supervisor.memory_embedding.token_source_conflict, "fail_before_child_start");
+assert.equal(spec.restart_supervisor.memory_embedding.token_file_max_bytes, 16384);
+assert.equal(spec.restart_supervisor.memory_embedding.token_values_logged, false);
 
 console.log("smoke_runtime_config_spec ok");

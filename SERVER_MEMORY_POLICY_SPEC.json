@@ -31,8 +31,12 @@
     "external_egress_enablement": [
       "MCP_TEST_MEMORY_EMBEDDING_PROVIDER=ovh",
       "MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS=1",
-      "OVH_AI_ENDPOINTS_ACCESS_TOKEN is non-empty"
+      "exactly one token source is ready: MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE or legacy OVH_AI_ENDPOINTS_ACCESS_TOKEN"
     ],
+    "preferred_token_source": "MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE",
+    "legacy_token_source": "OVH_AI_ENDPOINTS_ACCESS_TOKEN",
+    "token_source_conflict_policy": "fail_closed_without_network_request",
+    "token_file_max_bytes": 16384,
     "fallback": "keyword_term_overlap",
     "ranking": "max_keyword_or_80_percent_thresholded_semantic_plus_20_percent_keyword",
     "response_vectors_exposed": false
@@ -137,6 +141,8 @@
     "delete_semantics_not_implemented": true,
     "database_backend_requires_separate_database_policy": true,
     "embedding_external_egress_requires_explicit_opt_in": true,
+    "embedding_token_file_preferred_over_legacy_environment_secret": true,
+    "embedding_token_sources_must_not_be_combined": true,
     "embedding_provider_endpoint_is_not_caller_configurable": true,
     "embedding_request_timeout_and_response_cap_required": true,
     "embedding_cache_contains_hashes_and_vectors_not_plaintext": true,

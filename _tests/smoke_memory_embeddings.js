@@ -47,13 +47,17 @@ function responseFor(vector) {
       provider: process.env.MCP_TEST_MEMORY_EMBEDDING_PROVIDER,
       egress: process.env.MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS,
       token: process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN,
+      tokenFile: process.env.MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE,
       timeout: process.env.MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS,
     };
     const auditTempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-runtime-audit-"));
     try {
+      const auditTokenFile = path.join(auditTempRoot, "token.txt");
+      fs.writeFileSync(auditTokenFile, smokeSecret, "utf8");
       process.env.MCP_TEST_MEMORY_EMBEDDING_PROVIDER = " OVH ";
       process.env.MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS = "1";
-      process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN = smokeSecret;
+      delete process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN;
+      process.env.MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE = auditTokenFile;
       process.env.MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS = "5000";
       const audit = cp.spawnSync(
         "pwsh",
@@ -80,6 +84,10 @@ function responseFor(vector) {
       assert.equal(payload.config.provider_present, true);
       assert.equal(payload.config.provider_supported, true);
       assert.equal(payload.config.external_egress_enabled, true);
+      assert.equal(payload.config.token_file_configured, true);
+      assert.equal(payload.config.token_file_ready, true);
+      assert.equal(payload.config.legacy_token_present, false);
+      assert.equal(payload.config.token_source_conflict, false);
       assert.equal(payload.config.token_present, true);
       assert.equal(payload.config.timeout_effective_valid, true);
       assert.equal(payload.cache.present, false);
@@ -89,6 +97,7 @@ function responseFor(vector) {
         MCP_TEST_MEMORY_EMBEDDING_PROVIDER: previousRuntimeAuditEnv.provider,
         MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS: previousRuntimeAuditEnv.egress,
         OVH_AI_ENDPOINTS_ACCESS_TOKEN: previousRuntimeAuditEnv.token,
+        MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE: previousRuntimeAuditEnv.tokenFile,
         MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS: previousRuntimeAuditEnv.timeout,
       })) {
         if (value === undefined) delete process.env[name];
@@ -159,6 +168,59 @@ function responseFor(vector) {
     fetchImpl: async () => responseFor([1, 2, 3]),
   });
   assert.equal((await invalid.generate("invalid dimensions")).status, "invalid_dimensions");
+
+  const tokenFileRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-token-file-"));
+  try {
+    const tokenFile = path.join(tokenFileRoot, "token.txt");
+    fs.writeFileSync(tokenFile, "file-token\n", "utf8");
+    const fromFile = createEmbeddingClient({
+      env: {
+        MCP_TEST_MEMORY_EMBEDDING_PROVIDER: "ovh",
+        MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS: "1",
+        MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE: tokenFile,
+      },
+      fetchImpl: async (_url, options) => {
+        assert.equal(options.headers.Authorization, "Bearer file-token");
+        return responseFor(leadVector);
+      },
+    });
+    assert.equal((await fromFile.generate("file token")).status, "ok");
+
+    const conflict = createEmbeddingClient({
+      env: {
+        MCP_TEST_MEMORY_EMBEDDING_PROVIDER: "ovh",
+        MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS: "1",
+        MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE: tokenFile,
+        OVH_AI_ENDPOINTS_ACCESS_TOKEN: "inline-token",
+      },
+      fetchImpl: async () => { throw new Error("conflicted token sources must not fetch"); },
+    });
+    assert.equal((await conflict.generate("conflict")).status, "token_source_conflict");
+
+    const missingFile = createEmbeddingClient({
+      env: {
+        MCP_TEST_MEMORY_EMBEDDING_PROVIDER: "ovh",
+        MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS: "1",
+        MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE: path.join(tokenFileRoot, "missing.txt"),
+      },
+      fetchImpl: async () => { throw new Error("missing token file must not fetch"); },
+    });
+    assert.equal((await missingFile.generate("missing")).status, "token_file_unreadable");
+
+    const oversizedFile = path.join(tokenFileRoot, "oversized.txt");
+    fs.writeFileSync(oversizedFile, "x".repeat(16 * 1024 + 1), "utf8");
+    const oversized = createEmbeddingClient({
+      env: {
+        MCP_TEST_MEMORY_EMBEDDING_PROVIDER: "ovh",
+        MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS: "1",
+        MCP_TEST_MEMORY_EMBEDDING_TOKEN_FILE: oversizedFile,
+      },
+      fetchImpl: async () => { throw new Error("oversized token file must not fetch"); },
+    });
+    assert.equal((await oversized.generate("oversized")).status, "token_file_invalid");
+  } finally {
+    fs.rmSync(tokenFileRoot, { recursive: true, force: true });
+  }
 
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-embeddings-"));
   const previousEnv = {
