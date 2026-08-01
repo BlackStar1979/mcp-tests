@@ -78,7 +78,7 @@
   "workflow_progress_markers": {
     "current_working_course": "memory-embedding-runtime-activation-gate",
     "next_primary": "mem-1-live-provider-activation-and-quality-proof",
-    "next_secondary": "mem-1-runtime-config-presence-audit",
+    "next_secondary": "mem-1-secret-file-activation-package",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",

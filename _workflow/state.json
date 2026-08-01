@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-01T17:53:59.657Z",
+  "updated_at": "2026-08-01T18:10:59.661Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -67,7 +67,7 @@
   "workflow_progress_markers": {
     "current_working_course": "memory-embedding-runtime-activation-gate",
     "next_primary": "mem-1-live-provider-activation-and-quality-proof",
-    "next_secondary": "mem-1-runtime-config-presence-audit",
+    "next_secondary": "mem-1-secret-file-activation-package",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",

@@ -161,8 +161,9 @@ const CONFIG = {
   },
   "scripts": {
     title: "scripts directory map",
-    updated: "2026-07-28",
+    updated: "2026-08-01",
     entries: {
+      "audit-memory-embedding-runtime.ps1": "Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.",
       "audit_directory_docs.js": "Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.",
       "request-restart.js": "Writes a bounded restart request for the supervisor-managed runtime path.",
       "server.ps1": "PowerShell helper for controlled local server startup/orchestration.",

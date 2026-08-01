@@ -1,8 +1,10 @@
 # DIRECTORY
 
 Status: active scripts directory map
-Updated: 2026-07-28
+Updated: 2026-08-01
 
+- `audit-memory-embedding-runtime.ps1`
+  Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.
 - `audit_directory_docs.js`
   Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.
 - `request-restart.js`

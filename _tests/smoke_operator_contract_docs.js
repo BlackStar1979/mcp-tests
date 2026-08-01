@@ -104,7 +104,7 @@ assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-me
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "memory-embedding-runtime-activation-gate");
 assert.equal(workflowState.workflow_progress_markers.next_primary, "mem-1-live-provider-activation-and-quality-proof");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "mem-1-runtime-config-presence-audit");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "mem-1-secret-file-activation-package");
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -119,7 +119,7 @@ assert.ok(workflowIndex.includes("routes documentation/workflow questions to the
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = memory-embedding-runtime-activation-gate`"));
 assert.ok(workflowIndex.includes("`next_primary = mem-1-live-provider-activation-and-quality-proof`"));
-assert.ok(workflowIndex.includes("`next_secondary = mem-1-runtime-config-presence-audit`"));
+assert.ok(workflowIndex.includes("`next_secondary = mem-1-secret-file-activation-package`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

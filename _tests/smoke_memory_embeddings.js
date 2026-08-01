@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
+const cp = require("node:child_process");
 
 const {
   BGE_M3_DIMENSIONS,
@@ -27,6 +28,76 @@ function responseFor(vector) {
 }
 
 (async () => {
+  const runtimeAuditScript = path.join(__dirname, "..", "scripts", "audit-memory-embedding-runtime.ps1");
+  const runtimeAuditSource = fs.readFileSync(runtimeAuditScript, "utf8");
+  assert.ok(runtimeAuditSource.includes("ReadAllowlisted"));
+  assert.ok(runtimeAuditSource.includes("secret_values_exposed = $false"));
+  assert.ok(runtimeAuditSource.includes("activation_ready"));
+  const runtimePresenceAudit = fs.readFileSync(
+    path.join(__dirname, "..", "_workflow", "operator_decisions", "mem_1_runtime_config_presence_audit.md"),
+    "utf8",
+  );
+  assert.ok(runtimePresenceAudit.includes("Status: GREEN / LIVE CONFIGURATION ABSENT / ACTIVATION BLOCKED SAFELY"));
+  assert.ok(runtimePresenceAudit.includes("`activation_ready = false`"));
+  assert.ok(runtimePresenceAudit.includes("`secret_values_exposed = false`"));
+
+  if (process.platform === "win32") {
+    const smokeSecret = "smoke-secret-must-not-leak";
+    const previousRuntimeAuditEnv = {
+      provider: process.env.MCP_TEST_MEMORY_EMBEDDING_PROVIDER,
+      egress: process.env.MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS,
+      token: process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN,
+      timeout: process.env.MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS,
+    };
+    const auditTempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-runtime-audit-"));
+    try {
+      process.env.MCP_TEST_MEMORY_EMBEDDING_PROVIDER = " OVH ";
+      process.env.MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS = "1";
+      process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN = smokeSecret;
+      process.env.MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS = "5000";
+      const audit = cp.spawnSync(
+        "pwsh",
+        [
+          "-NoLogo",
+          "-NoProfile",
+          "-File",
+          runtimeAuditScript,
+          "-ProcessId",
+          String(process.pid),
+          "-CachePath",
+          path.join(auditTempRoot, "missing.sqlite"),
+          "-AllowNonServerProcess",
+        ],
+        { encoding: "utf8" },
+      );
+      assert.equal(audit.status, 0, audit.stderr);
+      assert.equal(audit.stdout.includes(smokeSecret), false);
+      assert.equal(audit.stderr.includes(smokeSecret), false);
+      const payload = JSON.parse(audit.stdout);
+      assert.equal(payload.ok, true);
+      assert.equal(payload.target_verified, false);
+      assert.equal(payload.activation_ready, true);
+      assert.equal(payload.config.provider_present, true);
+      assert.equal(payload.config.provider_supported, true);
+      assert.equal(payload.config.external_egress_enabled, true);
+      assert.equal(payload.config.token_present, true);
+      assert.equal(payload.config.timeout_effective_valid, true);
+      assert.equal(payload.cache.present, false);
+      assert.equal(payload.secret_values_exposed, false);
+    } finally {
+      for (const [name, value] of Object.entries({
+        MCP_TEST_MEMORY_EMBEDDING_PROVIDER: previousRuntimeAuditEnv.provider,
+        MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS: previousRuntimeAuditEnv.egress,
+        OVH_AI_ENDPOINTS_ACCESS_TOKEN: previousRuntimeAuditEnv.token,
+        MCP_TEST_MEMORY_EMBEDDING_TIMEOUT_MS: previousRuntimeAuditEnv.timeout,
+      })) {
+        if (value === undefined) delete process.env[name];
+        else process.env[name] = value;
+      }
+      fs.rmSync(auditTempRoot, { recursive: true, force: true });
+    }
+  }
+
   let disabledFetches = 0;
   const disabled = createEmbeddingClient({
     env: {},
