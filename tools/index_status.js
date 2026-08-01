@@ -12,7 +12,7 @@ const indexStatusTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Workspace index status",
-    description: "Read-only status for the local workspace index used by TEST MCP retrieval helpers.",
+    description: "Read-only status and source-freshness assessment for the local workspace index used by TEST MCP retrieval helpers.",
     inputSchema: INDEX_STATUS_INPUT_SCHEMA,
     outputSchema: INDEX_STATUS_OUTPUT_SCHEMA,
     annotations: READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS,

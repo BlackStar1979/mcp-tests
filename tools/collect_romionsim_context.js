@@ -12,7 +12,7 @@ const collectRomionsimContextTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Collect romionsim context",
-    description: "Collect retrieval-only context from romionsim-scoped documents in the local workspace index.",
+    description: "Collect retrieval-only context with source-freshness metadata from romionsim-scoped documents in the local workspace index.",
     inputSchema: COLLECT_ROMIONSIM_CONTEXT_INPUT_SCHEMA,
     outputSchema: COLLECT_ROMIONSIM_CONTEXT_OUTPUT_SCHEMA,
     annotations: READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS,

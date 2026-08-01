@@ -170,6 +170,41 @@ const INDEX_SCOPE_SCHEMA = {
   },
 };
 
+const INDEX_FRESHNESS_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "status",
+    "stale",
+    "checked_at",
+    "coverage",
+    "changed_file_count",
+    "missing_file_count",
+    "changed_directory_count",
+    "missing_directory_count",
+    "changed_files",
+    "missing_files",
+    "changed_directories",
+    "missing_directories",
+    "reasons",
+  ],
+  properties: {
+    status: { type: "string", enum: ["fresh", "stale", "unknown"] },
+    stale: { type: "boolean" },
+    checked_at: { type: "string" },
+    coverage: { type: "string" },
+    changed_file_count: { type: "integer", minimum: 0 },
+    missing_file_count: { type: "integer", minimum: 0 },
+    changed_directory_count: { type: "integer", minimum: 0 },
+    missing_directory_count: { type: "integer", minimum: 0 },
+    changed_files: { type: "array", items: { type: "string" } },
+    missing_files: { type: "array", items: { type: "string" } },
+    changed_directories: { type: "array", items: { type: "string" } },
+    missing_directories: { type: "array", items: { type: "string" } },
+    reasons: { type: "array", items: { type: "string" } },
+  },
+};
+
 const INDEX_RETRIEVAL_METADATA_REQUIRED = [
   "index_scope",
   "path_filter",
@@ -177,6 +212,7 @@ const INDEX_RETRIEVAL_METADATA_REQUIRED = [
   "index_truncated",
   "index_created_at",
   "index_count",
+  "freshness",
 ];
 
 const INDEX_RETRIEVAL_METADATA_PROPERTIES = {
@@ -186,6 +222,7 @@ const INDEX_RETRIEVAL_METADATA_PROPERTIES = {
   index_truncated: { type: "boolean" },
   index_created_at: { type: "string" },
   index_count: { type: "integer", minimum: 0 },
+  freshness: INDEX_FRESHNESS_SCHEMA,
 };
 
 const INDEX_COUNTER_ITEM_SCHEMA = {
@@ -488,7 +525,7 @@ const KNOWLEDGE_SUMMARY_SCHEMA = {
 const INDEX_STATUS_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["success", "error", "status", "count", "created_at", "root", "version", "profile", "knowledge_summary"],
+  required: ["success", "error", "status", "count", "created_at", "root", "version", "profile", "knowledge_summary", "freshness"],
   properties: {
     success: { type: "boolean" },
     error: { type: "string" },
@@ -518,6 +555,7 @@ const INDEX_STATUS_OUTPUT_SCHEMA = {
     max_files: { type: "integer", minimum: 0 },
     max_dirs: { type: "integer", minimum: 0 },
     knowledge_summary: KNOWLEDGE_SUMMARY_SCHEMA,
+    freshness: INDEX_FRESHNESS_SCHEMA,
     skipped: {
       type: "object",
       additionalProperties: false,
@@ -547,6 +585,7 @@ const BUILD_INDEX_OUTPUT_SCHEMA = {
     "truncated",
     "skipped",
     "knowledge_summary",
+    "freshness",
   ],
   properties: {
     success: { type: "boolean" },
@@ -575,6 +614,7 @@ const BUILD_INDEX_OUTPUT_SCHEMA = {
     max_files: { type: "integer", minimum: 0 },
     max_dirs: { type: "integer", minimum: 0 },
     knowledge_summary: KNOWLEDGE_SUMMARY_SCHEMA,
+    freshness: INDEX_FRESHNESS_SCHEMA,
     skipped: {
       type: "object",
       additionalProperties: false,

@@ -11,7 +11,7 @@ const { collectRomionsimContextTool } = require("../tools/collect_romionsim_cont
 const { indexStatusTool } = require("../tools/index_status");
 const { searchIndexContextTool } = require("../tools/search_index_context");
 const { searchIndexTool } = require("../tools/search_index");
-const { buildWorkspaceIndex, searchIndex } = require("../src/util/workspace_index");
+const { buildWorkspaceIndex, indexStatus, searchIndex } = require("../src/util/workspace_index");
 
 const ROOT = path.resolve(__dirname, "..");
 const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
@@ -80,6 +80,9 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
           "",
           "Status: active technical component readiness report",
           "Updated: 2026-07-28",
+          "",
+          "Long orientation preface retained for human readers.",
+          "x".repeat(13000),
           "",
           "| ID | Component | Maturity | NorthStar role | Depends on | Current evidence | Main blocker | Default next bounded package | Done signal |",
           "| --- | --- | --- | --- | --- | --- | --- | --- | --- |",
@@ -162,6 +165,41 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         ].join("\n"),
         "utf8"
       );
+      await fs.writeFile(
+        path.join(tempRoot, "_workflow", "operator_decisions", "initialize_no_handshake.md"),
+        [
+          "# Initialize No Handshake",
+          "",
+          "Historical MEM-1 evidence discussion. Is MEM-1 complete and what evidence exists?",
+          "MEM-1 evidence complete MEM-1 evidence complete MEM-1 evidence complete.",
+          "",
+        ].join("\n"),
+        "utf8"
+      );
+      await fs.writeFile(
+        path.join(tempRoot, "docs", "mem_1_live_provider_quality_proof.md"),
+        [
+          "# MEM-1 Live Provider Quality Proof",
+          "",
+          "Status: completed",
+          "",
+          "Current evidence proves MEM-1 is complete through live provider, fallback, cache, and backfill checks.",
+          "",
+        ].join("\n"),
+        "utf8"
+      );
+      await fs.writeFile(
+        path.join(tempRoot, "docs", "mem_1_runtime_config_presence_audit.md"),
+        [
+          "# MEM-1 Runtime Config Presence Audit",
+          "",
+          "Status: completed",
+          "",
+          "This audit confirms configuration presence but is not the live provider quality proof.",
+          "",
+        ].join("\n"),
+        "utf8"
+      );
       await fs.writeFile(path.join(tempRoot, "SERVER_TOOLS_SPEC.json"), "{\"schema_version\":\"server-tools-spec\"}\n", "utf8");
       await fs.writeFile(path.join(tempRoot, "_workflow", "control_plane", "snapshots", "old", "_workflow", "state.json"), "{\"live_package_marker\":\"snapshot-state-token\"}\n", "utf8");
       await fs.mkdir(path.join(tempRoot, "_workflow", "control_plane", "records"), { recursive: true });
@@ -200,6 +238,9 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.workflow_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.component_count, 2);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.components[1].id, "RETR-1");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.components[1].main_blocker, "Summary is too shallow");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.components[1].default_next_package, "Parse docs into workflow facts");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.components[1].done_signal, "Orientation query returns queue facts");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.item_count, 2);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.roadmap.items[0].priority, "P0");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.documentation_gaps.length, 0);
@@ -228,6 +269,55 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         "_workflow/ROADMAP.md",
       ]);
       assert.notEqual(planningSearch.results[0].kind, "operator_decision");
+
+      const componentEvidenceSearch = await searchIndex("Is MEM-1 complete and what evidence proves it?", {
+        limit: 5,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(componentEvidenceSearch.success, true);
+      assert.equal(componentEvidenceSearch.results[0].path, "docs/mem_1_live_provider_quality_proof.md");
+
+      const maturitySearch = await searchIndex("Which technical components are below maturity 4/4 and why?", {
+        limit: 5,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(maturitySearch.success, true);
+      assert.equal(maturitySearch.results[0].path, "_workflow/READINESS.md");
+
+      const freshStatus = await indexStatus({ indexFile: isolatedIndexFile });
+      assert.equal(freshStatus.freshness.status, "fresh");
+      assert.equal(freshStatus.freshness.stale, false);
+      const liveDocPath = path.join(tempRoot, "docs", "live.md");
+      const liveDocText = await fs.readFile(liveDocPath, "utf8");
+      await fs.writeFile(liveDocPath, liveDocText, "utf8");
+      const identicalRewriteStatus = await indexStatus({ indexFile: isolatedIndexFile });
+      assert.equal(identicalRewriteStatus.freshness.status, "fresh");
+
+      const transientPath = path.join(tempRoot, "docs", "transient.tmp");
+      await fs.writeFile(transientPath, "temporary\n", "utf8");
+      await fs.rm(transientPath, { force: true });
+      const transientDirectoryStatus = await indexStatus({ indexFile: isolatedIndexFile });
+      assert.equal(transientDirectoryStatus.freshness.status, "fresh");
+
+      await fs.writeFile(
+        liveDocPath,
+        "# Live doc\nfollowup_traffic_without_fresh_entry\nchanged-after-index\n",
+        "utf8"
+      );
+      const staleSearch = await searchIndex("followup_traffic_without_fresh_entry", {
+        limit: 5,
+        indexFile: isolatedIndexFile,
+      });
+      assert.equal(staleSearch.freshness.status, "stale");
+      assert.equal(staleSearch.freshness.stale, true);
+      assert.ok(staleSearch.freshness.changed_files.includes("docs/live.md"));
+
+      await buildWorkspaceIndex({
+        roots: isolatedRoots,
+        indexFile: isolatedIndexFile,
+        max_files: 100,
+        max_dirs: 100,
+      });
 
       const stateSearch = await searchIndex("live_package_marker live-state-token", {
         limit: 10,

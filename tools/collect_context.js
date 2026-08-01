@@ -12,7 +12,7 @@ const collectContextTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Collect workspace context",
-    description: "Collect bounded text context from the local workspace index without writing or analyzing beyond retrieval assembly.",
+    description: "Collect bounded text context with source-freshness metadata without writing or analyzing beyond retrieval assembly.",
     inputSchema: COLLECT_CONTEXT_INPUT_SCHEMA,
     outputSchema: COLLECT_CONTEXT_OUTPUT_SCHEMA,
     annotations: READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS,

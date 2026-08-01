@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active workflow operator decisions directory map
-Updated: 2026-07-28
+Updated: 2026-08-01
 
 - `initialize_client_compatibility_evidence.md`
   Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.
@@ -15,6 +15,8 @@ Updated: 2026-07-28
   Sessionless, single-route, and subscriptions/listen compatibility and migration records.
 - `oauth21_*.md, auth_*.md`
   OAuth21/auth control-plane, pruning, and security-adjacent decision evidence.
+- `retr_1_quality_regression_closeout.md`
+  Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.
 - `stage*.md, p*.md, post_stage*.md`
   Historical stage/package records retained for traceability; current authority stays in active workflow files.
 - `*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md`

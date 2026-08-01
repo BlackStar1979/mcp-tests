@@ -7,7 +7,7 @@ description: Use when a task requires inspecting, indexing, searching, querying,
 
 ## Overview
 
-Use CBM as indexed code evidence, not a substitute for repository files, live runtime inspection, or documentation/workflow retrieval. Select the narrowest tool and preserve truth-layer boundaries.
+Use CBM as indexed code evidence. Keep repository, runtime, documentation, and UI truth separate.
 
 ## Core Contract
 
@@ -18,6 +18,7 @@ Use CBM as indexed code evidence, not a substitute for repository files, live ru
 - **Client/UI truth:** connector enumeration and approval behavior.
 - Read operations never index implicitly.
 - Index only with explicit operator authorization.
+- Require `freshness.status=fresh` for current knowledge claims; rebuild an authorized stale or unknown scope first.
 
 ## Default Workflow
 
@@ -47,7 +48,7 @@ Prefer the descriptor's `project` argument. The bridge also accepts upstream `pr
 | ADR or traces | `cbm_manage_adr`, `cbm_ingest_traces` |
 | Remove index | `cbm_delete_project` |
 
-Load `references/tools.md` for arguments and caveats. Load `references/scenarios.md` for decision cases.
+`references/tools.md` covers contracts; `references/scenarios.md` covers decisions. Load only when needed.
 
 ## Safety Boundaries
 
@@ -59,13 +60,13 @@ Load `references/tools.md` for arguments and caveats. Load `references/scenarios
 
 ## Result Interpretation
 
-`success: true` with `partial_success: true` is not full success. Prefer structured fields. For `cbm_detect_changes`, read `bridge_analysis`, totals, and `impact_resolution_reason`; arrays are samples. For `cbm_ingest_traces`, `runtime_edge_creation: not_implemented` means accepted transport only. Snippets must contain the requested symbol. `source_integrity: bridge_recovered` is repository-backed; `source_reliable: false` requires file verification. Treat discovery absence, semantic-only suppression, `source_bearing_excluded_dirs`, Cypher caveats, Windows non-ASCII, and whitespace path/project caveats as coverage warnings. `queue_wait_ms` is scheduling delay.
+`partial_success` is not full success. Prefer structured fields: `bridge_analysis`, totals, and `impact_resolution_reason` for changes; `runtime_edge_creation` for traces. Arrays may be samples. Snippets must contain the symbol; `source_integrity: bridge_recovered` is repository-backed, while `source_reliable: false` requires file verification. Treat discovery absence, `source_bearing_excluded_dirs`, Windows non-ASCII, whitespace path/project caveats, and Cypher caveats as coverage warnings. `queue_wait_ms` is scheduling delay.
+
+Knowledge `fresh` covers indexed files and visited directories; changed/missing samples explain staleness. Canonical extraction is full but bounded and transient; persisted samples stay bounded.
 
 ## Common Mistakes
 
 - Inventing a project name instead of listing projects.
-- Using short ambiguous symbols when a qualified name is available.
 - Trusting snippet line metadata when the returned source does not contain the requested symbol.
 - Treating an empty scoped result as proof that no repository change exists.
 - Treating accepted trace ingestion as created runtime edges.
-- Confusing fifteen `cbm_*` tools with fourteen native CBM operations.

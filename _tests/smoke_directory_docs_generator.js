@@ -69,16 +69,18 @@ assert.ok(cbmSkillDirectory.includes("repository, index, runtime, and client/UI 
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.ok(workflowDirectory.includes("bounded OAuth21 prune records/backups"));
-assert.ok(operatorDecisionsDirectory.includes("Updated: 2026-07-28"));
+assert.ok(operatorDecisionsDirectory.includes("Updated: 2026-08-01"));
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
+assert.ok(operatorDecisionsDirectory.includes("retr_1_quality_regression_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("Connector refresh, migration, callable-surface"));
 assert.ok(operatorDecisionsDirectory.includes("This directory is a decision ledger, not the active queue."));
 assert.ok(fileBackupsDirectory.includes("runtime-owned backup bundles"));
-assert.ok(fileBackupsDirectory.includes("stage8_52d_control_plane_selftest/"));
+assert.ok(fileBackupsDirectory.includes("It is currently empty."));
 assert.ok(pruneBackupsDirectory.includes("explicit OAuth21 prune execute runs"));
 assert.ok(pruneBackupsDirectory.includes("live-prune-2026-07-15/"));
 assert.ok(srcDirectory.includes("Updated: 2026-07-27"));
 assert.ok(testsDirectory.includes("`smoke_directory_docs_audit.js`"));
+assert.ok(testsDirectory.includes("`smoke_build_index_tool.js`"));
 assert.ok(docsDirectory.includes("Status: active documentation directory map"));
 assert.ok(docsDirectory.includes("Imported or adapted Superpowers planning/specification material"));
 assert.ok(superpowersDirectory.includes("Status: active superpowers documentation directory map"));
@@ -132,16 +134,15 @@ for (const runtimeRoot of runtimeOwnedRoots) {
     .filter((entry) => entry.isDirectory())
     .map((entry) => entry.name);
 
-  assert.ok(childDirs.length > 0, `${runtimeRoot.relRoot} must keep at least one bundle directory for generator coverage`);
+  if (!runtimeRoot.emptyOk) {
+    assert.ok(childDirs.length > 0, `${runtimeRoot.relRoot} must keep at least one bundle directory for generator coverage`);
+  }
 
   for (const childName of childDirs) {
     const rel = path.join(runtimeRoot.relRoot, childName, "DIRECTORY.md");
     const content = read(rel);
     assert.ok(content.includes(`This bundle belongs to \`${childName}\``), `${childName} must be named in its generated DIRECTORY.md`);
     assert.ok(content.includes("runtime-owned support material"), `${childName} must keep runtime-owned support boundary`);
-    if (runtimeRoot.emptyOk && childName === "stage8_52d_control_plane_selftest") {
-      assert.ok(content.includes("It is currently empty."), `${childName} must document empty runtime-owned bundles`);
-    }
     if (!runtimeRoot.emptyOk && childName === "live-prune-2026-07-15") {
       assert.ok(content.includes("SQLite backup artifact"), `${childName} must describe sqlite backup artifacts`);
       assert.ok(content.includes("JSON control-plane receipt"), `${childName} must describe json receipt artifacts`);

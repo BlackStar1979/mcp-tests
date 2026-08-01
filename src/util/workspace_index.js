@@ -1,5 +1,6 @@
 "use strict";
 
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 const fsp = require("node:fs/promises");
 const path = require("node:path");
@@ -12,6 +13,15 @@ const DEFAULT_MAX_FILES = 20000;
 const DEFAULT_MAX_DIRS = 5000;
 const STREAM_READ_BUFFER_BYTES = 64 * 1024;
 const DEFAULT_INDEX_PROFILE = "knowledge";
+const FRESHNESS_SAMPLE_LIMIT = 20;
+const QUERY_STOPWORDS = new Set([
+  "a", "an", "and", "are", "be", "does", "for", "how", "in", "is", "it", "of", "or", "the", "to", "what", "which", "with",
+  "a", "albo", "czy", "dla", "do", "i", "jak", "jest", "ktory", "ktora", "ktore", "na", "oraz", "to", "w", "z",
+]);
+const EVIDENCE_QUERY_TERMS = new Set(["audit", "dowod", "dowody", "evidence", "proof", "prove", "proved", "proves", "raport", "report", "validation"]);
+const READINESS_QUERY_TERMS = new Set([
+  "component", "components", "dojrzalosc", "gotowosc", "maturities", "maturity", "readiness", "skladnik", "skladniki",
+]);
 const SKIPPED_SCAN_DIRS = new Set([
   ".archive",
   ".git",
@@ -80,6 +90,10 @@ function tokenList(text) {
     .filter((item) => item.length >= 2);
 }
 
+function queryTokenList(text) {
+  return tokenList(text).filter((item) => !QUERY_STOPWORDS.has(item));
+}
+
 function normalizeQuery(text) {
   return String(text || "").toLowerCase().trim();
 }
@@ -111,13 +125,22 @@ function activeWorkflowIntentScore(doc, terms) {
 
   const base = path.posix.basename(normalizedPath);
   if (base === "active_workflow_index.md") return 210;
-  if (base === "readiness.md") return 140;
+  if (base === "readiness.md") return 170;
   if (base === "roadmap.md") return 130;
   if (base === "state.json") return 90;
   if (base === "state.md") return 80;
   if (base === "workflow_canon.md") return 70;
   if (base === "northstar.md") return 45;
   if (String(doc?.kind || "") === "operator_decision") return -25;
+  return 0;
+}
+
+function readinessIntentScore(doc, terms) {
+  if (!hasAnyTerm(terms, READINESS_QUERY_TERMS)) return 0;
+  const base = path.posix.basename(normalizeSlashes(doc?.path || "").toLowerCase());
+  if (base === "readiness.md") return 180;
+  if (base === "roadmap.md") return 50;
+  if (base === "state.md" || base === "state.json") return 25;
   return 0;
 }
 
@@ -157,7 +180,7 @@ function resolveIndexScope(index = {}) {
   return index.stats?.scope || index.scope || defaultIndexScope();
 }
 
-function retrievalMetadata(index = {}, pathFilter = ".") {
+function retrievalMetadata(index = {}, pathFilter = ".", freshness = emptyFreshness()) {
   return {
     index_scope: resolveIndexScope(index),
     path_filter: normalizeOutputPathFilter(pathFilter),
@@ -165,6 +188,7 @@ function retrievalMetadata(index = {}, pathFilter = ".") {
     index_truncated: Boolean(index.stats?.truncated),
     index_created_at: String(index.created_at || ""),
     index_count: Array.isArray(index.docs) ? index.docs.length : 0,
+    freshness,
   };
 }
 
@@ -176,6 +200,7 @@ function retrievalErrorMetadata(pathFilter = ".", fallbackFilter = ".") {
     index_truncated: false,
     index_created_at: "",
     index_count: 0,
+    freshness: emptyFreshness("unknown", "index_unavailable"),
   };
 }
 
@@ -501,12 +526,36 @@ function cleanMarkdownCell(value) {
 }
 
 function splitMarkdownTableLine(line) {
-  return String(line || "")
-    .trim()
-    .replace(/^\|/, "")
-    .replace(/\|$/, "")
-    .split("|")
-    .map(cleanMarkdownCell);
+  const source = String(line || "").trim().replace(/^\|/, "").replace(/\|$/, "");
+  const cells = [];
+  let cell = "";
+  let escaped = false;
+  let inCode = false;
+  for (const char of source) {
+    if (escaped) {
+      cell += char;
+      escaped = false;
+      continue;
+    }
+    if (char === "\\") {
+      cell += char;
+      escaped = true;
+      continue;
+    }
+    if (char === "`") {
+      inCode = !inCode;
+      cell += char;
+      continue;
+    }
+    if (char === "|" && !inCode) {
+      cells.push(cleanMarkdownCell(cell));
+      cell = "";
+      continue;
+    }
+    cell += char;
+  }
+  cells.push(cleanMarkdownCell(cell));
+  return cells;
 }
 
 function parseMarkdownTable(text, wantedHeaders = []) {
@@ -770,9 +819,158 @@ async function readTextPrefixStream(absolutePath, maxChars) {
   return text;
 }
 
+function boundedHeadTailText(text, maxChars = MAX_INDEX_TEXT_CHARS) {
+  const source = String(text || "");
+  if (source.length <= maxChars) return source;
+  const separator = "\n...[bounded middle omitted]...\n";
+  const remaining = Math.max(0, maxChars - separator.length);
+  const headChars = Math.ceil(remaining / 2);
+  const tailChars = Math.floor(remaining / 2);
+  return source.slice(0, headChars) + separator + source.slice(-tailChars);
+}
+
 async function loadWorkspaceIndex(options = {}) {
   const indexFile = getIndexFile(options);
   return JSON.parse(await fsp.readFile(indexFile, "utf8"));
+}
+
+function canonicalWorkflowSampleRequired(classification, displayPath) {
+  const base = path.posix.basename(normalizeSlashes(displayPath).toLowerCase());
+  return classification.authority === "source_of_truth" && new Set([
+    "active_workflow_index.md",
+    "northstar.md",
+    "readiness.md",
+    "roadmap.md",
+    "state.json",
+    "state.md",
+    "workflow_canon.md",
+  ]).has(base);
+}
+
+function resolveIndexedDisplayPath(index, displayPath) {
+  const roots = Array.isArray(index?.roots) ? index.roots : [];
+  const normalized = normalizeSlashes(displayPath);
+  let root;
+  let relativePath = normalized;
+  if (normalized.startsWith("@")) {
+    const slash = normalized.indexOf("/");
+    const alias = slash >= 0 ? normalized.slice(1, slash) : normalized.slice(1);
+    root = roots.find((item) => String(item.alias || "") === alias);
+    relativePath = slash >= 0 ? normalized.slice(slash + 1) : ".";
+  } else {
+    root = roots.find((item) => item.primary) || roots[0];
+  }
+  if (!root?.path) return "";
+  return path.resolve(String(root.path), relativePath || ".");
+}
+
+function emptyFreshness(status = "unknown", reason = "snapshot_unavailable_rebuild_required") {
+  return {
+    status,
+    stale: status !== "fresh",
+    checked_at: new Date().toISOString(),
+    coverage: "indexed_files_and_visited_directories",
+    changed_file_count: 0,
+    missing_file_count: 0,
+    changed_directory_count: 0,
+    missing_directory_count: 0,
+    changed_files: [],
+    missing_files: [],
+    changed_directories: [],
+    missing_directories: [],
+    reasons: reason ? [reason] : [],
+  };
+}
+
+function contentFingerprint(value) {
+  return crypto.createHash("sha256").update(String(value || ""), "utf8").digest("hex");
+}
+
+function directoryEntryFingerprint(entries, excludedNames = []) {
+  const excluded = new Set(excludedNames.map(String));
+  const rows = entries
+    .filter((entry) => !excluded.has(entry.name))
+    .map((entry) => `${entry.name}\0${entry.isDirectory() ? "d" : entry.isFile() ? "f" : entry.isSymbolicLink() ? "l" : "o"}`)
+    .sort();
+  return contentFingerprint(rows.join("\n"));
+}
+
+async function forEachConcurrent(items, concurrency, callback) {
+  let nextIndex = 0;
+  const workerCount = Math.min(Math.max(1, concurrency), items.length);
+  await Promise.all(Array.from({ length: workerCount }, async () => {
+    while (nextIndex < items.length) {
+      const item = items[nextIndex];
+      nextIndex += 1;
+      await callback(item);
+    }
+  }));
+}
+
+async function assessIndexFreshness(index = {}) {
+  const snapshot = index.stats?.source_snapshot;
+  if (!snapshot || !Array.isArray(snapshot.files) || !Array.isArray(snapshot.directories)) {
+    return emptyFreshness();
+  }
+
+  const changedFiles = [];
+  const missingFiles = [];
+  const changedDirectories = [];
+  const missingDirectories = [];
+  await forEachConcurrent(snapshot.files, 32, async (item) => {
+    const absolutePath = resolveIndexedDisplayPath(index, item.path);
+    try {
+      const stat = await fsp.stat(absolutePath);
+      if (stat.size !== Number(item.bytes)) {
+        changedFiles.push(item.path);
+        return;
+      }
+      if (Math.abs(stat.mtimeMs - Number(item.mtime_ms)) <= 1) return;
+      if (!item.content_hash) {
+        changedFiles.push(item.path);
+        return;
+      }
+      const maxChars = item.hash_mode === "canonical_full" ? MAX_INDEX_FILE_BYTES : MAX_INDEX_TEXT_CHARS;
+      const currentText = await readTextPrefixStream(absolutePath, maxChars);
+      if (contentFingerprint(currentText) !== item.content_hash) changedFiles.push(item.path);
+    } catch (error) {
+      if (error?.code === "ENOENT") missingFiles.push(item.path);
+      else changedFiles.push(item.path);
+    }
+  });
+  await forEachConcurrent(snapshot.directories, 32, async (item) => {
+    const absolutePath = resolveIndexedDisplayPath(index, item.path);
+    try {
+      const stat = await fsp.stat(absolutePath);
+      if (Math.abs(stat.mtimeMs - Number(item.mtime_ms)) <= 1) return;
+      if (!item.entry_hash) {
+        changedDirectories.push(item.path);
+        return;
+      }
+      const entries = await fsp.readdir(absolutePath, { withFileTypes: true });
+      if (directoryEntryFingerprint(entries, item.excluded_names) !== item.entry_hash) changedDirectories.push(item.path);
+    } catch (error) {
+      if (error?.code === "ENOENT") missingDirectories.push(item.path);
+      else changedDirectories.push(item.path);
+    }
+  });
+
+  const stale = changedFiles.length > 0 || missingFiles.length > 0 || changedDirectories.length > 0 || missingDirectories.length > 0;
+  return {
+    status: stale ? "stale" : "fresh",
+    stale,
+    checked_at: new Date().toISOString(),
+    coverage: "indexed_files_and_visited_directories",
+    changed_file_count: changedFiles.length,
+    missing_file_count: missingFiles.length,
+    changed_directory_count: changedDirectories.length,
+    missing_directory_count: missingDirectories.length,
+    changed_files: changedFiles.slice(0, FRESHNESS_SAMPLE_LIMIT),
+    missing_files: missingFiles.slice(0, FRESHNESS_SAMPLE_LIMIT),
+    changed_directories: changedDirectories.slice(0, FRESHNESS_SAMPLE_LIMIT),
+    missing_directories: missingDirectories.slice(0, FRESHNESS_SAMPLE_LIMIT),
+    reasons: stale ? ["indexed_workspace_changed_after_build"] : [],
+  };
 }
 
 async function buildWorkspaceIndex(options = {}) {
@@ -785,12 +983,16 @@ async function buildWorkspaceIndex(options = {}) {
   const roots = listWorkspaceRoots(rootsMap);
   const scopePath = String(options.path || ".").trim() || ".";
   const docs = [];
+  const canonicalSamples = new Map();
+  const fileSnapshots = [];
+  const directorySnapshots = [];
   const skipped = { oversized: 0, extension: 0, directories: 0 };
   let visitedFiles = 0;
   let visitedDirs = 0;
   let truncated = false;
 
   async function addFileToIndex(root, full) {
+    if (path.resolve(full) === path.resolve(indexFile)) return;
     visitedFiles += 1;
     if (visitedFiles > maxFiles) {
       truncated = true;
@@ -809,15 +1011,32 @@ async function buildWorkspaceIndex(options = {}) {
     const text = await readTextPrefixStream(full, MAX_INDEX_TEXT_CHARS);
     const displayPath = displayPathForRoot(root, full);
     const classification = classifyDocument(displayPath, text);
+    let sample = text;
+    let freshnessText = text;
+    let hashMode = "retrieval_prefix";
+    if (profile === "knowledge" && canonicalWorkflowSampleRequired(classification, displayPath) && stat.size > text.length) {
+      const canonicalText = await readTextPrefixStream(full, MAX_INDEX_FILE_BYTES);
+      canonicalSamples.set(displayPath, canonicalText);
+      sample = boundedHeadTailText(canonicalText);
+      freshnessText = canonicalText;
+      hashMode = "canonical_full";
+    }
     docs.push({
       path: displayPath,
       title: classification.title,
       kind: classification.kind,
       authority: classification.authority,
       format: classification.format,
-      sample: text,
+      sample,
       bytes: stat.size,
       modified: stat.mtime.toISOString(),
+    });
+    fileSnapshots.push({
+      path: displayPath,
+      bytes: stat.size,
+      mtime_ms: stat.mtimeMs,
+      hash_mode: hashMode,
+      content_hash: contentFingerprint(freshnessText),
     });
   }
 
@@ -829,6 +1048,16 @@ async function buildWorkspaceIndex(options = {}) {
       return;
     }
     const entries = await fsp.readdir(dir, { withFileTypes: true });
+    const excludedNames = path.resolve(path.dirname(indexFile)) === path.resolve(dir)
+      ? [path.basename(indexFile)]
+      : [];
+    const dirStat = await fsp.stat(dir);
+    directorySnapshots.push({
+      path: displayPathForRoot(root, dir),
+      mtime_ms: dirStat.mtimeMs,
+      entry_hash: directoryEntryFingerprint(entries, excludedNames),
+      excluded_names: excludedNames,
+    });
     for (const entry of entries) {
       if (truncated) return;
       const full = path.join(dir, entry.name);
@@ -876,8 +1105,9 @@ async function buildWorkspaceIndex(options = {}) {
     }
   }
 
+  const summaryDocs = docs.map((doc) => canonicalSamples.has(doc.path) ? { ...doc, sample: canonicalSamples.get(doc.path) } : doc);
   const index = {
-    version: 2,
+    version: 3,
     created_at: new Date().toISOString(),
     root: ".",
     roots: roots.map((item) => ({ alias: item.alias, path: item.path, primary: item.primary })),
@@ -896,7 +1126,11 @@ async function buildWorkspaceIndex(options = {}) {
       scope,
       max_index_file_bytes: MAX_INDEX_FILE_BYTES,
       max_index_text_chars: MAX_INDEX_TEXT_CHARS,
-      knowledge_summary: summarizeIndexKnowledge({ docs, profile }),
+      source_snapshot: {
+        files: fileSnapshots,
+        directories: directorySnapshots,
+      },
+      knowledge_summary: summarizeIndexKnowledge({ docs: summaryDocs, profile }),
     },
   };
 
@@ -904,9 +1138,39 @@ async function buildWorkspaceIndex(options = {}) {
   return index;
 }
 
+function compactIdentifier(value) {
+  return String(value || "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+function identifierAndEvidenceIntentScore(doc, terms) {
+  const identifiers = terms.filter((term) => /^[a-z][a-z0-9]*-\d+[a-z0-9-]*$/i.test(term));
+  const { stem, segments } = basenameInfo(doc.path);
+  const title = normalizeQuery(doc.title);
+  const sample = normalizeQuery(doc.sample);
+  let score = 0;
+  for (const identifier of identifiers) {
+    const compact = compactIdentifier(identifier);
+    const compactStem = compactIdentifier(stem);
+    const compactSegments = segments.map(compactIdentifier);
+    if (compactStem.startsWith(compact)) score += 180;
+    else if (compactSegments.some((segment) => segment === compact || segment.startsWith(compact))) score += 120;
+    if (title.includes(identifier)) score += 35;
+    if (sample.includes(identifier)) score += 20;
+  }
+  if (hasAnyTerm(terms, EVIDENCE_QUERY_TERMS)) {
+    const evidenceSurface = `${normalizeQuery(doc.path)} ${title}`;
+    if (/\bproof\b/.test(evidenceSurface)) score += 100;
+    else if (/\bevidence\b/.test(evidenceSurface)) score += 70;
+    else if (/\bvalidation\b/.test(evidenceSurface)) score += 55;
+    else if (/\b(audit|report)\b/.test(evidenceSurface)) score += 35;
+    if (/^status:\s*(complete|completed|done)\b/mi.test(String(doc.sample || ""))) score += 35;
+  }
+  return score;
+}
+
 function scoreDoc(doc, query) {
   const q = normalizeQuery(query);
-  const terms = tokenList(query);
+  const terms = queryTokenList(query);
   const p = normalizeQuery(doc.path);
   const sample = normalizeQuery(doc.sample);
   const title = normalizeQuery(doc.title);
@@ -934,6 +1198,8 @@ function scoreDoc(doc, query) {
   if (doc.authority === "operational_guidance") score += 10;
   if (doc.kind === "northstar" || doc.kind === "state" || doc.kind === "readiness" || doc.kind === "roadmap") score += 18;
   score += activeWorkflowIntentScore(doc, terms);
+  score += readinessIntentScore(doc, terms);
+  score += identifierAndEvidenceIntentScore(doc, terms);
   if (p.startsWith("romionsim/")) score += 8;
   if (p.includes("readme")) score += 4;
   if (p.startsWith("mcp-tests/src/")) score += 2;
@@ -943,7 +1209,7 @@ function scoreDoc(doc, query) {
 function buildSnippet(doc, query, maxLen = 700) {
   const sample = String(doc.sample || "");
   const lower = normalizeQuery(sample);
-  const terms = tokenList(query);
+  const terms = queryTokenList(query);
   let pos = -1;
   for (const term of terms) {
     const found = lower.indexOf(term);
@@ -1003,6 +1269,7 @@ async function indexStatus(options = {}) {
     const stats = index.stats || {};
     const skipped = stats.skipped || {};
     const knowledgeSummary = stats.knowledge_summary?.workflow_summary ? stats.knowledge_summary : summarizeIndexKnowledge(index);
+    const freshness = await assessIndexFreshness(index);
     return {
       success: true,
       error: "",
@@ -1020,6 +1287,7 @@ async function indexStatus(options = {}) {
       max_files: Number(stats.max_files || 0),
       max_dirs: Number(stats.max_dirs || 0),
       knowledge_summary: knowledgeSummary,
+      freshness,
       skipped: {
         oversized: Number(skipped.oversized || 0),
         extension: Number(skipped.extension || 0),
@@ -1045,6 +1313,7 @@ async function indexStatus(options = {}) {
         max_files: 0,
         max_dirs: 0,
         knowledge_summary: summarizeIndexKnowledge({ docs: [], profile: "" }),
+        freshness: emptyFreshness("unknown", "index_read_failed"),
         skipped: { oversized: 0, extension: 0, directories: 0 },
       };
     }
@@ -1065,6 +1334,7 @@ async function indexStatus(options = {}) {
       max_files: 0,
       max_dirs: 0,
       knowledge_summary: summarizeIndexKnowledge({ docs: [], profile: "" }),
+      freshness: emptyFreshness("unknown", "index_missing"),
       skipped: { oversized: 0, extension: 0, directories: 0 },
     };
   }
@@ -1073,12 +1343,13 @@ async function indexStatus(options = {}) {
 async function searchIndex(query, { limit = 10, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   const pathFilter = path || ".";
+  const freshness = await assessIndexFreshness(index);
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    ...retrievalMetadata(index, pathFilter),
+    ...retrievalMetadata(index, pathFilter, freshness),
     results: rankDocs(index, query, { limit, pathFilter }),
   };
 }
@@ -1086,12 +1357,13 @@ async function searchIndex(query, { limit = 10, indexFile, path } = {}) {
 async function searchIndexContext(query, { limit = 5, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   const pathFilter = path || ".";
+  const freshness = await assessIndexFreshness(index);
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    ...retrievalMetadata(index, pathFilter),
+    ...retrievalMetadata(index, pathFilter, freshness),
     results: rankDocs(index, query, { limit, pathFilter }).map((item) => ({
       path: item.path,
       title: item.title,
@@ -1107,13 +1379,14 @@ async function searchIndexContext(query, { limit = 5, indexFile, path } = {}) {
 async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   const pathFilter = path || ".";
+  const freshness = await assessIndexFreshness(index);
   const byPath = new Map((index.docs || []).map((doc) => [doc.path, doc]));
   return {
     success: true,
     error: "",
     status: "ok",
     query: String(query || ""),
-    ...retrievalMetadata(index, pathFilter),
+    ...retrievalMetadata(index, pathFilter, freshness),
     files: rankDocs(index, query, { limit, pathFilter }).map((item) => {
       const doc = byPath.get(item.path);
       return {
@@ -1132,6 +1405,7 @@ async function collectContext(query, { limit = 8, maxCharsPerFile = 8000, indexF
 async function collectRomionsimContext(query, { limit = 12, includePinned = true, indexFile, path } = {}) {
   const index = await loadWorkspaceIndex({ indexFile });
   const pathFilter = path || "romionsim";
+  const freshness = await assessIndexFreshness(index);
   const pinned = includePinned ? importantRomionsimDocs(index, pathFilter) : [];
   const ranked = rankDocs(index, query, { limit, romionsimOnly: true, pathFilter });
   const seen = new Set();
@@ -1148,7 +1422,7 @@ async function collectRomionsimContext(query, { limit = 12, includePinned = true
     query: String(query || ""),
     scope: "romionsim/",
     mode: "retrieval_helper_only",
-    ...retrievalMetadata(index, pathFilter),
+    ...retrievalMetadata(index, pathFilter, freshness),
     count: files.length,
     files,
   };
@@ -1156,9 +1430,11 @@ async function collectRomionsimContext(query, { limit = 12, includePinned = true
 
 module.exports = {
   DEFAULT_INDEX_FILE,
+  assessIndexFreshness,
   buildWorkspaceIndex,
   collectContext,
   collectRomionsimContext,
+  emptyFreshness,
   indexStatus,
   loadWorkspaceIndex,
   retrievalErrorMetadata,

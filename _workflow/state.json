@@ -1,9 +1,9 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-01T18:25:49.710Z",
+  "updated_at": "2026-08-01T19:50:00.000Z",
   "project": "mcp-tests",
-  "purpose": "Machine-readable TEST MCP map; not a chronological log.",
+  "purpose": "Machine-readable map; not a progress log.",
   "read_order": [
     "_workflow/README.md",
     "_workflow/ACTIVE_WORKFLOW_INDEX.md",
@@ -271,7 +271,6 @@
     "sse_allowed_in_end_state": false,
     "session_transport_dependency_allowed_in_end_state": false,
     "dual_route_coexistence_is_target": false,
-    "notes": "Target: one /mcp route, POST JSON-only, no SSE or transport sessions, and pull-only tools/list (ttlMs=0, cacheScope=private). Hidden /mcp/sessionless is retired; remaining session/outbound/sampling files are local compatibility helpers.",
     "hidden_sessionless_route_live_verification_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md"
   },
   "current_runtime_truth": {
@@ -279,8 +278,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 84,
-      "repo_expected_tool_count": 84,
-      "server_start_id": "2026-08-01T18:52:13.024Z",
+      "server_start_id": "2026-08-01T19:48:43.083Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -304,11 +302,13 @@
     "oauth21_3008_tools": {
       "tool_count": 84,
       "tool_names_hash": "7b5bfc1bd21386d3",
-      "combined_fingerprint": "673f28e12afea85c",
+      "input_schema_fingerprint": "f835e87d9899b3fa",
+      "output_schema_fingerprint": "d836b83b3151b65d",
+      "descriptor_fingerprint": "fb2ee514c19cd02e",
+      "combined_fingerprint": "73c0bc08dad53e8c",
       "connector_map_status": "live_84_descriptor_current",
       "repo_current_expected_tool_count": 84,
-      "evidence_source": "live_codex_tools_list_and_direct_call",
-      "server_start_id": "2026-08-01T18:52:13.024Z",
+      "server_start_id": "2026-08-01T19:48:43.083Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

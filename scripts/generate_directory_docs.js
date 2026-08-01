@@ -78,13 +78,13 @@ const CONFIG = {
   },
   ".agents/skills/using-codebase-memory": {
     title: "using-codebase-memory skill directory map",
-    updated: "2026-07-28",
+    updated: "2026-08-01",
     entries: {
       "references/": "Task-routed CBM tool contracts and decision scenarios loaded only when needed.",
-      "SKILL.md": "Entrypoint instructions for using TEST MCP `cbm_*` tools while preserving repository, index, runtime, and client/UI truth boundaries.",
+      "SKILL.md": "Entrypoint instructions for using TEST MCP `cbm_*` tools and freshness-aware knowledge retrieval while preserving repository, index, runtime, and client/UI truth boundaries.",
       "DIRECTORY.md": "Functional map of the `using-codebase-memory` skill boundary.",
     },
-    tail: "This skill is project-local agent guidance. It must describe how to use CBM evidence safely, but repository files and live runtime probes remain the source of truth for consequential claims.",
+    tail: "This skill is project-local agent guidance. It must reject stale knowledge-index claims and describe how to use CBM evidence safely, while repository files and live runtime probes remain authoritative for consequential claims.",
   },
   ".agents/skills/using-codebase-memory/references": {
     title: "using-codebase-memory references directory map",
@@ -132,7 +132,7 @@ const CONFIG = {
   },
   "_workflow/operator_decisions": {
     title: "workflow operator decisions directory map",
-    updated: "2026-07-28",
+    updated: "2026-08-01",
     entries: {
       "initialize_client_compatibility_evidence.md": "Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.",
       "initialize_retirement_decision_prep.md": "Bounded decision-preparation record for any future legacy `initialize` retirement package.",
@@ -140,6 +140,7 @@ const CONFIG = {
       "keep_mcp_*.md": "Decision records for retaining `/mcp` as the canonical route while retiring or constraining adjacent route debt.",
       "sessionless_*.md, single_route_*.md, subscriptions_listen_*.md": "Sessionless, single-route, and subscriptions/listen compatibility and migration records.",
       "oauth21_*.md, auth_*.md": "OAuth21/auth control-plane, pruning, and security-adjacent decision evidence.",
+      "retr_1_quality_regression_closeout.md": "Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.",
       "stage*.md, p*.md, post_stage*.md": "Historical stage/package records retained for traceability; current authority stays in active workflow files.",
       "*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md": "Bounded work-package lifecycle records used to explain why a change was prepared, accepted, deferred, or closed.",
     },
@@ -293,6 +294,7 @@ const CONFIG = {
   },
   "_tests": {
     title: "tests directory map",
+    updated: "2026-08-01",
     entries: {
       "archive/": "Archived legacy and stale smoke material retained for traceability only.",
       "fixtures/": "Static fixtures used by smoke tests.",
@@ -302,6 +304,7 @@ const CONFIG = {
       "run_all_smokes.js": "Active smoke harness entrypoint.",
       "run_all_smoke_scripts.json": "Default active smoke manifest.",
       "smoke_directory_docs_audit.js": "Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.",
+      "smoke_build_index_tool.js": "Regression coverage for workspace-index profiles, freshness, structured workflow extraction, and retrieval ranking.",
       "smoke_operator_contract_docs.js": "Guard for operator-facing documentation contract and initial DIRECTORY rollout.",
     },
     tail: "This map is intentionally compact. The complete active inventory remains in `_tests/README.md` and `run_all_smoke_scripts.json`.",

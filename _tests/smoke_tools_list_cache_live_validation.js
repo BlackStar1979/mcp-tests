@@ -13,7 +13,7 @@ const descriptorReview = fs.readFileSync(
 );
 
 const expectedCurrentStatus = "live_84_descriptor_current";
-const expectedCurrentFingerprint = "673f28e12afea85c";
+const expectedCurrentFingerprint = "73c0bc08dad53e8c";
 const expectedCurrentHash = "7b5bfc1bd21386d3";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
@@ -42,8 +42,10 @@ assert.ok(index.includes("Fresh client-entry evidence from `2026-07-28` keeps re
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries"));
 assert.ok(index.includes("Hardened CBM v0.9.0 behavior"));
 assert.ok(index.includes("snippet source-integrity recovery"));
-assert.ok(index.includes("canonical PKCE validation, and the secret-file-ready memory embedding package are live"));
-assert.ok(index.includes("direct memory callability survived the controlled restart"));
+assert.ok(index.includes("canonical PKCE"));
+assert.ok(index.includes("no OAuth relogin was required"));
+assert.ok(index.includes("The v3 knowledge index contains `259` documents"));
+assert.ok(index.includes("reports freshness `fresh`"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `84`"));
 assert.ok(canon.includes("tool count `84`"));
 assert.ok(canon.includes("CBM reliability hardening is live"));

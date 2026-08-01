@@ -5,7 +5,7 @@ const {
   BUILD_INDEX_OUTPUT_SCHEMA,
   STATE_CHANGING_WORKSPACE_INDEX_ANNOTATIONS,
 } = require("../src/schemas/workspace_index_tools");
-const { buildWorkspaceIndex } = require("../src/util/workspace_index");
+const { assessIndexFreshness, buildWorkspaceIndex, emptyFreshness } = require("../src/util/workspace_index");
 
 const TOOL_NAME = "build_index";
 
@@ -78,7 +78,7 @@ const buildIndexTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Build workspace index",
-    description: "Rebuild the local workspace retrieval index across configured roots.",
+    description: "Rebuild the local workspace retrieval index across configured roots and record a bounded source-freshness snapshot.",
     inputSchema: BUILD_INDEX_INPUT_SCHEMA,
     outputSchema: BUILD_INDEX_OUTPUT_SCHEMA,
     annotations: STATE_CHANGING_WORKSPACE_INDEX_ANNOTATIONS,
@@ -91,6 +91,7 @@ const buildIndexTool = {
         max_dirs: args.max_dirs,
         profile: args.profile,
       });
+      const freshness = await assessIndexFreshness(index);
       return {
         success: true,
         error: "",
@@ -107,6 +108,7 @@ const buildIndexTool = {
         max_dirs: Number(index.stats?.max_dirs || 0),
         skipped: index.stats?.skipped || { oversized: 0, extension: 0, directories: 0 },
         knowledge_summary: index.stats?.knowledge_summary || emptyKnowledgeSummary(String(index.profile || "knowledge")),
+        freshness,
       };
     } catch (error) {
       return {
@@ -125,6 +127,7 @@ const buildIndexTool = {
         max_dirs: 0,
         skipped: { oversized: 0, extension: 0, directories: 0 },
         knowledge_summary: emptyKnowledgeSummary(""),
+        freshness: emptyFreshness("unknown", "build_failed"),
       };
     }
   },

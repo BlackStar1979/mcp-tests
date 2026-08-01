@@ -42,7 +42,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `71`
 - Authenticated repo target for profile `tests`: `84`
-- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, and activated OVH-backed memory contracts are live at `server_start_id = 2026-08-01T18:52:13.024Z`. Own-connector PL/EN retrieval and lexical fallback are verified, so no restart or manual connector refresh is pending.
+- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, activated OVH-backed memory, and freshness-aware retrieval contracts are live at `server_start_id = 2026-08-01T19:48:43.083Z`. The v3 knowledge index is fresh, complete for all `11` readiness rows, and passes current-state acceptance queries; no restart or manual connector refresh is pending.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track

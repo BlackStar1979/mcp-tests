@@ -12,7 +12,7 @@ const searchIndexContextTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Search workspace index context",
-    description: "Search the local workspace index and return contextual snippets.",
+    description: "Search the local workspace index, report source freshness, and return contextual snippets.",
     inputSchema: SEARCH_INDEX_CONTEXT_INPUT_SCHEMA,
     outputSchema: SEARCH_INDEX_CONTEXT_OUTPUT_SCHEMA,
     annotations: READ_ONLY_WORKSPACE_INDEX_ANNOTATIONS,

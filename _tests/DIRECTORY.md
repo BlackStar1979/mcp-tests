@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active tests directory map
-Updated: 2026-07-17
+Updated: 2026-08-01
 
 - `archive/`
   Archived legacy and stale smoke material retained for traceability only.
@@ -19,6 +19,8 @@ Updated: 2026-07-17
   Default active smoke manifest.
 - `smoke_directory_docs_audit.js`
   Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.
+- `smoke_build_index_tool.js`
+  Regression coverage for workspace-index profiles, freshness, structured workflow extraction, and retrieval ranking.
 - `smoke_operator_contract_docs.js`
   Guard for operator-facing documentation contract and initial DIRECTORY rollout.
 
