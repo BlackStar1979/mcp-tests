@@ -255,7 +255,8 @@
       "legacy_inline_token_env": "OVH_AI_ENDPOINTS_ACCESS_TOKEN",
       "token_source_conflict": "fail_before_child_start",
       "token_file_max_bytes": 16384,
-      "token_values_logged": false
+      "token_values_logged": false,
+      "provisioning_helper": "scripts/provision-memory-embedding-token.ps1"
     }
   },
   "rate_limit_quota_runtime": {

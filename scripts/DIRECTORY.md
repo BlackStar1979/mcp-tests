@@ -7,6 +7,8 @@ Updated: 2026-08-01
   Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.
 - `audit_directory_docs.js`
   Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.
+- `provision-memory-embedding-token.ps1`
+  Provisions or rotates the MEM-1 token file through a secure prompt or stdin with a restricted Windows ACL and secret-free output.
 - `request-restart.js`
   Writes a bounded restart request for the supervisor-managed runtime path.
 - `server.ps1`

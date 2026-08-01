@@ -99,5 +99,6 @@ assert.equal(spec.restart_supervisor.memory_embedding.runtime_token_file_env, "M
 assert.equal(spec.restart_supervisor.memory_embedding.token_source_conflict, "fail_before_child_start");
 assert.equal(spec.restart_supervisor.memory_embedding.token_file_max_bytes, 16384);
 assert.equal(spec.restart_supervisor.memory_embedding.token_values_logged, false);
+assert.equal(spec.restart_supervisor.memory_embedding.provisioning_helper, "scripts/provision-memory-embedding-token.ps1");
 
 console.log("smoke_runtime_config_spec ok");

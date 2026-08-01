@@ -52,8 +52,22 @@ function responseFor(vector) {
     };
     const auditTempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-memory-runtime-audit-"));
     try {
+      const provisionScript = path.join(__dirname, "..", "scripts", "provision-memory-embedding-token.ps1");
       const auditTokenFile = path.join(auditTempRoot, "token.txt");
-      fs.writeFileSync(auditTokenFile, smokeSecret, "utf8");
+      const provision = cp.spawnSync(
+        "pwsh",
+        ["-NoLogo", "-NoProfile", "-File", provisionScript, "-Path", auditTokenFile, "-TokenFromStdin"],
+        { encoding: "utf8", input: smokeSecret + "\n" },
+      );
+      assert.equal(provision.status, 0, provision.stderr);
+      assert.equal(provision.stdout.includes(smokeSecret), false);
+      assert.equal(provision.stderr.includes(smokeSecret), false);
+      const provisionPayload = JSON.parse(provision.stdout);
+      assert.equal(provisionPayload.ok, true);
+      assert.equal(provisionPayload.acl_inheritance_disabled, true);
+      assert.equal(provisionPayload.token_value_exposed, false);
+      assert.equal(provisionPayload.token_path_exposed, false);
+      assert.equal(fs.readFileSync(auditTokenFile, "utf8"), smokeSecret);
       process.env.MCP_TEST_MEMORY_EMBEDDING_PROVIDER = " OVH ";
       process.env.MCP_TEST_MEMORY_EMBEDDING_EXTERNAL_EGRESS = "1";
       delete process.env.OVH_AI_ENDPOINTS_ACCESS_TOKEN;
