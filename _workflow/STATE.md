@@ -42,14 +42,14 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `71`
 - Authenticated repo target for profile `tests`: `84`
-- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, and keyword-safe memory contracts are live at `server_start_id = 2026-08-01T17:51:19.986Z`. `codex-mcp-client 0.146.0-alpha.9.2` fetched the current descriptor fingerprint twice and own-connector `memory_search` succeeded, so no restart or manual connector refresh is pending.
+- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, and secret-file-ready memory contracts are live at `server_start_id = 2026-08-01T18:25:49.624Z`. Own-connector `memory_search` succeeded after controlled restart `manual-1785608748116`, so no restart or manual connector refresh is pending.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
 - `current_working_course = memory-embedding-runtime-activation-gate`
 - `next_primary = mem-1-live-provider-activation-and-quality-proof`
-- `next_secondary = mem-1-secret-file-activation-package`
+- `next_secondary = mem-1-credential-provision-and-quality-proof`
 
 ## Verified documentation authorities
 
@@ -92,4 +92,4 @@ Summarize the current validated product state in one operator-facing place witho
 - Public unauthenticated OAuth21 routes now have bounded per-IP throttling, and oversized OAuth21 request bodies are force-aborted before they can continue streaming in-process.
 - OAuth21 DCR registration now enforces a bounded client-registry cap and opportunistically prunes retention-expired `dead_clients` before admitting new public registrations.
 - OAuth21 PKCE validation distinguishes the RFC 7636 verifier grammar (`43..128` unreserved characters) from the canonical `S256` challenge representation (exactly 43 base64url characters). PKCE rejection audit events expose bounded reason/client/grant metadata without verifier or challenge values. Full offline validation is GREEN at `7 + 268`; controlled restart `manual-1785349273914` loaded the change, a live 44-character challenge returned `code_challenge_invalid`, and `workbench.get_info` remained callable.
-- Memory embeddings are live-loaded but provider-disabled at current `server_start_id = 2026-08-01T17:51:19.986Z`. A secret-free process-level audit of live PID `444` found provider, explicit egress, token, and timeout override absent; the validated default timeout remains effective, `activation_ready=false`, and no embedding cache exists. `_logs/.mcp-agent-memory.jsonl` remains authoritative, provider/cache failures preserve keyword search, vectors never enter JSONL or tool output, and live PL/EN semantic quality has not yet been claimed. The next bounded package adds supervisor-compatible secret-file activation before any credential is requested.
+- Memory embeddings are secret-file-ready but provider-disabled at current `server_start_id = 2026-08-01T18:25:49.624Z`. The token-file resolver, supervisor plumbing, restricted-ACL provisioning helper, conflict rejection, and boolean-only audit are live. Post-restart PID `3804` has no provider, egress opt-in, or token source; `activation_ready=false`, no embedding cache exists, and keyword fallback remains authoritative. Real credential provisioning and bounded PL/EN quality proof are the remaining controlled operation.

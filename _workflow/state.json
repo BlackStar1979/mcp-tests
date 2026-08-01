@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-01T18:10:59.661Z",
+  "updated_at": "2026-08-01T18:25:49.710Z",
   "project": "mcp-tests",
   "purpose": "Machine-readable TEST MCP map; not a chronological log.",
   "read_order": [
@@ -67,7 +67,7 @@
   "workflow_progress_markers": {
     "current_working_course": "memory-embedding-runtime-activation-gate",
     "next_primary": "mem-1-live-provider-activation-and-quality-proof",
-    "next_secondary": "mem-1-secret-file-activation-package",
+    "next_secondary": "mem-1-credential-provision-and-quality-proof",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -280,7 +280,7 @@
       "profile": "internal",
       "expected_tool_count": 84,
       "repo_expected_tool_count": 84,
-      "server_start_id": "2026-08-01T17:51:19.986Z",
+      "server_start_id": "2026-08-01T18:25:49.624Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -308,7 +308,7 @@
       "connector_map_status": "live_84_descriptor_current",
       "repo_current_expected_tool_count": 84,
       "evidence_source": "live_codex_tools_list_and_direct_call",
-      "server_start_id": "2026-08-01T17:51:19.986Z",
+      "server_start_id": "2026-08-01T18:25:49.624Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

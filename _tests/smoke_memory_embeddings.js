@@ -40,6 +40,13 @@ function responseFor(vector) {
   assert.ok(runtimePresenceAudit.includes("Status: GREEN / LIVE CONFIGURATION ABSENT / ACTIVATION BLOCKED SAFELY"));
   assert.ok(runtimePresenceAudit.includes("`activation_ready = false`"));
   assert.ok(runtimePresenceAudit.includes("`secret_values_exposed = false`"));
+  const activationPackage = fs.readFileSync(
+    path.join(__dirname, "..", "_workflow", "operator_decisions", "mem_1_secret_file_activation_package.md"),
+    "utf8",
+  );
+  assert.ok(activationPackage.includes("Status: GREEN / LIVE LOADED / CREDENTIAL PROVISIONING PENDING"));
+  assert.ok(activationPackage.includes("server_start_id = 2026-08-01T18:25:49.624Z"));
+  assert.ok(activationPackage.includes("`activation_ready = false`"));
 
   if (process.platform === "win32") {
     const smokeSecret = "smoke-secret-must-not-leak";
