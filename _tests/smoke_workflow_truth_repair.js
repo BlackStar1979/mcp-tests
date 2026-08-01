@@ -25,8 +25,8 @@ for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliat
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_84_descriptor_refresh_pending");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "live_84_descriptor_current");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
@@ -40,7 +40,7 @@ assert.ok(index.includes("initialize_retirement_decision_prep.md"));
 assert.ok(index.includes("state.json` is only the compact machine-readable orientation map"));
 assert.equal(operatorState.includes("The current live server process predates these changes"), false);
 assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
-assert.ok(operatorState.includes("No restart is pending; descriptor-only metadata refresh/review remains pending"));
+assert.ok(operatorState.includes("no restart or manual connector refresh is pending"));
 assert.ok(operatorState.includes("`DOC-2A` remains a reusable bounded fallback"));
 assert.ok(index.includes("Fresh client-entry evidence from `2026-07-28` keeps retirement blocked"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.3.1` has `2` successful legacy `initialize` responses and `0` `server/discover` entries"));

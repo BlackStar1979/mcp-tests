@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-07-29
+Updated: 2026-08-01
 
 ## Purpose
 
@@ -23,6 +23,7 @@ Current derivation:
 - `RETR-1` retrieval now exposes workflow facts directly, ranks active workflow truth ahead of historical decision records for natural planning questions, and includes a deterministic document graph for internal doc references. The graph is intentionally local and dependency-free: it maps Markdown/backtick document references, linked-node coverage, active entrypoint outgoing links, top linked docs, and unresolved-reference samples without adding vector databases or LLM-based extraction.
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
+- Descriptor refresh review is closed: current Codex fetched the current 84-tool descriptor fingerprint twice on runtime `2026-08-01T17:51:19.986Z`, and no manual remove/add or OAuth relogin is required.
 
 ## Priority matrix
 

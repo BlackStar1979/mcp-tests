@@ -38,7 +38,7 @@ assert.equal(state.current_runtime_truth.oauth21_3008.runtime_gate_live_loaded_f
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(Object.hasOwn(state, "runtime_enforcement_reconciliation"), false);
 
 assert.ok(canon.includes("Stage 14.8 runtime enforcement state reconciliation green"));

@@ -42,14 +42,14 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `71`
 - Authenticated repo target for profile `tests`: `84`
-- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, and keyword-safe memory contracts are live at `server_start_id = 2026-07-29T18:53:50.174Z`. No restart is pending; descriptor-only metadata refresh/review remains pending because memory tool annotations changed without changing names or schemas.
+- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, and keyword-safe memory contracts are live at `server_start_id = 2026-08-01T17:51:19.986Z`. `codex-mcp-client 0.146.0-alpha.9.2` fetched the current descriptor fingerprint twice and own-connector `memory_search` succeeded, so no restart or manual connector refresh is pending.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
 - `current_working_course = memory-embedding-runtime-activation-gate`
 - `next_primary = mem-1-live-provider-activation-and-quality-proof`
-- `next_secondary = descriptor-refresh-impact-review`
+- `next_secondary = mem-1-runtime-config-presence-audit`
 
 ## Verified documentation authorities
 
