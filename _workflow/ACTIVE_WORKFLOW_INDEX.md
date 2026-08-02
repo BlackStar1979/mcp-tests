@@ -85,11 +85,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 84 connector-visible tools at `server_start_id = 2026-08-01T20:29:11.207Z`; the final `2026-07-28` adapter and official SDK v2 regression are complete, while current `COMP-1A` evidence remains `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2`;
+- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 85 connector-visible tools at `server_start_id = 2026-08-02T09:21:24.828Z`; the final `2026-07-28` adapter and official SDK v2 regression are complete, while current `COMP-1A` evidence remains `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Counts remain aligned at 84 and the hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, and final dual-era protocol contracts are live at `server_start_id = 2026-08-01T20:29:11.207Z`; direct calls survived the supervised restart and no connector refresh is pending.
+- Repository and live runtime counts remain aligned at 85, and the hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts are live at `server_start_id = 2026-08-02T09:21:24.828Z`; direct calls survived the supervised restart, while this already-open model task still awaits one surface re-enumeration.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
@@ -383,7 +383,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Complete the 85-tool task-lifecycle deployment and execute `OPS-1A` from the persistent queue.
+1. Execute `OPS-1A` from the persistent queue; the 85-tool task-lifecycle deployment is complete.
 2. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
 3. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
 4. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
@@ -391,7 +391,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: finish the controlled 85-tool task-lifecycle deployment, then execute `OPS-1A`. Keep the hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
+Next recommended action: execute `OPS-1A` from the persistent queue. Keep the completed 85-tool task lifecycle, hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
 
 Readiness-derived default next package queue:
 
