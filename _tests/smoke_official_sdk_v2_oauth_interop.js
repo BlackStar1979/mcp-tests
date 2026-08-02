@@ -1,7 +1,8 @@
 "use strict";
 
 // End-to-end OAuth 2.1 interoperability with the official MCP TypeScript
-// client v2. The server, OAuth store, audit log, and port are all hermetic.
+// client v2, including process-restart persistence. The server, OAuth store,
+// audit log, and port are all hermetic.
 
 const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
@@ -71,6 +72,30 @@ function createHermeticEnv(tempRoot, overrides) {
     delete env[key];
   }
   return withHermeticServerControlEnv({ ...env, ...overrides }, path.join(tempRoot, "control"));
+}
+
+function startHermeticServer({ tempRoot, auditPath, storagePath, issuer, operatorSecret, port }) {
+  const child = spawn(
+    process.execPath,
+    ["server.js", "--profile", "tests", "--auth", "oauth21", "--port", String(port)],
+    {
+      cwd: ROOT,
+      env: createHermeticEnv(tempRoot, {
+        MCP_TEST_AUDIT_LOG: auditPath,
+        MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
+        MCP_TEST_OAUTH_ISSUER: issuer,
+        MCP_TEST_OAUTH_OPERATOR_SECRET: operatorSecret,
+        MCP_TEST_OAUTH_STORAGE_FILE: storagePath,
+        MCP_TEST_PUBLIC_BASE_URL: issuer,
+      }),
+      stdio: ["ignore", "pipe", "pipe"],
+    }
+  );
+
+  let output = "";
+  child.stdout.on("data", (data) => { output += String(data); });
+  child.stderr.on("data", (data) => { output += String(data); });
+  return { child, getOutput: () => output };
 }
 
 function readAudit(auditPath) {
@@ -270,26 +295,16 @@ async function connectAndExercise({
   const auditPath = path.join(tempRoot, "audit.jsonl");
   const storagePath = path.join(tempRoot, "oauth.sqlite");
   const provider = new MemoryOAuthProvider("http://127.0.0.1/callback");
-  const child = spawn(
-    process.execPath,
-    ["server.js", "--profile", "tests", "--auth", "oauth21", "--port", String(port)],
-    {
-      cwd: ROOT,
-      env: createHermeticEnv(tempRoot, {
-        MCP_TEST_AUDIT_LOG: auditPath,
-        MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
-        MCP_TEST_OAUTH_ISSUER: issuer,
-        MCP_TEST_OAUTH_OPERATOR_SECRET: operatorSecret,
-        MCP_TEST_OAUTH_STORAGE_FILE: storagePath,
-        MCP_TEST_PUBLIC_BASE_URL: issuer,
-      }),
-      stdio: ["ignore", "pipe", "pipe"],
-    }
-  );
-
-  let serverOutput = "";
-  child.stdout.on("data", (data) => { serverOutput += String(data); });
-  child.stderr.on("data", (data) => { serverOutput += String(data); });
+  const serverProcesses = [];
+  let activeServer = startHermeticServer({
+    tempRoot,
+    auditPath,
+    storagePath,
+    issuer,
+    operatorSecret,
+    port,
+  });
+  serverProcesses.push(activeServer);
 
   try {
     const health = await waitHealth(issuer);
@@ -333,11 +348,31 @@ async function connectAndExercise({
       label: "authorized-modern",
     });
 
+    await stopChild(activeServer.child);
+    activeServer = startHermeticServer({
+      tempRoot,
+      auditPath,
+      storagePath,
+      issuer,
+      operatorSecret,
+      port,
+    });
+    serverProcesses.push(activeServer);
+    const restartedHealth = await waitHealth(issuer);
+    assert.equal(restartedHealth.auth.mode, "oauth21", "restarted server preserves OAuth 2.1 mode");
+
+    const resumedAfterRestartClientName = await connectAndExercise({
+      mcpUrl,
+      provider,
+      label: "resumed-modern-after-restart",
+    });
+    assert.equal(provider.authorizationUrls.length, 1, "restart does not reopen operator authorization");
+
     const poisonedAccessToken = provider.poisonAccessToken();
     const refreshedLegacyClientName = await connectAndExercise({
       mcpUrl,
       provider,
-      label: "refreshed-legacy",
+      label: "refreshed-legacy-after-restart",
       options: null,
       expectedEra: "legacy",
       expectedVersion: "2025-11-25",
@@ -350,7 +385,7 @@ async function connectAndExercise({
     const resumedModernClientName = await connectAndExercise({
       mcpUrl,
       provider,
-      label: "resumed-modern",
+      label: "resumed-modern-after-refresh",
     });
 
     assert.ok(fs.existsSync(storagePath), "OAuth state is persisted to the hermetic SQLite store");
@@ -365,13 +400,35 @@ async function connectAndExercise({
     assert.equal(
       audit.entries.filter((entry) => entry.event === "oauth21_refresh_token_accepted").length,
       1,
-      "server audit records automatic refresh-token rotation"
+      "restarted server records automatic refresh-token rotation"
+    );
+    assert.equal(
+      audit.entries.filter((entry) => entry.event === "server_start").length,
+      2,
+      "audit records both hermetic server processes"
+    );
+    assert.ok(
+      audit.entries.some((entry) => (
+        entry.event === "oauth21_clients_loaded"
+        && entry.backend === "sqlite"
+        && entry.client_count >= 1
+      )),
+      "restarted process loads the registered SDK client from SQLite"
+    );
+    assert.ok(
+      audit.entries.some((entry) => (
+        entry.event === "oauth21_state_loaded"
+        && entry.backend === "sqlite"
+        && entry.access_count >= 1
+        && entry.refresh_count >= 1
+      )),
+      "restarted process loads active access and refresh tokens from SQLite"
     );
     assert.deepEqual(
       audit.entries
         .filter((entry) => entry.event === "server_discover_received")
         .map((entry) => entry.client_name),
-      [authorizedClientName, resumedModernClientName],
+      [authorizedClientName, resumedAfterRestartClientName, resumedModernClientName],
       "authenticated modern SDK sessions use the discovery path"
     );
     assert.deepEqual(
@@ -383,7 +440,7 @@ async function connectAndExercise({
     );
     assert.equal(
       audit.entries.filter((entry) => entry.event === "tool_call_end" && entry.tool === "get_info").length,
-      3,
+      4,
       "all authenticated sessions complete a real authorized tool call"
     );
     for (const secret of [
@@ -396,10 +453,11 @@ async function connectAndExercise({
       assert.equal(audit.raw.includes(secret), false, "audit log does not expose OAuth secrets or tokens");
     }
   } catch (error) {
+    const serverOutput = serverProcesses.map((item) => item.getOutput()).filter(Boolean).join("\n");
     if (serverOutput) console.error(serverOutput);
     throw error;
   } finally {
-    await stopChild(child);
+    await stopChild(activeServer.child);
     fs.rmSync(tempRoot, { recursive: true, force: true, maxRetries: 5, retryDelay: 100 });
   }
 

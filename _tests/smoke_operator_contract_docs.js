@@ -76,7 +76,8 @@ assert.ok(readiness.includes("Live `get_code_snippet` recovered verified `search
 assert.ok(readiness.includes("incorrect native lines `898-909`"));
 assert.ok(readiness.includes("No active CBM integrity blocker remains"));
 assert.ok(readiness.includes("Hermetic official `@modelcontextprotocol/client@2.0.0` coverage"));
-assert.ok(readiness.includes("legacy-path refresh-token rotation after access rejection"));
+assert.ok(readiness.includes("process-restart recovery of the registered client plus active tokens from SQLite"));
+assert.ok(readiness.includes("legacy-path refresh-token rotation after that restart and an access rejection"));
 assert.ok(readiness.includes("the high-churn CBM integration boundary"));
 assert.ok(readiness.includes("the high-churn `_workflow/operator_decisions` ledger"));
 assert.ok(readiness.includes("the project-local `using-codebase-memory` skill boundary"));

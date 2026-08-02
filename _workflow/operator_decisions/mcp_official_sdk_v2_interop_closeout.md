@@ -36,7 +36,7 @@ This prevents a client-side success result from being mistaken for proof of the 
 
 ## Authenticated OAuth21 extension
 
-`_tests/smoke_official_sdk_v2_oauth_interop.js` starts a separate OAuth21 `tests` profile on a dynamically allocated loopback port. Its operator secret, SQLite store, control state, and audit log all live under one temporary root. It does not bind or restart production port `3008`.
+`_tests/smoke_official_sdk_v2_oauth_interop.js` starts a separate OAuth21 `tests` profile on a dynamically allocated loopback port. Its operator secret, SQLite store, control state, and audit log all live under one temporary root. The test stops that process and starts a second process on the same isolated port and store. It does not bind or restart production port `3008`.
 
 The test implements the official v2 `OAuthClientProvider` contract and proves the complete client/server boundary:
 
@@ -45,10 +45,12 @@ The test implements the official v2 `OAuthClientProvider` contract and proves th
 3. The test host completes the operator-login redirect, validates callback `state`, and passes callback `URLSearchParams` to `finishAuth`, which validates RFC 9207 `iss`.
 4. Saved client information and tokens retain the SDK's authorization-server `issuer` stamp.
 5. A fresh modern client lists the authenticated surface, confirms representative public/authorized/CBM/memory tools, and calls `get_info` successfully.
-6. After deliberate access-token rejection, a default legacy client refreshes during `initialize`, rotates both tokens, lists/calls successfully, and does not reopen operator authorization.
-7. A final fresh modern client reuses the rotated credentials and completes `server/discover`, list, and call without another refresh.
+6. A second server process loads the registered SDK client plus active access and refresh tokens from the same SQLite store.
+7. The saved SDK credentials authorize a modern list/call immediately after process restart without another operator login.
+8. After deliberate access-token rejection, a default legacy client refreshes against the restarted process during `initialize`, rotates both tokens, lists/calls successfully, and does not reopen operator authorization.
+9. A final fresh modern client reuses the rotated credentials and completes `server/discover`, list, and call without another refresh.
 
-The audit assertions require one accepted operator login, one accepted refresh rotation, two authenticated `server/discover` entries, one authenticated legacy `initialize`, three completed `get_info` calls, and no operator secret, authorization code, PKCE verifier, rejected access token, issued access token, or refresh token in the audit log.
+The audit assertions require one accepted operator login, two server starts, a SQLite load containing the registered client plus active tokens, one accepted refresh rotation after restart, three authenticated `server/discover` entries, one authenticated legacy `initialize`, four completed `get_info` calls, and no operator secret, authorization code, PKCE verifier, rejected access token, issued access token, or refresh token in the audit log.
 
 ## Harness correction
 
@@ -58,7 +60,7 @@ The first full-suite run exposed inherited audit-path pollution in the new test.
 
 - focused official SDK interop smoke: GREEN
 - focused repository hygiene smoke: GREEN
-- focused official SDK OAuth21 interop smoke: GREEN
+- focused official SDK OAuth21 interop smoke: GREEN in six consecutive runs, including one initial run and a five-run restart stress loop
 - full offline suite: `7 public + 272 authenticated`, GREEN
 - production port `3008`: not touched
 - runtime restart: not required because this package changes only tests, development dependencies, and workflow documentation

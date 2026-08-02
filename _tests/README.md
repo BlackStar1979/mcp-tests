@@ -44,7 +44,7 @@ Latest full active validation:
 
 - Public profile surface: descriptor audit, profile audit, public FS surface, and profile schema checks
 - Core authenticated surface: policy, routing, schema, MCP dispatch, repo/runtime topology, and enforcement guards
-- Official SDK interoperability: `@modelcontextprotocol/client` v2 legacy initialization, automatic modern negotiation, pinned `2026-07-28` negotiation, full OAuth21 DCR/PKCE/callback flow, issuer-bound credential persistence, automatic refresh-token rotation, tool listing/calls, and server-side audit evidence
+- Official SDK interoperability: `@modelcontextprotocol/client` v2 legacy initialization, automatic modern negotiation, pinned `2026-07-28` negotiation, full OAuth21 DCR/PKCE/callback flow, issuer-bound credential persistence, process-restart recovery from SQLite, post-restart refresh-token rotation, tool listing/calls, and server-side audit evidence
 - Codebase-memory bridge: fixture-based contract smokes plus live v0.9.0 bridge stress coverage for indexing, project aliasing, concurrent heavy reads, snippets, tracing, and cleanup
 - OAuth and OAuth21: AS metadata, JWKS/introspection, DCR, PKCE, rotation, state, prune preview/receipt/gate/apply-package draft/apply helper/control-plane script, and route contract checks
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
