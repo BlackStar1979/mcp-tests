@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-08-01
+Updated: 2026-08-02
 
 ## Purpose
 
@@ -10,7 +10,7 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current as-is state
 
 - Repository: `C:\Work\mcp-tests`
-- Branch expectation: `main`
+- Current branch: `feature/cbm-cli-bridge-mvp`
 - Runtime entrypoint: `server.js`
 - Server identity: `mcp-tests-response-shape`
 - Server version: `0.40.0`
@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=270`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=271`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `270`
+- Latest validated authenticated smoke count: `271`
 
 ## Surface model
 
@@ -82,8 +82,8 @@ Summarize the current validated product state in one operator-facing place witho
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
-- The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live at `server_start_id 2026-08-01T20:29:11.207Z`. Modern requests use per-request metadata, `Mcp-Method`/`Mcp-Name` validation, final error codes, modern result envelopes, and server identity metadata; legacy initialize-era traffic remains isolated from that adapter.
-- Fresh `COMP-1A` evidence selects `server_start_id 2026-08-01T17:51:19.986Z` and shows `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2` on protocol `2025-06-18`, with `2` legacy entries and `0` `server/discover` entries. Server capability is ready, but retirement remains blocked by client behavior.
+- The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live at `server_start_id 2026-08-01T20:29:11.207Z`. Official `@modelcontextprotocol/client@2.0.0` interop now proves default legacy plus automatic and pinned modern paths end-to-end. Modern requests use per-request metadata, `Mcp-Method`/`Mcp-Name` validation, final error codes, modern result envelopes, and server identity metadata; legacy initialize-era traffic remains isolated from that adapter.
+- Fresh August 2 `COMP-1A` evidence selects the same live server start and shows `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2` on protocol `2025-06-18`, with `2` matching legacy entries and `0` `server/discover` entries. Server capability is independently verified, but retirement remains blocked by client behavior.
 - The July 28 `_workflow/operator_decisions` directory-map instance of `DOC-2A` is complete. `DOC-2A` remains a reusable bounded fallback, not a permanently open task, and may run again only for a demonstrable current high-churn orientation gap.
 - Live `observability_status` now exposes the same retained blocker-matrix view as the workflow helper, so current-window entry evidence and `1d`/`2d`/`7d`/`30d`/`all` blocker framing no longer depend on a script-only code path.
 - `state.json` is an orientation map, not a progress log.

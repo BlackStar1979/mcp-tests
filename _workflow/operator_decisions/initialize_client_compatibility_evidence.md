@@ -244,6 +244,21 @@ Fresh operational traffic now supersedes the July 28 client sample:
 
 The final `2026-07-28` server adapter is implemented and regression-covered in `_workflow/operator_decisions/mcp_2026_07_28_dual_era_closeout.md`, but operational Codex behavior still requires the compatibility shim.
 
+## Live evidence refresh on 2026-08-02
+
+Traffic newer than the August 1 snapshot created a current-window evidence point on the already loaded production runtime:
+
+- command: `node _workflow/scripts/client_entry_path_report.js --latest-entry-window --client-name=codex-mcp-client --evidence-scope=operational --max-age-days=2 --limit=30`
+- selected and current server start: `2026-08-01T20:29:11.207Z`
+- latest matching Codex initialize: `2026-08-02T08:02:55.013Z`
+- client: `codex-mcp-client 0.146.0-alpha.9.2`
+- protocol: `2025-06-18`
+- matching selected-window result: `2` legacy `initialize` entries and `0` `server/discover` entries
+- retained matching result within the two-day filter: `14` legacy `initialize` entries and `0` `server/discover` entries
+- verdict: `blocked_by_operational_initialize_clients`
+
+The same package now also has independent official SDK v2 proof in `_workflow/operator_decisions/mcp_official_sdk_v2_interop_closeout.md`: the repository server accepts both automatic and pinned modern `2026-07-28` negotiation through `server/discover`, while the SDK default legacy client remains functional through `initialize`. This separates server readiness from the unchanged operational Codex blocker.
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:

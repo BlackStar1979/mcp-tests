@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-01
+Updated: 2026-08-02
 
 ## Purpose
 
@@ -18,9 +18,9 @@ Current derivation:
 - Stdin native transport, normalized `detect_changes`, explicit `detect_changes` partial-result metadata, explicit `ingest_traces` runtime-edge status, semantic-only `search_graph` structural-result suppression, source-bearing excluded-route warnings, Windows non-ASCII and whitespace path/project caveats, unsupported Cypher shape caveats, resident-set discovery guidance, fail-fast startup configuration, portable executable resolution, ADR snapshot gating, native-cache schema repair, shared OAuth/HTTP helpers, and CBM-vs-knowledge-index skill routing are live and verified in repo tests and connector probes.
 - Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Earlier post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. The snippet-integrity package is live and required no connector refresh.
-- `COMP-1` is now 3/4: the final MCP `2026-07-28` dual-era adapter is live, but the August 1 `codex-mcp-client 0.146.0-alpha.9.2` window still contains `2` legacy `initialize` entries and `0` `server/discover` entries.
+- `COMP-1` is 3/4: official `@modelcontextprotocol/client@2.0.0` regression proves legacy, automatic modern, and pinned `2026-07-28` operation, but the August 2 operational `codex-mcp-client 0.146.0-alpha.9.2` sample still contains `2` matching legacy `initialize` entries and `0` `server/discover` entries.
 - `DOC-2A` remains the autonomous fallback class, but the current July 29 pass closed the active documentation gap: `docs/superpowers`, `docs/superpowers/plans`, and `docs/superpowers/specs` now have generator-owned maps, and `scripts/audit_directory_docs.js` reports no missing maps among the top 25 dirs with churn >= 5.
-- `RETR-1` retrieval now exposes workflow facts directly, rejects silent staleness, parses complete canonical workflow documents through a bounded transient sample, and ranks authoritative current evidence ahead of historical records. The live v3 knowledge index contains `260` documents, visited `1124` files and `50` directories, reports freshness `fresh`, and passes active-workflow, component-maturity, and `MEM-1` proof queries.
+- `RETR-1` retrieval now exposes workflow facts directly, rejects silent staleness, parses complete canonical workflow documents through a bounded transient sample, and ranks authoritative current evidence ahead of historical records. The live v3 knowledge index contains `261` documents, visited `1126` files and `50` directories, reports freshness `fresh`, extracts all `11` readiness components, and links all `36` source-of-truth documents.
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
 - Descriptor refresh review is closed: runtime `2026-08-01T19:48:43.083Z` serves the intentional additive retrieval output contract with combined fingerprint `73c0bc08dad53e8c`; live retrieval calls succeeded without OAuth relogin.
@@ -29,7 +29,7 @@ Current derivation:
 
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
-| P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after 2026-08-01 | Server-side final-era support is complete, but operational Codex still uses legacy `initialize`. | Preserve both version-gated paths and wait for traffic newer than `codex-mcp-client 0.146.0-alpha.9.2`. |
+| P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but operational Codex still uses legacy `initialize`. | Preserve both version-gated paths and wait for a newer Codex client entry sample. |
 | P1 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
 | P2 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
 | P3 | Preserve the hardened CBM and 84-tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
@@ -49,6 +49,7 @@ Current derivation:
    Execute only when fresh `COMP-1A` or UI evidence materially changes the decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
+Completed official client interoperability: `MCP-OFFICIAL-SDK-V2-INTEROP` pins `@modelcontextprotocol/client@2.0.0` for tests and guards default legacy, automatic modern, pinned modern, list, call, and server-side entry-path evidence without touching production runtime.
 Completed memory activation: `MEM-1-LIVE` activated OVH `bge-m3`, fixed live ranking noise, proved PL/EN and fallback behavior, verified a non-plaintext cache, and backfilled all active unique memories.
 Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metadata is now guarded in `_tests/smoke_cbm_live_bridge_stress.js` and agent-facing CBM interpretation guidance is guarded by `_tests/smoke_cbm_agent_skill.js`.
 Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map and project-local `using-codebase-memory` skill maps on July 28, 2026, then added generator-owned `docs/superpowers` plan/spec maps and raised the audit guard to top25/churn>=5 on July 29, 2026 without widening into repo-wide documentation churn.

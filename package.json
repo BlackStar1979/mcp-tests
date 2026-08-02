@@ -22,5 +22,8 @@
   },
   "allowScripts": {
     "ssh2@1.17.0": true
+  },
+  "devDependencies": {
+    "@modelcontextprotocol/client": "2.0.0"
   }
 }

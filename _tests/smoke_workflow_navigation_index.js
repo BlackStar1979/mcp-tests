@@ -19,7 +19,7 @@ assert.ok(index.includes("Do not infer active work from historical plan files"))
 assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Historical records remain traceability evidence, not the active queue."));
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
-assert.ok(index.includes("Wait for a meaningfully new external-client evidence window before rerunning `COMP-1A`."));
+assert.ok(index.includes("Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`."));
 assert.ok(index.includes("`COMP-1A` — event-gated"));
 assert.ok(index.includes("`DOC-2A` — bounded fallback"));
 assert.ok(index.includes("`COMP-1B` / `SURF-1A`"));
@@ -33,6 +33,7 @@ assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 assert.ok(index.includes("Confirmed the previous dirty-worktree push blocker is closed on `main`"));
 assert.ok(index.includes("Recently completed:"));
+assert.ok(index.includes("Completed `MCP-OFFICIAL-SDK-V2-INTEROP` on August 2, 2026"));
 assert.ok(index.includes("Validated cleanup-closeout anchor on `main`: `aecec58`."));
 assert.ok(index.includes("Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt."));
 assert.ok(index.includes("?? _workflow/experiments/"));
