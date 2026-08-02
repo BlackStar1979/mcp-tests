@@ -12,7 +12,7 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "live84_repo85_refresh_pending";
+const expectedCurrentStatus = "runtime85_model84_refresh_pending";
 const expectedCurrentFingerprint = "73c0bc08dad53e8c";
 const expectedCurrentHash = "7b5bfc1bd21386d3";
 
@@ -28,7 +28,7 @@ assert.equal(c.repo_current_expected_tool_count, 85);
 assert.equal(c.connector_refresh_required_now, true);
 assert.equal(c.connector_ui_visibility_verified_now, false);
 assert.equal(c.model_runtime_callable_verified_now, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
@@ -37,7 +37,7 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("the repository target is `85` authenticated tools"));
+assert.ok(index.includes("serve `85` authenticated tools"));
 assert.ok(index.includes("Fresh August 2 evidence keeps retirement blocked"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries"));
 assert.ok(index.includes("canonical PKCE"));
@@ -45,7 +45,7 @@ assert.ok(index.includes("no OAuth relogin was required"));
 assert.ok(index.includes("The v3 knowledge index contains `261` documents"));
 assert.ok(index.includes("reports freshness `fresh`"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `85`"));
-assert.ok(canon.includes("still enumerate `84` tools"));
+assert.ok(canon.includes("startup-time `84`-tool map"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

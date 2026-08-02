@@ -1,6 +1,6 @@
 # Memory Task Lifecycle and Queue Repair
 
-Status: GREEN / REPOSITORY APPLIED / LIVE RESTART PENDING
+Status: GREEN / LIVE LOADED / CLIENT RE-ENUMERATION PENDING
 Date: 2026-08-02
 
 ## Problem
@@ -26,7 +26,7 @@ Task storage remains append-only JSONL. An update appends a complete task snapsh
 - Authorized tools: `71` to `72`.
 - Authenticated total: `84` to `85`.
 - Repository combined fingerprint: `b435c9f507d18f12`.
-- Live `3008` remains at `84` until the controlled restart and connector re-enumeration complete.
+- Live `3008` serves `85` tools at `server_start_id 2026-08-02T09:21:24.828Z`; this already-open model task retains its startup-time `84`-tool map until client re-enumeration.
 
 ## Acceptance
 
@@ -34,6 +34,8 @@ Task storage remains append-only JSONL. An update appends a complete task snapsh
 - root specs, policy bindings, catalog semantics, registry equivalence, and connector counts agree at `85`;
 - full offline suite must pass before restart;
 - after restart, live inventory must expose `memory_update_task`, direct existing connector calls must remain authorized, and stale completed tasks must be transitioned to `done`.
+
+Offline suite passed at `7 public + 273 authenticated`. Controlled restart `manual-1785662483342` loaded fingerprint `b435c9f507d18f12`; health reports `85`; direct `workbench.get_info` remained authorized without relogin; two completed tasks were appended as `done`; and live `memory_get_tasks` returns only `a6cf7cac-ba33-427f-bd14-70107c36f2ef` as the pending Codex package. Direct named invocation of `memory_update_task` from the already-open model task remains blocked only by its immutable startup tool map.
 
 ## Rollback
 

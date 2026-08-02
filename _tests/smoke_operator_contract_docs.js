@@ -66,7 +66,7 @@ assert.ok(stateDoc.includes("`2` matching legacy entries"));
 assert.ok(stateDoc.includes("`0` `server/discover` entries"));
 assert.ok(readiness.includes("## Component maturity"));
 assert.ok(readiness.includes("Operator-facing documentation contract"));
-assert.ok(readiness.includes("Repository target is `13 + 72 = 85`"));
+assert.ok(readiness.includes("Repository and live runtime are aligned at `13 + 72 = 85`"));
 assert.ok(readiness.includes("Codebase-Memory bridge and index integrity"));
 assert.ok(readiness.includes("`detect_changes` exposes exact totals and impact metadata"));
 assert.ok(readiness.includes("`ingest_traces` exposes runtime-edge status"));
