@@ -60,7 +60,8 @@
         "write",
         "state_update",
         "task_create",
-        "task_list"
+        "task_list",
+        "task_update"
       ],
       "public_surface_allowed": false
     },
@@ -252,6 +253,9 @@
     },
     "task_list": {
       "mutation": false
+    },
+    "task_update": {
+      "mutation": true
     },
     "plan": {
       "mutation": false

@@ -28,28 +28,28 @@ Summarize the current validated product state in one operator-facing place witho
   - port `3008`
   - auth mode `oauth21`
   - profile `tests/internal`
-  - target connector-visible tools `84`
+  - repository target connector-visible tools `85`
 
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=272`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=273`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `272`
+- Latest validated authenticated smoke count: `273`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
-- Authorized MCP-visible tools: `71`
-- Authenticated repo target for profile `tests`: `84`
-- Current live OAuth21 runtime and connector count: `84`; the hardened CBM v0.9.0, canonical PKCE, activated OVH-backed memory, freshness-aware retrieval, and final dual-era protocol contracts are live at `server_start_id = 2026-08-01T20:29:11.207Z`. The v3 knowledge index is fresh, complete for all `11` readiness rows, and passes current-state acceptance queries; no restart or manual connector refresh is pending.
+- Authorized MCP-visible tools: `72`
+- Authenticated repo target for profile `tests`: `85`
+- Current live OAuth21 runtime and connector count: `84` at `server_start_id = 2026-08-01T20:29:11.207Z`. The repository adds `memory_update_task` and latest-snapshot task reads, so one controlled runtime restart and connector re-enumeration are pending after offline validation. The hardened CBM v0.9.0, canonical PKCE, activated OVH-backed memory, freshness-aware retrieval, and final dual-era protocol contracts remain unchanged.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = protocol-compatibility-evidence-gate`
-- `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = doc-2a-on-demonstrated-orientation-gap`
+- `current_working_course = operational-e2e-quality`
+- `next_primary = ops-1a-operational-e2e-coverage-matrix`
+- `next_secondary = comp-1a-on-fresh-external-client-traffic`
 
 ## Verified documentation authorities
 
@@ -80,6 +80,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
+- The persistent task queue currently contains one active Codex package (`Build operational E2E coverage matrix`) plus two stale Codex-visible entries whose implementation already landed. The repository task-lifecycle repair will make those entries closable without rewriting task history.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
 - The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live at `server_start_id 2026-08-01T20:29:11.207Z`. Official `@modelcontextprotocol/client@2.0.0` interop now proves default legacy plus automatic and pinned modern paths end-to-end, and a hermetic authenticated extension proves DCR, PKCE S256, callback `state`/`iss`, issuer-bound credentials, full authorized list/call, process-restart recovery of client and token state from SQLite, and automatic refresh-token rotation after restart. Modern requests use per-request metadata, `Mcp-Method`/`Mcp-Name` validation, final error codes, modern result envelopes, and server identity metadata; legacy initialize-era traffic remains isolated from that adapter.

@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces and intended for model/agent use",
-      "tool_count": 71,
+      "tool_count": 72,
       "tools": [
         "code_sample_js",
         "cbm_status",
@@ -97,7 +97,8 @@
         "memory_get_state",
         "memory_set_state",
         "memory_create_task",
-        "memory_get_tasks"
+        "memory_get_tasks",
+        "memory_update_task"
       ],
       "legacy_auth_precutover_tools_replaced_stage4": [
         "auth_transition_status",
@@ -147,7 +148,7 @@
       ]
     }
   },
-  "total_mcp_callable_tool_count": 84,
+  "total_mcp_callable_tool_count": 85,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -861,6 +862,18 @@
       "tool_category": "memory",
       "resource_class": "memory_context_scoped",
       "operation_class": "task_list",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "memory_policy_ref": "SERVER_MEMORY_POLICY_SPEC.json"
+    },
+    "memory_update_task": {
+      "name": "memory_update_task",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "memory",
+      "resource_class": "memory_context_scoped",
+      "operation_class": "task_update",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],

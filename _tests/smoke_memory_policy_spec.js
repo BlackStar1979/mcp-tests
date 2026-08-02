@@ -34,7 +34,7 @@ assert.equal(res.memory_policy_ref,"SERVER_MEMORY_POLICY_SPEC.json");
 assert.equal(profiles.server_profiles.memory_policy_ref,"SERVER_MEMORY_POLICY_SPEC.json");
 assert.equal(tools.memory_policy_ref,"SERVER_MEMORY_POLICY_SPEC.json");
 for(const scope of ["agent_state","memory_entries","task_entries"])assert.ok(mem.memory_scopes[scope]);
-const expected={memory_get_state:["agent_state","read"],memory_set_state:["agent_state","state_update"],memory_search:["memory_entries","search"],memory_save:["memory_entries","write"],memory_get_tasks:["task_entries","task_list"],memory_create_task:["task_entries","task_create"]};
+const expected={memory_get_state:["agent_state","read"],memory_set_state:["agent_state","state_update"],memory_search:["memory_entries","search"],memory_save:["memory_entries","write"],memory_get_tasks:["task_entries","task_list"],memory_create_task:["task_entries","task_create"],memory_update_task:["task_entries","task_update"]};
 for(const [name,[scope,op]] of Object.entries(expected)){
   assert.equal(mem.tool_bindings[name].scope,scope);
   assert.equal(mem.tool_bindings[name].operation_class,op);

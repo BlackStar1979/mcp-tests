@@ -51,7 +51,7 @@ const READ_ONLY_NAMES = [
 const MUTATION_NAMES = ["cbm_index_repository", "cbm_manage_adr", "cbm_ingest_traces"];
 
 assert.equal(PUBLIC_TOOL_NAMES.length, 13);
-assert.equal(AUTHORIZED_MCP_TOOL_NAMES.length, 71);
+assert.equal(AUTHORIZED_MCP_TOOL_NAMES.length, 72);
 for (const name of CBM_NAMES) {
   assert.equal(AUTHORIZED_MCP_TOOL_NAMES.includes(name), true, `${name} missing from authorized policy surface`);
   assert.equal(PUBLIC_TOOL_NAMES.includes(name), false, `${name} leaked to public policy surface`);
@@ -79,8 +79,8 @@ assert.equal(getToolPolicy("cbm_delete_project").destructive, true);
 assert.equal(getToolPolicy("cbm_delete_project").fs_scope, "codebase-memory-destructive");
 
 assert.equal(toolsSpec.surface_classes.public_mcp_tools.tool_count, 13);
-assert.equal(toolsSpec.surface_classes.authorized_mcp_tools.tool_count, 71);
-assert.equal(toolsSpec.total_mcp_callable_tool_count, 84);
+assert.equal(toolsSpec.surface_classes.authorized_mcp_tools.tool_count, 72);
+assert.equal(toolsSpec.total_mcp_callable_tool_count, 85);
 for (const name of CBM_NAMES) {
   assert.equal(toolsSpec.surface_classes.authorized_mcp_tools.tools.includes(name), true);
   const catalog = toolsSpec.tool_catalog[name];
@@ -135,14 +135,14 @@ for (const name of CBM_NAMES) {
   assert.equal(connectorSpec.public_connector.forbidden_tool_names.includes(name), true);
   assert.equal(connectorSpec.authenticated_connector.expected_authorized_tools.includes(name), true);
 }
-assert.equal(connectorSpec.authenticated_connector.expected_public_plus_authorized_count, 84);
-assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 84);
-assert.equal(connectorSpec.target_connector_topology.active_connectors.authorized.repo_current_expected_tool_count, 84);
+assert.equal(connectorSpec.authenticated_connector.expected_public_plus_authorized_count, 85);
+assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 85);
+assert.equal(connectorSpec.target_connector_topology.active_connectors.authorized.repo_current_expected_tool_count, 85);
 
 assert.equal(serverSpec.server.default_tool_count, 13);
 assert.equal(serverSpec.server.public_tool_count, 13);
-assert.equal(serverSpec.server.full_tests_authenticated_tool_count, 84);
-assert.equal(serverSpec.server.authenticated_tool_count, 84);
+assert.equal(serverSpec.server.full_tests_authenticated_tool_count, 85);
+assert.equal(serverSpec.server.authenticated_tool_count, 85);
 assert.equal(serverSpec.runtime_config_spec.env_var_count, 79);
 assert.equal(runtimeConfigSpec.env_vars.includes("MCP_TEST_ENABLE_CBM_TOOLS"), false);
 assert.equal(runtimeConfigSpec.env_vars.includes("CBM_EXE_PATH"), true);

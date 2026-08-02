@@ -42,6 +42,7 @@ const fingerprint = buildToolSurfaceFingerprint(tools);
   assert.deepEqual(resolveToolResultFreshness("search"), { ttlMs: 0, cacheScope: "private" });
   assert.deepEqual(resolveToolResultFreshness("fs_list_public"), { ttlMs: 0, cacheScope: "private" });
   assert.deepEqual(resolveToolResultFreshness("memory_get_tasks"), { ttlMs: 0, cacheScope: "private" });
+  assert.deepEqual(resolveToolResultFreshness("memory_update_task"), { ttlMs: 0, cacheScope: "private" });
   assert.equal(resolveToolResultFreshness("dev_code_audit"), null);
   assert.equal(resolveToolResultFreshness("plugin_execute_readonly"), null);
 

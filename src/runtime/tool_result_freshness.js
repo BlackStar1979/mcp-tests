@@ -15,6 +15,7 @@ const FRESH_OPERATION_CLASSES = new Set([
   "stat",
   "head",
   "task_list",
+  "task_update",
 ]);
 
 function resolveToolResultFreshness(toolName, spec = toolsSpec) {

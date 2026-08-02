@@ -6,10 +6,10 @@
  * Storage layout (all files in _logs/):
  *   .mcp-agent-state.json   — JSON object keyed by agent_name (upsert, atomic write)
  *   .mcp-agent-memory.jsonl — append-only JSONL of memory entries
- *   .mcp-agent-tasks.jsonl  — append-only JSONL of task entries
+ *   .mcp-agent-tasks.jsonl  — append-only JSONL of task snapshots
  *
  * Search: keyword scoring with an opt-in OVH embedding sidecar.
- * Memory writes are append-only; task rewrites use temp-file + rename.
+ * Memory and task writes are append-only; task readers resolve the latest snapshot by id.
  */
 
 const fsp  = require("node:fs/promises");
@@ -239,6 +239,36 @@ async function createTask({ created_by, assigned_to = "", title, description = "
   return task;
 }
 
+function latestTaskSnapshots(entries) {
+  const latestById = new Map();
+  for (const entry of entries) {
+    if (!entry || typeof entry.id !== "string" || !entry.id) continue;
+    latestById.set(entry.id, entry);
+  }
+  return [...latestById.values()];
+}
+
+/**
+ * Append a new complete snapshot for an existing task.
+ * The JSONL remains append-only while readers resolve the latest snapshot by id.
+ */
+async function updateTask({ task_id, updated_by, status }) {
+  const filePath = tasksFile();
+  const all = await readJsonl(filePath);
+  const current = latestTaskSnapshots(all).find((task) => task.id === task_id);
+  if (!current) return null;
+
+  const updated = {
+    ...current,
+    status,
+    updated_by,
+    updated_at: new Date().toISOString(),
+  };
+  await fsp.mkdir(path.dirname(filePath), { recursive: true });
+  await fsp.appendFile(filePath, JSON.stringify(updated) + "\n", "utf8");
+  return { task: updated, previous_status: current.status || "pending" };
+}
+
 /**
  * Get tasks by status and optional assignee.
  * Unassigned tasks (assigned_to === "") are returned for any assignee filter.
@@ -247,7 +277,7 @@ async function createTask({ created_by, assigned_to = "", title, description = "
 async function getTasks({ assigned_to, status = "pending", limit = 20 }) {
   const all = await readJsonl(tasksFile());
 
-  let filtered = all.filter((t) => t.status === status);
+  let filtered = latestTaskSnapshots(all).filter((t) => t.status === status);
 
   if (assigned_to) {
     filtered = filtered.filter(
@@ -270,5 +300,6 @@ module.exports = {
   saveMemory,
   searchMemory,
   createTask,
+  updateTask,
   getTasks,
 };

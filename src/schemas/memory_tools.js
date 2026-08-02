@@ -137,6 +137,26 @@ const MEMORY_GET_TASKS_INPUT_SCHEMA = {
   },
 };
 
+const MEMORY_UPDATE_TASK_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["task_id", "updated_by", "status"],
+  properties: {
+    task_id: {
+      type: "string",
+      minLength: 1,
+      maxLength: 128,
+      description: "Existing task identifier returned by memory_create_task or memory_get_tasks.",
+    },
+    updated_by: AGENT_NAME_PROP,
+    status: {
+      type: "string",
+      enum: ["pending", "in_progress", "done", "cancelled"],
+      description: "New lifecycle status for the task.",
+    },
+  },
+};
+
 // ── Output schemas ────────────────────────────────────────────────────────────
 
 const MEMORY_SAVE_OUTPUT_SCHEMA = {
@@ -243,6 +263,19 @@ const MEMORY_GET_TASKS_OUTPUT_SCHEMA = {
   },
 };
 
+const MEMORY_UPDATE_TASK_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["success", "id", "status", "previous_status", "error"],
+  properties: {
+    success:         { type: "boolean" },
+    id:              { type: "string" },
+    status:          { type: "string" },
+    previous_status: { type: "string" },
+    error:           { type: "string" },
+  },
+};
+
 module.exports = {
   MEMORY_READ_ANNOTATIONS,
   MEMORY_WRITE_ANNOTATIONS,
@@ -258,4 +291,6 @@ module.exports = {
   MEMORY_CREATE_TASK_OUTPUT_SCHEMA,
   MEMORY_GET_TASKS_INPUT_SCHEMA,
   MEMORY_GET_TASKS_OUTPUT_SCHEMA,
+  MEMORY_UPDATE_TASK_INPUT_SCHEMA,
+  MEMORY_UPDATE_TASK_OUTPUT_SCHEMA,
 };

@@ -31,11 +31,11 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Output mode: `structured` by default.
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
-- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=272`.
+- Latest known full smoke: `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=273`.
 - Latest validated public section count: `7`.
-- Latest validated authenticated smoke count: `272`.
-- Repo current connector-visible authenticated tool target is `84` (`13 public + 71 authorized-visible`), including all fifteen profile-managed `cbm_*` tools; `26` server-internal helpers remain intentionally hidden from MCP schema/tools-list.
-- Live OAuth21 `3008` and the connector enumerate tool count `84`, with current live proof `server_start_id = 2026-08-01T20:29:11.207Z`; the additive freshness-aware retrieval output contract is live with combined fingerprint `73c0bc08dad53e8c`, while the hardened CBM v0.9.0 contract remains verified without tool-name change.
+- Latest validated authenticated smoke count: `273`.
+- Repo current connector-visible authenticated tool target is `85` (`13 public + 72 authorized-visible`), including all fifteen profile-managed `cbm_*` tools and the new `memory_update_task`; `26` server-internal helpers remain intentionally hidden from MCP schema/tools-list.
+- Live OAuth21 `3008` and the current connector still enumerate `84` tools at `server_start_id = 2026-08-01T20:29:11.207Z` with combined fingerprint `73c0bc08dad53e8c`. Repository fingerprint `b435c9f507d18f12` and latest-snapshot task lifecycle are pending full offline validation, one controlled restart, and connector re-enumeration.
 - CBM reliability hardening is live: stdin payload transport emits no raw-JSON deprecation warning, `detect_changes` normalizes duplicate paths and exposes exact returned/omitted totals, `bridge_analysis`, and `impact_resolution_reason`, `ingest_traces` exposes `runtime_edge_creation` and `runtime_edges_created`, semantic-only `search_graph` suppresses unfiltered structural `results`, `index_repository` warns on source-bearing excluded route directories, `search_code` warns on Windows non-ASCII patterns, `query_graph` warns on unsupported Cypher shapes, runtime output configuration fails fast, executable resolution is operator-neutral, ADR snapshot gating fails closed, and all three active cache databases are v0.9.0-compatible. Post-refresh delete verification returned `deleted` then `cbm_project_not_found`; no restart or connector refresh remains pending.
 - Bounded OAuth21 PKCE hardening is live and full-suite green: `S256` challenge input is restricted to exactly 43 base64url characters, verifier input remains RFC 7636 `43..128` unreserved, and PKCE rejection audits never include verifier/challenge values. Restart `manual-1785349273914` loaded the change; a live malformed challenge was rejected, `workbench.get_info` remained callable, and no connector refresh was required.
 - `MEM-1` is 4/4, live, and accepted at `server_start_id = 2026-08-01T18:52:13.024Z`: append-only JSONL remains authoritative; the protected token-file and explicit egress activate OVH `bge-m3`; invalid files and source conflicts fail closed; and diagnostics remain secret-free. Own-connector EN-to-PL and PL-to-EN probes rank the intended entries first, controlled token-file loss preserves lexical fallback, exact Unicode tokens plus bounded EN/PL stop words prevent lexical noise from outranking valid semantic results, and the non-plaintext cache is fully backfilled at `67/67`. The descriptor review is closed without manual connector refresh.
@@ -50,7 +50,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Fresh 2026-07-15 model-runtime evidence confirms that `mcp__workbench` is callable again in the current Codex runtime session, but this still does not upgrade the UI enumeration claim; callable runtime surface and full external visible-tool inventory remain separate truth layers.
 - Repo-validated 2026-07-16 OAuth21 hardening now additionally covers pre-auth public-route throttling, oversized-body aborts, bounded DCR client-registry growth, and retention-based dead-client pruning. This turn did not independently re-probe live OAuth21 `3008`, so those new guards are repo-and-smoke truth first, not a fresh live-runtime claim.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it runs under `BEGIN IMMEDIATE` before RAM state load, verifies a transaction-bound logical SQLite rollback backup before deletion, records rollback/apply receipts, and executes at most once per 24 hours. The first live run reported `no_candidates`; the final-load restart reported `interval_not_elapsed`; the store retained 475 clients with zero eligible dead clients and zero orphan access, refresh, or used-refresh tokens, and own-connector `get_info` remained callable.
-- Workflow progress markers: `current_working_course = protocol-compatibility-evidence-gate`; `next_primary = comp-1a-on-fresh-external-client-traffic`; `next_secondary = doc-2a-on-demonstrated-orientation-gap`.
+- Workflow progress markers: `current_working_course = operational-e2e-quality`; `next_primary = ops-1a-operational-e2e-coverage-matrix`; `next_secondary = comp-1a-on-fresh-external-client-traffic`.
 - Stage marker vocabulary: `Stage 8 / Step 53b` = modular safe tool surface consolidation; `Stage 8 / Step 53c` = modular unsafe tool governance boundary; `Stage 8 / Step 53d` = live restart and connector surface reconciliation.
 - Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
 - Runtime stage label may remain a compatibility label and may lag repo progress.
@@ -68,13 +68,14 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 The active queue is deliberately short. Historical plans are evidence, not current next-work lists.
 
 1. Preserve accepted `MEM-1` behavior and reopen only on measured ranking, provider, cache, or fallback regression.
-2. Keep `COMP-1A` event-gated until traffic newer than the August 2 operational sample creates a meaningfully new evidence window.
-3. Use `DOC-2A` only as a bounded fallback when one real high-churn orientation gap exists.
-4. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence materially changes the decision surface.
+2. Complete the task-lifecycle surface deployment, then execute `OPS-1A` from persistent task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+3. Keep `COMP-1A` event-gated until traffic newer than the August 2 operational sample creates a meaningfully new evidence window.
+4. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
+5. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence materially changes the decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, `FINAL-LIVE-LOAD`, `CBM-BRIDGE-SAMPLE-STRESS`, `CBM-SNIPPET-INTEGRITY`, and `RETR-1-QUALITY-REGRESSION`. Operator-supervised takeover loaded the final retrieval package at `server_start_id = 2026-08-01T19:48:43.083Z`; live acceptance verified fresh source truth and authoritative ranking without OAuth relogin.
 
-Next recommended action: keep `COMP-1A` event-gated until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window. Preserve the live dual-era adapter and official SDK negotiation/OAuth regressions; run `DOC-2A` only when a current orientation audit exposes a real gap.
+Next recommended action: finish the validated `memory_update_task` deployment and use the repaired persistent queue to execute `OPS-1A`. Keep `COMP-1A` event-gated until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window; use `DOC-2A` only after higher-value E2E work or when a current orientation audit exposes a real gap.
 
 Restart-boundary clarification: the recovered supervisor-managed OAuth21 `3008` authority is no longer an open blocker. Future `restart_required_now` flags after later runtime code changes are ordinary per-change operational truth, not evidence that the restart-resilience ledger item is still incomplete.
 

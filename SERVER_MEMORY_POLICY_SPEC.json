@@ -68,11 +68,13 @@
       "description": "Append-only task records for inter-agent work tracking.",
       "operations": [
         "task_list",
-        "task_create"
+        "task_create",
+        "task_update"
       ],
       "tools": [
         "memory_get_tasks",
-        "memory_create_task"
+        "memory_create_task",
+        "memory_update_task"
       ]
     }
   },
@@ -125,6 +127,11 @@
     "memory_create_task": {
       "scope": "task_entries",
       "operation_class": "task_create",
+      "mutation": true
+    },
+    "memory_update_task": {
+      "scope": "task_entries",
+      "operation_class": "task_update",
       "mutation": true
     }
   },

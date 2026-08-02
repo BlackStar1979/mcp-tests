@@ -88,6 +88,7 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "memory_set_state",
   "memory_create_task",
   "memory_get_tasks",
+  "memory_update_task",
 ];
 
 const INTERNAL_RUNTIME_TOOL_NAMES = [
@@ -127,6 +128,7 @@ const TOOL_POLICIES = Object.freeze({
   memory_set_state:   policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "agent-memory-store", readOnly: false }),
   memory_create_task: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "agent-memory-store", readOnly: false }),
   memory_get_tasks:   policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "agent-memory-store" }),
+  memory_update_task: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "agent-memory-store", readOnly: false }),
   // ── Existing tools ───────────────────────────────────────────────────────
   search: policy({ usesNetwork: false, usesFs: false, fsScope: "none" }),
   fetch: policy({ usesNetwork: false, usesFs: false, fsScope: "none" }),

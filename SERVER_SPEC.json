@@ -10,7 +10,7 @@
     "default_profile": "public",
     "default_tool_surface": "public_mcp_tools",
     "default_tool_count": 13,
-    "full_tests_authenticated_tool_count": 84,
+    "full_tests_authenticated_tool_count": 85,
     "target_active_runtime_count": 2,
     "target_active_runtime_modes": [
       "none",
@@ -22,7 +22,7 @@
     },
     "legacy_access_bearer_runtime_status": "retired_from_server_startup_path_stage2_enforced",
     "public_tool_count": 13,
-    "authenticated_tool_count": 84,
+    "authenticated_tool_count": 85,
     "stage6_closeout_status": "green_stage6_final_closeout_source_aligned"
   },
   "maintenance_rules": {
@@ -76,9 +76,9 @@
     }
   },
   "workflow_progress_markers": {
-    "current_working_course": "protocol-compatibility-evidence-gate",
-    "next_primary": "comp-1a-on-fresh-external-client-traffic",
-    "next_secondary": "doc-2a-on-demonstrated-orientation-gap",
+    "current_working_course": "operational-e2e-quality",
+    "next_primary": "ops-1a-operational-e2e-coverage-matrix",
+    "next_secondary": "comp-1a-on-fresh-external-client-traffic",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",

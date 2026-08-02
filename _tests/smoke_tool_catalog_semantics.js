@@ -20,6 +20,7 @@ expect("memory_get_tasks",{tool_category:"memory",resource_class:"memory_context
 expect("memory_save",{tool_category:"memory",resource_class:"memory_context_scoped",operation_class:"write"});
 expect("memory_set_state",{tool_category:"memory",resource_class:"memory_context_scoped",operation_class:"state_update"});
 expect("memory_create_task",{tool_category:"memory",resource_class:"memory_context_scoped",operation_class:"task_create"});
+expect("memory_update_task",{tool_category:"memory",resource_class:"memory_context_scoped",operation_class:"task_update"});
 expect("plugin_catalog_describe",{tool_category:"plugin_registry",resource_class:"plugin_registry_readonly",operation_class:"read"});
 expect("plugin_catalog_search",{tool_category:"plugin_registry",resource_class:"plugin_registry_readonly",operation_class:"search"});
 expect("plugin_registry_list",{tool_category:"plugin_registry",resource_class:"plugin_registry_readonly",operation_class:"list"});

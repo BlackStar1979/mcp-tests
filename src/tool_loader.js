@@ -161,6 +161,7 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/memory_set_state", "memorySetStateTool", "memory_set_state");
     add("../tools/authorized/memory_create_task", "memoryCreateTaskTool", "memory_create_task");
     add("../tools/authorized/memory_get_tasks", "memoryGetTasksTool", "memory_get_tasks");
+    add("../tools/authorized/memory_update_task", "memoryUpdateTaskTool", "memory_update_task");
   }
 
   return tools;

@@ -32,7 +32,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 84,
+      "expected_tool_count": 85,
       "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
     },
     "retired": {
@@ -46,11 +46,11 @@
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authorized_mcp_tools": {
-      "count": 71,
+      "count": 72,
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authenticated_total": {
-      "count": 84,
+      "count": 85,
       "source_spec": "SERVER_SPEC.json / SERVER_TOOLS_SPEC.json"
     }
   },
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "protocol-compatibility-evidence-gate",
-    "next_primary": "comp-1a-on-fresh-external-client-traffic",
-    "next_secondary": "doc-2a-on-demonstrated-orientation-gap",
+    "current_working_course": "operational-e2e-quality",
+    "next_primary": "ops-1a-operational-e2e-coverage-matrix",
+    "next_secondary": "comp-1a-on-fresh-external-client-traffic",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -281,11 +281,11 @@
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
-      "expected_tool_count": 84,
+      "expected_tool_count": 85,
       "server_start_id": "2026-08-01T20:29:11.207Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,
@@ -310,14 +310,14 @@
       "output_schema_fingerprint": "d836b83b3151b65d",
       "descriptor_fingerprint": "fb2ee514c19cd02e",
       "combined_fingerprint": "73c0bc08dad53e8c",
-      "connector_map_status": "live_84_descriptor_current",
-      "repo_current_expected_tool_count": 84,
+      "connector_map_status": "live84_repo85_refresh_pending",
+      "repo_current_expected_tool_count": 85,
       "server_start_id": "2026-08-01T20:29:11.207Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,
       "cache_scope": "private",
-      "connector_refresh_required_now": false
+      "connector_refresh_required_now": true
     }
   }
 }

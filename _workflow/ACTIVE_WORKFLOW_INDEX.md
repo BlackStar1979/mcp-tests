@@ -4,13 +4,15 @@ Status: active navigation index
 Date: 2026-08-02
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`) at `server_start_id = 2026-08-01T20:29:11.207Z`. The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live, and official `@modelcontextprotocol/client@2.0.0` regressions now prove default legacy, automatic and pinned modern list/call paths, plus the complete OAuth21 DCR/PKCE/callback/refresh lifecycle and process-restart recovery from SQLite on a hermetic server. The additive retrieval contract remains live with combined fingerprint `73c0bc08dad53e8c`; no OAuth relogin was required on production. The v3 knowledge index contains `261` documents, visited `1127` files and `50` directories, reports freshness `fresh`, extracts all `11` readiness components, and links all `36` source-of-truth documents. Fresh August 2 evidence keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries.
+Current repo/runtime note: profile `tests`; the repository target is `85` authenticated tools (`13 public + 72 authorized-visible`) after adding `memory_update_task`, while live OAuth21 `3008` and the current connector remain at `84` tools and `server_start_id = 2026-08-01T20:29:11.207Z` until controlled deployment completes. The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live, and official `@modelcontextprotocol/client@2.0.0` regressions prove default legacy, automatic and pinned modern list/call paths, plus the complete OAuth21 DCR/PKCE/callback/refresh lifecycle and process-restart recovery from SQLite on a hermetic server. The v3 knowledge index contains `261` documents, visited `1127` files and `50` directories, reports freshness `fresh`, extracts all current readiness components, and links all `36` source-of-truth documents. Fresh August 2 evidence keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries. Actionable autonomous work is `OPS-1A`, persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+
+The currently loaded package is accepted and no OAuth relogin was required; the pending task-lifecycle deployment must preserve that property.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = protocol-compatibility-evidence-gate`
-- `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = doc-2a-on-demonstrated-orientation-gap`
+- `current_working_course = operational-e2e-quality`
+- `next_primary = ops-1a-operational-e2e-coverage-matrix`
+- `next_secondary = comp-1a-on-fresh-external-client-traffic`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -71,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=272`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=273`.
 - Public section count: `7`.
-- Authenticated smoke count: `272`.
+- Authenticated smoke count: `273`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -381,24 +383,26 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
-2. Use `DOC-2A` only as a bounded fallback when one real high-churn orientation gap exists.
-3. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
+1. Complete the 85-tool task-lifecycle deployment and execute `OPS-1A` from the persistent queue.
+2. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
+3. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
+4. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the hardened OAuth21 `3008`, 84-tool surface, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window. Select `DOC-2A` only when a current high-churn gap is demonstrable.
+Next recommended action: finish the controlled 85-tool task-lifecycle deployment, then execute `OPS-1A`. Keep the hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
 
 Readiness-derived default next package queue:
 
-1. `COMP-1A` — event-gated
+1. `OPS-1A` — active autonomous E2E quality package
+2. `COMP-1A` — event-gated
    Resume only when a new external-client evidence window exists.
 
-2. `DOC-2A` — bounded fallback
+3. `DOC-2A` — bounded fallback
    Current top25/churn>=5 audit is clean. Reopen only when a fresh audit exposes one real high-churn orientation gap, then stop.
 
-3. `COMP-1B` / `SURF-1A`
+4. `COMP-1B` / `SURF-1A`
    Execute only when fresh evidence materially changes the decision surface.
 
 Recently completed:

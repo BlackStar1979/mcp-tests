@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: authorized tools facade directory map
-Updated: 2026-07-12
+Updated: 2026-08-02
 
 - `read_file.js`, `read_file_lines.js`, `read_file_chunk.js`, `write_file.js`, `append_file.js`, `edit_file_patch.js`
   Authorized workspace file-read and file-mutation facades.
@@ -13,7 +13,7 @@ Updated: 2026-07-12
   Authorized code-analysis facades.
 - `code_apply_patch.js`, `code_patch_plan.js`, `code_rollback_patch.js`, `code_orchestrate.js`, `code_runtime_map.js`, `code_scenario.js`, `code_sample_js.js`
   Authorized code-change planning and execution facades.
-- `memory_create_task.js`, `memory_get_state.js`, `memory_get_tasks.js`, `memory_save.js`, `memory_search.js`, `memory_set_state.js`
+- `memory_create_task.js`, `memory_get_state.js`, `memory_get_tasks.js`, `memory_save.js`, `memory_search.js`, `memory_set_state.js`, `memory_update_task.js`
   Authorized memory/task facades.
 - `plugin_catalog_describe.js`, `plugin_catalog_search.js`, `plugin_execute_readonly.js`, `plugin_execution_governance.js`, `plugin_execution_preflight.js`, `plugin_execution_verify_receipt.js`, `plugin_registry_audit.js`, `plugin_registry_get.js`, `plugin_registry_list.js`, `plugin_registry_status.js`, `plugin_visibility_plan.js`, `plugin_visibility_status.js`
   Authorized plugin governance and registry facades.

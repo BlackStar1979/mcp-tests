@@ -20,6 +20,7 @@
   "_tests/smoke_package_metadata_tools.js",
   "_tests/smoke_memory_policy_spec.js",
   "_tests/smoke_memory_embeddings.js",
+  "_tests/smoke_memory_task_lifecycle.js",
   "_tests/smoke_network_policy_spec.js",
   "_tests/smoke_database_policy_spec.js",
   "_tests/smoke_plugin_visibility_policy_spec.js",

@@ -24,28 +24,34 @@ Current derivation:
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
 - Descriptor refresh review is closed: runtime `2026-08-01T19:48:43.083Z` serves the intentional additive retrieval output contract with combined fingerprint `73c0bc08dad53e8c`; live retrieval calls succeeded without OAuth relogin.
+- The shared task queue now has an explicit lifecycle repair in the repository: `memory_update_task` appends provenance-bearing snapshots and `memory_get_tasks` resolves the latest snapshot per task. Offline validation precedes a controlled `3008` restart and connector re-enumeration from `84` to `85` tools.
+- The next autonomous quality package is persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`: build an operational E2E coverage matrix across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process, and destructive rollback behavior, then close the highest-risk reproduced gaps.
 
 ## Priority matrix
 
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
 | P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but operational Codex still uses legacy `initialize`. | Preserve both version-gated paths and wait for a newer Codex client entry sample. |
-| P1 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
-| P2 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
-| P3 | Preserve the hardened CBM and 84-tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
-| P4 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P0 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
-| P5 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
-| P6 | Hold OAuth21 runtime hardening steady | live PKCE and startup-prune validation | Prevent stable auth from becoming a source of speculative churn. | Preserve PKCE, durable-state, startup-prune, backup, and audit guards; reopen only on reproduced evidence or a current standards delta. |
+| P1 | Complete `OPS-1A` operational E2E coverage matrix | task lifecycle repair, existing smoke/live evidence | The old diagnosis correctly identified uneven depth across operational tool families; the queue now names the missing evidence instead of defaulting to low-value documentation churn. | Inventory hermetic and live evidence, classify positive/negative/repetition/observability/rollback coverage, and implement only reproduced high-risk gaps. |
+| P2 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked and OPS-1A not actionable | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
+| P3 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
+| P4 | Preserve the hardened CBM and governed tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
+| P5 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P0 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
+| P6 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
+| P7 | Hold OAuth21 runtime hardening steady | live PKCE and startup-prune validation | Prevent stable auth from becoming a source of speculative churn. | Preserve PKCE, durable-state, startup-prune, backup, and audit guards; reopen only on reproduced evidence or a current standards delta. |
 
 ## Bounded package queue
 
 0. `COMP-1A` — event-gated protocol course
    Re-run the operational client-entry picture only when a meaningfully new external-client evidence window exists.
 
-1. `DOC-2A` — bounded fallback
+1. `OPS-1A` — operational E2E quality package
+   Build the evidence matrix, reproduce the highest-risk gaps, and repair only demonstrated weaknesses. The durable queue item is `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+
+2. `DOC-2A` — bounded fallback
    Execute only when one real current high-churn orientation gap can be closed without repo-wide documentation churn.
 
-2. `COMP-1B` / `SURF-1A`
+3. `COMP-1B` / `SURF-1A`
    Execute only when fresh `COMP-1A` or UI evidence materially changes the decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
