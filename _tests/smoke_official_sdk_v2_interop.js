@@ -6,6 +6,7 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const net = require("node:net");
 const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
@@ -15,18 +16,28 @@ const {
 } = require("@modelcontextprotocol/client");
 const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
-const PORT = Number(process.env.MCP_TEST_OFFICIAL_SDK_PORT || 3198);
-const MCP_URL = `http://127.0.0.1:${PORT}/mcp`;
 const CLIENT_VERSION = "2.0.0";
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-async function waitHealth() {
+function freePort() {
+  return new Promise((resolve, reject) => {
+    const server = net.createServer();
+    server.unref();
+    server.on("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const { port } = server.address();
+      server.close(() => resolve(port));
+    });
+  });
+}
+
+async function waitHealth(port) {
   for (let attempt = 0; attempt < 60; attempt += 1) {
     try {
-      if ((await fetch(`http://127.0.0.1:${PORT}/healthz`)).ok) return;
+      if ((await fetch(`http://127.0.0.1:${port}/healthz`)).ok) return;
     } catch {}
     await wait(100);
   }
@@ -41,10 +52,10 @@ function readAudit(auditPath) {
     .map((line) => JSON.parse(line));
 }
 
-async function exerciseClient(label, options, expectedEra, expectedVersion) {
+async function exerciseClient(label, options, expectedEra, expectedVersion, mcpUrl) {
   const clientName = `mcp-tests-official-sdk-${label}`;
   const client = new Client({ name: clientName, version: CLIENT_VERSION }, options);
-  const transport = new StreamableHTTPClientTransport(new URL(MCP_URL));
+  const transport = new StreamableHTTPClientTransport(new URL(mcpUrl));
 
   try {
     await client.connect(transport);
@@ -83,13 +94,15 @@ async function exerciseClient(label, options, expectedEra, expectedVersion) {
   ));
   assert.equal(packageJson.version, CLIENT_VERSION, "official client version is pinned");
 
+  const port = await freePort();
+  const mcpUrl = `http://127.0.0.1:${port}/mcp`;
   const controlRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-official-sdk-v2-"));
   const auditPath = path.join(controlRoot, "audit.jsonl");
   const child = spawn(process.execPath, ["server.js"], {
     cwd: path.resolve(__dirname, ".."),
     env: withHermeticServerControlEnv({
       ...process.env,
-      MCP_TEST_PORT: String(PORT),
+      MCP_TEST_PORT: String(port),
       MCP_TEST_AUTH_MODE: "none",
       MCP_TEST_FS_ROOT: path.join(__dirname, "..", "_public_sandbox"),
       MCP_TEST_AUDIT_LOG: auditPath,
@@ -102,24 +115,27 @@ async function exerciseClient(label, options, expectedEra, expectedVersion) {
   child.stderr.on("data", (data) => { serverOutput += String(data); });
 
   try {
-    await waitHealth();
+    await waitHealth(port);
     const legacyClient = await exerciseClient(
       "legacy",
       undefined,
       "legacy",
-      "2025-11-25"
+      "2025-11-25",
+      mcpUrl
     );
     const autoClient = await exerciseClient(
       "auto",
       { versionNegotiation: { mode: "auto" } },
       "modern",
-      "2026-07-28"
+      "2026-07-28",
+      mcpUrl
     );
     const pinnedClient = await exerciseClient(
       "pinned",
       { versionNegotiation: { mode: { pin: "2026-07-28" } } },
       "modern",
-      "2026-07-28"
+      "2026-07-28",
+      mcpUrl
     );
 
     const audit = readAudit(auditPath);

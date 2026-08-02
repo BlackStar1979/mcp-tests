@@ -42,7 +42,7 @@ assert.ok(index.includes("Fresh August 2 evidence keeps retirement blocked"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries"));
 assert.ok(index.includes("canonical PKCE"));
 assert.ok(index.includes("no OAuth relogin was required"));
-assert.ok(index.includes("The v3 knowledge index contains `260` documents"));
+assert.ok(index.includes("The v3 knowledge index contains `261` documents"));
 assert.ok(index.includes("reports freshness `fresh`"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `84`"));
 assert.ok(canon.includes("tool count `84`"));

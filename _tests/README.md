@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-08-02`:
 
-- `362` JavaScript files total in `_tests`
-- `279` active scripts currently listed in `run_all_smoke_scripts.json`
+- `363` JavaScript files total in `_tests`
+- `280` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs
@@ -19,8 +19,8 @@ Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
 - last confirmed result from `2026-08-02`: `ok=true`
-- last confirmed section counts from that full run: `7` public scripts and `271` authenticated scripts
-- current manifest file contains `279` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `278` sectioned scripts, not all `279` manifest entries
+- last confirmed section counts from that full run: `7` public scripts and `272` authenticated scripts
+- current manifest file contains `280` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `279` sectioned scripts, not all `280` manifest entries
 
 ## Orientation
 
@@ -44,7 +44,7 @@ Latest full active validation:
 
 - Public profile surface: descriptor audit, profile audit, public FS surface, and profile schema checks
 - Core authenticated surface: policy, routing, schema, MCP dispatch, repo/runtime topology, and enforcement guards
-- Official SDK interoperability: `@modelcontextprotocol/client` v2 legacy initialization, automatic modern negotiation, pinned `2026-07-28` negotiation, tool listing, tool calls, and server-side entry-path audit evidence
+- Official SDK interoperability: `@modelcontextprotocol/client` v2 legacy initialization, automatic modern negotiation, pinned `2026-07-28` negotiation, full OAuth21 DCR/PKCE/callback flow, issuer-bound credential persistence, automatic refresh-token rotation, tool listing/calls, and server-side audit evidence
 - Codebase-memory bridge: fixture-based contract smokes plus live v0.9.0 bridge stress coverage for indexing, project aliasing, concurrent heavy reads, snippets, tracing, and cleanup
 - OAuth and OAuth21: AS metadata, JWKS/introspection, DCR, PKCE, rotation, state, prune preview/receipt/gate/apply-package draft/apply helper/control-plane script, and route contract checks
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target

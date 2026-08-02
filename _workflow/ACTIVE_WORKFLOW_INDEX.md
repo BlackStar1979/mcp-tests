@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-02
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`) at `server_start_id = 2026-08-01T20:29:11.207Z`. The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live, and official `@modelcontextprotocol/client@2.0.0` regression now proves default legacy plus automatic and pinned modern list/call paths. The additive retrieval contract remains live with combined fingerprint `73c0bc08dad53e8c`; no OAuth relogin was required. The v3 knowledge index contains `261` documents, visited `1126` files and `50` directories, reports freshness `fresh`, extracts all `11` readiness components, and links all `36` source-of-truth documents. Fresh August 2 evidence keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries.
+Current repo/runtime note: profile `tests`, the live OAuth21 `3008` runtime, and the connector enumerate `84` authenticated tools (`13 public + 71 authorized-visible`) at `server_start_id = 2026-08-01T20:29:11.207Z`. The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live, and official `@modelcontextprotocol/client@2.0.0` regressions now prove default legacy, automatic and pinned modern list/call paths, plus the complete OAuth21 DCR/PKCE/callback/refresh lifecycle on a hermetic server. The additive retrieval contract remains live with combined fingerprint `73c0bc08dad53e8c`; no OAuth relogin was required on production. The v3 knowledge index contains `261` documents, visited `1127` files and `50` directories, reports freshness `fresh`, extracts all `11` readiness components, and links all `36` source-of-truth documents. Fresh August 2 evidence keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
@@ -71,9 +71,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=271`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=272`.
 - Public section count: `7`.
-- Authenticated smoke count: `271`.
+- Authenticated smoke count: `272`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -403,7 +403,7 @@ Readiness-derived default next package queue:
 
 Recently completed:
 
-- Completed `MCP-OFFICIAL-SDK-V2-INTEROP` on August 2, 2026: exact dev dependency `@modelcontextprotocol/client@2.0.0` proves default legacy, automatic modern, and pinned `2026-07-28` negotiation on isolated port `3198`; all clients list and call tools, and hermetic server audit assertions prove the actual entry paths. Full validation is `7 + 271`; production port `3008` was not touched.
+- Completed `MCP-OFFICIAL-SDK-V2-INTEROP` on August 2, 2026: exact dev dependency `@modelcontextprotocol/client@2.0.0` proves default legacy, automatic modern, and pinned `2026-07-28` negotiation on isolated servers; all clients list and call tools, and hermetic server audit assertions prove the actual entry paths. The authenticated extension additionally proves SDK-driven DCR, PKCE S256, callback `state`/`iss`, issuer-bound persistence, an 84-tool authorized list/call, and automatic refresh-token rotation. Full validation is `7 + 272`; production port `3008` was not touched.
 
 - Refreshed `COMP-1A` on August 2, 2026: current live `server_start_id 2026-08-01T20:29:11.207Z` shows operational `codex-mcp-client 0.146.0-alpha.9.2` remains `initialize_only` with `2` matching legacy entries and `0` `server/discover` entries.
 

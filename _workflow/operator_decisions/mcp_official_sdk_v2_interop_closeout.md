@@ -1,6 +1,6 @@
 # MCP Official SDK v2 Interoperability Closeout
 
-Status: GREEN / OFFICIAL CLIENT INTEROP REGRESSION-GUARDED
+Status: GREEN / OFFICIAL CLIENT NEGOTIATION AND OAUTH INTEROP REGRESSION-GUARDED
 Date: 2026-08-02
 
 ## Purpose
@@ -18,7 +18,7 @@ The dependency is pinned exactly as a development dependency. It is not imported
 
 ## Verified paths
 
-`_tests/smoke_official_sdk_v2_interop.js` starts one auth-free server child on isolated port `3198` with hermetic control and audit paths, then creates a fresh official transport and client for each case:
+`_tests/smoke_official_sdk_v2_interop.js` starts one auth-free server child on a dynamically allocated loopback port with hermetic control and audit paths, then creates a fresh official transport and client for each case:
 
 1. SDK default legacy mode negotiates `2025-11-25` through `initialize`.
 2. SDK automatic negotiation selects modern `2026-07-28` through `server/discover`.
@@ -34,6 +34,22 @@ The isolated server audit is part of the assertion surface:
 
 This prevents a client-side success result from being mistaken for proof of the intended server entry path.
 
+## Authenticated OAuth21 extension
+
+`_tests/smoke_official_sdk_v2_oauth_interop.js` starts a separate OAuth21 `tests` profile on a dynamically allocated loopback port. Its operator secret, SQLite store, control state, and audit log all live under one temporary root. It does not bind or restart production port `3008`.
+
+The test implements the official v2 `OAuthClientProvider` contract and proves the complete client/server boundary:
+
+1. An unauthenticated modern connection receives `401` and the SDK performs discovery plus DCR.
+2. The SDK creates PKCE S256 authorization material and preserves provider `state` and RFC 8707 `resource` binding.
+3. The test host completes the operator-login redirect, validates callback `state`, and passes callback `URLSearchParams` to `finishAuth`, which validates RFC 9207 `iss`.
+4. Saved client information and tokens retain the SDK's authorization-server `issuer` stamp.
+5. A fresh modern client lists the authenticated surface, confirms representative public/authorized/CBM/memory tools, and calls `get_info` successfully.
+6. After deliberate access-token rejection, a default legacy client refreshes during `initialize`, rotates both tokens, lists/calls successfully, and does not reopen operator authorization.
+7. A final fresh modern client reuses the rotated credentials and completes `server/discover`, list, and call without another refresh.
+
+The audit assertions require one accepted operator login, one accepted refresh rotation, two authenticated `server/discover` entries, one authenticated legacy `initialize`, three completed `get_info` calls, and no operator secret, authorization code, PKCE verifier, rejected access token, issued access token, or refresh token in the audit log.
+
 ## Harness correction
 
 The first full-suite run exposed inherited audit-path pollution in the new test. The test now explicitly binds `MCP_TEST_AUDIT_LOG` to its own temporary control root even when `run_all_smokes` supplies a parent audit path. A focused run with a deliberately conflicting inherited path and the subsequent full suite both passed.
@@ -42,7 +58,8 @@ The first full-suite run exposed inherited audit-path pollution in the new test.
 
 - focused official SDK interop smoke: GREEN
 - focused repository hygiene smoke: GREEN
-- full offline suite: `7 public + 271 authenticated`, GREEN
+- focused official SDK OAuth21 interop smoke: GREEN
+- full offline suite: `7 public + 272 authenticated`, GREEN
 - production port `3008`: not touched
 - runtime restart: not required because this package changes only tests, development dependencies, and workflow documentation
 
