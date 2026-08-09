@@ -83,19 +83,19 @@ Base inheritance is limited to OS identity, locale, home, temp, and the trusted 
 
 ## Asynchronous lifecycle
 
-The default manager allows two running jobs, eight queued jobs, and 32 retained terminal records. Terminal records expire after 30 minutes. These limits are fail-fast configurable within hard bounds.
+The default manager allows two running jobs, eight queued jobs, and 32 retained terminal records. Terminal records expire after 30 minutes. These limits are fail-fast configurable within hard bounds. Every job is bound to a one-way hash of the authenticated OAuth client ID; a different client receives the same not-found result as an unknown job and cannot read or cancel it.
 
 Job states are `queued`, `running`, `ok`, `nonzero_exit`, `timeout`, `spawn_error`, and `cancelled`. Timeout begins when the child starts, not while queued.
 
 `process_output` accepts independent stdout/stderr offsets and a combined per-call chunk limit capped at 65536 characters. It returns next offsets and EOF flags. Polling therefore stays transport-bounded even when the job's retained output reaches one million characters.
 
-Queued cancellation removes the job without spawning. Running cancellation first requests graceful termination, then escalates to process-tree termination. Windows uses `taskkill /T /F` through a fixed system executable; POSIX uses a process group where available. The manager drains output until close and records termination errors.
+Queued cancellation removes the job without spawning. Running cancellation immediately terminates the process tree because killing only the parent can orphan descendants. Windows waits for `taskkill /T /F` through a fixed system executable; POSIX sends `SIGKILL` to the detached process group with a direct-child fallback. The job completion promise does not resolve until tree termination completes, the manager drains output until close, and termination errors remain explicit.
 
 The registry is intentionally in-memory. A controlled server restart cancels active jobs before exit. Job metadata does not survive restart, and the API reports unknown IDs deterministically after restart. No detached process is created.
 
 ## Audit and confidentiality
 
-The manager emits bounded lifecycle events: queued, started, completed, timed out, cancelled, spawn failed, output read, and pruned. Events include job ID, logical command, status, durations, counts, truncation flags, and reason codes. They exclude raw output, env values, executable paths, and command arguments.
+The manager emits bounded lifecycle events: queued, started, completed, timed out, cancelled, spawn failed, output read, and pruned. Events include job ID, logical command, status, durations, counts, truncation flags, and closed cancellation reason codes. They exclude raw cancellation text, raw output, env values, executable paths, OAuth client IDs, and command arguments.
 
 Tool-call audit remains active through the existing runtime. The optional-tool execution context gains an internal audit callback so terminal events can be recorded after `process_start` returns.
 
@@ -107,8 +107,8 @@ Tool-call audit remains active through the existing runtime. The optional-tool e
 4. Prove Node is pinned and workspace `.venv`/`node_modules` resolution wins where applicable.
 5. Prove Docker remains allowed and `kubectl` is denied.
 6. Prove combined stdout/stderr never exceeds the configured output budget.
-7. Prove queueing, concurrency, cursor output, completion, timeout, cancellation, retention, and unknown-job behavior.
-8. Prove audits contain lifecycle metadata without raw output, args, env values, or resolved paths.
+7. Prove queueing, concurrency, cursor output, completion, timeout, process-tree cancellation, retention, owner isolation, and unknown-job behavior.
+8. Prove audits contain lifecycle metadata without raw output, args, env values, raw cancellation reasons, OAuth client IDs, or resolved paths.
 9. Run targeted smokes, full offline suite, self-test, schema/spec guards, and live OAuth probes on an isolated non-production port.
 10. Restart production port 3008 only with `node .\scripts\request-restart.js --code=42 --reason=manual`, then verify health, 89-tool surface, OAuth continuity, and direct calls.
 

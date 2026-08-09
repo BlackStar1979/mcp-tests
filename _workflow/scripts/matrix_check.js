@@ -49,6 +49,9 @@ function auditRuntimeConfig(findings){
   const env = uniq(
     [...codeText.matchAll(/MCP_TEST_[A-Z0-9_]+/g)].map(m=>m[0])
       .concat(
+        [...codeText.matchAll(/process\.env\.(MCP_[A-Z0-9_]+)/g)].map(m=>m[1]),
+        [...codeText.matchAll(/env\.(MCP_[A-Z0-9_]+)/g)].map(m=>m[1]),
+        [...codeText.matchAll(/["'](MCP_PROCESS_[A-Z0-9_]+)["']/g)].map(m=>m[1]),
         [...codeText.matchAll(/process\.env\.(CBM_[A-Z0-9_]+)/g)].map(m=>m[1]),
         [...codeText.matchAll(/env\.(OVH_[A-Z0-9_]+)/g)].map(m=>m[1]),
         cbmSafeEnv,
@@ -85,7 +88,8 @@ function auditEvents(findings){
   const runtimeControllerEvents = [...text.matchAll(/audit\(\"(runtime_restart_[a-z0-9_]+)\"/g)].map(m=>m[1]);
   const oauthEvents = [...text.matchAll(/auditOAuth\(\"(oauth21_[a-z0-9_]+)\"/g)].map(m=>m[1]);
   const oauthWrapperEvents = [...text.matchAll(/emitAudit\([^,]+,[^,]+,\s*\"(oauth21_[a-z0-9_]+)\"/g)].map(m=>m[1]);
-  const uniqEvents = uniq(events.concat(runtimeControllerEvents, oauthEvents, oauthWrapperEvents));
+  const processJobEvents = [...text.matchAll(/emit\(\"(process_job_[a-z0-9_]+)\"/g)].map(m=>m[1]);
+  const uniqEvents = uniq(events.concat(runtimeControllerEvents, oauthEvents, oauthWrapperEvents, processJobEvents));
   if (!exists("SERVER_EVENT_CATALOG_SPEC.json")) { push(findings,"warn","missing_audit_events_spec",{event_count:uniqEvents.length, events:uniqEvents}); return; }
   const spec = json("SERVER_EVENT_CATALOG_SPEC.json");
   const listed = (spec.events||[]).map(e=>typeof e==="string"?e:e.name).sort();

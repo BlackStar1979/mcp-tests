@@ -14,7 +14,7 @@ const runProcessTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Run bounded workspace process",
-    description: "Run an allowlisted local process inside an allowed workspace root with bounded output, timeout, and restrictive PowerShell policy.",
+    description: "Run an allowlisted local process inside an allowed workspace root with pinned executable resolution, combined bounded output, timeout, and restrictive environment policy.",
     inputSchema: RUN_PROCESS_INPUT_SCHEMA,
     outputSchema: RUN_PROCESS_OUTPUT_SCHEMA,
     annotations: PROCESS_TOOL_ANNOTATIONS,
@@ -27,7 +27,7 @@ const runProcessTool = {
       command: String(args.command || ""),
       arg_count: Array.isArray(args.args) ? args.args.length : 0,
       cwd_length_chars: String(args.cwd || ".").length,
-      timeout_ms: Number(args.timeout_ms || 30000),
+      timeout_ms: Number(args.timeout_ms || 60000),
     };
   },
   resultStats(payload = {}) {

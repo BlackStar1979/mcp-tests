@@ -1,18 +1,18 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-02
+Date: 2026-08-09
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` now serve `85` authenticated tools (`13 public + 72 authorized-visible`) at `server_start_id = 2026-08-02T09:21:24.828Z` after controlled restart `manual-1785662483342`. The already-open model task retains its startup-time `84`-tool map, while existing direct connector calls remain authorized and latest-snapshot task reads are live. The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy remain live, and official `@modelcontextprotocol/client@2.0.0` regressions prove default legacy, automatic and pinned modern list/call paths, plus the complete OAuth21 DCR/PKCE/callback/refresh lifecycle and process-restart recovery from SQLite on a hermetic server. The v3 knowledge index contains `262` documents, visited `1131` files and `50` directories, reports freshness `fresh`, extracts all `12` readiness components, and links all `36` source-of-truth documents. Fresh August 2 evidence keeps retirement blocked: `codex-mcp-client 0.146.0-alpha.9.2` has `2` matching legacy `initialize` entries and `0` `server/discover` entries. Actionable autonomous work is `OPS-1A`, persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` both serve the `89`-tool target (`13 public + 76 authorized-visible`) after accepted restart `manual-1786285267764`. `PROC-1A` is complete: sync limits are `60s/600s/250k/1M`, the shared execution core and four bounded async job tools are live, Docker remains available, `kubectl` is denied, resolution is pinned, child env is restricted, and restart drains jobs. This already-open Codex task retains its startup `85`-tool map; only client re-enumeration of the four new names remains. Actionable autonomous work is `OPS-1A`, task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
 
-The task-lifecycle package is live and no OAuth relogin was required; only client re-enumeration of the new tool name remains pending in this already-open model task.
+The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = operational-e2e-quality`
+- `current_working_course = operational-e2e-reliability`
 - `next_primary = ops-1a-operational-e2e-coverage-matrix`
-- `next_secondary = comp-1a-on-fresh-external-client-traffic`
+- `next_secondary = comp-1a-client-entry-evidence-on-new-version`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=273`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=277`.
 - Public section count: `7`.
-- Authenticated smoke count: `273`.
+- Authenticated smoke count: `277`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -85,11 +85,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, current live and repository surface 85 connector-visible tools at `server_start_id = 2026-08-02T09:21:24.828Z`; the final `2026-07-28` adapter and official SDK v2 regression are complete, while current `COMP-1A` evidence remains `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2`;
+- authorized runtime: `auth:oauth21`, port `3008`, repository/live target `89` at `server_start_id = 2026-08-09T14:21:09.406Z`; this already-open model task remains at its startup `85`-tool map until re-enumeration;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Repository and live runtime counts remain aligned at 85, and the hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts are live at `server_start_id = 2026-08-02T09:21:24.828Z`; direct calls survived the supervised restart, while this already-open model task still awaits one surface re-enumeration.
+- Repository and live runtime are `89`; only this already-open model map remains `85`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain live and unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.

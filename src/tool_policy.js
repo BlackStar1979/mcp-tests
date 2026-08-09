@@ -82,6 +82,10 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "code_rollback_patch",
   "tool_dispatch",
   "run_process",
+  "process_start",
+  "process_status",
+  "process_output",
+  "process_cancel",
   "memory_save",
   "memory_search",
   "memory_get_state",
@@ -232,7 +236,11 @@ const TOOL_POLICIES = Object.freeze({
   plugin_execution_verify_receipt: policy({ usesFs: false, fsScope: "none" }),
   auth_legacy_retirement_status: policy({ usesFs: false, fsScope: "none" }),
   observability_status: policy({ usesFs: true, fsScope: "observability-audit-preview" }),
-  run_process: policy({ profileAllowed: ["internal"], readOnly: false, destructive: true, usesFs: false, fsScope: "none", authRequired: true, publicSafe: false, openWorld: false }),
+  run_process: policy({ profileAllowed: ["internal"], readOnly: false, destructive: true, usesFs: true, fsScope: "workspace-process-execution", authRequired: true, publicSafe: false, openWorld: true }),
+  process_start: policy({ profileAllowed: ["internal"], readOnly: false, destructive: true, usesFs: true, fsScope: "workspace-process-execution", authRequired: true, publicSafe: false, openWorld: true }),
+  process_status: policy({ profileAllowed: ["internal"], usesFs: false, fsScope: "process-job-registry-readonly", authRequired: true, publicSafe: false }),
+  process_output: policy({ profileAllowed: ["internal"], usesFs: false, fsScope: "process-job-registry-readonly", authRequired: true, publicSafe: false }),
+  process_cancel: policy({ profileAllowed: ["internal"], readOnly: false, destructive: true, usesFs: false, fsScope: "process-job-control", authRequired: true, publicSafe: false, openWorld: true }),
   process_runner_status: policy({ usesFs: false, fsScope: "none", publicSafe: false }),
 });
 

@@ -28,6 +28,7 @@ const { createRuntimeRateLimiter } = require("./rate_limit_policy");
 const { DOCS } = require("./static_docs");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
 const { resolveRuntimeOutputConfig } = require("./runtime_output_config");
+const { shutdownDefaultProcessJobManager } = require("../util/process_job_manager");
 
 function runServerBootstrapRuntime({ argv = process.argv, env = process.env, rootDir = path.resolve(__dirname, "../..") } = {}) {
   const serverCliConfig = parseServerCliArgs(argv.slice(2));
@@ -139,7 +140,13 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   }
 
   const rateLimiter = createRuntimeRateLimiter({ env, rootDir });
-  const restartController = createRestartController({ auditLog, env, rootDir, rateLimiter });
+  const restartController = createRestartController({
+    auditLog,
+    env,
+    rootDir,
+    rateLimiter,
+    beforeExit: () => shutdownDefaultProcessJobManager("server_restart"),
+  });
   if (runtimeSideEffectsEnabled) restartController.start();
 
   const getRuntimeStatus = createRuntimeStatusAssembly({

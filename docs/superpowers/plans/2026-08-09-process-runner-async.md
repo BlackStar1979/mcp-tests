@@ -287,7 +287,7 @@ Expected: all commands exit zero.
 
 - [ ] **Step 2: Run isolated live probes**
 
-Start an OAuth21 test instance on an unused port with isolated OAuth/audit/state files. Verify synchronous limits, async completion, output cursors, timeout, cancellation, Docker version, package-manager version, denial of Kubernetes, and no orphan processes. Stop and clean only the isolated instance and its temporary files.
+Start an OAuth21 test instance on an unused port with isolated OAuth/audit/state files. Verify synchronous limits, async completion, output cursors, timeout, OAuth-client owner isolation, confirmed process-tree cancellation, Docker version, package-manager version, denial of Kubernetes, and no orphan processes. Stop and clean only the isolated instance and its temporary files.
 
 - [ ] **Step 3: Restart production safely**
 

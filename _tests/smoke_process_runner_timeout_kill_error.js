@@ -16,12 +16,12 @@ function createFakeStream() {
   fakeChild.stdout = createFakeStream();
   fakeChild.stderr = createFakeStream();
   fakeChild.kill = (signal) => {
-    if (signal === "SIGTERM") throw new Error("sigterm blocked");
-    return true;
+    if (signal === "SIGKILL") throw new Error("tree kill blocked");
+    return false;
   };
 
   const fakeSpawn = () => {
-    setTimeout(() => fakeChild.emit("close", null, "SIGTERM"), 180);
+    setTimeout(() => fakeChild.emit("close", null, "SIGKILL"), 180);
     return fakeChild;
   };
 
@@ -34,8 +34,8 @@ function createFakeStream() {
 
   assert.equal(result.status, "timeout");
   assert.equal(result.timed_out, true);
-  assert.equal(result.signal, "SIGTERM");
-  assert.match(result.error || "", /kill\(SIGTERM\) failed: sigterm blocked/);
+  assert.equal(result.signal, "SIGKILL");
+  assert.match(result.error || "", /process-tree termination returned false/);
   console.log("smoke_process_runner_timeout_kill_error ok");
 })().catch((error) => {
   console.error(error);

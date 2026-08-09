@@ -23,6 +23,7 @@ const workflowMarkers = state.workflow_progress_markers;
   assert.equal(truthAudit.current.next_primary, workflowMarkers.next_primary);
   assert.equal(truthAudit.current.next_secondary, workflowMarkers.next_secondary);
   assert.equal(Array.isArray(truthAudit.findings), true);
+  assert.deepEqual(truthAudit.findings, []);
 
   const runtimeMap = await codeRuntimeMapTool.execute({});
   assert.equal(runtimeMap.stage_plan.current, workflowMarkers.current_working_course);

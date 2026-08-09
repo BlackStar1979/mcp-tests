@@ -181,9 +181,23 @@
       "public_surface_allowed": false
     },
     "process_execution_bounded": {
-      "description": "Bounded authenticated process execution restricted by allowlist, cwd, timeout, output caps, and environment minimization.",
+      "description": "Bounded authenticated process execution restricted by pinned executable resolution, command families, workspace cwd, timeout, combined output caps, and environment minimization.",
       "allowed_operations": [
         "execute"
+      ],
+      "public_surface_allowed": false
+    },
+    "process_job_registry_readonly": {
+      "description": "Read-only bounded status and cursor output access for OAuth-client-bound in-memory process jobs.",
+      "allowed_operations": [
+        "read"
+      ],
+      "public_surface_allowed": false
+    },
+    "process_job_control": {
+      "description": "Authenticated owner-bound cancellation and confirmed process-tree termination for queued or running in-memory process jobs.",
+      "allowed_operations": [
+        "cancel"
       ],
       "public_surface_allowed": false
     },
@@ -290,6 +304,10 @@
     },
     "execute": {
       "mutation": true
+    },
+    "cancel": {
+      "mutation": true,
+      "destructive": true
     }
   },
   "mandatory_rules": {

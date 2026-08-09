@@ -266,7 +266,16 @@ async function connectAndExercise({
 
     const toolList = await client.listTools();
     assert.ok(toolList.tools.length >= 80, `${label} receives the authenticated tool surface`);
-    for (const toolName of ["get_info", "build_index", "cbm_index_repository", "memory_search"]) {
+    for (const toolName of [
+      "get_info",
+      "build_index",
+      "cbm_index_repository",
+      "memory_search",
+      "process_start",
+      "process_status",
+      "process_output",
+      "process_cancel",
+    ]) {
       assert.ok(toolList.tools.some((tool) => tool.name === toolName), `${label} exposes ${toolName}`);
     }
 
@@ -274,6 +283,61 @@ async function connectAndExercise({
     assert.notEqual(call.isError, true, `${label} authenticated tool call succeeds`);
     assert.equal(call.structuredContent?.success, true, `${label} returns structured success`);
     assert.equal(call.structuredContent?.type, "directory", `${label} reads the workspace root`);
+
+    const started = await client.callTool({
+      name: "process_start",
+      arguments: {
+        command: "node",
+        args: ["-e", "process.stdout.write('oauth-process-ok')"],
+        cwd: "mcp-tests",
+        timeout_ms: 5000,
+      },
+    });
+    assert.notEqual(started.isError, true, `${label} starts an async process job`);
+    const jobId = started.structuredContent?.job_id;
+    assert.equal(typeof jobId, "string", `${label} receives an async process job id`);
+
+    let terminalStatus = null;
+    for (let attempt = 0; attempt < 100; attempt += 1) {
+      const status = await client.callTool({
+        name: "process_status",
+        arguments: { job_id: jobId },
+      });
+      if (status.structuredContent?.terminal === true) {
+        terminalStatus = status.structuredContent;
+        break;
+      }
+      await wait(20);
+    }
+    assert.equal(terminalStatus?.status, "ok", `${label} completes the async process job`);
+
+    const output = await client.callTool({
+      name: "process_output",
+      arguments: { job_id: jobId, max_chars: 65536 },
+    });
+    assert.equal(output.structuredContent?.stdout, "oauth-process-ok", `${label} reads async output by cursor`);
+    assert.equal(output.structuredContent?.stdout_eof, true, `${label} reaches async stdout EOF`);
+
+    if (label === "authorized-modern") {
+      const longJob = await client.callTool({
+        name: "process_start",
+        arguments: {
+          command: "node",
+          args: ["-e", "setTimeout(() => {}, 5000)"],
+          cwd: "mcp-tests",
+          timeout_ms: 10000,
+        },
+      });
+      const cancelled = await client.callTool({
+        name: "process_cancel",
+        arguments: {
+          job_id: longJob.structuredContent?.job_id,
+          reason: "oauth_e2e_cancel",
+        },
+      });
+      assert.equal(cancelled.structuredContent?.status, "cancelled", `${label} cancels an owned async process job`);
+      assert.equal(cancelled.structuredContent?.terminal, true, `${label} observes terminal cancellation`);
+    }
   } finally {
     await client.close().catch(() => {});
   }
@@ -443,6 +507,28 @@ async function connectAndExercise({
       4,
       "all authenticated sessions complete a real authorized tool call"
     );
+    for (const eventName of [
+      "process_job_queued",
+      "process_job_started",
+      "process_job_completed",
+      "process_job_output_read",
+      "process_job_cancelled",
+    ]) {
+      assert.ok(
+        audit.entries.some((entry) => entry.event === eventName),
+        `async process lifecycle records ${eventName}`
+      );
+    }
+    assert.ok(
+      audit.entries.some((entry) => (
+        entry.event === "tool_call_decision"
+        && entry.decision_receipt?.redacted_context?.tool === "process_start"
+        && entry.decision_receipt?.reason_codes?.includes("guarded_process_execution")
+      )),
+      "central runtime policy explicitly authorizes guarded process execution"
+    );
+    assert.equal(audit.raw.includes("oauth-process-ok"), false, "audit log does not expose process output");
+    assert.equal(audit.raw.includes("oauth_e2e_cancel"), false, "audit log does not expose raw cancellation reasons");
     for (const secret of [
       operatorSecret,
       callback.searchParams.get("code"),

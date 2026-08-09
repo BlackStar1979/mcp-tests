@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces and intended for model/agent use",
-      "tool_count": 72,
+      "tool_count": 76,
       "tools": [
         "code_sample_js",
         "cbm_status",
@@ -92,6 +92,10 @@
         "code_rollback_patch",
         "tool_dispatch",
         "run_process",
+        "process_start",
+        "process_status",
+        "process_output",
+        "process_cancel",
         "memory_save",
         "memory_search",
         "memory_get_state",
@@ -148,7 +152,7 @@
       ]
     }
   },
-  "total_mcp_callable_tool_count": 85,
+  "total_mcp_callable_tool_count": 89,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -933,6 +937,58 @@
       "tool_category": "process",
       "resource_class": "process_execution_bounded",
       "operation_class": "execute",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "process_start": {
+      "name": "process_start",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_execution_bounded",
+      "operation_class": "execute",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "process_status": {
+      "name": "process_status",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_job_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "process_output": {
+      "name": "process_output",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_job_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "process_cancel": {
+      "name": "process_cancel",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_job_control",
+      "operation_class": "cancel",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],

@@ -1,9 +1,9 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-01T20:30:00.000Z",
+  "updated_at": "2026-08-09T13:50:00.000Z",
   "project": "mcp-tests",
-  "purpose": "Current orientation map, not a log.",
+  "purpose": "Orientation only.",
   "read_order": [
     "_workflow/README.md",
     "_workflow/ACTIVE_WORKFLOW_INDEX.md",
@@ -32,7 +32,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 85,
+      "expected_tool_count": 89,
       "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
     },
     "retired": {
@@ -46,11 +46,11 @@
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authorized_mcp_tools": {
-      "count": 72,
+      "count": 76,
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authenticated_total": {
-      "count": 85,
+      "count": 89,
       "source_spec": "SERVER_SPEC.json / SERVER_TOOLS_SPEC.json"
     }
   },
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "operational-e2e-quality",
+    "current_working_course": "operational-e2e-reliability",
     "next_primary": "ops-1a-operational-e2e-coverage-matrix",
-    "next_secondary": "comp-1a-on-fresh-external-client-traffic",
+    "next_secondary": "comp-1a-client-entry-evidence-on-new-version",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -181,7 +181,7 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 86,
+    "env_var_count": 98,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -281,8 +281,8 @@
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
-      "expected_tool_count": 85,
-      "server_start_id": "2026-08-02T09:21:24.828Z",
+      "expected_tool_count": 89,
+      "server_start_id": "2026-08-09T14:21:09.406Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -291,7 +291,7 @@
       "sessionless_hidden_route_subscriptions_listen_active": false,
       "sessionless_hidden_route_repo_retired_now": true,
       "transport_session_retirement_repo_applied_not_live_loaded_yet": false,
-      "cbm_contract": "live_hardened_v0_9_0_84_with_upstream_201_277_caveats_and_snippet_integrity"
+      "cbm_contract": "live_hardened_v0_9_0_89_with_upstream_201_277_caveats_and_snippet_integrity"
     },
     "public_3009": {
       "auth_mode": "none",
@@ -304,15 +304,15 @@
   },
   "current_connector_truth": {
     "oauth21_3008_tools": {
-      "tool_count": 84,
+      "tool_count": 85,
       "tool_names_hash": "7b5bfc1bd21386d3",
       "input_schema_fingerprint": "f835e87d9899b3fa",
       "output_schema_fingerprint": "d836b83b3151b65d",
       "descriptor_fingerprint": "fb2ee514c19cd02e",
       "combined_fingerprint": "73c0bc08dad53e8c",
-      "connector_map_status": "runtime85_model84_refresh_pending",
-      "repo_current_expected_tool_count": 85,
-      "server_start_id": "2026-08-02T09:21:24.828Z",
+      "connector_map_status": "repo89_runtime89_model85_reenumeration_pending",
+      "repo_current_expected_tool_count": 89,
+      "server_start_id": "2026-08-09T14:21:09.406Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

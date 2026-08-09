@@ -23,9 +23,9 @@ const EXPECTED = {
   authorized: {
     authMode: "oauth21",
     runtimeProfile: "internal",
-    total: 85,
-    optional: 83,
-    required: ["search", "fetch", "memory_save", "list_directory", "read_file", "write_file", "project_truth_audit", "tool_usage_snapshot", "search_index", "build_index", "run_process", "code_patch_plan", "code_orchestrate", "code_scenario", "code_apply_patch", "code_rollback_patch", "tool_dispatch", "cbm_status", "cbm_index_repository"],
+    total: 89,
+    optional: 87,
+    required: ["search", "fetch", "memory_save", "list_directory", "read_file", "write_file", "project_truth_audit", "tool_usage_snapshot", "search_index", "build_index", "run_process", "process_start", "process_status", "process_output", "process_cancel", "code_patch_plan", "code_orchestrate", "code_scenario", "code_apply_patch", "code_rollback_patch", "tool_dispatch", "cbm_status", "cbm_index_repository"],
     forbidden: ["test_mcp_runtime_status", "auth_legacy_retirement_status", "plugin_visibility_plan", "tool_registry_status"],
   },
 };

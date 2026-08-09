@@ -152,6 +152,10 @@ function loadOptionalTools(options = {}) {
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_PROCESS_EXECUTION_TOOL", true)) {
     add("../tools/authorized/run_process", "runProcessTool", "run_process");
+    add("../tools/authorized/process_start", "processStartTool", "process_start");
+    add("../tools/authorized/process_status", "processStatusTool", "process_status");
+    add("../tools/authorized/process_output", "processOutputTool", "process_output");
+    add("../tools/authorized/process_cancel", "processCancelTool", "process_cancel");
   }
 
   if (memoryToolsRequested && memoryToolsAllowed) {

@@ -57,7 +57,7 @@ function assertMatrix(label, matrix, expected) {
   assert.equal(publicMatrix.audit_required_count, 0, "public has no audit-required tools");
   const auth = buildSupport({ authMode: "oauth21", runtimeProfile: "internal" });
   const authMatrix = buildPolicyEnforcementCoverageMatrix({ registryContext: auth.support.registryContext, serverProfileConfig: auth.serverProfileConfig, surfaceName: "authenticated", authMode: "oauth21", rootDir: ROOT, label: "authorized-policy-coverage" });
-  assertMatrix("authorized", authMatrix, { total: 85, required: ["memory_save", "memory_update_task", "search_index", "build_index", "write_file", "run_process", "code_patch_plan", "code_scenario", "write_remote_site_file", "restore_remote_site_file", "code_orchestrate", "code_apply_patch", "code_rollback_patch", "tool_dispatch", "cbm_status", "cbm_index_repository"] });
+  assertMatrix("authorized", authMatrix, { total: 89, required: ["memory_save", "memory_update_task", "search_index", "build_index", "write_file", "run_process", "process_start", "process_status", "process_output", "process_cancel", "code_patch_plan", "code_scenario", "write_remote_site_file", "restore_remote_site_file", "code_orchestrate", "code_apply_patch", "code_rollback_patch", "tool_dispatch", "cbm_status", "cbm_index_repository"] });
   assert.ok(authMatrix.mutating_tools.includes("memory_save"), "authorized mutating tool inventory includes memory_save");
   assert.ok(authMatrix.audit_required_tools.includes("memory_save"), "memory_save audit required");
   assert.ok(authMatrix.audit_required_tools.includes("write_remote_site_file"), "write_remote_site_file audit required");

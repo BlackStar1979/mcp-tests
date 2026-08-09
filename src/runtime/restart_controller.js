@@ -6,6 +6,7 @@ const { normalizeRestartExitCode } = require("./restart_exit_codes");
 
 function flag(v) { return ["1","true","yes","on"].includes(String(v || "").trim().toLowerCase()); }
 function delay(v) { const n = Number(v || 250); return Number.isInteger(n) && n >= 50 && n <= 5000 ? n : 250; }
+function shutdownGrace(v) { const n = Number(v || 5000); return Number.isInteger(n) && n >= 50 && n <= 30000 ? n : 5000; }
 function defaultTriggerFile(rootDir) { return path.join(rootDir, "_control", "restart-request.json"); }
 function createRestartController(opts = {}) {
   const env = opts.env || process.env;
@@ -15,9 +16,11 @@ function createRestartController(opts = {}) {
   const logger = typeof opts.logger === "function" ? opts.logger : console.log;
   const warnLogger = typeof opts.warnLogger === "function" ? opts.warnLogger : console.warn;
   const rateLimiter = opts.rateLimiter || null;
+  const beforeExit = typeof opts.beforeExit === "function" ? opts.beforeExit : null;
   const enabled = flag(env.MCP_TEST_ENABLE_RESTART_TRIGGER);
   const triggerFile = String(env.MCP_TEST_RESTART_TRIGGER_FILE || defaultTriggerFile(rootDir));
   const delayMs = delay(env.MCP_TEST_RESTART_EXIT_DELAY_MS);
+  const shutdownGraceMs = shutdownGrace(env.MCP_TEST_RESTART_SHUTDOWN_GRACE_MS);
   let scheduled = false;
   let handle = null;
   function audit(name, data) {
@@ -26,6 +29,48 @@ function createRestartController(opts = {}) {
     } catch (error) {
       warnLogger("RESTART_AUDIT_LOG_FAILED:", error?.message || String(error));
     }
+  }
+  async function exitAfterShutdown({ code, requestId, source, reason }) {
+    audit("runtime_restart_exit_scheduled", { request_id: requestId, source, reason, exit_code: code });
+    if (beforeExit) {
+      let timeoutHandle;
+      const timeoutResult = Symbol("shutdown_timeout");
+      const outcome = await Promise.race([
+        Promise.resolve()
+          .then(() => beforeExit({ code, requestId, source, reason }))
+          .then(() => "completed", (error) => ({ error })),
+        new Promise((resolve) => {
+          timeoutHandle = setTimeout(() => resolve(timeoutResult), shutdownGraceMs);
+          timeoutHandle.unref?.();
+        }),
+      ]);
+      if (timeoutHandle) clearTimeout(timeoutHandle);
+      if (outcome === timeoutResult) {
+        audit("runtime_restart_shutdown_timeout", {
+          request_id: requestId,
+          source,
+          reason,
+          exit_code: code,
+          shutdown_grace_ms: shutdownGraceMs,
+        });
+      } else if (outcome && outcome.error) {
+        audit("runtime_restart_shutdown_failed", {
+          request_id: requestId,
+          source,
+          reason,
+          exit_code: code,
+          error_message: outcome.error?.message || String(outcome.error),
+        });
+      } else {
+        audit("runtime_restart_shutdown_completed", {
+          request_id: requestId,
+          source,
+          reason,
+          exit_code: code,
+        });
+      }
+    }
+    endProcess(code);
   }
   function requestRestart(input = {}) {
     const n = normalizeRestartExitCode(input.code, 42);
@@ -43,7 +88,9 @@ function createRestartController(opts = {}) {
     }
     scheduled = true;
     audit("runtime_restart_requested", { request_id: requestId, source, reason, exit_code: n.code, delay_ms: delayMs });
-    setTimeout(() => { audit("runtime_restart_exit_scheduled", { request_id: requestId, source, reason, exit_code: n.code }); endProcess(n.code); }, delayMs).unref?.();
+    setTimeout(() => {
+      void exitAfterShutdown({ code: n.code, requestId, source, reason });
+    }, delayMs).unref?.();
     return { ok: true, scheduled: true, code: n.code, delay_ms: delayMs, reason, source };
   }
   function poll() {
@@ -69,7 +116,7 @@ function createRestartController(opts = {}) {
     return { ok: true, enabled: true, trigger_file: triggerFile, started: true };
   }
   function stop() { if (handle) clearInterval(handle); handle = null; }
-  function status() { return { enabled, trigger_file: triggerFile, scheduled, delay_ms: delayMs, allowed_exit_codes: [42, 43, 44] }; }
+  function status() { return { enabled, trigger_file: triggerFile, scheduled, delay_ms: delayMs, shutdown_grace_ms: shutdownGraceMs, allowed_exit_codes: [42, 43, 44] }; }
   return { requestRestart, start, stop, status };
 }
 

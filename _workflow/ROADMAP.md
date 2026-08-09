@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-02
+Updated: 2026-08-09
 
 ## Purpose
 
@@ -13,7 +13,7 @@ This roadmap must stay downstream from `READINESS.md`.
 
 Current derivation:
 
-- The hardened CBM v0.9.0 and canonical PKCE behavior remains live in the current `85`-tool runtime at `server_start_id = 2026-08-02T09:21:24.828Z`; all fifteen `cbm_*` tools and verified snippet source-integrity recovery are unchanged by the additive task-lifecycle surface.
+- The hardened CBM v0.9.0 and canonical PKCE behavior remains live in the current `89`-tool runtime at `server_start_id = 2026-08-09T14:21:09.406Z`; all fifteen `cbm_*` tools and verified snippet source-integrity recovery are unchanged by the additive process surface.
 - `MEM-1` is 4/4 and accepted at `server_start_id = 2026-08-01T18:52:13.024Z`: protected token-file auth and explicit egress are live, EN-to-PL and PL-to-EN probes rank the intended entries first, controlled token-file loss preserves lexical fallback, the ranking-noise defect is regression-guarded, and all `67` active unique memories are cached without plaintext.
 - Stdin native transport, normalized `detect_changes`, explicit `detect_changes` partial-result metadata, explicit `ingest_traces` runtime-edge status, semantic-only `search_graph` structural-result suppression, source-bearing excluded-route warnings, Windows non-ASCII and whitespace path/project caveats, unsupported Cypher shape caveats, resident-set discovery guidance, fail-fast startup configuration, portable executable resolution, ADR snapshot gating, native-cache schema repair, shared OAuth/HTTP helpers, and CBM-vs-knowledge-index skill routing are live and verified in repo tests and connector probes.
 - Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
@@ -25,28 +25,30 @@ Current derivation:
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
 - Descriptor refresh review is closed: runtime `2026-08-01T19:48:43.083Z` serves the intentional additive retrieval output contract with combined fingerprint `73c0bc08dad53e8c`; live retrieval calls succeeded without OAuth relogin.
 - The shared task queue lifecycle repair is live: `memory_update_task` appends provenance-bearing snapshots and `memory_get_tasks` resolves the latest snapshot per task. Controlled restart `manual-1785662483342` loaded the `85`-tool runtime without OAuth relogin; only re-enumeration in this already-open model task remains pending.
-- The next autonomous quality package is persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`: build an operational E2E coverage matrix across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process, and destructive rollback behavior, then close the highest-risk reproduced gaps.
+- `PROC-1A` is accepted and live at `server_start_id = 2026-08-09T14:21:09.406Z`: repository/runtime count `89`, exact shared limits, pinned resolution, filtered environment, combined output budget, bounded OAuth-client-owned jobs, cursor output, process-tree cancellation, restart drain, official-client OAuth E2E, and direct live package/Docker probes are green. Only this already-open model task awaits re-enumeration of the four new names.
+- The active autonomous quality package is persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`: build an operational E2E coverage matrix across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process, and destructive rollback behavior, then close the highest-risk reproduced gaps.
 
 ## Priority matrix
 
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
-| P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but operational Codex still uses legacy `initialize`. | Preserve both version-gated paths and wait for a newer Codex client entry sample. |
-| P1 | Complete `OPS-1A` operational E2E coverage matrix | task lifecycle repair, existing smoke/live evidence | The old diagnosis correctly identified uneven depth across operational tool families; the queue now names the missing evidence instead of defaulting to low-value documentation churn. | Inventory hermetic and live evidence, classify positive/negative/repetition/observability/rollback coverage, and implement only reproduced high-risk gaps. |
-| P2 | Execute one bounded `DOC-2A` fallback only when a real orientation gap exists | P0 externally blocked and OPS-1A not actionable | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
-| P3 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
-| P4 | Preserve the hardened CBM and governed tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
-| P5 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P0 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
-| P6 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
-| P7 | Hold OAuth21 runtime hardening steady | live PKCE and startup-prune validation | Prevent stable auth from becoming a source of speculative churn. | Preserve PKCE, durable-state, startup-prune, backup, and audit guards; reopen only on reproduced evidence or a current standards delta. |
+| P0 | Complete `OPS-1A` operational E2E coverage matrix | accepted `PROC-1A`, task lifecycle repair, existing smoke/live evidence | Coverage depth remains uneven across operational tool families; the queue must close measured high-risk gaps instead of defaulting to low-value documentation churn. | Build the matrix, run bounded representative soak/E2E probes, and implement only reproduced gaps. |
+| P1 | Re-enumerate the four async process tools in a fresh Codex task | live `89`-tool runtime | The server and OAuth are healthy, but this already-open model task cannot gain new names after startup. | Restart/reopen the Codex environment when direct model-side calls to `process_start/status/output/cancel` are needed; do not relogin unless auth actually fails. |
+| P2 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but operational Codex still uses legacy `initialize`. | Preserve both version-gated paths and wait for a newer Codex client entry sample. |
+| P3 | Execute one bounded `DOC-2A` fallback only when `COMP-1A` is externally blocked and OPS-1A is not actionable | P2 externally blocked and OPS-1A not actionable | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
+| P4 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
+| P5 | Preserve the hardened CBM and governed tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
+| P6 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P2 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
+| P7 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
+| P8 | Hold OAuth21 runtime hardening steady | live PKCE and startup-prune validation | Prevent stable auth from becoming a source of speculative churn. | Preserve PKCE, durable-state, startup-prune, backup, and audit guards; reopen only on reproduced evidence or a current standards delta. |
 
 ## Bounded package queue
 
-0. `COMP-1A` — event-gated protocol course
-   Re-run the operational client-entry picture only when a meaningfully new external-client evidence window exists.
-
-1. `OPS-1A` — operational E2E quality package
+0. `OPS-1A` — operational E2E quality package
    Build the evidence matrix, reproduce the highest-risk gaps, and repair only demonstrated weaknesses. The durable queue item is `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+
+1. `COMP-1A` — event-gated protocol course
+   Re-run the operational client-entry picture only when a meaningfully new external-client evidence window exists.
 
 2. `DOC-2A` — bounded fallback
    Execute only when one real current high-churn orientation gap can be closed without repo-wide documentation churn.
@@ -61,6 +63,7 @@ Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metad
 Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map and project-local `using-codebase-memory` skill maps on July 28, 2026, then added generator-owned `docs/superpowers` plan/spec maps and raised the audit guard to top25/churn>=5 on July 29, 2026 without widening into repo-wide documentation churn.
 Completed upstream review extension: `CBM-UPSTREAM-201-277` records the remaining July 29, 2026 open-issue batch and updates the project-local skill boundary so documentation/workflow retrieval uses `workbench` `profile=knowledge` while CBM remains the indexed code graph.
 Completed retrieval quality pass: `RETR-1-ACTIVE-WORKFLOW-RANKING` guards that active workflow documents outrank historical decision records for natural planning questions in `search_index`, `search_index_context`, and `collect_context`; live `workbench` validation after restart `manual-1785343566402` confirms the same behavior on the running connector.
+Completed process execution acceptance: `PROC-1A` shares one hardened sync/async core, passed official-client OAuth21 lifecycle coverage and the full `7 + 277` suite, and is live on the `89`-tool runtime after restart `manual-1786285267764`; evidence is in `_workflow/operator_decisions/process_runner_async_live_acceptance.md`.
 Completed structural document graph pass: `RETR-1-DOCUMENT-GRAPH` exposes deterministic document-link topology in `knowledge_summary.document_graph`; the latest July 29 validation reports `252` docs, `514` internal document links, all `36` source-of-truth docs linked, and `40` unresolved-reference samples after wildcard/glob noise filtering.
 Completed measured retrieval regression: `RETR-1-QUALITY-REGRESSION` adds source-snapshot freshness, complete bounded canonical extraction, robust Markdown table parsing, identifier-aware ranking, and proof-over-audit ordering. Unit, schema, full-suite, restart, and live acceptance evidence are recorded in `_workflow/operator_decisions/retr_1_quality_regression_closeout.md`.
 Completed upstream pattern lab pass: `UPSTREAM-PATTERN-LAB` clones or reuses seven local high-value retrieval/memory repositories under the ignored `_repos_with_code_samples` corpus, extracts observable implementation signals with `scripts/extract_upstream_repo_patterns.js`, writes `docs/UPSTREAM_REPO_PATTERN_LAB.md`, and guards the extractor with `_tests/smoke_upstream_repo_pattern_extractor.js`.

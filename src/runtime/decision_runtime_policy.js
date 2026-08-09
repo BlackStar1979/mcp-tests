@@ -3,6 +3,8 @@
 const { PUBLIC_TOOL_NAMES, getToolPolicy } = require("../tool_policy");
 const { getDefaultDestructiveToolConfirmationManager } = require("./destructive_tool_confirmation");
 
+const GUARDED_PROCESS_TOOLS = new Set(["run_process", "process_start", "process_cancel"]);
+
 function buildJsonRpcError(code, message) {
   return {
     code,
@@ -89,6 +91,19 @@ function evaluateDecisionRuntimePolicy({
   }
 
   if (toolPolicy.destructive === true) {
+    if (GUARDED_PROCESS_TOOLS.has(toolName)) {
+      return {
+        allow: true,
+        deny_code: null,
+        http_status: 200,
+        json_rpc_error: null,
+        response_data: {},
+        decision_meta: {
+          policy: "decision-runtime-policy-v2",
+          reason_codes: ["guarded_process_execution"],
+        },
+      };
+    }
     if (toolName !== "cbm_delete_project") {
       return denyDecision({ code: "destructive_tool_denied", message: `Tool ${toolName} is destructive` });
     }

@@ -96,7 +96,7 @@ const PROCESS_TOOL_ANNOTATIONS = {
   readOnlyHint: false,
   destructiveHint: true,
   idempotentHint: false,
-  openWorldHint: false,
+  openWorldHint: true,
 };
 
 const RUN_PROCESS_INPUT_SCHEMA = {
@@ -112,8 +112,8 @@ const RUN_PROCESS_INPUT_SCHEMA = {
       items: { type: "string", maxLength: 4000 },
     },
     cwd: { type: "string", default: ".", maxLength: 1000 },
-    timeout_ms: { type: "integer", minimum: 100, maximum: 120000, default: 30000 },
-    max_output_chars: { type: "integer", minimum: 1000, maximum: 250000, default: 60000 },
+    timeout_ms: { type: "integer", minimum: 100, maximum: 600000, default: 60000 },
+    max_output_chars: { type: "integer", minimum: 1000, maximum: 1000000, default: 250000 },
     env: {
       type: "object",
       default: {},
@@ -170,8 +170,140 @@ const RUN_PROCESS_OUTPUT_SCHEMA = {
   },
 };
 
+const PROCESS_JOB_STATUSES = [
+  "queued",
+  "running",
+  "ok",
+  "nonzero_exit",
+  "timeout",
+  "spawn_error",
+  "cancelled",
+];
+
+const PROCESS_JOB_ID_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["job_id"],
+  properties: {
+    job_id: { type: "string", minLength: 1, maxLength: 200 },
+  },
+};
+
+const PROCESS_CANCEL_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["job_id"],
+  properties: {
+    job_id: { type: "string", minLength: 1, maxLength: 200 },
+    reason: { type: "string", minLength: 1, maxLength: 200, default: "cancelled" },
+  },
+};
+
+const PROCESS_OUTPUT_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["job_id"],
+  properties: {
+    job_id: { type: "string", minLength: 1, maxLength: 200 },
+    stdout_offset: { type: "integer", minimum: 0, maximum: 1000000, default: 0 },
+    stderr_offset: { type: "integer", minimum: 0, maximum: 1000000, default: 0 },
+    max_chars: { type: "integer", minimum: 1, maximum: 65536, default: 65536 },
+  },
+};
+
+const PROCESS_JOB_STATUS_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "job_id",
+    "status",
+    "terminal",
+    "command",
+    "family",
+    "resolution_class",
+    "cwd",
+    "workspace",
+    "queue_position",
+    "created_at",
+    "started_at",
+    "finished_at",
+    "duration_ms",
+    "timeout_ms",
+    "output_limit_chars",
+    "stdout_chars",
+    "stderr_chars",
+    "stdout_truncated",
+    "stderr_truncated",
+    "exit_code",
+    "signal",
+    "timed_out",
+    "error",
+  ],
+  properties: {
+    job_id: { type: "string" },
+    status: { type: "string", enum: PROCESS_JOB_STATUSES },
+    terminal: { type: "boolean" },
+    command: { type: "string" },
+    family: { type: "string" },
+    resolution_class: { type: "string" },
+    cwd: { type: "string" },
+    workspace: { type: "string" },
+    queue_position: { type: ["integer", "null"], minimum: 1 },
+    created_at: { type: "string" },
+    started_at: { type: ["string", "null"] },
+    finished_at: { type: ["string", "null"] },
+    duration_ms: { type: "integer", minimum: 0 },
+    timeout_ms: { type: "integer", minimum: 100, maximum: 600000 },
+    output_limit_chars: { type: "integer", minimum: 1000, maximum: 1000000 },
+    stdout_chars: { type: "integer", minimum: 0, maximum: 1000000 },
+    stderr_chars: { type: "integer", minimum: 0, maximum: 1000000 },
+    stdout_truncated: { type: "boolean" },
+    stderr_truncated: { type: "boolean" },
+    exit_code: { type: ["integer", "null"] },
+    signal: { type: ["string", "null"] },
+    timed_out: { type: "boolean" },
+    error: { type: ["string", "null"] },
+  },
+};
+
+const PROCESS_OUTPUT_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "job_id",
+    "stdout",
+    "stderr",
+    "stdout_offset",
+    "stderr_offset",
+    "stdout_next_offset",
+    "stderr_next_offset",
+    "stdout_eof",
+    "stderr_eof",
+    "terminal",
+    "status",
+  ],
+  properties: {
+    job_id: { type: "string" },
+    stdout: { type: "string" },
+    stderr: { type: "string" },
+    stdout_offset: { type: "integer", minimum: 0 },
+    stderr_offset: { type: "integer", minimum: 0 },
+    stdout_next_offset: { type: "integer", minimum: 0 },
+    stderr_next_offset: { type: "integer", minimum: 0 },
+    stdout_eof: { type: "boolean" },
+    stderr_eof: { type: "boolean" },
+    terminal: { type: "boolean" },
+    status: { type: "string", enum: PROCESS_JOB_STATUSES },
+  },
+};
+
 module.exports = {
   EMPTY_INPUT_SCHEMA,
+  PROCESS_CANCEL_INPUT_SCHEMA,
+  PROCESS_JOB_ID_INPUT_SCHEMA,
+  PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
+  PROCESS_OUTPUT_INPUT_SCHEMA,
+  PROCESS_OUTPUT_OUTPUT_SCHEMA,
   PROCESS_TOOL_ANNOTATIONS,
   READ_ONLY_PROCESS_ANNOTATIONS,
   RUN_PROCESS_INPUT_SCHEMA,

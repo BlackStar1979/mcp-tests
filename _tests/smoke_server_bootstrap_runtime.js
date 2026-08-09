@@ -42,6 +42,8 @@ for(const required of [
   "createRuntimeSupportAssembly({",
   "createRuntimeStatusAssembly({",
   "configureOptionalToolsAssembly({",
+  "shutdownDefaultProcessJobManager",
+  "beforeExit:",
   "runConfiguredRuntime({",
   "module.exports"
 ]){assert.ok(bootstrap.includes(required),required);}

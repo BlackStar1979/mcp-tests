@@ -17,7 +17,9 @@
     "src/runtime/request_metadata_policy.js",
     "src/runtime/modern_protocol_adapter.js",
     "src/runtime/server_discover_message_handler.js",
-    "src/integrations/codebase_memory/cbm_cli_bridge.js"
+    "src/integrations/codebase_memory/cbm_cli_bridge.js",
+    "src/util/process_runner_config.js",
+    "src/runtime/restart_controller.js"
   ],
   "cli_flags": [
     "--profile",
@@ -121,7 +123,19 @@
     "MCP_TEST_RATE_LIMIT_TOOL_MAX",
     "MCP_TEST_RATE_LIMIT_TOOL_WINDOW_MS",
     "MCP_TEST_RESTART_EXIT_DELAY_MS",
+    "MCP_TEST_RESTART_SHUTDOWN_GRACE_MS",
     "MCP_TEST_RESTART_TRIGGER_FILE",
+    "MCP_ALLOW_RAW_POWERSHELL",
+    "MCP_ENABLE_POWERSHELL_COMMAND",
+    "MCP_PROCESS_ALLOWLIST",
+    "MCP_PROCESS_HARD_OUTPUT_CHARS",
+    "MCP_PROCESS_MAX_CONCURRENT",
+    "MCP_PROCESS_MAX_OUTPUT_CHARS",
+    "MCP_PROCESS_MAX_QUEUED",
+    "MCP_PROCESS_MAX_RETAINED",
+    "MCP_PROCESS_MAX_TIMEOUT_MS",
+    "MCP_PROCESS_RETENTION_MS",
+    "MCP_PROCESS_TIMEOUT_MS",
     "MCP_TEST_SCIENCE_TIMEOUT_MS",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "MCP_TEST_TOKEN_FILE",
@@ -242,7 +256,21 @@
     "trigger_env": {
       "enabled": "MCP_TEST_ENABLE_RESTART_TRIGGER",
       "file": "MCP_TEST_RESTART_TRIGGER_FILE",
-      "delay_ms": "MCP_TEST_RESTART_EXIT_DELAY_MS"
+      "delay_ms": "MCP_TEST_RESTART_EXIT_DELAY_MS",
+      "shutdown_grace_ms": "MCP_TEST_RESTART_SHUTDOWN_GRACE_MS"
+    },
+    "process_runner": {
+      "default_timeout_ms": 60000,
+      "max_timeout_ms": 600000,
+      "default_combined_output_chars": 250000,
+      "hard_combined_output_chars": 1000000,
+      "async_max_concurrent": 2,
+      "async_max_queued": 8,
+      "async_max_retained": 32,
+      "async_retention_ms": 1800000,
+      "async_output_read_chars": 65536,
+      "registry_persistence": false,
+      "controlled_restart_cancels_active_jobs": true
     },
     "default_trigger_file": "_control/restart-request.json",
     "surface_change": false,

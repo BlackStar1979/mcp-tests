@@ -100,6 +100,18 @@
       "status": "active_code_event"
     },
     {
+      "name": "runtime_restart_shutdown_completed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "runtime_restart_shutdown_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "runtime_restart_shutdown_timeout",
+      "status": "active_code_event"
+    },
+    {
       "name": "runtime_restart_trigger_file_ignored",
       "status": "active_code_event"
     },
@@ -113,6 +125,38 @@
     },
     {
       "name": "runtime_restart_rate_limited",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_queued",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_started",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_completed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_timed_out",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_spawn_failed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_cancelled",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_output_read",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_pruned",
       "status": "active_code_event"
     },
     {

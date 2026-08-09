@@ -21,6 +21,40 @@ const { createRestartController } = require("../src/runtime/restart_controller")
   assert.ok(events.some((x) => x.event === "runtime_restart_requested"));
   assert.ok(events.some((x) => x.event === "runtime_restart_exit_scheduled"));
 
+  const shutdownOrder = [];
+  const shutdownController = createRestartController({
+    env: {
+      MCP_TEST_RESTART_EXIT_DELAY_MS: "50",
+      MCP_TEST_RESTART_SHUTDOWN_GRACE_MS: "200",
+    },
+    auditLog: () => {},
+    beforeExit: async () => {
+      shutdownOrder.push("shutdown_start");
+      await new Promise((resolve) => setTimeout(resolve, 30));
+      shutdownOrder.push("shutdown_end");
+    },
+    exit: () => shutdownOrder.push("exit"),
+  });
+  shutdownController.requestRestart({ code: 42, reason: "shutdown_order", source: "smoke" });
+  await new Promise((resolve) => setTimeout(resolve, 120));
+  assert.deepEqual(shutdownOrder, ["shutdown_start", "shutdown_end", "exit"]);
+
+  const timeoutOrder = [];
+  const timeoutEvents = [];
+  const timeoutController = createRestartController({
+    env: {
+      MCP_TEST_RESTART_EXIT_DELAY_MS: "50",
+      MCP_TEST_RESTART_SHUTDOWN_GRACE_MS: "50",
+    },
+    auditLog: (event, data) => timeoutEvents.push({ event, data }),
+    beforeExit: () => new Promise(() => {}),
+    exit: () => timeoutOrder.push("exit"),
+  });
+  timeoutController.requestRestart({ code: 42, reason: "shutdown_timeout", source: "smoke" });
+  await new Promise((resolve) => setTimeout(resolve, 140));
+  assert.deepEqual(timeoutOrder, ["exit"]);
+  assert.ok(timeoutEvents.some((entry) => entry.event === "runtime_restart_shutdown_timeout"));
+
   const auditFailureWarnings = [];
   const auditFailureExits = [];
   const auditFailureController = createRestartController({

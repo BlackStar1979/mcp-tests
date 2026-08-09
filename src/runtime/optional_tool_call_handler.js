@@ -44,7 +44,10 @@ async function tryHandleOptionalToolCall({
 
   let output;
   try {
-    output = await optionalTool.execute(args, context);
+    output = await optionalTool.execute(args, {
+      ...context,
+      auditLog,
+    });
   } catch (error) {
     if (isCooperativeToolCancellation({ error, abortSignal: context?.abortSignal })) {
       return buildCancellationResponse({ id, name, context, startedAt, auditLog, error, phase: "execute" });

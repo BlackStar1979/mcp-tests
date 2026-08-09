@@ -65,6 +65,8 @@
         "filesystem_workspace_mutation",
         "runtime_status_readonly",
         "process_execution_bounded",
+        "process_job_registry_readonly",
+        "process_job_control",
         "remote_site_readonly",
         "remote_site_mutation"
       ],

@@ -13,6 +13,7 @@ const { buildMechanismParityReport } = require("../mechanism_parity_matrix");
 
 const EXPECTED = Object.freeze({
   server_version: "0.40.0",
+  authenticated_tool_count: 89,
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
   tool_names_hash: "c8cf1842ac2a3dfe",
@@ -56,6 +57,12 @@ function buildProjectTruthAudit(options = {}) {
     index: readText(repoRoot, "_workflow/ACTIVE_WORKFLOW_INDEX.md"),
     handoff: readText(repoRoot, "_workflow/state.json"),
   };
+  const serverSpec = JSON.parse(docs.server_spec);
+  const workflowDocs = {
+    working_course: docs.working_course,
+    index: docs.index,
+    handoff: docs.handoff,
+  };
 
   if (CURRENT_COMPATIBILITY_LABEL !== EXPECTED.runtime_compatibility_label) {
     findings.push({ severity: "error", code: "runtime_compatibility_label_drift", actual: CURRENT_COMPATIBILITY_LABEL, expected: EXPECTED.runtime_compatibility_label });
@@ -70,7 +77,14 @@ function buildProjectTruthAudit(options = {}) {
     findings.push({ severity: "error", code: "stage_status_semantics_drift", actual: CURRENT_STAGE_STATUS_SEMANTICS });
   }
 
-  for (const [name, text] of Object.entries(docs)) {
+  if (serverSpec.server?.version !== EXPECTED.server_version) {
+    findings.push({ severity: "error", code: "server_spec_version_drift", actual: serverSpec.server?.version, expected: EXPECTED.server_version });
+  }
+  if (serverSpec.server?.full_tests_authenticated_tool_count !== EXPECTED.authenticated_tool_count) {
+    findings.push({ severity: "error", code: "server_spec_authenticated_tool_count_drift", actual: serverSpec.server?.full_tests_authenticated_tool_count, expected: EXPECTED.authenticated_tool_count });
+  }
+
+  for (const [name, text] of Object.entries(workflowDocs)) {
     requireIncludes(findings, name, text, workflowProgressMarkers.current_working_course);
     requireIncludes(findings, name, text, workflowProgressMarkers.next_primary);
     requireIncludes(findings, name, text, workflowProgressMarkers.next_secondary);
