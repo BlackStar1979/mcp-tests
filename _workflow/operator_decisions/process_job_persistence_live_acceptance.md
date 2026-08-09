@@ -32,9 +32,9 @@ The server persists owner-scoped job metadata, bounded stdout/stderr, and append
 - Unknown job IDs return `process_job_not_found` as a controlled result instead of a transport exception.
 - Live `powershell -Command` and `py -3.14` jobs completed with exit code 0; `py` reported `resolution_class=windows_python_launcher`.
 
-## Remaining boundary
+## Connector surface acceptance
 
-The already-open Codex task retains its 89-tool startup map. The live server has 91 tools, but direct model-visible calls to the newly added `process_list` and `process_events` names require client re-enumeration in a fresh task. This is a surface freshness boundary, not a server, persistence, or OAuth failure.
+After Codex environment re-enumeration, the model-visible workbench surface contains all `91` tools. Direct `process_list` and `process_events` calls succeeded without OAuth relogin or another server restart. `process_list` rediscovered connector-owned job `b247a65e-7cea-4e83-9bb8-4cdf66ffb227`; `process_events` returned its durable append-only `queued -> running -> ok` history from server instance `2026-08-09T16:35:16.355Z`. The repository, live runtime, and current connector map are aligned.
 
 ## Rollback
 

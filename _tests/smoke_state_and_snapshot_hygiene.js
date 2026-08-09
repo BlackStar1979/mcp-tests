@@ -48,11 +48,11 @@ for (const removed of [
 assert.equal(state.current_runtime_truth.oauth21_3008.expected_tool_count, 91);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 89);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "d07f8d0a89c66d97");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 91);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "79c3b49ba27e604a");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 91);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo91_runtime91_model89_reenumeration_pending");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo91_runtime91_model91_aligned");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 

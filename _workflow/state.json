@@ -304,20 +304,20 @@
   },
   "current_connector_truth": {
     "oauth21_3008_tools": {
-      "tool_count": 89,
-      "tool_names_hash": "d07f8d0a89c66d97",
-      "input_schema_fingerprint": "239f0816fcc109b8",
-      "output_schema_fingerprint": "69f7ef9ca9a0f2a8",
-      "descriptor_fingerprint": "6d4a9ea80fff2709",
-      "combined_fingerprint": "c4e3e5087a1fe9bf",
-      "connector_map_status": "repo91_runtime91_model89_reenumeration_pending",
+      "tool_count": 91,
+      "tool_names_hash": "79c3b49ba27e604a",
+      "input_schema_fingerprint": "c3ad07890bacdb70",
+      "output_schema_fingerprint": "9f6c18c944887291",
+      "descriptor_fingerprint": "317ea27d950098b3",
+      "combined_fingerprint": "54ed6536bb75e46e",
+      "connector_map_status": "repo91_runtime91_model91_aligned",
       "repo_current_expected_tool_count": 91,
       "server_start_id": "2026-08-09T16:35:16.355Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,
       "cache_scope": "private",
-      "connector_refresh_required_now": true
+      "connector_refresh_required_now": false
     }
   }
 }

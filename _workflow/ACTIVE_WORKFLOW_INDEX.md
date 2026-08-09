@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-09
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T16:35:16.355Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. The current model map retains the existing four async tools and requires re-enumeration for `process_list/events`.
+Current repo/runtime note: profile `tests`; repository, live OAuth21 `3008`, and the refreshed Codex connector map are aligned at `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T16:35:16.355Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. Direct `process_list` and `process_events` calls are accepted.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
@@ -384,10 +384,9 @@ Current records:
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
 1. Resume `OPS-1A` from the persistent queue; `PROC-1B` is complete and live.
-2. Re-enumerate the Codex client map when a fresh task is available, then directly accept `process_list/events` without another server restart.
-3. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
-4. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
-5. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
+2. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
+3. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
+4. Run `COMP-1B` only when fresh client evidence changes the decision surface; `SURF-1` is accepted at `4/4`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
@@ -403,8 +402,8 @@ Readiness-derived default next package queue:
 3. `DOC-2A` — bounded fallback
    Current top25/churn>=5 audit is clean. Reopen only when a fresh audit exposes one real high-churn orientation gap, then stop.
 
-4. `COMP-1B` / `SURF-1A`
-   Execute only when fresh evidence materially changes the decision surface.
+4. `COMP-1B`
+   Execute only when fresh evidence materially changes the protocol decision surface.
 
 Recently completed:
 

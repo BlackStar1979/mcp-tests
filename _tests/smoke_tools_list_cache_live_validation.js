@@ -12,9 +12,9 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo91_runtime91_model89_reenumeration_pending";
-const expectedCurrentFingerprint = "c4e3e5087a1fe9bf";
-const expectedCurrentHash = "d07f8d0a89c66d97";
+const expectedCurrentStatus = "repo91_runtime91_model91_aligned";
+const expectedCurrentFingerprint = "54ed6536bb75e46e";
+const expectedCurrentHash = "79c3b49ba27e604a";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
 const currentServerStartId = state.current_runtime_truth.oauth21_3008.server_start_id;
@@ -23,9 +23,9 @@ assert.match(currentServerStartId, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z
 assert.equal(c.server_start_id, currentServerStartId);
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
-assert.equal(c.tool_count, 89);
+assert.equal(c.tool_count, 91);
 assert.equal(c.repo_current_expected_tool_count, 91);
-assert.equal(c.connector_refresh_required_now, true);
+assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, false);
 assert.equal(c.model_runtime_callable_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
@@ -37,8 +37,8 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repository and live OAuth21 `3008` are `91`"));
-assert.ok(index.includes("current model map retains the existing four async tools"));
+assert.ok(index.includes("repository, live OAuth21 `3008`, and the refreshed Codex connector map are aligned at `91`"));
+assert.ok(index.includes("refreshed Codex connector map are aligned at `91`"));
 assert.ok(index.includes("`PROC-1B` is complete and live"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));

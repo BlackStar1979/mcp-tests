@@ -42,7 +42,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `78`
 - Authenticated repo target for profile `tests`: `91`
-- Live OAuth21 runtime count is `91` at `server_start_id = 2026-08-09T16:35:16.355Z`. This already-open Codex task retains its 89-tool startup map and requires client re-enumeration only for the new `process_list` and `process_events` names. Existing direct `workbench` calls remained authorized through all controlled restarts; no OAuth relogin was required.
+- Live OAuth21 runtime and the refreshed Codex connector map both expose `91` tools at `server_start_id = 2026-08-09T16:35:16.355Z`. Direct named calls to `process_list` and `process_events` succeeded without OAuth relogin or another server restart; the connector fingerprint is `54ed6536bb75e46e`.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
