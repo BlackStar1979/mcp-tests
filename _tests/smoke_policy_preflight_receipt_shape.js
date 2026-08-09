@@ -70,7 +70,7 @@ function assertNoRawSecrets(value) {
   assertNoRawSecrets(allowedReceipt);
   const receiptSet = buildPolicyPreflightReceipts({ evaluation, profileSurface: "authenticated", authMode: "oauth21", argsByTool: { memory_save: { content: "super-secret-token" } } });
   assert.equal(receiptSet.schema_version, "stage10-policy-preflight-receipt-set-v1");
-  assert.equal(receiptSet.receipt_count, 89);
+  assert.equal(receiptSet.receipt_count, 91);
   assert.equal(receiptSet.denied_receipt_count, 0);
   assert.equal(receiptSet.raw_arguments_included, false);
   assert.equal(receiptSet.runtime_audit_event_emitted, false);

@@ -22,7 +22,8 @@
     "memory_embedding_cache_authoritative": false,
     "memory_embedding_cache_plaintext": false,
     "current_plugin_visibility_state_mode": "preview_pipeline_existing_runtime",
-    "current_audit_backend": "_logs/.mcp-tests-audit.jsonl"
+    "current_audit_backend": "_logs/.mcp-tests-audit.jsonl",
+    "current_process_job_backend": "sqlite_wal_owner_bound_job_and_append_only_event_store"
   },
   "database_scopes": {
     "state_store": {
@@ -93,6 +94,18 @@
       ],
       "public_surface_allowed": false,
       "operator_approval_required": true
+    },
+    "process_job_registry": {
+      "description": "Bounded owner-scoped durable process job metadata, output, and append-only lifecycle transition store.",
+      "operations": [
+        "read",
+        "write",
+        "append",
+        "prune"
+      ],
+      "public_surface_allowed": false,
+      "raw_arguments_or_environment_persisted": false,
+      "automatic_command_replay_allowed": false
     }
   },
   "operation_classes": {
@@ -113,6 +126,10 @@
       "audit_required": true
     },
     "append": {
+      "mutation": true,
+      "audit_required": true
+    },
+    "prune": {
       "mutation": true,
       "audit_required": true
     },

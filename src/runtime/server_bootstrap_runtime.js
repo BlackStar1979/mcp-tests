@@ -28,7 +28,7 @@ const { createRuntimeRateLimiter } = require("./rate_limit_policy");
 const { DOCS } = require("./static_docs");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
 const { resolveRuntimeOutputConfig } = require("./runtime_output_config");
-const { shutdownDefaultProcessJobManager } = require("../util/process_job_manager");
+const { getDefaultProcessJobManager, shutdownDefaultProcessJobManager } = require("../util/process_job_manager");
 
 function runServerBootstrapRuntime({ argv = process.argv, env = process.env, rootDir = path.resolve(__dirname, "../..") } = {}) {
   const serverCliConfig = parseServerCliArgs(argv.slice(2));
@@ -137,6 +137,20 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
 
   if (oauth21AuthorizationServer && typeof oauth21AuthorizationServer.setAuditLog === "function") {
     oauth21AuthorizationServer.setAuditLog(auditLog);
+  }
+
+  if (runtimeSideEffectsEnabled) {
+    const processJobStorageFile = env.MCP_PROCESS_JOB_STORAGE_FILE
+      || path.join(os.homedir(), ".romion", `tests_process_jobs_${port}.sqlite`);
+    getDefaultProcessJobManager({
+      audit: (payload) => {
+        const { event, ...details } = payload;
+        auditLog(event, details);
+      },
+      storageFile: processJobStorageFile,
+      runtimeScope: mcpResourceUrl,
+      serverInstanceId: serverStartId,
+    });
   }
 
   const rateLimiter = createRuntimeRateLimiter({ env, rootDir });

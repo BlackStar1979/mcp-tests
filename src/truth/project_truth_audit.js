@@ -13,7 +13,7 @@ const { buildMechanismParityReport } = require("../mechanism_parity_matrix");
 
 const EXPECTED = Object.freeze({
   server_version: "0.40.0",
-  authenticated_tool_count: 89,
+  authenticated_tool_count: 91,
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
   tool_names_hash: "c8cf1842ac2a3dfe",

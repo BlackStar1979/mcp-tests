@@ -4,7 +4,9 @@ const {
   PROCESS_CANCEL_INPUT_SCHEMA,
   PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
   PROCESS_TOOL_ANNOTATIONS,
+  processToolOutputSchema,
 } = require("../src/schemas/process_tools");
+const { executeProcessTool } = require("../src/util/process_tool_errors");
 const {
   resolveProcessJobManager,
   resolveProcessJobOwner,
@@ -19,15 +21,15 @@ const processCancelTool = {
     title: "Cancel process job",
     description: "Cancel an owned queued process job or terminate its running process tree, returning terminal state only after tree termination completes.",
     inputSchema: PROCESS_CANCEL_INPUT_SCHEMA,
-    outputSchema: PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
+    outputSchema: processToolOutputSchema(PROCESS_JOB_STATUS_OUTPUT_SCHEMA),
     annotations: PROCESS_TOOL_ANNOTATIONS,
   },
   execute(args = {}, context = {}) {
-    return resolveProcessJobManager(context).cancel(
+    return executeProcessTool(() => resolveProcessJobManager(context).cancel(
       args.job_id,
       args.reason || "cancelled",
       { ownerId: resolveProcessJobOwner(context) }
-    );
+    ));
   },
   summarizeArgs(args = {}) {
     return {

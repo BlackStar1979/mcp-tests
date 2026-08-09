@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-09
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` both serve the `89`-tool target (`13 public + 76 authorized-visible`) after accepted restart `manual-1786285267764`. `PROC-1A` is complete: sync limits are `60s/600s/250k/1M`, the shared execution core and four bounded async job tools are live, Docker remains available, `kubectl` is denied, resolution is pinned, child env is restricted, and restart drains jobs. This already-open Codex task retains its startup `85`-tool map; only client re-enumeration of the four new names remains. Actionable autonomous work is `OPS-1A`, task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+Current repo/runtime note: profile `tests`; repository target is `91` (`13 public + 78 authorized-visible`) while live OAuth21 `3008` remains at `89` until controlled deployment. `PROC-1B` adds durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. The current model map has the existing four async tools and will require re-enumeration for `process_list/events` after deployment.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=277`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=278`.
 - Public section count: `7`.
-- Authenticated smoke count: `277`.
+- Authenticated smoke count: `278`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -85,11 +85,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repository/live target `89` at `server_start_id = 2026-08-09T14:21:09.406Z`; this already-open model task remains at its startup `85`-tool map until re-enumeration;
+- authorized runtime: `auth:oauth21`, port `3008`, repository target `91`, live runtime `89` at `server_start_id = 2026-08-09T14:21:09.406Z`; controlled deployment is pending;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Repository and live runtime are `89`; only this already-open model map remains `85`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain live and unchanged.
+- Repository is `91`, live runtime and this model map are `89` until controlled deployment/re-enumeration. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
@@ -383,15 +383,16 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Execute `OPS-1A` from the persistent queue; the 85-tool task-lifecycle deployment is complete.
-2. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
-3. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
-4. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
+1. Complete the active `PROC-1B` deployment: controlled restart, same-job post-restart read, and final runtime/workflow evidence.
+2. Resume `OPS-1A` from the persistent queue after `PROC-1B` is closed.
+3. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
+4. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
+5. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: execute `OPS-1A` from the persistent queue. Keep the completed 85-tool task lifecycle, hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
+Next recommended action: complete `PROC-1B` deployment and post-restart persistence proof, then return to `OPS-1A`. Keep the hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
 
 Readiness-derived default next package queue:
 

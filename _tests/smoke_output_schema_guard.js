@@ -5,6 +5,19 @@ const { RUNTIME_STATUS_OUTPUT_SCHEMA } = require("../src/schemas/runtime_status"
 const { buildRuntimeStatus } = require("../src/runtime_status");
 const { assertMatchesSchema, validateAgainstSchema } = require("../src/output_schema_guard");
 
+assert.equal(validateAgainstSchema({ ok: true }, {
+  oneOf: [
+    { type: "object", additionalProperties: false, required: ["ok"], properties: { ok: { type: "boolean", enum: [true] } } },
+    { type: "object", additionalProperties: false, required: ["error"], properties: { error: { type: "string" } } },
+  ],
+}).success, true);
+assert.equal(validateAgainstSchema({ error: "controlled" }, {
+  oneOf: [
+    { type: "object", additionalProperties: false, required: ["ok"], properties: { ok: { type: "boolean", enum: [true] } } },
+    { type: "object", additionalProperties: false, required: ["error"], properties: { error: { type: "string" } } },
+  ],
+}).success, true);
+
 function runtimeStatusFromBuilder(includeTools = true) {
   return buildRuntimeStatus({
     serverName: "mcp-tests-response-shape",

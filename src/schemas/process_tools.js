@@ -178,7 +178,42 @@ const PROCESS_JOB_STATUSES = [
   "timeout",
   "spawn_error",
   "cancelled",
+  "interrupted",
 ];
+
+const PROCESS_TOOL_ERROR_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["success", "error"],
+  properties: {
+    success: { type: "boolean", enum: [false] },
+    error: {
+      type: "object",
+      additionalProperties: false,
+      required: ["code", "message", "retryable"],
+      properties: {
+        code: { type: "string" },
+        message: { type: "string" },
+        retryable: { type: "boolean" },
+      },
+    },
+  },
+};
+
+function processToolOutputSchema(successSchema) {
+  const properties = {
+    ...(successSchema.properties || {}),
+    ...PROCESS_TOOL_ERROR_OUTPUT_SCHEMA.properties,
+  };
+  if (successSchema.properties?.error) properties.error = {};
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: [],
+    properties,
+    oneOf: [successSchema, PROCESS_TOOL_ERROR_OUTPUT_SCHEMA],
+  };
+}
 
 const PROCESS_JOB_ID_INPUT_SCHEMA = {
   type: "object",
@@ -238,6 +273,8 @@ const PROCESS_JOB_STATUS_OUTPUT_SCHEMA = {
     "signal",
     "timed_out",
     "error",
+    "durable",
+    "recovered_after_restart",
   ],
   properties: {
     job_id: { type: "string" },
@@ -263,6 +300,65 @@ const PROCESS_JOB_STATUS_OUTPUT_SCHEMA = {
     signal: { type: ["string", "null"] },
     timed_out: { type: "boolean" },
     error: { type: ["string", "null"] },
+    durable: { type: "boolean", enum: [true] },
+    recovered_after_restart: { type: "boolean" },
+  },
+};
+
+const PROCESS_LIST_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {
+    status: { type: "string", enum: PROCESS_JOB_STATUSES },
+    limit: { type: "integer", minimum: 1, maximum: 100, default: 20 },
+  },
+};
+
+const PROCESS_LIST_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["durable", "jobs"],
+  properties: {
+    durable: { type: "boolean", enum: [true] },
+    jobs: { type: "array", items: PROCESS_JOB_STATUS_OUTPUT_SCHEMA },
+  },
+};
+
+const PROCESS_EVENTS_INPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["job_id"],
+  properties: {
+    job_id: { type: "string", minLength: 1, maxLength: 200 },
+    limit: { type: "integer", minimum: 1, maximum: 200, default: 50 },
+  },
+};
+
+const PROCESS_EVENTS_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["job_id", "durable", "events"],
+  properties: {
+    job_id: { type: "string" },
+    durable: { type: "boolean", enum: [true] },
+    events: {
+      type: "array",
+      items: {
+        type: "object",
+        additionalProperties: false,
+        required: ["sequence", "from_status", "to_status", "event", "reason_code", "created_at", "server_instance_id"],
+        properties: {
+          sequence: { type: "integer", minimum: 1 },
+          from_status: { type: ["string", "null"] },
+          to_status: { type: "string", enum: PROCESS_JOB_STATUSES },
+          event: { type: "string" },
+          reason_code: { type: ["string", "null"] },
+          created_at: { type: "string" },
+          server_instance_id: { type: "string" },
+        },
+      },
+    },
   },
 };
 
@@ -302,11 +398,17 @@ module.exports = {
   PROCESS_CANCEL_INPUT_SCHEMA,
   PROCESS_JOB_ID_INPUT_SCHEMA,
   PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
+  PROCESS_LIST_INPUT_SCHEMA,
+  PROCESS_LIST_OUTPUT_SCHEMA,
+  PROCESS_EVENTS_INPUT_SCHEMA,
+  PROCESS_EVENTS_OUTPUT_SCHEMA,
   PROCESS_OUTPUT_INPUT_SCHEMA,
   PROCESS_OUTPUT_OUTPUT_SCHEMA,
   PROCESS_TOOL_ANNOTATIONS,
+  PROCESS_TOOL_ERROR_OUTPUT_SCHEMA,
   READ_ONLY_PROCESS_ANNOTATIONS,
   RUN_PROCESS_INPUT_SCHEMA,
   RUN_PROCESS_OUTPUT_SCHEMA,
   PROCESS_RUNNER_STATUS_OUTPUT_SCHEMA,
+  processToolOutputSchema,
 };

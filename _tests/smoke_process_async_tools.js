@@ -6,6 +6,8 @@ const { processStartTool } = require("../tools/process_start");
 const { processStatusTool } = require("../tools/process_status");
 const { processOutputTool } = require("../tools/process_output");
 const { processCancelTool } = require("../tools/process_cancel");
+const { processListTool } = require("../tools/process_list");
+const { processEventsTool } = require("../tools/process_events");
 const { loadOptionalTools } = require("../src/tool_loader");
 const { getToolPolicy } = require("../src/tool_policy");
 const { createProcessJobManager } = require("../src/util/process_job_manager");
@@ -36,12 +38,14 @@ async function waitFor(predicate, timeoutMs = 5000) {
     processJobManager: manager,
     authResult: { clientId: "client-b" },
   };
-  const tools = [processStartTool, processStatusTool, processOutputTool, processCancelTool];
+  const tools = [processStartTool, processStatusTool, processOutputTool, processCancelTool, processListTool, processEventsTool];
   assert.deepEqual(tools.map((tool) => tool.name), [
     "process_start",
     "process_status",
     "process_output",
     "process_cancel",
+    "process_list",
+    "process_events",
   ]);
 
   assert.equal(processStartTool.descriptor.annotations.readOnlyHint, false);
@@ -51,6 +55,8 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(processCancelTool.descriptor.annotations.openWorldHint, true);
   assert.equal(processStatusTool.descriptor.annotations.readOnlyHint, true);
   assert.equal(processOutputTool.descriptor.annotations.readOnlyHint, true);
+  assert.equal(processListTool.descriptor.annotations.readOnlyHint, true);
+  assert.equal(processEventsTool.descriptor.annotations.readOnlyHint, true);
 
   assert.equal(getToolPolicy("process_start").destructive, true);
   assert.equal(getToolPolicy("process_start").open_world, true);
@@ -58,6 +64,8 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(getToolPolicy("process_cancel").destructive, true);
   assert.equal(getToolPolicy("process_status").read_only, true);
   assert.equal(getToolPolicy("process_output").read_only, true);
+  assert.equal(getToolPolicy("process_list").read_only, true);
+  assert.equal(getToolPolicy("process_events").read_only, true);
 
   const loaded = loadOptionalTools({
     profile: "internal",
@@ -120,10 +128,15 @@ async function waitFor(predicate, timeoutMs = 5000) {
     return status.terminal ? status : null;
   });
   assert.equal(completed.status, "ok");
-  assert.throws(
-    () => processStatusTool.execute({ job_id: started.job_id }, otherClientContext),
-    /Unknown process job/
-  );
+  const hiddenStatus = await processStatusTool.execute({ job_id: started.job_id }, otherClientContext);
+  assert.deepEqual(hiddenStatus, {
+    success: false,
+    error: {
+      code: "process_job_not_found",
+      message: "Process job was not found or is not owned by this client.",
+      retryable: false,
+    },
+  });
 
   const output = await processOutputTool.execute({
     job_id: started.job_id,
@@ -133,6 +146,36 @@ async function waitFor(predicate, timeoutMs = 5000) {
   }, context);
   assert.equal(output.stdout, "async-tool-output");
   assert.equal(output.stdout_eof, true);
+
+  const listed = await processListTool.execute({ limit: 10 }, context);
+  assert.equal(listed.durable, true);
+  assert.equal(listed.jobs.some((job) => job.job_id === started.job_id), true);
+  const events = await processEventsTool.execute({ job_id: started.job_id, limit: 50 }, context);
+  assert.equal(events.durable, true);
+  assert.equal(events.events.some((event) => event.to_status === "ok"), true);
+  const hiddenEvents = await processEventsTool.execute({ job_id: started.job_id }, otherClientContext);
+  assert.equal(hiddenEvents.success, false);
+  assert.equal(hiddenEvents.error.code, "process_job_not_found");
+
+  for (const [tool, args] of [
+    [processStatusTool, { job_id: "missing-job" }],
+    [processOutputTool, { job_id: "missing-job" }],
+    [processCancelTool, { job_id: "missing-job" }],
+  ]) {
+    const missing = await tool.execute(args, context);
+    assert.equal(missing.success, false);
+    assert.equal(missing.error.code, "process_job_not_found");
+  }
+  const deniedCommand = await processStartTool.execute({ command: "cmd", cwd: "mcp-tests" }, context);
+  assert.equal(deniedCommand.success, false);
+  assert.equal(deniedCommand.error.code, "process_command_not_allowed");
+  const deniedEnv = await processStartTool.execute({
+    command: "node",
+    cwd: "mcp-tests",
+    env: { PYTHONPATH: "C:\\untrusted" },
+  }, context);
+  assert.equal(deniedEnv.success, false);
+  assert.equal(deniedEnv.error.code, "process_env_not_allowed");
 
   const longJob = await processStartTool.execute({
     command: "node",
@@ -147,6 +190,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(cancelled.terminal, true);
 
   await manager.shutdown("test_shutdown");
+  manager.close();
   console.log("smoke_process_async_tools ok");
 })().catch((error) => {
   console.error(error);

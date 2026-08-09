@@ -4,7 +4,9 @@ const {
   PROCESS_JOB_ID_INPUT_SCHEMA,
   PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
   READ_ONLY_PROCESS_ANNOTATIONS,
+  processToolOutputSchema,
 } = require("../src/schemas/process_tools");
+const { executeProcessTool } = require("../src/util/process_tool_errors");
 const {
   resolveProcessJobManager,
   resolveProcessJobOwner,
@@ -17,15 +19,15 @@ const processStatusTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Read process job status",
-    description: "Read bounded lifecycle and output metadata for one OAuth-client-bound in-memory process job without returning output bodies.",
+    description: "Read bounded SQLite-backed lifecycle and output metadata for one OAuth-client-bound process job, including after restart.",
     inputSchema: PROCESS_JOB_ID_INPUT_SCHEMA,
-    outputSchema: PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
+    outputSchema: processToolOutputSchema(PROCESS_JOB_STATUS_OUTPUT_SCHEMA),
     annotations: READ_ONLY_PROCESS_ANNOTATIONS,
   },
   execute(args = {}, context = {}) {
-    return resolveProcessJobManager(context).status(args.job_id, {
+    return executeProcessTool(() => resolveProcessJobManager(context).status(args.job_id, {
       ownerId: resolveProcessJobOwner(context),
-    });
+    }));
   },
   summarizeArgs(args = {}) {
     return { job_id: String(args.job_id || "") };

@@ -142,8 +142,6 @@ const JAVASCRIPT_PACKAGES = Object.freeze({
   pyright: ["pyright", "pyright"],
 });
 
-const SHELL_METACHARS = /[&|;<>()`$]/;
-
 function configError(message) {
   const error = new Error(message);
   error.code = "process_runner_invalid_config";
@@ -257,8 +255,8 @@ function enforcePowerShellPolicy(command, args, parentEnv = process.env) {
   if (hasEncoded) {
     throw new Error("PowerShell EncodedCommand is not allowed.");
   }
-  if (hasCommand && parentEnv.MCP_ENABLE_POWERSHELL_COMMAND !== "1") {
-    throw new Error("PowerShell -Command is disabled. Use -File with a workspace-local .ps1 script, or set MCP_ENABLE_POWERSHELL_COMMAND=1.");
+  if (hasCommand && parentEnv.MCP_ENABLE_POWERSHELL_COMMAND === "0") {
+    throw new Error("PowerShell -Command is disabled by MCP_ENABLE_POWERSHELL_COMMAND=0.");
   }
   if (fileIndex >= 0) {
     const fileArg = args[fileIndex + 1];
@@ -269,11 +267,8 @@ function enforcePowerShellPolicy(command, args, parentEnv = process.env) {
     }
     return;
   }
-  if (parentEnv.MCP_ALLOW_RAW_POWERSHELL !== "1") {
-    throw new Error("PowerShell calls must use -File by default.");
-  }
-  if (SHELL_METACHARS.test(args.join(" "))) {
-    throw new Error("PowerShell args contain shell metacharacters; rejected.");
+  if (parentEnv.MCP_ALLOW_RAW_POWERSHELL === "0") {
+    throw new Error("PowerShell calls without -File are disabled by MCP_ALLOW_RAW_POWERSHELL=0.");
   }
 }
 
@@ -324,6 +319,20 @@ function isRegularFile(filePath, fsImpl = fs) {
   }
 }
 
+function isWindowsAppExecutionAlias(filePath, fsImpl = fs, parentEnv = process.env) {
+  if (process.platform !== "win32" || typeof fsImpl.lstatSync !== "function") return false;
+  const localAppData = String(parentEnv.LOCALAPPDATA || "");
+  if (!localAppData) return false;
+  const aliasRoot = path.resolve(localAppData, "Microsoft", "WindowsApps");
+  const candidate = path.resolve(filePath);
+  if (path.dirname(candidate).toLowerCase() !== aliasRoot.toLowerCase()) return false;
+  try {
+    return fsImpl.lstatSync(candidate).isSymbolicLink();
+  } catch {
+    return false;
+  }
+}
+
 function pathCandidates(command, parentEnv = process.env) {
   const pathValue = String(parentEnv.PATH || "");
   const directories = pathValue.split(path.delimiter).filter(Boolean);
@@ -351,7 +360,7 @@ function findTrustedExecutable(command, dependencies = {}) {
   const fsImpl = dependencies.fs || fs;
   const parentEnv = dependencies.parentEnv || process.env;
   for (const candidate of pathCandidates(command, parentEnv)) {
-    if (isRegularFile(candidate, fsImpl)) return candidate;
+    if (isRegularFile(candidate, fsImpl) || isWindowsAppExecutionAlias(candidate, fsImpl, parentEnv)) return candidate;
   }
   return null;
 }
@@ -385,7 +394,7 @@ function findWorkspacePython(cwdInfo, dependencies = {}) {
     }
   }
 
-  for (const name of process.platform === "win32" ? ["python", "python3", "py"] : ["python3", "python"]) {
+  for (const name of process.platform === "win32" ? ["python", "python3"] : ["python3", "python"]) {
     const executable = findTrustedExecutable(name, dependencies);
     if (executable) return { executable, resolutionClass: "trusted_parent_path" };
   }
@@ -460,7 +469,13 @@ function resolveExecutable(command, cwdInfo, dependencies = {}) {
     };
   }
 
-  if (["python", "python3", "py"].includes(command)) {
+  if (command === "py") {
+    const launcher = findTrustedExecutable("py", dependencies);
+    if (!launcher) return commandNotFound(command);
+    return { executable: launcher, prefixArgs: [], resolutionClass: "windows_python_launcher" };
+  }
+
+  if (["python", "python3"].includes(command)) {
     const python = findWorkspacePython(cwdInfo, dependencies);
     if (!python) return commandNotFound(command);
     return { ...python, prefixArgs: [] };

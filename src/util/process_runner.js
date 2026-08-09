@@ -48,9 +48,9 @@ function processRunnerPolicySnapshot() {
       hard_output_chars: MAX_OUTPUT_CHARS,
     },
     powershell: {
-      raw_powershell_enabled: process.env.MCP_ALLOW_RAW_POWERSHELL === "1",
-      command_enabled: process.env.MCP_ENABLE_POWERSHELL_COMMAND === "1",
-      default_policy: "PowerShell requires -File with a workspace-local .ps1 script unless explicitly enabled otherwise.",
+      raw_powershell_enabled: process.env.MCP_ALLOW_RAW_POWERSHELL !== "0",
+      command_enabled: process.env.MCP_ENABLE_POWERSHELL_COMMAND !== "0",
+      default_policy: "PowerShell is enabled for the authenticated internal runner; EncodedCommand is denied and -File remains workspace-bounded.",
     },
     workspace_roots: listWorkspaceRoots(),
     env_policy: {

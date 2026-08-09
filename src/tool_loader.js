@@ -156,6 +156,8 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/process_status", "processStatusTool", "process_status");
     add("../tools/authorized/process_output", "processOutputTool", "process_output");
     add("../tools/authorized/process_cancel", "processCancelTool", "process_cancel");
+    add("../tools/authorized/process_list", "processListTool", "process_list");
+    add("../tools/authorized/process_events", "processEventsTool", "process_events");
   }
 
   if (memoryToolsRequested && memoryToolsAllowed) {

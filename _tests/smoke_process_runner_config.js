@@ -124,6 +124,40 @@ try {
   assert.deepEqual(pipInvocation.prefixArgs, ["-m", "pip"]);
   assert.equal(pipInvocation.resolutionClass, "workspace_python_venv");
 
+  if (process.platform === "win32") {
+    const launcherDir = path.join(fixtureRoot, "launchers");
+    const pyPath = path.join(launcherDir, "py.exe");
+    const pwshPath = path.join(launcherDir, "pwsh.exe");
+    fs.mkdirSync(launcherDir, { recursive: true });
+    fs.writeFileSync(pyPath, "fixture", "utf8");
+    fs.writeFileSync(pwshPath, "fixture", "utf8");
+    const launcherEnv = { PATH: launcherDir, PATHEXT: ".EXE" };
+    const pyInvocation = prepareProcessInvocation({
+      command: "py",
+      args: ["-3.14", "-c", "print('ok')"],
+      cwd: relativeCwd,
+    }, config, { parentEnv: launcherEnv });
+    assert.equal(pyInvocation.executable, pyPath);
+    assert.deepEqual(pyInvocation.args, ["-3.14", "-c", "print('ok')"]);
+    assert.equal(pyInvocation.resolutionClass, "windows_python_launcher");
+
+    const pwshInvocation = prepareProcessInvocation({
+      command: "pwsh",
+      args: ["-NoProfile", "-Command", "Write-Output ok"],
+      cwd: relativeCwd,
+    }, config, { parentEnv: launcherEnv });
+    assert.equal(pwshInvocation.executable, pwshPath);
+    assert.equal(pwshInvocation.resolutionClass, "trusted_parent_path");
+    assert.throws(
+      () => prepareProcessInvocation({
+        command: "pwsh",
+        args: ["-Command", "Write-Output denied"],
+        cwd: relativeCwd,
+      }, config, { parentEnv: { ...launcherEnv, MCP_ENABLE_POWERSHELL_COMMAND: "0" } }),
+      /disabled by MCP_ENABLE_POWERSHELL_COMMAND=0/
+    );
+  }
+
   const packageRoot = path.join(fixtureRoot, "node_modules", "typescript");
   const tscPath = path.join(packageRoot, "bin", "tsc.js");
   fs.mkdirSync(path.dirname(tscPath), { recursive: true });

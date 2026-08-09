@@ -151,6 +151,21 @@ function startProcessExecution(options = {}, dependencies = {}) {
       stderr += accepted;
       stderrTruncated = stderrTruncated || accepted.length < text.length;
     }
+    if (typeof dependencies.onOutput === "function") {
+      try {
+        dependencies.onOutput({
+          stream,
+          text: accepted,
+          truncated: stream === "stdout" ? stdoutTruncated : stderrTruncated,
+        });
+      } catch (error) {
+        if (!terminationError) {
+          terminationError = `process output persistence failed: ${error?.message || String(error)}`;
+        }
+        try { dependencies.onPersistenceError?.(error); } catch {}
+        requestTermination("persistence_failure");
+      }
+    }
   }
 
   function resultPayload(error = null) {

@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces and intended for model/agent use",
-      "tool_count": 76,
+      "tool_count": 78,
       "tools": [
         "code_sample_js",
         "cbm_status",
@@ -96,6 +96,8 @@
         "process_status",
         "process_output",
         "process_cancel",
+        "process_list",
+        "process_events",
         "memory_save",
         "memory_search",
         "memory_get_state",
@@ -152,7 +154,7 @@
       ]
     }
   },
-  "total_mcp_callable_tool_count": 89,
+  "total_mcp_callable_tool_count": 91,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -991,6 +993,34 @@
       "operation_class": "cancel",
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "process_list": {
+      "name": "process_list",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_job_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json",
+        "SERVER_DATABASE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "process_events": {
+      "name": "process_events",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "process",
+      "resource_class": "process_job_registry_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json",
+        "SERVER_DATABASE_POLICY_SPEC.json"
       ],
       "audit_required": true,
       "auth_required": true,

@@ -28,21 +28,21 @@ Summarize the current validated product state in one operator-facing place witho
   - port `3008`
   - auth mode `oauth21`
   - profile `tests/internal`
-  - repository target connector-visible tools `89`
+  - repository target connector-visible tools `91`
 
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=277`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=278`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `277`
+- Latest validated authenticated smoke count: `278`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
-- Authorized MCP-visible tools: `76`
-- Authenticated repo target for profile `tests`: `89`
-- Live OAuth21 runtime count is `89` at `server_start_id = 2026-08-09T14:21:09.406Z` after accepted restart `manual-1786285267764`. This already-open Codex task retains its startup `85`-tool map and therefore cannot name the four new async process tools until client re-enumeration. Existing direct `workbench` calls remain authorized; no OAuth relogin is required.
+- Authorized MCP-visible tools: `78`
+- Authenticated repo target for profile `tests`: `91`
+- Live OAuth21 runtime count is still `89` at `server_start_id = 2026-08-09T14:21:09.406Z` while the durable process-job package awaits controlled deployment. This Codex task has the existing four async names but requires client re-enumeration for `process_list` and `process_events`. Existing direct `workbench` calls remain authorized; no OAuth relogin is required.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
@@ -80,7 +80,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
-- `PROC-1A` is accepted and live: sync and async process paths share exact `60s/600s/250k/1M` limits and one guarded execution core; OAuth E2E, full `7 + 277` suite, controlled restart, and live Node/npm/npx/pip/Docker calls are recorded in `_workflow/operator_decisions/process_runner_async_live_acceptance.md`.
+- `PROC-1A` remains accepted and live. `PROC-1B` adds a SQLite WAL owner-scoped job/event registry, restart recovery without command replay, controlled error envelopes, Windows `py` launcher fidelity, and functional PowerShell resolution; repository acceptance is complete and controlled live deployment is pending.
 - The persistent Codex queue now contains one active package (`Build operational E2E coverage matrix`). Two stale completed entries were transitioned to `done` through append-only snapshots, and live `memory_get_tasks` resolves the latest status correctly.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.

@@ -33,6 +33,15 @@ function validateAgainstSchema(value, schema, path = "$", options = {}) {
 
   function visit(current, currentSchema, currentPath, depth) {
     if (!currentSchema || typeof currentSchema !== "object") return;
+    const variants = currentSchema.oneOf || currentSchema.anyOf;
+    if (Array.isArray(variants) && variants.length) {
+      const matches = variants.filter((variant) => (
+        validateAgainstSchema(current, variant, currentPath, options).success
+      ));
+      const valid = currentSchema.oneOf ? matches.length === 1 : matches.length >= 1;
+      if (!valid) addIssue(issues, currentPath, `${currentSchema.oneOf ? "oneOf" : "anyOf"} variant mismatch`);
+      return;
+    }
     if (!typeMatches(current, currentSchema)) {
       addIssue(issues, currentPath, "type mismatch", {
         expected: schemaTypes(currentSchema),

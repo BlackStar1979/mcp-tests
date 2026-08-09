@@ -86,6 +86,8 @@ const AUTHORIZED_MCP_TOOL_NAMES = [
   "process_status",
   "process_output",
   "process_cancel",
+  "process_list",
+  "process_events",
   "memory_save",
   "memory_search",
   "memory_get_state",
@@ -241,6 +243,8 @@ const TOOL_POLICIES = Object.freeze({
   process_status: policy({ profileAllowed: ["internal"], usesFs: false, fsScope: "process-job-registry-readonly", authRequired: true, publicSafe: false }),
   process_output: policy({ profileAllowed: ["internal"], usesFs: false, fsScope: "process-job-registry-readonly", authRequired: true, publicSafe: false }),
   process_cancel: policy({ profileAllowed: ["internal"], readOnly: false, destructive: true, usesFs: false, fsScope: "process-job-control", authRequired: true, publicSafe: false, openWorld: true }),
+  process_list: policy({ profileAllowed: ["internal"], usesFs: false, fsScope: "process-job-registry-readonly", authRequired: true, publicSafe: false }),
+  process_events: policy({ profileAllowed: ["internal"], usesFs: false, fsScope: "process-job-registry-readonly", authRequired: true, publicSafe: false }),
   process_runner_status: policy({ usesFs: false, fsScope: "none", publicSafe: false }),
 });
 

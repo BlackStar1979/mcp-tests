@@ -188,14 +188,14 @@
       "public_surface_allowed": false
     },
     "process_job_registry_readonly": {
-      "description": "Read-only bounded status and cursor output access for OAuth-client-bound in-memory process jobs.",
+      "description": "Read-only bounded status, cursor output, discovery, and append-only transition-history access for OAuth-client-bound durable process jobs.",
       "allowed_operations": [
         "read"
       ],
       "public_surface_allowed": false
     },
     "process_job_control": {
-      "description": "Authenticated owner-bound cancellation and confirmed process-tree termination for queued or running in-memory process jobs.",
+      "description": "Authenticated owner-bound cancellation and confirmed process-tree termination for queued or running durable process jobs.",
       "allowed_operations": [
         "cancel"
       ],

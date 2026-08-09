@@ -74,7 +74,7 @@ function createHermeticEnv(tempRoot, overrides) {
   return withHermeticServerControlEnv({ ...env, ...overrides }, path.join(tempRoot, "control"));
 }
 
-function startHermeticServer({ tempRoot, auditPath, storagePath, issuer, operatorSecret, port }) {
+function startHermeticServer({ tempRoot, auditPath, storagePath, processStoragePath, issuer, operatorSecret, port }) {
   const child = spawn(
     process.execPath,
     ["server.js", "--profile", "tests", "--auth", "oauth21", "--port", String(port)],
@@ -86,6 +86,7 @@ function startHermeticServer({ tempRoot, auditPath, storagePath, issuer, operato
         MCP_TEST_OAUTH_ISSUER: issuer,
         MCP_TEST_OAUTH_OPERATOR_SECRET: operatorSecret,
         MCP_TEST_OAUTH_STORAGE_FILE: storagePath,
+        MCP_PROCESS_JOB_STORAGE_FILE: processStoragePath,
         MCP_TEST_PUBLIC_BASE_URL: issuer,
       }),
       stdio: ["ignore", "pipe", "pipe"],
@@ -255,10 +256,12 @@ async function connectAndExercise({
   options = { versionNegotiation: { mode: "auto" } },
   expectedEra = "modern",
   expectedVersion = "2026-07-28",
+  persistedJobId = null,
 }) {
   const clientName = `mcp-tests-official-sdk-oauth-${label}`;
   const client = new Client({ name: clientName, version: CLIENT_VERSION }, options || undefined);
   const transport = new StreamableHTTPClientTransport(new URL(mcpUrl), { authProvider: provider });
+  let jobId = "";
   await client.connect(transport);
   try {
     assert.equal(client.getProtocolEra(), expectedEra, `${label} uses expected protocol era`);
@@ -275,6 +278,8 @@ async function connectAndExercise({
       "process_status",
       "process_output",
       "process_cancel",
+      "process_list",
+      "process_events",
     ]) {
       assert.ok(toolList.tools.some((tool) => tool.name === toolName), `${label} exposes ${toolName}`);
     }
@@ -294,7 +299,7 @@ async function connectAndExercise({
       },
     });
     assert.notEqual(started.isError, true, `${label} starts an async process job`);
-    const jobId = started.structuredContent?.job_id;
+    jobId = started.structuredContent?.job_id;
     assert.equal(typeof jobId, "string", `${label} receives an async process job id`);
 
     let terminalStatus = null;
@@ -318,6 +323,49 @@ async function connectAndExercise({
     assert.equal(output.structuredContent?.stdout, "oauth-process-ok", `${label} reads async output by cursor`);
     assert.equal(output.structuredContent?.stdout_eof, true, `${label} reaches async stdout EOF`);
 
+    const listed = await client.callTool({
+      name: "process_list",
+      arguments: { limit: 20 },
+    });
+    assert.equal(
+      listed.structuredContent?.jobs?.some((job) => job.job_id === jobId),
+      true,
+      `${label} rediscovers its durable async process job`
+    );
+    const events = await client.callTool({
+      name: "process_events",
+      arguments: { job_id: jobId, limit: 50 },
+    });
+    assert.equal(
+      events.structuredContent?.events?.some((event) => event.to_status === "ok"),
+      true,
+      `${label} reads the durable terminal transition`
+    );
+
+    if (persistedJobId) {
+      const recoveredStatus = await client.callTool({
+        name: "process_status",
+        arguments: { job_id: persistedJobId },
+      });
+      assert.equal(recoveredStatus.structuredContent?.status, "ok", `${label} recovers pre-restart job status`);
+      assert.equal(recoveredStatus.structuredContent?.durable, true, `${label} reports durable recovery`);
+      assert.equal(recoveredStatus.structuredContent?.recovered_after_restart, true, `${label} marks restart recovery`);
+      const recoveredOutput = await client.callTool({
+        name: "process_output",
+        arguments: { job_id: persistedJobId, max_chars: 65536 },
+      });
+      assert.equal(recoveredOutput.structuredContent?.stdout, "oauth-process-ok", `${label} recovers pre-restart output`);
+      const recoveredEvents = await client.callTool({
+        name: "process_events",
+        arguments: { job_id: persistedJobId, limit: 50 },
+      });
+      assert.equal(
+        recoveredEvents.structuredContent?.events?.some((event) => event.to_status === "ok"),
+        true,
+        `${label} recovers pre-restart event history`
+      );
+    }
+
     if (label === "authorized-modern") {
       const longJob = await client.callTool({
         name: "process_start",
@@ -337,11 +385,27 @@ async function connectAndExercise({
       });
       assert.equal(cancelled.structuredContent?.status, "cancelled", `${label} cancels an owned async process job`);
       assert.equal(cancelled.structuredContent?.terminal, true, `${label} observes terminal cancellation`);
+
+      const missingStatus = await client.callTool({
+        name: "process_status",
+        arguments: { job_id: "missing-oauth-job" },
+      });
+      assert.notEqual(missingStatus.isError, true, `${label} normalizes missing jobs without protocol exceptions`);
+      assert.equal(missingStatus.structuredContent?.success, false, `${label} returns a controlled missing-job envelope`);
+      assert.equal(missingStatus.structuredContent?.error?.code, "process_job_not_found");
+
+      const deniedStart = await client.callTool({
+        name: "process_start",
+        arguments: { command: "cmd", cwd: "mcp-tests" },
+      });
+      assert.notEqual(deniedStart.isError, true, `${label} normalizes process policy denials`);
+      assert.equal(deniedStart.structuredContent?.success, false);
+      assert.equal(deniedStart.structuredContent?.error?.code, "process_command_not_allowed");
     }
   } finally {
     await client.close().catch(() => {});
   }
-  return clientName;
+  return { clientName, jobId };
 }
 
 (async () => {
@@ -358,12 +422,14 @@ async function connectAndExercise({
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-official-sdk-v2-oauth-"));
   const auditPath = path.join(tempRoot, "audit.jsonl");
   const storagePath = path.join(tempRoot, "oauth.sqlite");
+  const processStoragePath = path.join(tempRoot, "process-jobs.sqlite");
   const provider = new MemoryOAuthProvider("http://127.0.0.1/callback");
   const serverProcesses = [];
   let activeServer = startHermeticServer({
     tempRoot,
     auditPath,
     storagePath,
+    processStoragePath,
     issuer,
     operatorSecret,
     port,
@@ -406,7 +472,7 @@ async function connectAndExercise({
     assert.ok(initialTokens.refresh_token, "authorization code exchange stores a refresh token");
     assert.equal(initialTokens.issuer, issuer, "tokens retain the authorization-server issuer stamp");
 
-    const authorizedClientName = await connectAndExercise({
+    const authorized = await connectAndExercise({
       mcpUrl,
       provider,
       label: "authorized-modern",
@@ -417,6 +483,7 @@ async function connectAndExercise({
       tempRoot,
       auditPath,
       storagePath,
+      processStoragePath,
       issuer,
       operatorSecret,
       port,
@@ -425,15 +492,16 @@ async function connectAndExercise({
     const restartedHealth = await waitHealth(issuer);
     assert.equal(restartedHealth.auth.mode, "oauth21", "restarted server preserves OAuth 2.1 mode");
 
-    const resumedAfterRestartClientName = await connectAndExercise({
+    const resumedAfterRestart = await connectAndExercise({
       mcpUrl,
       provider,
       label: "resumed-modern-after-restart",
+      persistedJobId: authorized.jobId,
     });
     assert.equal(provider.authorizationUrls.length, 1, "restart does not reopen operator authorization");
 
     const poisonedAccessToken = provider.poisonAccessToken();
-    const refreshedLegacyClientName = await connectAndExercise({
+    const refreshedLegacy = await connectAndExercise({
       mcpUrl,
       provider,
       label: "refreshed-legacy-after-restart",
@@ -446,7 +514,7 @@ async function connectAndExercise({
     assert.notEqual(refreshedTokens.refresh_token, initialTokens.refresh_token, "401 recovery rotates the refresh token");
     assert.equal(provider.authorizationUrls.length, 1, "refresh does not reopen operator authorization");
 
-    const resumedModernClientName = await connectAndExercise({
+    const resumedModern = await connectAndExercise({
       mcpUrl,
       provider,
       label: "resumed-modern-after-refresh",
@@ -492,14 +560,14 @@ async function connectAndExercise({
       audit.entries
         .filter((entry) => entry.event === "server_discover_received")
         .map((entry) => entry.client_name),
-      [authorizedClientName, resumedAfterRestartClientName, resumedModernClientName],
+      [authorized.clientName, resumedAfterRestart.clientName, resumedModern.clientName],
       "authenticated modern SDK sessions use the discovery path"
     );
     assert.deepEqual(
       audit.entries
         .filter((entry) => entry.event === "initialize_received")
         .map((entry) => entry.client_name),
-      [refreshedLegacyClientName],
+      [refreshedLegacy.clientName],
       "authenticated legacy SDK session uses initialize"
     );
     assert.equal(

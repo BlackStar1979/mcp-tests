@@ -4,7 +4,7 @@
 
 **Goal:** Align synchronous process execution with the operator-selected limits and add a bounded, cancellable asynchronous job lifecycle for long-running development commands.
 
-**Architecture:** A fail-fast process policy module prepares pinned commands and restricted environments. A shared execution handle powers both `run_process` and an in-memory job manager exposed through four explicit MCP tools.
+**Architecture:** A fail-fast process policy module prepares pinned commands and restricted environments. A shared execution handle powers both `run_process` and a SQLite-backed owner-scoped job manager exposed through six explicit MCP tools.
 
 **Tech Stack:** Node.js CommonJS, `node:child_process`, JSON Schema, MCP Streamable HTTP runtime, repository smoke harness.
 
@@ -15,7 +15,7 @@
 - Remove `kubectl` from the default allowlist.
 - Reject caller overrides of executable resolution and loader startup controls.
 - Keep public port 3009 unchanged.
-- Add exactly four authenticated tools: `process_start`, `process_status`, `process_output`, and `process_cancel`.
+- Add six authenticated tools: `process_start`, `process_status`, `process_output`, `process_cancel`, `process_list`, and `process_events`.
 - Every production behavior change requires a failing test first.
 - Never expose raw output, args, env values, or resolved executable paths in lifecycle audit events.
 - Never start a replacement server on port 3008; use the controlled restart helper only after isolated validation.
@@ -163,10 +163,10 @@ Run process execution, sync tool, timeout-kill, and output-schema smokes.
 
 ---
 
-### Task 4: In-memory asynchronous job manager
+### Task 4: Durable asynchronous job manager
 
 **Files:**
-- Create: `src/util/process_job_manager.js`
+- Create: `src/util/process_job_manager.js`, `src/util/process_job_store.js`
 - Create: `_tests/smoke_process_job_manager.js`
 
 **Interfaces:**
@@ -202,10 +202,10 @@ After tests complete, assert no child process remains and the registry retains n
 
 ---
 
-### Task 5: Expose four MCP tools and policy contracts
+### Task 5: Expose six MCP tools and policy contracts
 
 **Files:**
-- Create: `tools/process_start.js`, `tools/process_status.js`, `tools/process_output.js`, `tools/process_cancel.js`
+- Create: `tools/process_start.js`, `tools/process_status.js`, `tools/process_output.js`, `tools/process_cancel.js`, `tools/process_list.js`, `tools/process_events.js`
 - Create: `tools/authorized/process_start.js`, `tools/authorized/process_status.js`, `tools/authorized/process_output.js`, `tools/authorized/process_cancel.js`
 - Create: `_tests/smoke_process_async_tools.js`
 - Modify: `src/schemas/process_tools.js`, `src/tool_loader.js`, `src/tool_policy.js`
@@ -243,11 +243,11 @@ Run async tool, loader, policy, descriptor, output-schema, and security-boundary
 
 **Interfaces:**
 - Restart controller invokes process-job shutdown before process exit with a bounded grace period.
-- Live surface becomes 89 authenticated tools (`13 + 76`).
+- Live surface becomes 91 authenticated tools (`13 + 78`).
 
 - [ ] **Step 1: Write RED restart and spec guards**
 
-Assert shutdown occurs before injected exit, timeout fallback still exits, event catalog includes process lifecycle events, specs expose exact limits, and every expected tool count is 89.
+Assert shutdown occurs before injected exit, timeout fallback still exits, event catalog includes persistence/recovery lifecycle events, specs expose exact limits, and every expected tool count is 91.
 
 - [ ] **Step 2: Verify RED**
 
@@ -291,7 +291,7 @@ Start an OAuth21 test instance on an unused port with isolated OAuth/audit/state
 
 - [ ] **Step 3: Restart production safely**
 
-Run `node .\scripts\request-restart.js --code=42 --reason=manual`. Verify port 3008 health, server start ID, 89-tool surface, fingerprints, OAuth continuity, and direct workbench calls. Ask the operator only if OAuth login or connector re-enumeration requires UI interaction.
+Run `node .\scripts\request-restart.js --code=42 --reason=manual`. Verify port 3008 health, server start ID, 91-tool surface, fingerprints, OAuth continuity, and direct workbench calls. Ask the operator only if OAuth login or connector re-enumeration requires UI interaction.
 
 - [ ] **Step 4: Record and publish**
 

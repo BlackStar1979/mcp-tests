@@ -61,6 +61,7 @@
   "_tests/smoke_process_runner_config.js",
   "_tests/smoke_process_execution.js",
   "_tests/smoke_process_job_manager.js",
+  "_tests/smoke_process_job_persistence.js",
   "_tests/smoke_process_async_tools.js",
   "_tests/smoke_run_process_tool.js",
   "_tests/smoke_process_runner_timeout_kill_error.js",

@@ -11,7 +11,5 @@ Updated: 2026-07-29
   Design specification for CBM bridge reliability hardening.
 - `2026-07-26-cbm-v0-9-0-compatibility-hardening-design.md`
   Design specification for CBM v0.9.0 compatibility hardening.
-- `2026-08-09-process-runner-async-design.md`
-  Design specification for synchronized process limits, hardened execution policy, and asynchronous process jobs.
 
 Use these specs as supporting design evidence only. Current runtime and connector behavior must still be verified through tests, live probes, and canonical specs.

@@ -86,7 +86,9 @@
         "package_metadata_pypi"
       ],
       "denied_network_scopes": [],
-      "allowed_database_scopes": [],
+      "allowed_database_scopes": [
+        "process_job_registry"
+      ],
       "denied_database_scopes": [],
       "allowed_plugin_scopes": [
         "plugin_registry_read",

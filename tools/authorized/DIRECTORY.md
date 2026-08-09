@@ -21,7 +21,7 @@ Updated: 2026-08-02
   Authorized observability and truth-audit facades.
 - `remote_site_runtime_status.js`, `list_remote_site_files.js`, `read_remote_site_file.js`, `write_remote_site_file.js`, `edit_remote_site_file.js`, `move_remote_site_file.js`, `delete_remote_site_file.js`, `restore_remote_site_file.js`, `preview_remote_site_retention.js`
   Authorized remote-site facades.
-- `run_process.js`, `process_start.js`, `process_status.js`, `process_output.js`, `process_cancel.js`, `process_runner_status.js`, `tool_dispatch.js`, `tool_registry_execute.js`, `tool_registry_get_tool.js`, `tool_registry_list.js`, `tool_registry_plan.js`, `tool_registry_policy.js`, `tool_registry_preflight.js`, `tool_registry_status.js`, `tool_registry_validate_tool.js`
+- `run_process.js`, `process_start.js`, `process_status.js`, `process_output.js`, `process_cancel.js`, `process_list.js`, `process_events.js`, `process_runner_status.js`, `tool_dispatch.js`, `tool_registry_execute.js`, `tool_registry_get_tool.js`, `tool_registry_list.js`, `tool_registry_plan.js`, `tool_registry_policy.js`, `tool_registry_preflight.js`, `tool_registry_status.js`, `tool_registry_validate_tool.js`
   Authorized execution, dispatch, and tool-registry facades.
 - `README.md`
   Orientation for the authorized tool-facade layer.

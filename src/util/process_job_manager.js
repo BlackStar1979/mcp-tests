@@ -7,6 +7,7 @@ const {
   startProcessExecution,
 } = require("./process_execution");
 const { PROCESS_RUNNER_CONFIG } = require("./process_runner_config");
+const { createProcessJobStore } = require("./process_job_store");
 
 const TERMINAL_STATUSES = new Set([
   "ok",
@@ -14,6 +15,7 @@ const TERMINAL_STATUSES = new Set([
   "timeout",
   "spawn_error",
   "cancelled",
+  "interrupted",
 ]);
 
 function unknownJob(jobId) {
@@ -48,6 +50,15 @@ function createProcessJobManager(options = {}) {
   const now = options.now || Date.now;
   const createId = options.randomUUID || randomUUID;
   const executionDependencies = options.executionDependencies || {};
+  const runtimeScope = String(options.runtimeScope || "default");
+  const serverInstanceId = String(options.serverInstanceId || `process-${process.pid}`);
+  const store = options.store || createProcessJobStore({
+    storageFile: options.storageFile || ":memory:",
+    runtimeScope,
+    serverInstanceId,
+    serverPid: options.serverPid,
+    processKill: options.processKill,
+  });
   const jobs = new Map();
   const queue = [];
   let audit = typeof options.audit === "function" ? options.audit : () => {};
@@ -72,25 +83,66 @@ function createProcessJobManager(options = {}) {
     audit = typeof nextAudit === "function" ? nextAudit : () => {};
   }
 
+  function hydrate(record) {
+    if (!record) return null;
+    return {
+      id: record.id,
+      ownerKey: record.ownerKey,
+      prepared: {
+        timeoutMs: record.timeoutMs,
+        outputLimit: record.outputLimit,
+        invocation: {
+          logicalCommand: record.command,
+          family: record.family,
+          resolutionClass: record.resolutionClass,
+          cwdInfo: {
+            displayPath: record.cwd,
+            rootAlias: record.workspace,
+          },
+        },
+      },
+      status: record.status,
+      createdAtMs: record.createdAtMs,
+      startedAtMs: record.startedAtMs,
+      finishedAtMs: record.finishedAtMs,
+      cancelReason: null,
+      handle: null,
+      result: {
+        status: record.status,
+        exit_code: record.exitCode,
+        signal: record.signal,
+        timed_out: record.timedOut,
+        stdout: record.stdout,
+        stderr: record.stderr,
+        stdout_truncated: record.stdoutTruncated,
+        stderr_truncated: record.stderrTruncated,
+        error: record.error,
+      },
+      recoveredAfterRestart: record.recoveredAfterRestart || record.serverInstanceId !== serverInstanceId,
+      persistedOnly: true,
+    };
+  }
+
+  for (const record of store.reconcileOrphans(now())) {
+    const recovered = hydrate(record);
+    if (recovered) {
+      emit("process_job_recovered_interrupted", recovered, {
+        reason_code: "unclean_restart",
+      });
+    }
+  }
+
   function terminalJobs() {
     return [...jobs.values()].filter((job) => TERMINAL_STATUSES.has(job.status));
   }
 
   function prune() {
     const currentTime = now();
-    const terminal = terminalJobs().sort((left, right) => left.finishedAtMs - right.finishedAtMs);
-    for (const job of terminal) {
-      if (currentTime - job.finishedAtMs > config.retentionMs) {
-        jobs.delete(job.id);
-        emit("process_job_pruned", job, { reason: "retention_expired" });
-      }
-    }
-
-    const retained = terminalJobs().sort((left, right) => left.finishedAtMs - right.finishedAtMs);
-    while (retained.length > config.maxRetained) {
-      const removed = retained.shift();
-      jobs.delete(removed.id);
-      emit("process_job_pruned", removed, { reason: "retention_capacity" });
+    const removedIds = store.prune(currentTime, config.retentionMs, config.maxRetained);
+    for (const jobId of removedIds) {
+      const removed = jobs.get(jobId);
+      jobs.delete(jobId);
+      if (removed) emit("process_job_pruned", removed, { reason: "retention_policy" });
     }
   }
 
@@ -103,6 +155,19 @@ function createProcessJobManager(options = {}) {
     job.status = result.status;
     job.result = result;
     job.finishedAtMs = now();
+    const reasonCode = result.status === "cancelled"
+      ? cancellationReasonCode(job.cancelReason)
+      : result.status === "interrupted"
+        ? "unclean_restart"
+        : null;
+    try {
+      store.finish(job.id, result, job.finishedAtMs, reasonCode);
+    } catch (error) {
+      emit("process_job_persistence_failed", job, {
+        phase: "finish",
+        error_message: error?.message || String(error),
+      });
+    }
     emit("process_job_completed", job, {
       duration_ms: Math.max(0, job.finishedAtMs - job.startedAtMs),
       exit_code: result.exit_code,
@@ -129,10 +194,20 @@ function createProcessJobManager(options = {}) {
     job.status = "running";
     job.startedAtMs = now();
     try {
+      store.markRunning(job.id, job.startedAtMs);
       job.handle = startExecution(job.input, {
         ...executionDependencies,
         config,
         prepared: job.prepared,
+        onOutput: ({ stream, text, truncated }) => {
+          store.appendOutput(job.id, stream, text, truncated, now());
+        },
+        onPersistenceError: (error) => {
+          emit("process_job_persistence_failed", job, {
+            phase: "output",
+            error_message: error?.message || String(error),
+          });
+        },
       });
       emit("process_job_started", job, {
         queue_wait_ms: Math.max(0, job.startedAtMs - job.createdAtMs),
@@ -208,6 +283,8 @@ function createProcessJobManager(options = {}) {
       signal: result?.signal ?? null,
       timed_out: result?.timed_out ?? false,
       error: result?.error ?? null,
+      durable: true,
+      recovered_after_restart: job.recoveredAfterRestart === true,
     };
   }
 
@@ -234,7 +311,21 @@ function createProcessJobManager(options = {}) {
       cancelReason: null,
       handle: null,
       result: null,
+      recoveredAfterRestart: false,
+      persistedOnly: false,
     };
+    store.create({
+      id: job.id,
+      ownerKey: job.ownerKey,
+      command: prepared.invocation.logicalCommand,
+      family: prepared.invocation.family,
+      resolutionClass: prepared.invocation.resolutionClass,
+      cwd: prepared.invocation.cwdInfo.displayPath,
+      workspace: prepared.invocation.cwdInfo.rootAlias,
+      createdAtMs,
+      timeoutMs: prepared.timeoutMs,
+      outputLimit: prepared.outputLimit,
+    });
     jobs.set(job.id, job);
     queue.push(job.id);
     emit("process_job_queued", job, {
@@ -248,8 +339,11 @@ function createProcessJobManager(options = {}) {
 
   function getJob(jobId, owner = {}) {
     prune();
-    const job = jobs.get(String(jobId || ""));
-    if (!job || job.ownerKey !== ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true)) throw unknownJob(jobId);
+    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    let job = jobs.get(String(jobId || ""));
+    if (job && job.ownerKey !== expectedOwnerKey) throw unknownJob(jobId);
+    if (!job) job = hydrate(store.get(jobId, expectedOwnerKey));
+    if (!job) throw unknownJob(jobId);
     return job;
   }
 
@@ -261,24 +355,56 @@ function createProcessJobManager(options = {}) {
     const job = getJob(jobId, owner);
     const payload = job.handle
       ? job.handle.readOutput(cursor)
-      : {
-          stdout: "",
-          stderr: "",
-          stdout_offset: Number(cursor.stdout_offset || 0),
-          stderr_offset: Number(cursor.stderr_offset || 0),
-          stdout_next_offset: Number(cursor.stdout_offset || 0),
-          stderr_next_offset: Number(cursor.stderr_offset || 0),
-          stdout_eof: TERMINAL_STATUSES.has(job.status),
-          stderr_eof: TERMINAL_STATUSES.has(job.status),
-          terminal: TERMINAL_STATUSES.has(job.status),
-          status: job.status,
-        };
+      : readPersistedOutput(job, cursor);
     emit("process_job_output_read", job, {
       stdout_offset: payload.stdout_offset,
       stderr_offset: payload.stderr_offset,
       returned_chars: payload.stdout.length + payload.stderr.length,
     });
     return { job_id: job.id, ...payload };
+  }
+
+  function readPersistedOutput(job, cursor = {}) {
+    const stdout = String(job.result?.stdout || "");
+    const stderr = String(job.result?.stderr || "");
+    const stdoutOffset = Math.max(0, Math.min(Number(cursor.stdout_offset || 0), job.prepared.outputLimit));
+    const stderrOffset = Math.max(0, Math.min(Number(cursor.stderr_offset || 0), job.prepared.outputLimit));
+    let remaining = Math.max(1, Math.min(Number(cursor.max_chars || config.outputReadChars), config.outputReadChars));
+    const stdoutChunk = stdout.slice(stdoutOffset, stdoutOffset + remaining);
+    remaining -= stdoutChunk.length;
+    const stderrChunk = stderr.slice(stderrOffset, stderrOffset + remaining);
+    const stdoutNextOffset = stdoutOffset + stdoutChunk.length;
+    const stderrNextOffset = stderrOffset + stderrChunk.length;
+    return {
+      stdout: stdoutChunk,
+      stderr: stderrChunk,
+      stdout_offset: stdoutOffset,
+      stderr_offset: stderrOffset,
+      stdout_next_offset: stdoutNextOffset,
+      stderr_next_offset: stderrNextOffset,
+      stdout_eof: TERMINAL_STATUSES.has(job.status) && stdoutNextOffset >= stdout.length,
+      stderr_eof: TERMINAL_STATUSES.has(job.status) && stderrNextOffset >= stderr.length,
+      terminal: TERMINAL_STATUSES.has(job.status),
+      status: job.status,
+    };
+  }
+
+  function list(options = {}, owner = {}) {
+    prune();
+    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    return {
+      durable: true,
+      jobs: store.list(expectedOwnerKey, options).map((record) => (
+        toStatus(jobs.get(record.id) || hydrate(record))
+      )),
+    };
+  }
+
+  function events(jobId, options = {}, owner = {}) {
+    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    const rows = store.events(jobId, expectedOwnerKey, options);
+    if (!rows) throw unknownJob(jobId);
+    return { job_id: String(jobId), durable: true, events: rows };
   }
 
   async function cancel(jobId, reason = "cancelled", owner = {}) {
@@ -301,6 +427,12 @@ function createProcessJobManager(options = {}) {
         stderr_truncated: false,
         error: null,
       };
+      store.finish(
+        job.id,
+        job.result,
+        job.finishedAtMs,
+        cancellationReasonCode(job.cancelReason)
+      );
       emit("process_job_cancelled", job, {
         reason_code: cancellationReasonCode(job.cancelReason),
       });
@@ -325,6 +457,9 @@ function createProcessJobManager(options = {}) {
       max_queued: config.maxQueued,
       max_retained: config.maxRetained,
       retention_ms: config.retentionMs,
+      durable: true,
+      persistence: "sqlite",
+      persisted_status_counts: store.counts(),
     };
   }
 
@@ -338,8 +473,15 @@ function createProcessJobManager(options = {}) {
     return snapshot();
   }
 
+  function close() {
+    store.close();
+  }
+
   return {
     cancel,
+    close,
+    events,
+    list,
     output,
     setAudit,
     shutdown,

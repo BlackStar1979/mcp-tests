@@ -160,6 +160,14 @@
       "status": "active_code_event"
     },
     {
+      "name": "process_job_recovered_interrupted",
+      "status": "active_code_event"
+    },
+    {
+      "name": "process_job_persistence_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_state_missing",
       "status": "active_code_event"
     },

@@ -104,7 +104,7 @@ assert.ok(canon.includes("`current_working_course = operational-e2e-reliability`
 assert.ok(canon.includes("`next_primary = ops-1a-operational-e2e-coverage-matrix`"));
 assert.ok(canon.includes("`next_secondary = comp-1a-client-entry-evidence-on-new-version`"));
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_89_with_upstream_201_277_caveats_and_snippet_integrity");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));

@@ -66,7 +66,7 @@
       "public",
       "authorized"
     ],
-    "expected_public_plus_authorized_count": 89,
+    "expected_public_plus_authorized_count": 91,
     "tool_exposure_control": "profile_tests_authenticated_only",
     "dependency_availability_does_not_change_tools_list": true,
     "expected_authorized_tools": [
@@ -139,6 +139,8 @@
       "process_status",
       "process_output",
       "process_cancel",
+      "process_list",
+      "process_events",
       "memory_save",
       "memory_search",
       "memory_get_state",
@@ -166,7 +168,7 @@
     "current_tool_count_after_stage4": 43,
     "current_tool_count_after_stage5": 43,
     "current_tool_count_after_stage6": 43,
-    "repo_current_expected_tool_count": 89,
+    "repo_current_expected_tool_count": 91,
     "expected_count_source": "SERVER_SPEC.server.full_tests_authenticated_tool_count / SERVER_TOOLS_SPEC.total_mcp_callable_tool_count",
     "historical_expected_public_plus_authorized_count": 45,
     "hidden_internal_tools": [
@@ -261,7 +263,7 @@
         "mcp_endpoint": "https://mcp-tests-oauth21.romionologic.dev/mcp",
         "current_tool_count_after_stage4": 43,
         "current_tool_count_after_stage5": 43,
-        "repo_current_expected_tool_count": 89,
+        "repo_current_expected_tool_count": 91,
         "auth": "oauth21",
         "current_tool_count_after_stage6": 43
       }

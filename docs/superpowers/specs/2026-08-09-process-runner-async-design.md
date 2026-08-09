@@ -19,14 +19,16 @@ The output budget applies to stdout and stderr together. Each stream retains its
 
 ## Tool surface
 
-The authenticated test surface keeps `run_process` and adds four tools:
+The authenticated test surface keeps `run_process` and adds six tools:
 
 - `process_start`: validate, enqueue, and return a job record without waiting for completion.
 - `process_status`: return lifecycle and aggregate output metadata without output bodies.
 - `process_output`: return cursor-based bounded stdout and stderr chunks.
 - `process_cancel`: cancel a queued job or terminate a running process tree.
+- `process_list`: rediscover bounded owner-scoped jobs after context or server restart.
+- `process_events`: read bounded append-only lifecycle transitions for one owned job.
 
-The surface grows from 85 to 89 authenticated tools (`13 public + 76 authorized-visible`). `process_start` and `process_cancel` are destructive, non-idempotent, filesystem-capable, and open-world. `process_status` and `process_output` are read-only views over the in-memory process-job registry.
+The surface grows from 85 to 91 authenticated tools (`13 public + 78 authorized-visible`). `process_start` and `process_cancel` are destructive, non-idempotent, filesystem-capable, and open-world. Status, output, list, and events are owner-scoped read-only views over the durable process-job registry.
 
 ## Shared execution core
 
@@ -63,11 +65,11 @@ All families remain authenticated and destructive at the general execution-tool 
 Caller-provided environment values cannot replace executable lookup. `PATH`, `PATHEXT`, and `COMSPEC` are reserved and rejected in `args.env`.
 
 - `node` resolves to `process.execPath`.
-- Python commands first use workspace-local `.venv` or `venv`, then an active trusted parent virtual environment, then the server's inherited executable search path.
+- Python interpreter commands first use workspace-local `.venv` or `venv`, then an active trusted parent virtual environment, then the server's inherited executable search path. Windows `py` resolves only to the trusted Windows Python Launcher, including App Execution Alias handling, and preserves launcher arguments such as `-3.14`.
 - Python module tools use the selected interpreter with `-m` where the command has a stable module form, including `pip`, `pytest`, `coverage`, `unittest`, `mypy`, `black`, `flake8`, and `tox`.
 - JavaScript check tools resolve a workspace-local package binary before any trusted parent PATH fallback.
 - Docker and source-control commands resolve only from the server's inherited PATH, never caller overrides.
-- Missing commands fail with a deterministic `command_not_found` error before spawn.
+- Missing commands and domain-policy denials return a deterministic structured process error rather than escaping as transport exceptions.
 
 The resolver returns both the operator-facing logical command and the pinned spawn executable/prefix arguments. Results and audits expose only the logical command and a bounded resolution class, not secret-bearing paths.
 
@@ -85,13 +87,13 @@ Base inheritance is limited to OS identity, locale, home, temp, and the trusted 
 
 The default manager allows two running jobs, eight queued jobs, and 32 retained terminal records. Terminal records expire after 30 minutes. These limits are fail-fast configurable within hard bounds. Every job is bound to a one-way hash of the authenticated OAuth client ID; a different client receives the same not-found result as an unknown job and cannot read or cancel it.
 
-Job states are `queued`, `running`, `ok`, `nonzero_exit`, `timeout`, `spawn_error`, and `cancelled`. Timeout begins when the child starts, not while queued.
+Job states are `queued`, `running`, `ok`, `nonzero_exit`, `timeout`, `spawn_error`, `cancelled`, and `interrupted`. Timeout begins when the child starts, not while queued.
 
 `process_output` accepts independent stdout/stderr offsets and a combined per-call chunk limit capped at 65536 characters. It returns next offsets and EOF flags. Polling therefore stays transport-bounded even when the job's retained output reaches one million characters.
 
 Queued cancellation removes the job without spawning. Running cancellation immediately terminates the process tree because killing only the parent can orphan descendants. Windows waits for `taskkill /T /F` through a fixed system executable; POSIX sends `SIGKILL` to the detached process group with a direct-child fallback. The job completion promise does not resolve until tree termination completes, the manager drains output until close, and termination errors remain explicit.
 
-The registry is intentionally in-memory. A controlled server restart cancels active jobs before exit. Job metadata does not survive restart, and the API reports unknown IDs deterministically after restart. No detached process is created.
+SQLite in WAL mode is the source of truth for owner hashes, safe command metadata, bounded output, timestamps, terminal results, and append-only transitions. Arguments and environment values are never persisted. A controlled restart cancels active jobs before exit; an unclean restart marks orphaned `queued` or `running` rows as terminal `interrupted`. Status, output, discovery, and event history survive restart. Commands are never replayed automatically, and no detached process is created.
 
 ## Audit and confidentiality
 
@@ -110,12 +112,12 @@ Tool-call audit remains active through the existing runtime. The optional-tool e
 7. Prove queueing, concurrency, cursor output, completion, timeout, process-tree cancellation, retention, owner isolation, and unknown-job behavior.
 8. Prove audits contain lifecycle metadata without raw output, args, env values, raw cancellation reasons, OAuth client IDs, or resolved paths.
 9. Run targeted smokes, full offline suite, self-test, schema/spec guards, and live OAuth probes on an isolated non-production port.
-10. Restart production port 3008 only with `node .\scripts\request-restart.js --code=42 --reason=manual`, then verify health, 89-tool surface, OAuth continuity, and direct calls.
+10. Restart production port 3008 only with `node .\scripts\request-restart.js --code=42 --reason=manual`, then verify health, 91-tool surface, OAuth continuity, persisted-job recovery, and direct calls.
 
 ## Non-goals
 
 - No Kubernetes execution in this package.
-- No persistent or detached job execution across server restart.
+- No detached execution or automatic command replay across server restart.
 - No claim that a synchronous ten-minute tool call is transport-safe.
 - No shell-output streaming protocol extension; asynchronous bounded polling is the supported long-running path.
 - No change to public port 3009 tools.

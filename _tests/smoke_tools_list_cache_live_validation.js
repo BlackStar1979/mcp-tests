@@ -12,9 +12,9 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo89_runtime89_model85_reenumeration_pending";
-const expectedCurrentFingerprint = "73c0bc08dad53e8c";
-const expectedCurrentHash = "7b5bfc1bd21386d3";
+const expectedCurrentStatus = "repo91_runtime89_model89_deploy_pending";
+const expectedCurrentFingerprint = "c4e3e5087a1fe9bf";
+const expectedCurrentHash = "d07f8d0a89c66d97";
 
 const c = state.current_connector_truth.oauth21_3008_tools;
 const currentServerStartId = state.current_runtime_truth.oauth21_3008.server_start_id;
@@ -23,13 +23,13 @@ assert.match(currentServerStartId, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z
 assert.equal(c.server_start_id, currentServerStartId);
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
-assert.equal(c.tool_count, 85);
-assert.equal(c.repo_current_expected_tool_count, 89);
+assert.equal(c.tool_count, 89);
+assert.equal(c.repo_current_expected_tool_count, 91);
 assert.equal(c.connector_refresh_required_now, true);
 assert.equal(c.connector_ui_visibility_verified_now, false);
 assert.equal(c.model_runtime_callable_verified_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_89_with_upstream_201_277_caveats_and_snippet_integrity");
+assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
 
@@ -37,10 +37,10 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repository and live OAuth21 `3008` both serve the `89`-tool target"));
-assert.ok(index.includes("repository/live target `89`"));
-assert.ok(index.includes("startup `85`-tool map"));
-assert.ok(index.includes("the 85-tool task-lifecycle deployment is complete"));
+assert.ok(index.includes("repository target is `91`"));
+assert.ok(index.includes("live OAuth21 `3008` remains at `89`"));
+assert.ok(index.includes("current model map has the existing four async tools"));
+assert.ok(index.includes("Complete the active `PROC-1B` deployment"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 2, 2026"));
@@ -49,8 +49,8 @@ assert.ok(index.includes("canonical PKCE"));
 assert.ok(index.includes("No OAuth relogin is required"));
 assert.ok(index.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(index.includes("knowledge index"));
-assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `89`"));
-assert.ok(canon.includes("already-open Codex task retains its startup `85`-tool map"));
+assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `91`"));
+assert.ok(canon.includes("`PROC-1B` is repository-accepted and awaiting controlled live deployment"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

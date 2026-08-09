@@ -13,7 +13,7 @@ Keep one shared guarded execution core for synchronous and asynchronous process 
 - Default timeout: `60000 ms`; hard timeout: `600000 ms`.
 - Default combined stdout/stderr budget: `250000` characters; hard budget: `1000000` characters.
 - Async registry: maximum `2` running, `8` queued, `32` retained terminal jobs, `30` minute retention, and `65536` characters per cursor read.
-- Jobs are in-memory, bound to the authenticated OAuth client, and cancelled before controlled restart.
+- At this phase-A acceptance, jobs were in-memory, bound to the authenticated OAuth client, and cancelled before controlled restart. This storage model is superseded by `PROC-1B`, which persists owner-scoped lifecycle state and bounded output in SQLite without command replay.
 - Node resolves to `process.execPath`; Python and JavaScript tooling prefer workspace-local environments; caller environment overrides cannot replace executable lookup or loader policy.
 - Docker remains available in the internal tests profile. `kubectl` is denied. Raw shell execution remains constrained by the existing PowerShell/shell policy.
 - The central runtime policy explicitly permits only the guarded process tools after profile and authentication checks; destructive annotations remain truthful.

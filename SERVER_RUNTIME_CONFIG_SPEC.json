@@ -129,6 +129,7 @@
     "MCP_ENABLE_POWERSHELL_COMMAND",
     "MCP_PROCESS_ALLOWLIST",
     "MCP_PROCESS_HARD_OUTPUT_CHARS",
+    "MCP_PROCESS_JOB_STORAGE_FILE",
     "MCP_PROCESS_MAX_CONCURRENT",
     "MCP_PROCESS_MAX_OUTPUT_CHARS",
     "MCP_PROCESS_MAX_QUEUED",
@@ -269,8 +270,13 @@
       "async_max_retained": 32,
       "async_retention_ms": 1800000,
       "async_output_read_chars": 65536,
-      "registry_persistence": false,
-      "controlled_restart_cancels_active_jobs": true
+      "registry_persistence": "sqlite_wal",
+      "registry_storage_env": "MCP_PROCESS_JOB_STORAGE_FILE",
+      "registry_storage_default": "~/.romion/tests_process_jobs_<port>.sqlite",
+      "controlled_restart_cancels_active_jobs": true,
+      "unclean_restart_marks_active_jobs_interrupted": true,
+      "automatic_command_replay_after_restart": false,
+      "arguments_and_environment_persisted": false
     },
     "default_trigger_file": "_control/restart-request.json",
     "surface_change": false,

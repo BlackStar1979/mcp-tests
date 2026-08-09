@@ -4,7 +4,9 @@ const {
   PROCESS_OUTPUT_INPUT_SCHEMA,
   PROCESS_OUTPUT_OUTPUT_SCHEMA,
   READ_ONLY_PROCESS_ANNOTATIONS,
+  processToolOutputSchema,
 } = require("../src/schemas/process_tools");
+const { executeProcessTool } = require("../src/util/process_tool_errors");
 const {
   resolveProcessJobManager,
   resolveProcessJobOwner,
@@ -17,15 +19,15 @@ const processOutputTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Read process job output",
-    description: "Read bounded cursor-based stdout and stderr chunks for one OAuth-client-bound in-memory process job.",
+    description: "Read bounded cursor-based stdout and stderr chunks for one OAuth-client-bound durable process job, including after restart.",
     inputSchema: PROCESS_OUTPUT_INPUT_SCHEMA,
-    outputSchema: PROCESS_OUTPUT_OUTPUT_SCHEMA,
+    outputSchema: processToolOutputSchema(PROCESS_OUTPUT_OUTPUT_SCHEMA),
     annotations: READ_ONLY_PROCESS_ANNOTATIONS,
   },
   execute(args = {}, context = {}) {
-    return resolveProcessJobManager(context).output(args.job_id, args, {
+    return executeProcessTool(() => resolveProcessJobManager(context).output(args.job_id, args, {
       ownerId: resolveProcessJobOwner(context),
-    });
+    }));
   },
   summarizeArgs(args = {}) {
     return {
