@@ -16,11 +16,11 @@ const EXPECTED = Object.freeze({
   authenticated_tool_count: 91,
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
-  tool_names_hash: "c8cf1842ac2a3dfe",
-  input_schema_fingerprint: "ae404a432a858de3",
-  output_schema_fingerprint: "6864276ac1ebd159",
-  descriptor_fingerprint: "c0260fc9ddd1b1d0",
-  combined_fingerprint: "3248a1bef9b94318",
+  tool_names_hash: "79c3b49ba27e604a",
+  input_schema_fingerprint: "c3ad07890bacdb70",
+  output_schema_fingerprint: "9f6c18c944887291",
+  descriptor_fingerprint: "317ea27d950098b3",
+  combined_fingerprint: "54ed6536bb75e46e",
 });
 
 function readText(repoRoot, relPath) {

@@ -12,7 +12,7 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo91_runtime89_model89_deploy_pending";
+const expectedCurrentStatus = "repo91_runtime91_model89_reenumeration_pending";
 const expectedCurrentFingerprint = "c4e3e5087a1fe9bf";
 const expectedCurrentHash = "d07f8d0a89c66d97";
 
@@ -37,10 +37,9 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repository target is `91`"));
-assert.ok(index.includes("live OAuth21 `3008` remains at `89`"));
-assert.ok(index.includes("current model map has the existing four async tools"));
-assert.ok(index.includes("Complete the active `PROC-1B` deployment"));
+assert.ok(index.includes("repository and live OAuth21 `3008` are `91`"));
+assert.ok(index.includes("current model map retains the existing four async tools"));
+assert.ok(index.includes("`PROC-1B` is complete and live"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 2, 2026"));
@@ -50,7 +49,7 @@ assert.ok(index.includes("No OAuth relogin is required"));
 assert.ok(index.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(index.includes("knowledge index"));
 assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `91`"));
-assert.ok(canon.includes("`PROC-1B` is repository-accepted and awaiting controlled live deployment"));
+assert.ok(canon.includes("`PROC-1B` is accepted and live on the `91`-tool runtime"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

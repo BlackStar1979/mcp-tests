@@ -26,7 +26,7 @@ assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo91_runtime89_model89_deploy_pending");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo91_runtime91_model89_reenumeration_pending");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
@@ -40,7 +40,7 @@ assert.ok(index.includes("initialize_retirement_decision_prep.md"));
 assert.ok(index.includes("state.json` is only the compact machine-readable orientation map"));
 assert.equal(operatorState.includes("The current live server process predates these changes"), false);
 assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
-assert.ok(operatorState.includes("Live OAuth21 runtime count is still `89`"));
+assert.ok(operatorState.includes("Live OAuth21 runtime count is `91`"));
 assert.ok(operatorState.includes("`DOC-2A` remains a reusable bounded fallback"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 2, 2026"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.9.2` remains `initialize_only` with `2` matching legacy entries and `0` `server/discover` entries"));

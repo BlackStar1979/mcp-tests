@@ -8,6 +8,7 @@ const { buildToolSurfaceFingerprint } = require("../src/schema_compat");
 const { loadServerProfileConfig } = require("../src/server_profile_loader");
 const { createTestMcpRuntimeStatusTool } = require("../tools/authorized/test_mcp_runtime_status");
 const { CONNECTOR_SHAPE_VERSION, SERVER_NAME, SERVER_VERSION, AUDIT_VERSION } = require("../src/runtime/identity");
+const { EXPECTED: PROJECT_TRUTH_EXPECTED } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
 
@@ -117,6 +118,12 @@ function assertScenario(label, expected) {
   assert.equal(publicResult.surface.tool_names_hash.length, 16, "public hash length");
   assert.equal(authorizedResult.surface.tool_names_hash.length, 16, "authorized hash length");
   assert.notEqual(publicResult.surface.tool_names_hash, authorizedResult.surface.tool_names_hash, "public/authorized tool names hash must differ");
+  assert.equal(PROJECT_TRUTH_EXPECTED.authenticated_tool_count, authorizedResult.surface.tool_count, "project truth tool count baseline");
+  assert.equal(PROJECT_TRUTH_EXPECTED.tool_names_hash, authorizedResult.surface.tool_names_hash, "project truth names baseline");
+  assert.equal(PROJECT_TRUTH_EXPECTED.input_schema_fingerprint, authorizedResult.surface.input_schema_fingerprint, "project truth input baseline");
+  assert.equal(PROJECT_TRUTH_EXPECTED.output_schema_fingerprint, authorizedResult.surface.output_schema_fingerprint, "project truth output baseline");
+  assert.equal(PROJECT_TRUTH_EXPECTED.descriptor_fingerprint, authorizedResult.surface.descriptor_fingerprint, "project truth descriptor baseline");
+  assert.equal(PROJECT_TRUTH_EXPECTED.combined_fingerprint, authorizedResult.surface.combined_fingerprint, "project truth combined baseline");
   for (const publicName of publicResult.names) {
     assert.ok(authorizedResult.names.includes(publicName), `authorized surface should include public/core-safe tool ${publicName}`);
   }

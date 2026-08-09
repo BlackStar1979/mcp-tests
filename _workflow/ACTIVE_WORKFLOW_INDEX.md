@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-09
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository target is `91` (`13 public + 78 authorized-visible`) while live OAuth21 `3008` remains at `89` until controlled deployment. `PROC-1B` adds durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. The current model map has the existing four async tools and will require re-enumeration for `process_list/events` after deployment.
+Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T16:15:36.332Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. The current model map retains the existing four async tools and requires re-enumeration for `process_list/events`.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
@@ -85,11 +85,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repository target `91`, live runtime `89` at `server_start_id = 2026-08-09T14:21:09.406Z`; controlled deployment is pending;
+- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-09T16:15:36.332Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Repository is `91`, live runtime and this model map are `89` until controlled deployment/re-enumeration. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain unchanged.
+- Repository and live runtime are `91`; this model map remains `89` until re-enumeration. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
@@ -383,8 +383,8 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Complete the active `PROC-1B` deployment: controlled restart, same-job post-restart read, and final runtime/workflow evidence.
-2. Resume `OPS-1A` from the persistent queue after `PROC-1B` is closed.
+1. Resume `OPS-1A` from the persistent queue; `PROC-1B` is complete and live.
+2. Re-enumerate the Codex client map when a fresh task is available, then directly accept `process_list/events` without another server restart.
 3. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
 4. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
 5. Run `COMP-1B` or `SURF-1A` only when fresh client or UI evidence changes the decision surface.
@@ -392,7 +392,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: complete `PROC-1B` deployment and post-restart persistence proof, then return to `OPS-1A`. Keep the hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
+Next recommended action: return to `OPS-1A` and use the independent adversarial recovery test as the next process-runner evidence package. Keep the hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
 
 Readiness-derived default next package queue:
 
