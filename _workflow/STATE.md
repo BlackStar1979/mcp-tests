@@ -33,23 +33,23 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=278`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=279`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `278`
+- Latest validated authenticated smoke count: `279`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `78`
 - Authenticated repo target for profile `tests`: `91`
-- Live OAuth21 runtime and the refreshed Codex connector map both expose `91` tools at `server_start_id = 2026-08-09T16:35:16.355Z`. Direct named calls to `process_list` and `process_events` succeeded without OAuth relogin or another server restart; the connector fingerprint is `54ed6536bb75e46e`.
+- Live OAuth21 runtime and the refreshed Codex connector map both expose `91` tools at `server_start_id = 2026-08-09T18:09:11.902Z`. Direct named calls to `process_list`, `process_status`, `process_output`, and `process_events` succeeded after the lease-hardening restarts without OAuth relogin; the connector fingerprint is `54ed6536bb75e46e`.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = operational-e2e-reliability`
-- `next_primary = ops-1a-operational-e2e-coverage-matrix`
-- `next_secondary = comp-1a-client-entry-evidence-on-new-version`
+- `current_working_course = protocol-compatibility-evidence`
+- `next_primary = comp-1a-client-entry-evidence-on-new-version`
+- `next_secondary = ops-1b-live-sftp-and-reauth-evidence-when-available`
 
 ## Verified documentation authorities
 
@@ -80,7 +80,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
-- `PROC-1A` remains accepted and live. `PROC-1B` adds a SQLite WAL owner-scoped job/event registry, restart recovery without command replay, controlled error envelopes, Windows `py` launcher fidelity, and functional PowerShell resolution; repository acceptance is complete and controlled live deployment is pending.
+- `PROC-1A` remains accepted and live. `PROC-1B` provides a SQLite WAL owner-scoped job/event registry, restart recovery without command replay, controlled error envelopes, Windows `py` launcher fidelity, and functional PowerShell resolution. `PROC-1B-R1` adds renewable server-instance leases plus periodic orphan reconciliation to prevent PID reuse from preserving a crashed job indefinitely; two controlled restarts loaded the correction, one active lease remains, and the same live job retained terminal state, output, and event history with `recovered_after_restart=true`.
 - The persistent Codex queue now contains one active package (`Build operational E2E coverage matrix`). Two stale completed entries were transitioned to `done` through append-only snapshots, and live `memory_get_tasks` resolves the latest status correctly.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.

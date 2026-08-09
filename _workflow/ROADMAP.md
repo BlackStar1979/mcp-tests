@@ -25,16 +25,17 @@ Current derivation:
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
 - Descriptor refresh review is closed: runtime `2026-08-01T19:48:43.083Z` serves the intentional additive retrieval output contract with combined fingerprint `73c0bc08dad53e8c`; live retrieval calls succeeded without OAuth relogin.
 - The shared task queue lifecycle repair is live: `memory_update_task` appends provenance-bearing snapshots and `memory_get_tasks` resolves the latest snapshot per task. The later connector re-enumeration is complete at `91` tools without OAuth relogin.
-- `PROC-1B` is live and accepted: jobs and transitions are durable in owner-scoped SQLite, terminal status/output survive restart, unclean orphans become `interrupted`, policy failures are controlled responses, and the `py`/PowerShell resolver defects from external stress testing are repaired. The same live job survived the second controlled restart with status and output intact.
+- `PROC-1B` is live and accepted: jobs and transitions are durable in owner-scoped SQLite, terminal status/output survive restart, unclean orphans become `interrupted`, policy failures are controlled responses, and the `py`/PowerShell resolver defects from external stress testing are repaired. Follow-up `PROC-1B-R1` adds renewable instance leases and periodic reconciliation so PID reuse cannot preserve a crashed job indefinitely. The same live job survived the second controlled restart with status and output intact.
 - The active autonomous quality package is persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`: build an operational E2E coverage matrix across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process, and destructive rollback behavior, then close the highest-risk reproduced gaps.
+- `OPS-1A` is complete at `3/4`: the classified matrix and bounded runner produced `56/56` green invocations. Live SFTP remains externally blocked by a missing config, while full OAuth reconnect remains operator-driven; neither boundary is represented as automated proof.
 
 ## Priority matrix
 
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
-| P0 | Complete `OPS-1A` operational E2E coverage matrix | accepted `PROC-1A`, task lifecycle repair, existing smoke/live evidence | Coverage depth remains uneven across operational tool families; the queue must close measured high-risk gaps instead of defaulting to low-value documentation churn. | Build the matrix, run bounded representative soak/E2E probes, and implement only reproduced gaps. |
-| P1 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but operational Codex still uses legacy `initialize`. | Preserve both version-gated paths and wait for a newer Codex client entry sample. |
-| P2 | Execute one bounded `DOC-2A` fallback only when `COMP-1A` is externally blocked and OPS-1A is not actionable | P1 externally blocked and OPS-1A not actionable | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
+| P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but the last measured operational Codex client used legacy `initialize`. | Inspect current audit traffic; preserve both version-gated paths unless a newer client entry sample changes the verdict. |
+| P1 | Execute `OPS-1B` only when a live boundary becomes available | completed `OPS-1A`, recovered SFTP config or real reconnect event | The remaining gaps require external infrastructure or operator credential entry and must not be fabricated. | Run the existing bounded matrix against the newly available boundary and repair only reproduced defects. |
+| P2 | Execute one bounded `DOC-2A` fallback only when `COMP-1A` and `OPS-1B` are externally blocked | P0 and P1 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
 | P3 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
 | P4 | Preserve the hardened CBM and governed tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
 | P5 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P1 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
@@ -43,11 +44,11 @@ Current derivation:
 
 ## Bounded package queue
 
-0. `OPS-1A` — operational E2E quality package
-   Build the evidence matrix, reproduce the highest-risk gaps, and repair only demonstrated weaknesses. The durable queue item is `a6cf7cac-ba33-427f-bd14-70107c36f2ef`.
+0. `COMP-1A` — event-gated protocol course
+   Inspect current traffic for a client entry newer than the August 2 sample; rerun the operational verdict only when the evidence window is meaningfully new.
 
-1. `COMP-1A` — event-gated protocol course
-   Re-run the operational client-entry picture only when a meaningfully new external-client evidence window exists.
+1. `OPS-1B` — event-gated live boundary completion
+   Reopen only for recovered SFTP infrastructure, a real reconnect incident, or a reproduced operational regression.
 
 2. `DOC-2A` — bounded fallback
    Execute only when one real current high-churn orientation gap can be closed without repo-wide documentation churn.
@@ -63,6 +64,7 @@ Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/o
 Completed upstream review extension: `CBM-UPSTREAM-201-277` records the remaining July 29, 2026 open-issue batch and updates the project-local skill boundary so documentation/workflow retrieval uses `workbench` `profile=knowledge` while CBM remains the indexed code graph.
 Completed retrieval quality pass: `RETR-1-ACTIVE-WORKFLOW-RANKING` guards that active workflow documents outrank historical decision records for natural planning questions in `search_index`, `search_index_context`, and `collect_context`; live `workbench` validation after restart `manual-1785343566402` confirms the same behavior on the running connector.
 Completed process execution: `PROC-1A` introduced the shared hardened sync/async core; `PROC-1B` adds durable recovery, rediscovery/history, controlled errors, and resolver fixes. Restarts `manual-1786291985998` and `manual-1786292134573` loaded the `91`-tool runtime and proved same-job terminal status/output recovery without OAuth relogin.
+Completed operational E2E package: `OPS-1A` classifies eight risk families, adds a bounded hermetic/live runner, prevents server-dependent network tests from being run as standalone evidence, and records `56/56` green invocations in `_workflow/operator_decisions/ops_1a_operational_e2e_closeout.md`.
 Completed structural document graph pass: `RETR-1-DOCUMENT-GRAPH` exposes deterministic document-link topology in `knowledge_summary.document_graph`; the latest July 29 validation reports `252` docs, `514` internal document links, all `36` source-of-truth docs linked, and `40` unresolved-reference samples after wildcard/glob noise filtering.
 Completed measured retrieval regression: `RETR-1-QUALITY-REGRESSION` adds source-snapshot freshness, complete bounded canonical extraction, robust Markdown table parsing, identifier-aware ranking, and proof-over-audit ordering. Unit, schema, full-suite, restart, and live acceptance evidence are recorded in `_workflow/operator_decisions/retr_1_quality_regression_closeout.md`.
 Completed upstream pattern lab pass: `UPSTREAM-PATTERN-LAB` clones or reuses seven local high-value retrieval/memory repositories under the ignored `_repos_with_code_samples` corpus, extracts observable implementation signals with `scripts/extract_upstream_repo_patterns.js`, writes `docs/UPSTREAM_REPO_PATTERN_LAB.md`, and guards the extractor with `_tests/smoke_upstream_repo_pattern_extractor.js`.

@@ -5,8 +5,14 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 
-const { createProcessJobManager } = require("../src/util/process_job_manager");
-const { createProcessJobStore } = require("../src/util/process_job_store");
+const {
+  createProcessJobManager,
+  normalizeInstanceLeaseHeartbeatMs,
+} = require("../src/util/process_job_manager");
+const {
+  createProcessJobStore,
+  normalizeInstanceLeaseTtlMs,
+} = require("../src/util/process_job_store");
 const { PROCESS_RUNNER_CONFIG } = require("../src/util/process_runner_config");
 
 async function waitFor(predicate, timeoutMs = 5000) {
@@ -20,6 +26,13 @@ async function waitFor(predicate, timeoutMs = 5000) {
 }
 
 (async () => {
+  assert.equal(normalizeInstanceLeaseTtlMs("invalid"), 15000);
+  assert.equal(normalizeInstanceLeaseTtlMs(-1), 15000);
+  assert.equal(normalizeInstanceLeaseTtlMs(1), 1000);
+  assert.equal(normalizeInstanceLeaseHeartbeatMs("invalid", 15000), 5000);
+  assert.equal(normalizeInstanceLeaseHeartbeatMs(99999, 15000), 7500);
+  assert.equal(normalizeInstanceLeaseHeartbeatMs(1, 1000), 250);
+
   const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-process-jobs-"));
   const storageFile = path.join(tempRoot, "jobs.sqlite");
   const runtimeScope = "smoke-process-jobs";
@@ -140,6 +153,77 @@ async function waitFor(predicate, timeoutMs = 5000) {
       && event.reason_code === "unclean_restart"
     )));
     recoveredManager.close();
+
+    let leaseNow = 5000;
+    let leaseMaintenanceTick = null;
+    const reusedPid = 4242;
+    const reusedPidStore = createProcessJobStore({
+      storageFile,
+      runtimeScope,
+      serverInstanceId: "pid-reuse-old-instance",
+      serverPid: reusedPid,
+      processKill: () => true,
+      now: () => leaseNow,
+      instanceLeaseTtlMs: 1000,
+    });
+    resources.push(reusedPidStore);
+    reusedPidStore.refreshInstanceLease();
+    reusedPidStore.create({
+      id: "pid-reuse-job",
+      ownerKey: "pid-reuse-owner",
+      command: "node",
+      family: "runtime",
+      resolutionClass: "pinned_node_runtime",
+      cwd: "mcp-tests",
+      workspace: "work",
+      createdAtMs: leaseNow,
+      timeoutMs: 30000,
+      outputLimit: 10000,
+    });
+    reusedPidStore.markRunning("pid-reuse-job", leaseNow + 10);
+    reusedPidStore.close();
+
+    leaseNow += 500;
+    const reusedPidRecoveryAudit = [];
+    const reusedPidManager = createProcessJobManager({
+      config,
+      storageFile,
+      runtimeScope,
+      serverInstanceId: "pid-reuse-new-instance",
+      serverPid: 4343,
+      processKill: () => true,
+      now: () => leaseNow,
+      instanceLeaseTtlMs: 1000,
+      instanceLeaseHeartbeatMs: 250,
+      setInterval: (callback) => {
+        leaseMaintenanceTick = callback;
+        return { unref() {} };
+      },
+      clearInterval: () => {},
+      audit: (event) => reusedPidRecoveryAudit.push(event),
+    });
+    resources.push(reusedPidManager);
+    const freshLeaseStatus = reusedPidManager.status("pid-reuse-job", {
+      ownerId: "pid-reuse-owner",
+      ownerKeyIsPrehashed: true,
+    });
+    assert.equal(freshLeaseStatus.status, "running");
+    assert.equal(freshLeaseStatus.recovered_after_restart, true);
+
+    leaseNow += 501;
+    leaseMaintenanceTick();
+    const reusedPidInterrupted = reusedPidManager.status("pid-reuse-job", {
+      ownerId: "pid-reuse-owner",
+      ownerKeyIsPrehashed: true,
+    });
+    assert.equal(reusedPidInterrupted.status, "interrupted");
+    assert.equal(reusedPidInterrupted.terminal, true);
+    assert.ok(reusedPidRecoveryAudit.some((event) => (
+      event.event === "process_job_recovered_interrupted"
+      && event.job_id === "pid-reuse-job"
+      && event.reason_code === "unclean_restart"
+    )));
+    reusedPidManager.close();
 
     const secretArg = "must-not-persist-process-argument";
     const redactionManager = createProcessJobManager({

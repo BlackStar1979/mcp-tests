@@ -16,7 +16,7 @@ Audit date: `2026-07-01`
 
 Post-audit drift now visible from the current tree:
 
-- current mechanical non-`run_all` count is `42`
+- current mechanical non-`run_all` count is `43`
 - the former transitional SSE/list-changed debt guards were later removed entirely after their unreachable helper files were retired from the active repo
 - seven HTTP `stress_*.js` files were rechecked directly in source on `2026-06-30`
 - `stress_cbm_bridge_samples.js` was added later as a local in-process CBM bridge stress harness against `_repos_with_code_samples`
@@ -35,6 +35,7 @@ Helper execution slices now available:
 - `current_targeted_guard`: current guard or targeted contract check kept outside default `run_all`
 - `meta_guard`: recursive or full-run wrapper guard kept outside default `run_all`
 - `manual_external_stress`: explicit stress client that requires a separately running MCP endpoint
+- `manual_live_read_only_probe`: explicit bounded probe of a live external boundary that performs no authenticated mutation
 - `manual_cbm_bridge_stress`: explicit local CBM bridge stress client that creates temporary codebase-memory indexes
 - `historical_workflow_wrapper`: wrapper around historical `_workflow/scripts/*` or `_workflow/patch_manifests/*` checkpoints
 - `archived_from_top_level`: file was identified as stale or broken and moved out of the current top-level review surface
@@ -125,6 +126,12 @@ These current targeted/debt guards are additionally grouped in `run_all_targeted
 - `stress_session_toolsets.js`
   Reason: each script is an explicit HTTP client harness that targets `MCP_TEST_SMOKE_URL` (default `http://127.0.0.1:3009/mcp`) and measures latency/behavior under repeated concurrent tool calls.
   Recommendation: keep outside default `run_all`; document and invoke only when a matching MCP server is already running and the operator intentionally wants load or concurrency coverage.
+
+### `manual_live_read_only_probe`
+
+- `live_cloudflare_boundary_probe.js`
+  Reason: validates the live public health endpoint, OAuth protected-resource metadata, GET method guard, and unauthenticated POST challenge through Cloudflare Tunnel without using credentials or mutating server state.
+  Recommendation: keep outside default `run_all`; invoke through `scripts/run_operational_e2e_soak.js --include-live-cloudflare` when live boundary evidence is required.
 
 ### `manual_cbm_bridge_stress`
 

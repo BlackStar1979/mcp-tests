@@ -1,0 +1,143 @@
+{
+  "schema_version": "mcp-tests-ops-1a-operational-e2e-matrix-v1",
+  "scope": "Auditable operational evidence across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process execution, and destructive rollback.",
+  "evidence_modes": [
+    "hermetic",
+    "live_read_only",
+    "operator_observed"
+  ],
+  "coverage_statuses": [
+    "covered",
+    "partial",
+    "blocked_external"
+  ],
+  "families": [
+    {
+      "id": "restart_recovery",
+      "risk": "high",
+      "status": "covered",
+      "positive_negative": "both",
+      "evidence_modes": ["hermetic", "live_read_only"],
+      "observability": "restart audit events, durable job transitions, recovery flags",
+      "rollback_proof": "not_applicable",
+      "evidence": [
+        "_tests/smoke_restart_controller.js",
+        "_tests/smoke_restart_supervisor_scripts.js",
+        "_tests/smoke_process_job_persistence.js",
+        "_workflow/operator_decisions/process_runner_async_live_acceptance.md"
+      ]
+    },
+    {
+      "id": "reconnect_transport",
+      "risk": "high",
+      "status": "partial",
+      "positive_negative": "positive_current_and_historical_reauth",
+      "evidence_modes": ["live_read_only", "operator_observed"],
+      "observability": "direct connector calls, server audit, connector-visible fingerprint",
+      "rollback_proof": "not_applicable",
+      "evidence": [
+        "_tests/smoke_connector_reconnect_execution_evidence.js",
+        "_workflow/operator_decisions/connector_reconnect_execution_evidence.md",
+        "_workflow/operator_decisions/process_runner_async_live_acceptance.md"
+      ],
+      "gap": "A full logout/login/UI reconnect is intentionally not automated because it requires operator credential entry and disrupts the active connector. Current direct connector calls prove the active path only."
+    },
+    {
+      "id": "cancellation_timeout",
+      "risk": "high",
+      "status": "covered",
+      "positive_negative": "both",
+      "evidence_modes": ["hermetic", "live_read_only"],
+      "observability": "terminal status, timeout flag, cancellation transition, process-tree termination",
+      "rollback_proof": "process_tree_terminated",
+      "evidence": [
+        "_tests/smoke_process_async_tools.js",
+        "_tests/smoke_process_runner_timeout_kill_error.js",
+        "_tests/smoke_cooperative_tool_cancellation.js",
+        "_workflow/operator_decisions/process_runner_async_live_acceptance.md"
+      ]
+    },
+    {
+      "id": "cloudflare_tunnel",
+      "risk": "high",
+      "status": "covered",
+      "positive_negative": "both",
+      "evidence_modes": ["live_read_only"],
+      "observability": "public health, protected-resource metadata, GET method guard, unauthenticated POST challenge",
+      "rollback_proof": "not_applicable",
+      "evidence": [
+        "_tests/live_cloudflare_boundary_probe.js"
+      ]
+    },
+    {
+      "id": "sftp_remote_site",
+      "risk": "medium",
+      "status": "blocked_external",
+      "positive_negative": "hermetic_both_live_missing",
+      "evidence_modes": ["hermetic"],
+      "observability": "fake-client call trace and cleanup error propagation",
+      "rollback_proof": "hermetic_cleanup_only",
+      "evidence": [
+        "_tests/smoke_remote_site_lifecycle.js"
+      ],
+      "gap": "No local SFTP config containing host, username, privateKeyPath, siteRoot, and opsRoot is present after the workstation reinstall, so a live read-only SFTP probe cannot be executed."
+    },
+    {
+      "id": "network_tools",
+      "risk": "medium",
+      "status": "covered",
+      "positive_negative": "both",
+      "evidence_modes": ["hermetic", "live_read_only"],
+      "observability": "MCP response envelopes, HTTP status, allowlist rejection",
+      "rollback_proof": "not_applicable",
+      "evidence": [
+        "_tests/smoke_network_allowlist_workflow.js",
+        "_tests/smoke_network.js",
+        "_tests/operational_network_manifest.json"
+      ]
+    },
+    {
+      "id": "process_execution",
+      "risk": "high",
+      "status": "covered",
+      "positive_negative": "both",
+      "evidence_modes": ["hermetic", "live_read_only"],
+      "observability": "SQLite lifecycle, cursor output, owner isolation, resolver and policy errors",
+      "rollback_proof": "cancel_and_shutdown_terminate_process_tree",
+      "evidence": [
+        "_tests/smoke_process_job_manager.js",
+        "_tests/smoke_process_job_persistence.js",
+        "_tests/smoke_process_async_tools.js",
+        "_workflow/operator_decisions/process_runner_async_live_acceptance.md"
+      ]
+    },
+    {
+      "id": "destructive_rollback",
+      "risk": "high",
+      "status": "covered",
+      "positive_negative": "both",
+      "evidence_modes": ["hermetic"],
+      "observability": "operation receipts, backups, trash metadata, rollback records",
+      "rollback_proof": "explicit_restore_and_control_plane_rollback",
+      "evidence": [
+        "_tests/smoke_workspace_mutation_tools.js",
+        "_tests/smoke_control_plane_deploy_rollback.js",
+        "_tests/smoke_cbm_delete_confirmation_runtime.js"
+      ]
+    }
+  ],
+  "soak_cases": [
+    { "id": "process_job_manager", "mode": "hermetic", "script": "_tests/smoke_process_job_manager.js", "default": true },
+    { "id": "process_job_persistence", "mode": "hermetic", "script": "_tests/smoke_process_job_persistence.js", "default": true },
+    { "id": "process_async_tools", "mode": "hermetic", "script": "_tests/smoke_process_async_tools.js", "default": true },
+    { "id": "process_timeout_kill", "mode": "hermetic", "script": "_tests/smoke_process_runner_timeout_kill_error.js", "default": true },
+    { "id": "restart_controller", "mode": "hermetic", "script": "_tests/smoke_restart_controller.js", "default": true },
+    { "id": "restart_supervisor_contract", "mode": "hermetic", "script": "_tests/smoke_restart_supervisor_scripts.js", "default": true },
+    { "id": "remote_site_lifecycle", "mode": "hermetic", "script": "_tests/smoke_remote_site_lifecycle.js", "default": true },
+    { "id": "network_allowlist_policy", "mode": "hermetic", "script": "_tests/smoke_network_allowlist_workflow.js", "default": true },
+    { "id": "workspace_mutation_rollback", "mode": "hermetic", "script": "_tests/smoke_workspace_mutation_tools.js", "default": true },
+    { "id": "control_plane_rollback", "mode": "hermetic", "script": "_tests/smoke_control_plane_deploy_rollback.js", "default": true },
+    { "id": "cloudflare_boundary", "mode": "live_cloudflare", "script": "_tests/live_cloudflare_boundary_probe.js", "default": false },
+    { "id": "network_tools_mcp", "mode": "live_network", "script": "_tests/run_all_smokes.js", "args": ["--manifest", "_tests/operational_network_manifest.json"], "default": false }
+  ]
+}

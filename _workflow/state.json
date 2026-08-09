@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-09T16:30:00.000Z",
+  "updated_at": "2026-08-09T17:30:00.000Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "operational-e2e-reliability",
-    "next_primary": "ops-1a-operational-e2e-coverage-matrix",
-    "next_secondary": "comp-1a-client-entry-evidence-on-new-version",
+    "current_working_course": "protocol-compatibility-evidence",
+    "next_primary": "comp-1a-client-entry-evidence-on-new-version",
+    "next_secondary": "ops-1b-live-sftp-and-reauth-evidence-when-available",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -282,7 +282,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 91,
-      "server_start_id": "2026-08-09T16:35:16.355Z",
+      "server_start_id": "2026-08-09T18:09:11.902Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -312,7 +312,7 @@
       "combined_fingerprint": "54ed6536bb75e46e",
       "connector_map_status": "repo91_runtime91_model91_aligned",
       "repo_current_expected_tool_count": 91,
-      "server_start_id": "2026-08-09T16:35:16.355Z",
+      "server_start_id": "2026-08-09T18:09:11.902Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

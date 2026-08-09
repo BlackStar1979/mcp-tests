@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active workflow operator decisions directory map
-Updated: 2026-08-01
+Updated: 2026-08-09
 
 - `initialize_client_compatibility_evidence.md`
   Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.
@@ -19,6 +19,10 @@ Updated: 2026-08-01
   Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.
 - `process_job_persistence_live_acceptance.md`
   Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.
+- `process_job_pid_reuse_recovery.md`
+  Post-acceptance correction and regression evidence for PID-reuse-safe durable process recovery.
+- `ops_1a_operational_e2e_closeout.md`
+  Evidence-classified closeout for the bounded operational E2E matrix, hermetic/live soak, and remaining external boundaries.
 - `stage*.md, p*.md, post_stage*.md`
   Historical stage/package records retained for traceability; current authority stays in active workflow files.
 - `*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md`

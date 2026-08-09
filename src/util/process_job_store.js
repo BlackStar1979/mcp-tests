@@ -5,6 +5,8 @@ const path = require("node:path");
 const { DatabaseSync } = require("node:sqlite");
 
 const ACTIVE_STATUSES = new Set(["queued", "running"]);
+const DEFAULT_INSTANCE_LEASE_TTL_MS = 15000;
+const MIN_INSTANCE_LEASE_TTL_MS = 1000;
 
 function createStoreError(message, code = "process_job_store_error") {
   const error = new Error(message);
@@ -28,12 +30,21 @@ function processExists(pid, processKill = process.kill) {
   }
 }
 
+function normalizeInstanceLeaseTtlMs(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return DEFAULT_INSTANCE_LEASE_TTL_MS;
+  return Math.max(MIN_INSTANCE_LEASE_TTL_MS, Math.floor(parsed));
+}
+
 function createProcessJobStore(options = {}) {
   const storageFile = normalizeStorageFile(options.storageFile);
   const runtimeScope = String(options.runtimeScope || "default");
   const serverInstanceId = String(options.serverInstanceId || "unknown-instance");
   const serverPid = Number.isInteger(options.serverPid) ? options.serverPid : process.pid;
   const processKill = options.processKill || process.kill;
+  const now = options.now || Date.now;
+  const instanceLeaseTtlMs = normalizeInstanceLeaseTtlMs(options.instanceLeaseTtlMs);
+  const instanceLeaseRetentionMs = Math.max(60000, instanceLeaseTtlMs * 4);
   if (storageFile !== ":memory:") fs.mkdirSync(path.dirname(storageFile), { recursive: true });
 
   const db = options.database || new DatabaseSync(storageFile, { timeout: 5000 });
@@ -88,6 +99,15 @@ function createProcessJobStore(options = {}) {
     );
     CREATE INDEX IF NOT EXISTS idx_process_job_events_job
       ON process_job_events(job_id, id);
+    CREATE TABLE IF NOT EXISTS process_job_instances (
+      runtime_scope TEXT NOT NULL,
+      server_instance_id TEXT NOT NULL,
+      server_pid INTEGER NOT NULL,
+      lease_updated_at_ms INTEGER NOT NULL,
+      PRIMARY KEY(runtime_scope, server_instance_id)
+    );
+    CREATE INDEX IF NOT EXISTS idx_process_job_instances_lease
+      ON process_job_instances(runtime_scope, lease_updated_at_ms);
   `);
 
   function transaction(callback) {
@@ -146,6 +166,42 @@ function createProcessJobStore(options = {}) {
     return rowToRecord(db.prepare(
       "SELECT * FROM process_jobs WHERE runtime_scope=? AND job_id=?"
     ).get(runtimeScope, String(jobId || "")));
+  }
+
+  function refreshInstanceLease(updatedAtMs = now()) {
+    transaction(() => {
+      db.prepare(`
+        INSERT INTO process_job_instances
+          (runtime_scope, server_instance_id, server_pid, lease_updated_at_ms)
+        VALUES (?, ?, ?, ?)
+        ON CONFLICT(runtime_scope, server_instance_id) DO UPDATE SET
+          server_pid=excluded.server_pid,
+          lease_updated_at_ms=excluded.lease_updated_at_ms
+      `).run(runtimeScope, serverInstanceId, serverPid, updatedAtMs);
+      db.prepare(`
+        DELETE FROM process_job_instances
+        WHERE runtime_scope=? AND server_instance_id<>? AND lease_updated_at_ms<?
+      `).run(runtimeScope, serverInstanceId, updatedAtMs - instanceLeaseRetentionMs);
+    });
+  }
+
+  function releaseInstanceLease() {
+    db.prepare(`
+      DELETE FROM process_job_instances
+      WHERE runtime_scope=? AND server_instance_id=? AND server_pid=?
+    `).run(runtimeScope, serverInstanceId, serverPid);
+  }
+
+  function hasLiveInstanceLease(record, nowMs) {
+    const lease = db.prepare(`
+      SELECT server_pid, lease_updated_at_ms
+      FROM process_job_instances
+      WHERE runtime_scope=? AND server_instance_id=?
+    `).get(runtimeScope, record.serverInstanceId);
+    if (!lease || Number(lease.server_pid) !== record.serverPid) return false;
+    const leaseAgeMs = nowMs - Number(lease.lease_updated_at_ms);
+    if (leaseAgeMs < 0 || leaseAgeMs > instanceLeaseTtlMs) return false;
+    return processExists(record.serverPid, processKill);
   }
 
   function create(job) {
@@ -289,10 +345,10 @@ function createProcessJobStore(options = {}) {
     `).all(runtimeScope, serverInstanceId).map(rowToRecord);
     const reconciled = [];
     for (const row of rows) {
-      if (processExists(row.serverPid, processKill)) continue;
-      transaction(() => {
+      const recovered = transaction(() => {
         const current = selectAny(row.id);
-        if (!current || !ACTIVE_STATUSES.has(current.status)) return;
+        if (!current || !ACTIVE_STATUSES.has(current.status)) return null;
+        if (hasLiveInstanceLease(current, nowMs)) return null;
         db.prepare(`
           UPDATE process_jobs SET
             status='interrupted', finished_at_ms=?, updated_at_ms=?, recovered_after_restart=1,
@@ -300,8 +356,9 @@ function createProcessJobStore(options = {}) {
           WHERE runtime_scope=? AND job_id=?
         `).run(nowMs, nowMs, serverInstanceId, serverPid, runtimeScope, row.id);
         insertEvent(row.id, current.status, "interrupted", "process_job_recovered_interrupted", "unclean_restart", nowMs);
+        return selectAny(row.id);
       });
-      reconciled.push(selectAny(row.id));
+      if (recovered) reconciled.push(recovered);
     }
     return reconciled;
   }
@@ -348,6 +405,8 @@ function createProcessJobStore(options = {}) {
     markRunning,
     prune,
     reconcileOrphans,
+    refreshInstanceLease,
+    releaseInstanceLease,
     runtimeScope,
     serverInstanceId,
     storageFile,
@@ -356,7 +415,9 @@ function createProcessJobStore(options = {}) {
 
 module.exports = {
   ACTIVE_STATUSES,
+  DEFAULT_INSTANCE_LEASE_TTL_MS,
   createProcessJobStore,
+  normalizeInstanceLeaseTtlMs,
   normalizeStorageFile,
   processExists,
 };

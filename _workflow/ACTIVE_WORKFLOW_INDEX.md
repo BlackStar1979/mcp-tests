@@ -4,15 +4,15 @@ Status: active navigation index
 Date: 2026-08-09
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository, live OAuth21 `3008`, and the refreshed Codex connector map are aligned at `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T16:35:16.355Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. Direct `process_list` and `process_events` calls are accepted.
+Current repo/runtime note: profile `tests`; repository, live OAuth21 `3008`, and the refreshed Codex connector map are aligned at `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T18:09:11.902Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, corrected Windows `py`/PowerShell resolution, and PID-reuse-safe instance leases. Direct `process_list`, `process_status`, `process_output`, and `process_events` calls are accepted.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = operational-e2e-reliability`
-- `next_primary = ops-1a-operational-e2e-coverage-matrix`
-- `next_secondary = comp-1a-client-entry-evidence-on-new-version`
+- `current_working_course = protocol-compatibility-evidence`
+- `next_primary = comp-1a-client-entry-evidence-on-new-version`
+- `next_secondary = ops-1b-live-sftp-and-reauth-evidence-when-available`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=278`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=279`.
 - Public section count: `7`.
-- Authenticated smoke count: `278`.
+- Authenticated smoke count: `279`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -85,11 +85,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-09T16:35:16.355Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-09T18:09:11.902Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Repository and live runtime are `91`; this model map remains `89` until re-enumeration. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain unchanged.
+- Repository, live runtime, and this model map are aligned at `91`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
@@ -383,21 +383,23 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Resume `OPS-1A` from the persistent queue; `PROC-1B` is complete and live.
-2. Wait for external-client traffic newer than the August 2 sample before rerunning `COMP-1A`.
+1. Inspect current audit traffic for a client-entry window newer than the August 2 sample before rerunning `COMP-1A`.
+2. Preserve completed `OPS-1A`; reopen `OPS-1B` only when live SFTP infrastructure or a real reconnect event exists.
 3. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
 4. Run `COMP-1B` only when fresh client evidence changes the decision surface; `SURF-1` is accepted at `4/4`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: return to `OPS-1A` and use the independent adversarial recovery test as the next process-runner evidence package. Keep the hardened OAuth21 runtime, final dual-era adapter, and official SDK regression stable. Do not refresh `COMP-1A` again until traffic newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample creates a meaningfully new entry-path window.
+Next recommended action: inspect current audit traffic for a `COMP-1A` entry window newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample. Keep the hardened OAuth21 runtime, final dual-era adapter, official SDK regression, and completed `OPS-1A` matrix stable.
 
 Readiness-derived default next package queue:
 
-1. `OPS-1A` — active autonomous E2E quality package
-2. `COMP-1A` — event-gated
+1. `COMP-1A` — event-gated protocol evidence
    Resume only when a new external-client evidence window exists.
+
+2. `OPS-1B` — event-gated live boundary completion
+   Resume only for recovered SFTP infrastructure, a real reconnect event, or a reproduced operational defect.
 
 3. `DOC-2A` — bounded fallback
    Current top25/churn>=5 audit is clean. Reopen only when a fresh audit exposes one real high-churn orientation gap, then stop.
@@ -406,6 +408,8 @@ Readiness-derived default next package queue:
    Execute only when fresh evidence materially changes the protocol decision surface.
 
 Recently completed:
+
+- Completed `OPS-1A` on August 9, 2026: the evidence-classified operational matrix and bounded runner passed `56/56` invocations, including three live Cloudflare and three live MCP network probes. Full operator-driven reconnect and live SFTP remain explicit external boundaries, not automated green claims.
 
 - Completed `MCP-OFFICIAL-SDK-V2-INTEROP` on August 2, 2026: exact dev dependency `@modelcontextprotocol/client@2.0.0` proves default legacy, automatic modern, and pinned `2026-07-28` negotiation on isolated servers; all clients list and call tools, and hermetic server audit assertions prove the actual entry paths. The authenticated extension additionally proves SDK-driven DCR, PKCE S256, callback `state`/`iss`, issuer-bound persistence, an 84-tool authorized list/call, process-restart recovery from SQLite, and automatic refresh-token rotation after restart. Full validation is `7 + 272`; production port `3008` was not touched.
 

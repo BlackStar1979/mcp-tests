@@ -8,25 +8,27 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-08-09`:
 
-- `369` JavaScript files total in `_tests`
-- `286` active scripts currently listed in `run_all_smoke_scripts.json`
+- `371` JavaScript files total in `_tests`
+- `287` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs
-- `42` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, and review debt
+- `43` top-level `_tests/*.js` files currently outside default `run_all`; these are mixed targeted guards, helpers, wrappers, stress harnesses, live probes, and review debt
 
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- last confirmed result from `2026-08-02`: `ok=true`
-- last confirmed section counts from that full run: `7` public scripts and `278` authenticated scripts
-- current manifest file contains `285` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `284` sectioned scripts, not all `285` manifest entries
+- last confirmed result from `2026-08-09`: `ok=true`
+- last confirmed section counts from that full run: `7` public scripts and `279` authenticated scripts
+- current manifest file contains `287` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `286` sectioned scripts, not all `287` manifest entries
 
 ## Orientation
 
 - Active smoke entrypoint: `run_all_smokes.js`
 - `run_all_smokes.js` must isolate OAuth state/client storage per run and must not reuse the default `~/.romion/tests_oauth_*.json` files
 - Active manifest: `run_all_smoke_scripts.json`
+- Operational evidence matrix: `_workflow/inventories/ops_1a_operational_e2e_matrix.json`
+- Bounded operational runner: `node scripts/run_operational_e2e_soak.js --repetitions=5`; live read-only probes require explicit `--include-live-cloudflare` and/or `--include-live-network`, with independent bounded repetition via `--live-repetitions=N`
 - Active manifest audit: `RUN_ALL_ACTIVE_AUDIT.md`
 - Mixed-review split: `RUN_ALL_MIXED_REVIEW_CLASSIFICATION.md`
 - Rename-normalization migration audit: `RENAME_NORMALIZATION_MIGRATION_AUDIT.md`
@@ -77,9 +79,10 @@ These are not all equivalent and should not be assumed current just because they
 Current top-level non-`run_all` inventory:
 
 - Historical audit from `2026-06-29` classified `32` files.
-- Current mechanical count is `42`, so the older classification is still useful but not complete for every newly renamed or added file.
+- Current mechanical count is `43`, so the older classification is still useful but not complete for every newly renamed or added file.
 
 - Helpers: `run_all_smokes.js`, `smoke_auth_fetch_patch.js`
+- Live targeted probe: `live_cloudflare_boundary_probe.js` is intentionally outside default `run_all` and runs only through the explicit operational soak runner.
 - Current targeted guards include: `smoke_auth_bootstrap_config_resolver.js`, `smoke_auth_port_policy.js`, `smoke_canary_naming_guard.js`, `smoke_discovery_compat_empty_lists.js`, `smoke_keep_mcp_initialize_retirement_boundary.js`, `smoke_keep_mcp_sessionless_replacement_coverage_scoping.js`, `smoke_keep_mcp_subscriptions_listen_pull_only_contract.js`, `smoke_list_changed_readiness_contract.js`, `smoke_policy_spec.js`, `smoke_preflight_control_plane_guard.js`, `smoke_sep2549_list_read_cache_inventory.js`, `smoke_sessionless_prototype_route_retirement_scoping.js`, `smoke_oauth_legacy_env_failfast.js`, `smoke_state_store_apply_readiness_gate.js`, `smoke_subscriptions_listen_compatibility_matrix.js`, `smoke_subscriptions_listen_isolated_validation.js`, `smoke_subscriptions_listen_no_sse_project_contract.js`
 - Meta guard: `smoke_harness_no_pollution_guard.js`
 - Historical recommendation quarantine: `smoke_historical_next_recommendation_quarantine.js`

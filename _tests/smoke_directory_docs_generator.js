@@ -59,6 +59,11 @@ const superpowersSpecsDirectory = read("docs/superpowers/specs/DIRECTORY.md");
 const todayMatch = scriptSource.match(/const TODAY = "([^"]+)";/);
 assert.ok(todayMatch, "generator must declare TODAY constant");
 const today = todayMatch[1];
+const operatorDecisionsUpdatedMatch = scriptSource.match(
+  /"_workflow\/operator_decisions":\s*\{[\s\S]*?updated:\s*"([^"]+)"/
+);
+assert.ok(operatorDecisionsUpdatedMatch, "generator must configure operator decisions update date");
+const operatorDecisionsUpdated = operatorDecisionsUpdatedMatch[1];
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));
 assert.ok(rootDirectory.includes(`Updated: ${today}`));
@@ -69,7 +74,7 @@ assert.ok(cbmSkillDirectory.includes("repository, index, runtime, and client/UI 
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.ok(workflowDirectory.includes("bounded OAuth21 prune records/backups"));
-assert.ok(operatorDecisionsDirectory.includes("Updated: 2026-08-01"));
+assert.ok(operatorDecisionsDirectory.includes(`Updated: ${operatorDecisionsUpdated}`));
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(operatorDecisionsDirectory.includes("retr_1_quality_regression_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("process_job_persistence_live_acceptance.md"));

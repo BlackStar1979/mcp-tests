@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active scripts directory map
-Updated: 2026-08-01
+Updated: 2026-08-09
 
 - `audit-memory-embedding-runtime.ps1`
   Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.
@@ -19,3 +19,5 @@ Updated: 2026-08-01
   Shell helper for controlled local server startup/orchestration.
 - `generate_directory_docs.js`
   Regenerates selected `DIRECTORY.md` files from a bounded description map.
+- `run_operational_e2e_soak.js`
+  Runs the bounded OPS-1A hermetic/live operational matrix with independent repetition limits and structured output.

@@ -7,7 +7,11 @@ const {
   startProcessExecution,
 } = require("./process_execution");
 const { PROCESS_RUNNER_CONFIG } = require("./process_runner_config");
-const { createProcessJobStore } = require("./process_job_store");
+const {
+  createProcessJobStore,
+  DEFAULT_INSTANCE_LEASE_TTL_MS,
+  normalizeInstanceLeaseTtlMs,
+} = require("./process_job_store");
 
 const TERMINAL_STATUSES = new Set([
   "ok",
@@ -17,6 +21,19 @@ const TERMINAL_STATUSES = new Set([
   "cancelled",
   "interrupted",
 ]);
+const DEFAULT_INSTANCE_LEASE_HEARTBEAT_MS = 5000;
+const MIN_INSTANCE_LEASE_HEARTBEAT_MS = 250;
+
+function normalizeInstanceLeaseHeartbeatMs(value, leaseTtlMs) {
+  const parsed = Number(value);
+  const requested = Number.isFinite(parsed) && parsed > 0
+    ? Math.floor(parsed)
+    : DEFAULT_INSTANCE_LEASE_HEARTBEAT_MS;
+  return Math.max(
+    MIN_INSTANCE_LEASE_HEARTBEAT_MS,
+    Math.min(requested, Math.floor(leaseTtlMs / 2))
+  );
+}
 
 function unknownJob(jobId) {
   const error = new Error(`Unknown process job: ${jobId}`);
@@ -52,17 +69,29 @@ function createProcessJobManager(options = {}) {
   const executionDependencies = options.executionDependencies || {};
   const runtimeScope = String(options.runtimeScope || "default");
   const serverInstanceId = String(options.serverInstanceId || `process-${process.pid}`);
+  const instanceLeaseTtlMs = normalizeInstanceLeaseTtlMs(
+    options.instanceLeaseTtlMs || DEFAULT_INSTANCE_LEASE_TTL_MS
+  );
+  const instanceLeaseHeartbeatMs = normalizeInstanceLeaseHeartbeatMs(
+    options.instanceLeaseHeartbeatMs,
+    instanceLeaseTtlMs
+  );
+  const setIntervalFn = options.setInterval || setInterval;
+  const clearIntervalFn = options.clearInterval || clearInterval;
   const store = options.store || createProcessJobStore({
     storageFile: options.storageFile || ":memory:",
     runtimeScope,
     serverInstanceId,
     serverPid: options.serverPid,
     processKill: options.processKill,
+    now,
+    instanceLeaseTtlMs,
   });
   const jobs = new Map();
   const queue = [];
   let audit = typeof options.audit === "function" ? options.audit : () => {};
   let shuttingDown = false;
+  let closed = false;
 
   function emit(event, job, details = {}) {
     const payload = {
@@ -123,14 +152,41 @@ function createProcessJobManager(options = {}) {
     };
   }
 
-  for (const record of store.reconcileOrphans(now())) {
-    const recovered = hydrate(record);
-    if (recovered) {
-      emit("process_job_recovered_interrupted", recovered, {
-        reason_code: "unclean_restart",
-      });
+  function reconcileOrphans() {
+    const reconciled = store.reconcileOrphans(now());
+    for (const record of reconciled) {
+      const recovered = hydrate(record);
+      if (recovered) {
+        emit("process_job_recovered_interrupted", recovered, {
+          reason_code: "unclean_restart",
+        });
+      }
+    }
+    return reconciled;
+  }
+
+  function maintainInstanceLease() {
+    if (closed) return;
+    try {
+      store.refreshInstanceLease(now());
+      reconcileOrphans();
+    } catch (error) {
+      try {
+        audit({
+          event: "process_job_instance_lease_failed",
+          server_instance_id: serverInstanceId,
+          error_message: error?.message || String(error),
+        });
+      } catch {
+        // Lease maintenance cannot make the process runner fail open or crash.
+      }
     }
   }
+
+  store.refreshInstanceLease(now());
+  reconcileOrphans();
+  const instanceLeaseTimer = setIntervalFn(maintainInstanceLease, instanceLeaseHeartbeatMs);
+  instanceLeaseTimer?.unref?.();
 
   function terminalJobs() {
     return [...jobs.values()].filter((job) => TERMINAL_STATUSES.has(job.status));
@@ -474,7 +530,14 @@ function createProcessJobManager(options = {}) {
   }
 
   function close() {
-    store.close();
+    if (closed) return;
+    closed = true;
+    clearIntervalFn(instanceLeaseTimer);
+    try {
+      store.releaseInstanceLease();
+    } finally {
+      store.close();
+    }
   }
 
   return {
@@ -516,10 +579,12 @@ function resolveProcessJobManager(context = {}) {
 }
 
 module.exports = {
+  DEFAULT_INSTANCE_LEASE_HEARTBEAT_MS,
   TERMINAL_STATUSES,
   createProcessJobManager,
   getDefaultProcessJobManager,
   resolveProcessJobOwner,
   resolveProcessJobManager,
   shutdownDefaultProcessJobManager,
+  normalizeInstanceLeaseHeartbeatMs,
 };

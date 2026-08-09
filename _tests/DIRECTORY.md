@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active tests directory map
-Updated: 2026-08-01
+Updated: 2026-08-09
 
 - `archive/`
   Archived legacy and stale smoke material retained for traceability only.
@@ -23,5 +23,11 @@ Updated: 2026-08-01
   Regression coverage for workspace-index profiles, freshness, structured workflow extraction, and retrieval ranking.
 - `smoke_operator_contract_docs.js`
   Guard for operator-facing documentation contract and initial DIRECTORY rollout.
+- `smoke_operational_e2e_matrix.js`
+  Guard for OPS-1A family classification, evidence references, explicit gaps, and bounded runner selection.
+- `live_cloudflare_boundary_probe.js`
+  Explicit non-default read-only live probe for Cloudflare health, OAuth metadata, method guard, and auth challenge.
+- `operational_network_manifest.json`
+  One-entry live network manifest that supplies the full isolated MCP harness required by `smoke_network.js`.
 
 This map is intentionally compact. The complete active inventory remains in `_tests/README.md` and `run_all_smoke_scripts.json`.

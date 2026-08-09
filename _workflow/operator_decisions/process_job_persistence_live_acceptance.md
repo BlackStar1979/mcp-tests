@@ -7,15 +7,19 @@ Date: 2026-08-09
 
 Accept `PROC-1B` as the durable process lifecycle model for the authorized `tests` profile.
 
-The server persists owner-scoped job metadata, bounded stdout/stderr, and append-only lifecycle transitions in SQLite WAL. It does not persist command arguments or environment values, and it never replays commands after restart. Nonterminal jobs left by an unclean process become `interrupted` after PID-aware reconciliation.
+The server persists owner-scoped job metadata, bounded stdout/stderr, and append-only lifecycle transitions in SQLite WAL. It does not persist command arguments or environment values, and it never replays commands after restart. Nonterminal jobs left by an unclean process become `interrupted` after lease-backed, PID-aware periodic reconciliation.
 
 ## Repository evidence
 
 - Commit under acceptance: `91aead7`.
-- Full offline suite: `7 public + 278 authenticated`, `ok=true`.
+- Original acceptance suite: `7 public + 278 authenticated`, `ok=true`.
 - Official MCP client v2 OAuth21 E2E preserves one job across a child-server process restart and verifies owner isolation, controlled error envelopes, `process_list`, and `process_events`.
 - Persistence smoke verifies terminal reconstruction, bounded output cursors, append-only transitions, orphan recovery, recovery audit emission, and absence of argument/environment markers in SQLite bytes.
 - Tool target: `91`, with fingerprint `54ed6536bb75e46e` and tool-name hash `79c3b49ba27e604a`.
+
+## Post-Acceptance Recovery Hardening
+
+Independent adversarial stress later found that PID existence alone could preserve a crashed instance's job forever after PID reuse. `PROC-1B-R1` replaces that inference with a renewable `(runtime_scope, server_instance_id, PID)` lease and periodic orphan reconciliation. The regression keeps PID existence true, proves that a fresh lease protects a genuinely live overlapping instance, then proves that lease expiry produces the durable `interrupted` transition. See `process_job_pid_reuse_recovery.md`.
 
 ## Live evidence
 

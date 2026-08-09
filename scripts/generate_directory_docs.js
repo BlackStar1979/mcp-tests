@@ -132,7 +132,7 @@ const CONFIG = {
   },
   "_workflow/operator_decisions": {
     title: "workflow operator decisions directory map",
-    updated: "2026-08-01",
+    updated: "2026-08-09",
     entries: {
       "initialize_client_compatibility_evidence.md": "Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.",
       "initialize_retirement_decision_prep.md": "Bounded decision-preparation record for any future legacy `initialize` retirement package.",
@@ -142,10 +142,23 @@ const CONFIG = {
       "oauth21_*.md, auth_*.md": "OAuth21/auth control-plane, pruning, and security-adjacent decision evidence.",
       "retr_1_quality_regression_closeout.md": "Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.",
       "process_job_persistence_live_acceptance.md": "Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.",
+      "process_job_pid_reuse_recovery.md": "Post-acceptance correction and regression evidence for PID-reuse-safe durable process recovery.",
+      "ops_1a_operational_e2e_closeout.md": "Evidence-classified closeout for the bounded operational E2E matrix, hermetic/live soak, and remaining external boundaries.",
       "stage*.md, p*.md, post_stage*.md": "Historical stage/package records retained for traceability; current authority stays in active workflow files.",
       "*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md": "Bounded work-package lifecycle records used to explain why a change was prepared, accepted, deferred, or closed.",
     },
     tail: "This directory is a decision ledger, not the active queue. Current priority and interpretation still come from `_workflow/READINESS.md`, `_workflow/ROADMAP.md`, `_workflow/ACTIVE_WORKFLOW_INDEX.md`, `_workflow/WORKFLOW_CANON.md`, and `_workflow/state.json`.",
+  },
+  "_workflow/inventories": {
+    title: "workflow inventories directory map",
+    updated: "2026-08-09",
+    entries: {
+      "modular_tool_migration_inventory.json": "Machine-readable modular tool migration and parity inventory.",
+      "modular_tool_migration_inventory.md": "Human-readable rendering of the modular tool migration inventory.",
+      "ops_1a_operational_e2e_matrix.json": "Machine-readable operational evidence matrix for restart, reconnect, cancellation, timeout, Cloudflare, SFTP, network, process, and rollback families.",
+      "DIRECTORY.md": "Functional map of structured workflow inventories.",
+    },
+    tail: "Inventories classify current evidence and migration state. They do not replace repository, runtime, connector, or active workflow truth.",
   },
   "_workflow/control_plane/file_backups": {
     title: "control-plane file backups directory map",
@@ -163,7 +176,7 @@ const CONFIG = {
   },
   "scripts": {
     title: "scripts directory map",
-    updated: "2026-08-01",
+    updated: "2026-08-09",
     entries: {
       "audit-memory-embedding-runtime.ps1": "Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.",
       "audit_directory_docs.js": "Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.",
@@ -173,6 +186,7 @@ const CONFIG = {
       "server.ps1": "PowerShell helper for controlled local server startup/orchestration.",
       "server.sh": "Shell helper for controlled local server startup/orchestration.",
       "generate_directory_docs.js": "Regenerates selected `DIRECTORY.md` files from a bounded description map.",
+      "run_operational_e2e_soak.js": "Runs the bounded OPS-1A hermetic/live operational matrix with independent repetition limits and structured output.",
     },
   },
   "profiles": {
@@ -295,7 +309,7 @@ const CONFIG = {
   },
   "_tests": {
     title: "tests directory map",
-    updated: "2026-08-01",
+    updated: "2026-08-09",
     entries: {
       "archive/": "Archived legacy and stale smoke material retained for traceability only.",
       "fixtures/": "Static fixtures used by smoke tests.",
@@ -307,6 +321,9 @@ const CONFIG = {
       "smoke_directory_docs_audit.js": "Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.",
       "smoke_build_index_tool.js": "Regression coverage for workspace-index profiles, freshness, structured workflow extraction, and retrieval ranking.",
       "smoke_operator_contract_docs.js": "Guard for operator-facing documentation contract and initial DIRECTORY rollout.",
+      "smoke_operational_e2e_matrix.js": "Guard for OPS-1A family classification, evidence references, explicit gaps, and bounded runner selection.",
+      "live_cloudflare_boundary_probe.js": "Explicit non-default read-only live probe for Cloudflare health, OAuth metadata, method guard, and auth challenge.",
+      "operational_network_manifest.json": "One-entry live network manifest that supplies the full isolated MCP harness required by `smoke_network.js`.",
     },
     tail: "This map is intentionally compact. The complete active inventory remains in `_tests/README.md` and `run_all_smoke_scripts.json`.",
   },

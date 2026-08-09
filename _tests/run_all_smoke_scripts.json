@@ -71,6 +71,7 @@
   "_tests/smoke_dev_code_impact_cache.js",
   "_tests/smoke_audit_arg_summary_semantics.js",
   "_tests/smoke_network_allowlist_workflow.js",
+  "_tests/smoke_operational_e2e_matrix.js",
   "_tests/smoke_schema_compat.js",
   "_tests/smoke_tool_surface_fingerprints.js",
   "_tests/smoke_compact_connector_map.js",
