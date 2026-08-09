@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-09
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T16:15:36.332Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. The current model map retains the existing four async tools and requires re-enumeration for `process_list/events`.
+Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T16:35:16.355Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, and corrected Windows `py`/PowerShell resolution. The current model map retains the existing four async tools and requires re-enumeration for `process_list/events`.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
@@ -85,7 +85,7 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-09T16:15:36.332Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-09T16:35:16.355Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;

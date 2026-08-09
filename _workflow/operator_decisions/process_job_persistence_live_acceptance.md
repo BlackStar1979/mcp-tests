@@ -21,11 +21,13 @@ The server persists owner-scoped job metadata, bounded stdout/stderr, and append
 
 - First deployment restart: `manual-1786291985998`.
 - Recovery-proof restart: `manual-1786292134573`.
-- Final server start: `2026-08-09T16:15:36.332Z`.
-- Health after both restarts: `status=ok`, `auth=oauth21`, `profile=internal`, `tools_count=91`.
+- Truth-baseline restart: `manual-1786293314947`.
+- Final server start: `2026-08-09T16:35:16.355Z`.
+- Health after all restarts: `status=ok`, `auth=oauth21`, `profile=internal`, `tools_count=91`.
 - Live job: `731a623b-497a-4d2d-a30d-c481b8e87114`.
 - Before restart: `status=ok`, `exit_code=0`, stdout `PROC1B_LIVE_RESTART_MARKER`.
 - After restart: the same job returned the same status and output with `durable=true` and `recovered_after_restart=true`.
+- After the final truth-baseline restart, the same historical job remained readable with the same durable recovery metadata.
 - The existing OAuth connector remained callable; no relogin was required.
 - Unknown job IDs return `process_job_not_found` as a controlled result instead of a transport exception.
 - Live `powershell -Command` and `py -3.14` jobs completed with exit code 0; `py` reported `resolution_class=windows_python_launcher`.
