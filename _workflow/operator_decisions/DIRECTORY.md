@@ -17,6 +17,8 @@ Updated: 2026-08-01
   OAuth21/auth control-plane, pruning, and security-adjacent decision evidence.
 - `retr_1_quality_regression_closeout.md`
   Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.
+- `process_job_persistence_live_acceptance.md`
+  Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.
 - `stage*.md, p*.md, post_stage*.md`
   Historical stage/package records retained for traceability; current authority stays in active workflow files.
 - `*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md`

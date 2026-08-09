@@ -141,6 +141,7 @@ const CONFIG = {
       "sessionless_*.md, single_route_*.md, subscriptions_listen_*.md": "Sessionless, single-route, and subscriptions/listen compatibility and migration records.",
       "oauth21_*.md, auth_*.md": "OAuth21/auth control-plane, pruning, and security-adjacent decision evidence.",
       "retr_1_quality_regression_closeout.md": "Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.",
+      "process_job_persistence_live_acceptance.md": "Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.",
       "stage*.md, p*.md, post_stage*.md": "Historical stage/package records retained for traceability; current authority stays in active workflow files.",
       "*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md": "Bounded work-package lifecycle records used to explain why a change was prepared, accepted, deferred, or closed.",
     },

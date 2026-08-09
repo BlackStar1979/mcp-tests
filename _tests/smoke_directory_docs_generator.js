@@ -72,6 +72,7 @@ assert.ok(workflowDirectory.includes("bounded OAuth21 prune records/backups"));
 assert.ok(operatorDecisionsDirectory.includes("Updated: 2026-08-01"));
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(operatorDecisionsDirectory.includes("retr_1_quality_regression_closeout.md"));
+assert.ok(operatorDecisionsDirectory.includes("process_job_persistence_live_acceptance.md"));
 assert.ok(operatorDecisionsDirectory.includes("Connector refresh, migration, callable-surface"));
 assert.ok(operatorDecisionsDirectory.includes("This directory is a decision ledger, not the active queue."));
 assert.ok(fileBackupsDirectory.includes("runtime-owned backup bundles"));
