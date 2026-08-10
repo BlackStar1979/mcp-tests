@@ -30,7 +30,13 @@ const syncMax = SYNC_RUN_PROCESS_INPUT_SCHEMA.properties.timeout_ms.maximum;
 
 assert.equal(syncMax, SYNC_TIMEOUT_CEILING_MS, "sync ceiling must come from the named constant");
 assert.ok(syncMax < asyncMax, `sync ceiling ${syncMax} must be below async ceiling ${asyncMax}`);
-assert.ok(syncMax <= 120000, "sync ceiling must stay under the lowest known client request timeout");
+// STRICTLY below, not equal. The cutter is the Cloudflare tunnel's 120 s no-transfer timeout,
+// and `run_process` buffers its output, so nothing crosses the tunnel while a job runs — a job
+// printing every 10 s is as idle as a `sleep`. Setting the ceiling AT 120000 would place it
+// exactly where the tunnel cuts, so every job that actually used its budget would die.
+const TUNNEL_NO_TRANSFER_MS = 120000;
+assert.ok(syncMax < TUNNEL_NO_TRANSFER_MS,
+  `sync ceiling ${syncMax} must be strictly below the tunnel no-transfer cutoff ${TUNNEL_NO_TRANSFER_MS}`);
 
 // The tools must not share the schema object again.
 assert.equal(

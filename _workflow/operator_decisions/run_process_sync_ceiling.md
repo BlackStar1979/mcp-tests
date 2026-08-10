@@ -33,11 +33,24 @@ Same server, same command family, same spawn path:
 The asynchronous job ran to completion **while three synchronous calls were dying**. That is
 the decisive control: it isolates the failure to the synchronous request path, not the runner.
 
-`run_process` holds the MCP request open for the whole job, so the job is bounded by the
-**client's** per-request timeout. Different clients report it differently — the
-`ExceptionGroup: unhandled errors in a TaskGroup` above is one MCP client's session teardown;
-another client says `the connector's server isn't responding`. Neither message names its own
-cause, which is why the diagnosis went to the server.
+## What actually cuts the connection
+
+**The Cloudflare tunnel's 120 s no-transfer timeout** — identified by the operator, and it
+matches every measurement above to the second.
+
+`run_process` BUFFERS output and returns it only when the process exits, so **nothing crosses
+the tunnel while the job runs**. A process printing to stdout every 10 s still looks completely
+idle from the tunnel's side: the 200 s job above ticked continuously and died exactly like a
+pure `sleep`. The variable is not elapsed time and not output volume — it is *time with no
+bytes on the wire*.
+
+This is also why the asynchronous path is immune. `process_start`, `process_status` and
+`process_output` are all short calls, so no single request is ever idle for 120 s. The 240 s
+job survived because it never waited inside one request.
+
+Different clients report the cut differently — `ExceptionGroup: unhandled errors in a
+TaskGroup` is one MCP client's session teardown, another says `the connector's server isn't
+responding`. Neither names its own cause, which is why the diagnosis went to the server.
 
 ## The actual defect: a promise the transport cannot keep
 
@@ -60,9 +73,10 @@ transport cannot hold is worse than a lower one, because the failure it produces
   `process_start` — the consumer had those six tools available the whole time and never called
   one, so stating a limit without naming the alternative would not have been enough.
 
-`90000` sits below the lowest observed failure (130 s) *and* below the lowest observed success
-(122 s), with margin for slower clients. Raising it is not a tuning knob: anything the
-transport cannot hold belongs in `process_start`.
+`90000` must stay **strictly below** the tunnel's 120 s cutoff, not equal to it. **`120000` is
+the one value that must never be chosen**: it places the ceiling exactly where the tunnel cuts,
+so every job that actually uses its budget dies. If the tunnel's no-transfer timeout changes,
+that is the number this must be re-derived from.
 
 ## Live verification, after `node scripts/request-restart.js --code=42 --reason=manual`
 

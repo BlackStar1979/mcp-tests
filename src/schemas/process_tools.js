@@ -132,8 +132,17 @@ const RUN_PROCESS_INPUT_SCHEMA = {
 // The SYNCHRONOUS runner cannot deliver the asynchronous runner's ceiling, and until
 // 2026-08-10 both advertised the same 600000 ms because they share the input schema above.
 //
-// `run_process` holds the MCP request open for the whole job, so the job is bounded by the
-// CLIENT's per-request timeout, not by this server. Measured on a live workbench:
+// THE CUTTER IS THE CLOUDFLARE TUNNEL'S 120 s NO-TRANSFER TIMEOUT, not elapsed time and not
+// a generic client limit. `run_process` BUFFERS output and returns it only when the process
+// exits, so nothing crosses the tunnel while the job runs — a process printing to stdout every
+// 10 s still looks completely idle from the tunnel's side, which is why a 200 s job that ticked
+// continuously died exactly like a pure `sleep`.
+//
+// That is also why the asynchronous path is immune: `process_start` / `process_status` /
+// `process_output` are all SHORT calls, so no single request is ever idle for 120 s. The
+// 240 s job below survived because it never waited inside one request.
+//
+// Measured on a live workbench:
 //
 //     122 s  sync  -> OK           (ChatGPT connector)
 //     130 s  sync  -> transport died   (Claude Code connector)
@@ -148,9 +157,12 @@ const RUN_PROCESS_INPUT_SCHEMA = {
 // TaskGroup`, which is the MCP client's session teardown, not anything pytest or the runner
 // emitted.
 //
-// 90000 ms sits below the lowest observed failure (130 s) and below the lowest observed
-// success (122 s), with margin for slower clients. Raising it back is not a tuning knob:
-// anything the transport cannot hold belongs in `process_start`.
+// 90000 ms must stay STRICTLY BELOW the tunnel's 120 s no-transfer cutoff — not equal to it.
+// 120000 is therefore the one value that must never be chosen: it sets the ceiling exactly
+// where the tunnel cuts, so every job that actually uses its budget dies. Raising this is not
+// a tuning knob; anything the transport cannot hold belongs in `process_start`.
+//
+// If the tunnel's no-transfer timeout ever changes, THAT is the number to re-derive this from.
 const SYNC_TIMEOUT_CEILING_MS = 90000;
 
 const SYNC_RUN_PROCESS_INPUT_SCHEMA = {
