@@ -129,6 +129,43 @@ const RUN_PROCESS_INPUT_SCHEMA = {
   },
 };
 
+// The SYNCHRONOUS runner cannot deliver the asynchronous runner's ceiling, and until
+// 2026-08-10 both advertised the same 600000 ms because they share the input schema above.
+//
+// `run_process` holds the MCP request open for the whole job, so the job is bounded by the
+// CLIENT's per-request timeout, not by this server. Measured on a live workbench:
+//
+//     122 s  sync  -> OK           (ChatGPT connector)
+//     130 s  sync  -> transport died   (Claude Code connector)
+//     155 s  sync  -> transport died
+//     200 s  sync  -> transport died
+//     240 s  ASYNC -> exit_code 0, status ok, survived all three failures above
+//
+// The server was healthy throughout; it ran the 240 s job to completion while the
+// synchronous calls were dying. So this is not a defect in the runner, it is a promise the
+// transport cannot keep — and that false promise is what made a consumer spend hours
+// diagnosing "the MCP server is broken" from `ExceptionGroup: unhandled errors in a
+// TaskGroup`, which is the MCP client's session teardown, not anything pytest or the runner
+// emitted.
+//
+// 90000 ms sits below the lowest observed failure (130 s) and below the lowest observed
+// success (122 s), with margin for slower clients. Raising it back is not a tuning knob:
+// anything the transport cannot hold belongs in `process_start`.
+const SYNC_TIMEOUT_CEILING_MS = 90000;
+
+const SYNC_RUN_PROCESS_INPUT_SCHEMA = {
+  ...RUN_PROCESS_INPUT_SCHEMA,
+  properties: {
+    ...RUN_PROCESS_INPUT_SCHEMA.properties,
+    timeout_ms: {
+      type: "integer",
+      minimum: 100,
+      maximum: SYNC_TIMEOUT_CEILING_MS,
+      default: 60000,
+    },
+  },
+};
+
 const RUN_PROCESS_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -409,6 +446,8 @@ module.exports = {
   READ_ONLY_PROCESS_ANNOTATIONS,
   RUN_PROCESS_INPUT_SCHEMA,
   RUN_PROCESS_OUTPUT_SCHEMA,
+  SYNC_RUN_PROCESS_INPUT_SCHEMA,
+  SYNC_TIMEOUT_CEILING_MS,
   PROCESS_RUNNER_STATUS_OUTPUT_SCHEMA,
   processToolOutputSchema,
 };

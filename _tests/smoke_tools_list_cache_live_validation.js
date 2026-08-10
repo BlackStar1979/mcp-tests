@@ -1,6 +1,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
 const state = JSON.parse(fs.readFileSync(path.join(ROOT, "_workflow", "state.json"), "utf8"));
@@ -13,8 +14,8 @@ const descriptorReview = fs.readFileSync(
 );
 
 const expectedCurrentStatus = "repo91_runtime91_model91_aligned";
-const expectedCurrentFingerprint = "54ed6536bb75e46e";
-const expectedCurrentHash = "79c3b49ba27e604a";
+const expectedCurrentFingerprint = SURFACE.combined_fingerprint;
+const expectedCurrentHash = SURFACE.tool_names_hash;
 
 const c = state.current_connector_truth.oauth21_3008_tools;
 const currentServerStartId = state.current_runtime_truth.oauth21_3008.server_start_id;

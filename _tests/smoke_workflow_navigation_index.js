@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { assertCanonCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
+const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
@@ -107,7 +108,7 @@ assert.ok(canon.includes("`next_secondary = ops-1b-live-sftp-and-reauth-evidence
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 91);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "54ed6536bb75e46e");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, SURFACE.combined_fingerprint);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo91_runtime91_model91_aligned");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);

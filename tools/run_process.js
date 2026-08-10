@@ -2,7 +2,7 @@
 
 const {
   PROCESS_TOOL_ANNOTATIONS,
-  RUN_PROCESS_INPUT_SCHEMA,
+  SYNC_RUN_PROCESS_INPUT_SCHEMA,
   RUN_PROCESS_OUTPUT_SCHEMA,
 } = require("../src/schemas/process_tools");
 const { runProcess } = require("../src/util/process_runner");
@@ -14,8 +14,8 @@ const runProcessTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Run bounded workspace process",
-    description: "Run an allowlisted local process inside an allowed workspace root with pinned executable resolution, combined bounded output, timeout, and restrictive environment policy.",
-    inputSchema: RUN_PROCESS_INPUT_SCHEMA,
+    description: "Run a SHORT allowlisted workspace process synchronously and return its output in this call. Hard ceiling: 90 seconds. This call holds the MCP request open for the whole job, so anything longer is killed by the CLIENT's request timeout, not by this server — it surfaces as an opaque transport failure such as 'ExceptionGroup: unhandled errors in a TaskGroup' or 'the connector's server isn't responding', which looks like a server or test failure and is neither. For ANY job that may exceed 90 seconds — full test suites, multi-node pytest runs, builds, installs — use process_start and poll process_status/process_output instead; it is durable, survives disconnects, and allows up to 600 seconds.",
+    inputSchema: SYNC_RUN_PROCESS_INPUT_SCHEMA,
     outputSchema: RUN_PROCESS_OUTPUT_SCHEMA,
     annotations: PROCESS_TOOL_ANNOTATIONS,
   },

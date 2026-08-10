@@ -3,6 +3,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { assertWorkflowCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
+const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -39,7 +40,7 @@ assert.equal(connectorSpec.authenticated_connector.current_tool_count_after_stag
 assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 91);
 
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 91);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, "79c3b49ba27e604a");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, SURFACE.tool_names_hash);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 91);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo91_runtime91_model91_aligned");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);

@@ -1,0 +1,180 @@
+diff --git a/_tests/smoke_process_async_tools.js b/_tests/smoke_process_async_tools.js
+index d29400f..b1ea7c0 100644
+--- a/_tests/smoke_process_async_tools.js
++++ b/_tests/smoke_process_async_tools.js
+@@ -98,6 +98,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
+   for (const tool of tools) assert.equal(publicLoadedNames.has(tool.name), false, `public leak: ${tool.name}`);
+ 
+   let runtimeAuditCallback = null;
++  const runtimeAuditEvents = [];
+   await tryHandleOptionalToolCall({
+     id: 1,
+     name: "process_status",
+@@ -111,9 +112,38 @@ async function waitFor(predicate, timeoutMs = 5000) {
+         return { ok: true };
+       },
+     }),
+-    auditLog() {},
++    auditLog(event, payload) { runtimeAuditEvents.push({ event, payload }); },
+   });
+   assert.equal(typeof runtimeAuditCallback, "function");
++  assert.equal(runtimeAuditEvents.at(-1).event, "tool_call_end");
++  assert.equal(runtimeAuditEvents.at(-1).payload.is_error, false);
++  assert.equal(runtimeAuditEvents.at(-1).payload.error_code, null);
++
++  const rejectedAuditEvents = [];
++  await tryHandleOptionalToolCall({
++    id: 2,
++    name: "process_start",
++    args: { command: "node" },
++    context: { requestId: "process-rejected-audit-context" },
++    startedAt: Date.now(),
++    outputMode: "structured",
++    getOptionalTool: () => ({
++      execute() {
++        return {
++          success: false,
++          error: {
++            code: "process_cwd_not_allowed",
++            message: "Working directory is outside the configured workspace roots.",
++            retryable: false,
++          },
++        };
++      },
++    }),
++    auditLog(event, payload) { rejectedAuditEvents.push({ event, payload }); },
++  });
++  assert.equal(rejectedAuditEvents.at(-1).event, "tool_call_end");
++  assert.equal(rejectedAuditEvents.at(-1).payload.is_error, true);
++  assert.equal(rejectedAuditEvents.at(-1).payload.error_code, "process_cwd_not_allowed");
+ 
+   const started = await processStartTool.execute({
+     command: "node",
+diff --git a/_tests/smoke_process_runner_config.js b/_tests/smoke_process_runner_config.js
+index 5a7672a..da6308d 100644
+--- a/_tests/smoke_process_runner_config.js
++++ b/_tests/smoke_process_runner_config.js
+@@ -124,6 +124,28 @@ try {
+   assert.deepEqual(pipInvocation.prefixArgs, ["-m", "pip"]);
+   assert.equal(pipInvocation.resolutionClass, "workspace_python_venv");
+ 
++  const absoluteCwdInvocation = prepareProcessInvocation({
++    command: "node",
++    args: ["--version"],
++    cwd: fixtureRoot,
++  }, config);
++  assert.equal(absoluteCwdInvocation.cwdInfo.absolutePath, fixtureRoot);
++  assert.equal(absoluteCwdInvocation.cwdInfo.displayPath, relativeCwd);
++  assert.equal(absoluteCwdInvocation.cwdInfo.rootAlias, repo.rootAlias);
++  assert.throws(
++    () => safeWorkspacePath(fixtureRoot),
++    /absolute paths|drive-letter paths/i,
++    "absolute paths must remain opt-in outside the process runner"
++  );
++  assert.throws(
++    () => prepareProcessInvocation({
++      command: "node",
++      args: ["--version"],
++      cwd: path.parse(repo.rootPath).root,
++    }, config),
++    /outside configured workspace roots/i
++  );
++
+   if (process.platform === "win32") {
+     const launcherDir = path.join(fixtureRoot, "launchers");
+     const pyPath = path.join(launcherDir, "py.exe");
+diff --git a/src/runtime/optional_tool_call_handler.js b/src/runtime/optional_tool_call_handler.js
+index e1ed0be..c78b36d 100644
+--- a/src/runtime/optional_tool_call_handler.js
++++ b/src/runtime/optional_tool_call_handler.js
+@@ -60,12 +60,16 @@ async function tryHandleOptionalToolCall({
+   }
+ 
+   const result = toolResult(outputMode, output, resolveToolResultFreshness(name));
++  const controlledError = output?.success === false && output?.error && typeof output.error === "object";
+ 
+   auditLog("tool_call_end", {
+     request_id: context.requestId,
+     tool: name,
+     duration_ms: Date.now() - startedAt,
+-    is_error: false,
++    is_error: Boolean(controlledError),
++    error_code: controlledError && typeof output.error.code === "string"
++      ? output.error.code.slice(0, 100)
++      : null,
+     ...getToolResultStats(getOptionalTool, name, output),
+   });
+ 
+diff --git a/src/util/process_runner_config.js b/src/util/process_runner_config.js
+index c709475..358c575 100644
+--- a/src/util/process_runner_config.js
++++ b/src/util/process_runner_config.js
+@@ -499,7 +499,7 @@ function prepareProcessInvocation(options = {}, config = PROCESS_RUNNER_CONFIG,
+   const logicalCommand = normalizeCommand(options.command, config);
+   const args = normalizeArgs(options.args);
+   enforcePowerShellPolicy(logicalCommand, args, dependencies.parentEnv || process.env);
+-  const cwdInfo = safeWorkspacePath(options.cwd || ".");
++  const cwdInfo = safeWorkspacePath(options.cwd || ".", { allowAbsolute: true });
+   const family = COMMAND_FAMILIES[logicalCommand];
+   const resolved = resolveExecutable(logicalCommand, cwdInfo, dependencies);
+   return {
+diff --git a/src/util/workspace_roots.js b/src/util/workspace_roots.js
+index cd51e95..cdd3f27 100644
+--- a/src/util/workspace_roots.js
++++ b/src/util/workspace_roots.js
+@@ -145,7 +145,41 @@ function listWorkspaceRoots(roots = buildWorkRoots(), primaryAlias = PRIMARY_WOR
+   }));
+ }
+ 
+-function resolveWorkspaceTarget(relativePath = ".", { roots = buildWorkRoots(), primaryAlias = PRIMARY_WORK_ROOT_ALIAS } = {}) {
++function resolveAbsoluteWorkspaceTarget(requestedPath, roots, primaryAlias) {
++  const requested = stripQuotes(requestedPath);
++  const absolutePath = hostResolveAbsolute(requested);
++
++  for (const [rootAlias, rootPath] of roots.entries()) {
++    const pathApi = looksLikeWindowsAbsolute(rootPath) ? path.win32 : path;
++    const relative = pathApi.relative(rootPath, absolutePath);
++    const outside = relative === ".."
++      || relative.startsWith(`..${pathApi.sep}`)
++      || pathApi.isAbsolute(relative);
++    if (outside) continue;
++
++    const rootRelativePath = relative ? relative.replaceAll("\\", "/") : ".";
++    return {
++      requested,
++      rootAlias,
++      rootPath,
++      rootRelativePath,
++      displayPath: formatDisplayPath(rootAlias, rootRelativePath, primaryAlias),
++      usedAlias: false,
++    };
++  }
++
++  throw new Error("Absolute path is outside configured workspace roots.");
++}
++
++function resolveWorkspaceTarget(relativePath = ".", {
++  roots = buildWorkRoots(),
++  primaryAlias = PRIMARY_WORK_ROOT_ALIAS,
++  allowAbsolute = false,
++} = {}) {
++  const requested = stripQuotes(relativePath);
++  if (allowAbsolute && (path.isAbsolute(requested) || looksLikeWindowsAbsolute(requested))) {
++    return resolveAbsoluteWorkspaceTarget(requested, roots, primaryAlias);
++  }
+   const clean = normalizeRel(relativePath);
+   if (clean === ".") {
+     return {
+@@ -199,7 +233,11 @@ function findBlockedPrefix(fullPath, prefixes, rootPath) {
+ function safeWorkspacePath(relativePath = ".", options = {}) {
+   const roots = options.roots || buildWorkRoots();
+   const primaryAlias = options.primaryAlias || PRIMARY_WORK_ROOT_ALIAS;
+-  const target = resolveWorkspaceTarget(relativePath, { roots, primaryAlias });
++  const target = resolveWorkspaceTarget(relativePath, {
++    roots,
++    primaryAlias,
++    allowAbsolute: options.allowAbsolute === true,
++  });
+   const absolutePath = path.resolve(target.rootPath, target.rootRelativePath);
+   const rootWithSep = target.rootPath.endsWith(path.sep) ? target.rootPath : `${target.rootPath}${path.sep}`;
+ 
