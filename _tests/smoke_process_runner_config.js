@@ -124,6 +124,36 @@ try {
   assert.deepEqual(pipInvocation.prefixArgs, ["-m", "pip"]);
   assert.equal(pipInvocation.resolutionClass, "workspace_python_venv");
 
+  const absoluteCwdInvocation = prepareProcessInvocation({
+    command: "node",
+    args: ["--version"],
+    cwd: fixtureRoot,
+  }, config);
+  assert.equal(absoluteCwdInvocation.cwdInfo.absolutePath, fixtureRoot);
+  assert.equal(absoluteCwdInvocation.cwdInfo.displayPath, relativeCwd);
+  assert.equal(absoluteCwdInvocation.cwdInfo.rootAlias, repo.rootAlias);
+  assert.throws(
+    () => safeWorkspacePath(fixtureRoot),
+    /absolute paths|drive-letter paths/i,
+    "absolute paths must remain opt-in outside the process runner"
+  );
+  assert.throws(
+    () => prepareProcessInvocation({
+      command: "node",
+      args: ["--version"],
+      cwd: path.parse(repo.rootPath).root,
+    }, config),
+    /outside configured workspace roots/i
+  );
+  assert.throws(
+    () => prepareProcessInvocation({ command: "node", cwd: `${fixtureRoot}\u0000escape` }, config),
+    /NUL byte/i
+  );
+  assert.throws(
+    () => prepareProcessInvocation({ command: "node", cwd: `${fixtureRoot}${"x".repeat(1001)}` }, config),
+    /too long/i
+  );
+
   if (process.platform === "win32") {
     const launcherDir = path.join(fixtureRoot, "launchers");
     const pyPath = path.join(launcherDir, "py.exe");

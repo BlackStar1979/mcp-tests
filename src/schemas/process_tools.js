@@ -111,7 +111,12 @@ const RUN_PROCESS_INPUT_SCHEMA = {
       maxItems: 100,
       items: { type: "string", maxLength: 4000 },
     },
-    cwd: { type: "string", default: ".", maxLength: 1000 },
+    cwd: {
+      type: "string",
+      default: ".",
+      maxLength: 1000,
+      description: "Workspace-relative path or an absolute path contained by a configured workspace root. Paths outside configured roots are rejected.",
+    },
     timeout_ms: { type: "integer", minimum: 100, maximum: 600000, default: 60000 },
     max_output_chars: { type: "integer", minimum: 1000, maximum: 1000000, default: 250000 },
     env: {
@@ -132,14 +137,14 @@ const RUN_PROCESS_INPUT_SCHEMA = {
 // The SYNCHRONOUS runner cannot deliver the asynchronous runner's ceiling, and until
 // 2026-08-10 both advertised the same 600000 ms because they share the input schema above.
 //
-// THE CUTTER IS THE CLOUDFLARE TUNNEL'S 120 s NO-TRANSFER TIMEOUT, not elapsed time and not
-// a generic client limit. `run_process` BUFFERS output and returns it only when the process
-// exits, so nothing crosses the tunnel while the job runs — a process printing to stdout every
-// 10 s still looks completely idle from the tunnel's side, which is why a 200 s job that ticked
+// THE CUTTER IS CLOUDFLARE'S 125 s PROXY READ TIMEOUT, not elapsed time and not a generic
+// client limit. `run_process` BUFFERS output and returns it only when the process exits, so the
+// proxy receives no response bytes while the job runs — a process printing to stdout every
+// 10 s still looks completely idle from Cloudflare's side, which is why a 200 s job that ticked
 // continuously died exactly like a pure `sleep`.
 //
 // That is also why the asynchronous path is immune: `process_start` / `process_status` /
-// `process_output` are all SHORT calls, so no single request is ever idle for 120 s. The
+// `process_output` are all SHORT calls, so no single request approaches 125 s. The
 // 240 s job below survived because it never waited inside one request.
 //
 // Measured on a live workbench:
@@ -157,12 +162,10 @@ const RUN_PROCESS_INPUT_SCHEMA = {
 // TaskGroup`, which is the MCP client's session teardown, not anything pytest or the runner
 // emitted.
 //
-// 90000 ms must stay STRICTLY BELOW the tunnel's 120 s no-transfer cutoff — not equal to it.
-// 120000 is therefore the one value that must never be chosen: it sets the ceiling exactly
-// where the tunnel cuts, so every job that actually uses its budget dies. Raising this is not
-// a tuning knob; anything the transport cannot hold belongs in `process_start`.
+// 90000 ms must stay safely below Cloudflare's 125 s proxy read timeout. Raising this is not a
+// tuning knob; anything the transport cannot hold belongs in `process_start`.
 //
-// If the tunnel's no-transfer timeout ever changes, THAT is the number to re-derive this from.
+// If the proxy read timeout ever changes, THAT is the number to re-derive this from.
 const SYNC_TIMEOUT_CEILING_MS = 90000;
 
 const SYNC_RUN_PROCESS_INPUT_SCHEMA = {

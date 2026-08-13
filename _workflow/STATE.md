@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-08-09
+Updated: 2026-08-13
 
 ## Purpose
 
@@ -33,16 +33,16 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=279`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=280`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `279`
+- Latest validated authenticated smoke count: `280`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `78`
 - Authenticated repo target for profile `tests`: `91`
-- Live OAuth21 runtime and the refreshed Codex connector map both expose `91` tools at `server_start_id = 2026-08-09T18:09:11.902Z`. Direct named calls to `process_list`, `process_status`, `process_output`, and `process_events` succeeded after the lease-hardening restarts without OAuth relogin; the connector fingerprint is `54ed6536bb75e46e`.
+- Live OAuth21 runtime exposes `91` tools at `server_start_id = 2026-08-13T16:41:07.289Z` with fingerprint `f4512a756f780113`. Direct named async lifecycle calls succeeded with an absolute in-root `cwd`; the full-suite job survived the controlled restart as `recovered_after_restart=true`, and a post-restart job returned `POST_RESTART_ASYNC_OK` without OAuth relogin.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track

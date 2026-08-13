@@ -78,6 +78,7 @@ assert.ok(operatorDecisionsDirectory.includes(`Updated: ${operatorDecisionsUpdat
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(operatorDecisionsDirectory.includes("retr_1_quality_regression_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("process_job_persistence_live_acceptance.md"));
+assert.ok(operatorDecisionsDirectory.includes("run_process_sync_ceiling.md"));
 assert.ok(operatorDecisionsDirectory.includes("Connector refresh, migration, callable-surface"));
 assert.ok(operatorDecisionsDirectory.includes("This directory is a decision ledger, not the active queue."));
 assert.ok(fileBackupsDirectory.includes("runtime-owned backup bundles"));
@@ -89,6 +90,7 @@ assert.ok(testsDirectory.includes("`smoke_directory_docs_audit.js`"));
 assert.ok(testsDirectory.includes("`smoke_build_index_tool.js`"));
 assert.ok(docsDirectory.includes("Status: active documentation directory map"));
 assert.ok(docsDirectory.includes("Imported or adapted Superpowers planning/specification material"));
+assert.ok(docsDirectory.includes("PROCESS_RUNNER_CONSUMER_INSTRUCTION.md"));
 assert.ok(superpowersDirectory.includes("Status: active superpowers documentation directory map"));
 assert.ok(superpowersDirectory.includes("supporting workflow material"));
 assert.ok(superpowersPlansDirectory.includes("Status: active superpowers plans directory map"));

@@ -132,7 +132,7 @@ const CONFIG = {
   },
   "_workflow/operator_decisions": {
     title: "workflow operator decisions directory map",
-    updated: "2026-08-09",
+    updated: "2026-08-13",
     entries: {
       "initialize_client_compatibility_evidence.md": "Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.",
       "initialize_retirement_decision_prep.md": "Bounded decision-preparation record for any future legacy `initialize` retirement package.",
@@ -143,6 +143,7 @@ const CONFIG = {
       "retr_1_quality_regression_closeout.md": "Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.",
       "process_job_persistence_live_acceptance.md": "Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.",
       "process_job_pid_reuse_recovery.md": "Post-acceptance correction and regression evidence for PID-reuse-safe durable process recovery.",
+      "run_process_sync_ceiling.md": "Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.",
       "ops_1a_operational_e2e_closeout.md": "Evidence-classified closeout for the bounded operational E2E matrix, hermetic/live soak, and remaining external boundaries.",
       "stage*.md, p*.md, post_stage*.md": "Historical stage/package records retained for traceability; current authority stays in active workflow files.",
       "*_closeout.md, *_inventory.md, *_plan.md, *_review.md, *_package.md": "Bounded work-package lifecycle records used to explain why a change was prepared, accepted, deferred, or closed.",
@@ -219,7 +220,7 @@ const CONFIG = {
   },
   "docs": {
     title: "documentation directory map",
-    updated: "2026-07-29",
+    updated: "2026-08-13",
     entries: {
       "superpowers/": "Imported or adapted Superpowers planning/specification material used by local workflow documentation.",
       "CBM_RELIABILITY_HARDENING_REPORT.md": "Reliability hardening notes for the CBM bridge and its operational guardrails.",
@@ -229,6 +230,7 @@ const CONFIG = {
       "CBM_UPSTREAM_ISSUES_51_100_REVIEW.md": "Review of upstream issues 51-100 and local bridge safeguards derived from them.",
       "CBM_UPSTREAM_ISSUES_FIRST50_REVIEW.md": "Initial upstream issue review for the first 50 open codebase-memory-mcp issues.",
       "CBM_V0_9_0_REBASELINE_REPORT.md": "Rebaseline report for the codebase-memory v0.9.0 bridge contract and compatibility state.",
+      "PROCESS_RUNNER_CONSUMER_INSTRUCTION.md": "Consumer contract for choosing synchronous versus durable asynchronous process execution and recovering jobs.",
     },
     tail: "This directory holds supporting reports and imported planning references. Current project truth remains in `_workflow/` and root `SERVER_*_SPEC.json` files.",
   },

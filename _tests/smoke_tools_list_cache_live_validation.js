@@ -38,8 +38,8 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repository, live OAuth21 `3008`, and the refreshed Codex connector map are aligned at `91`"));
-assert.ok(index.includes("refreshed Codex connector map are aligned at `91`"));
+assert.ok(index.includes("repository and live OAuth21 `3008` are aligned at `91`"));
+assert.ok(index.includes(`fingerprint \`${expectedCurrentFingerprint}\``));
 assert.ok(index.includes("`PROC-1B` provides durable SQLite jobs/events"));
 assert.ok(index.includes("restart recovery without replay"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));

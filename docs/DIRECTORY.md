@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active documentation directory map
-Updated: 2026-07-29
+Updated: 2026-08-13
 
 - `superpowers/`
   Imported or adapted Superpowers planning/specification material used by local workflow documentation.
@@ -19,5 +19,7 @@ Updated: 2026-07-29
   Initial upstream issue review for the first 50 open codebase-memory-mcp issues.
 - `CBM_V0_9_0_REBASELINE_REPORT.md`
   Rebaseline report for the codebase-memory v0.9.0 bridge contract and compatibility state.
+- `PROCESS_RUNNER_CONSUMER_INSTRUCTION.md`
+  Consumer contract for choosing synchronous versus durable asynchronous process execution and recovering jobs.
 
 This directory holds supporting reports and imported planning references. Current project truth remains in `_workflow/` and root `SERVER_*_SPEC.json` files.

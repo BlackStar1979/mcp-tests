@@ -145,7 +145,47 @@ function listWorkspaceRoots(roots = buildWorkRoots(), primaryAlias = PRIMARY_WOR
   }));
 }
 
-function resolveWorkspaceTarget(relativePath = ".", { roots = buildWorkRoots(), primaryAlias = PRIMARY_WORK_ROOT_ALIAS } = {}) {
+function resolveAbsoluteWorkspaceTarget(requestedPath, roots, primaryAlias) {
+  const requested = stripQuotes(requestedPath);
+  if (requested.length > 1000) {
+    throw new Error("Path is too long.");
+  }
+  if (requested.includes("\u0000")) {
+    throw new Error("Path contains NUL byte.");
+  }
+  const absolutePath = hostResolveAbsolute(requested);
+
+  for (const [rootAlias, rootPath] of roots.entries()) {
+    const pathApi = looksLikeWindowsAbsolute(rootPath) ? path.win32 : path;
+    const relative = pathApi.relative(rootPath, absolutePath);
+    const outside = relative === ".."
+      || relative.startsWith(`..${pathApi.sep}`)
+      || pathApi.isAbsolute(relative);
+    if (outside) continue;
+
+    const rootRelativePath = relative ? relative.replaceAll("\\", "/") : ".";
+    return {
+      requested,
+      rootAlias,
+      rootPath,
+      rootRelativePath,
+      displayPath: formatDisplayPath(rootAlias, rootRelativePath, primaryAlias),
+      usedAlias: false,
+    };
+  }
+
+  throw new Error("Absolute path is outside configured workspace roots.");
+}
+
+function resolveWorkspaceTarget(relativePath = ".", {
+  roots = buildWorkRoots(),
+  primaryAlias = PRIMARY_WORK_ROOT_ALIAS,
+  allowAbsolute = false,
+} = {}) {
+  const requested = stripQuotes(relativePath);
+  if (allowAbsolute && (path.isAbsolute(requested) || looksLikeWindowsAbsolute(requested))) {
+    return resolveAbsoluteWorkspaceTarget(requested, roots, primaryAlias);
+  }
   const clean = normalizeRel(relativePath);
   if (clean === ".") {
     return {
@@ -199,7 +239,11 @@ function findBlockedPrefix(fullPath, prefixes, rootPath) {
 function safeWorkspacePath(relativePath = ".", options = {}) {
   const roots = options.roots || buildWorkRoots();
   const primaryAlias = options.primaryAlias || PRIMARY_WORK_ROOT_ALIAS;
-  const target = resolveWorkspaceTarget(relativePath, { roots, primaryAlias });
+  const target = resolveWorkspaceTarget(relativePath, {
+    roots,
+    primaryAlias,
+    allowAbsolute: options.allowAbsolute === true,
+  });
   const absolutePath = path.resolve(target.rootPath, target.rootRelativePath);
   const rootWithSep = target.rootPath.endsWith(path.sep) ? target.rootPath : `${target.rootPath}${path.sep}`;
 

@@ -15,6 +15,7 @@ const { PROCESS_RUNNER_CONFIG } = require("../src/util/process_runner_config");
 const { buildDecisionRuntimeContext } = require("../src/runtime/decision_runtime_context_builder");
 const { evaluateDecisionRuntimePolicy } = require("../src/runtime/decision_runtime_policy");
 const { tryHandleOptionalToolCall } = require("../src/runtime/optional_tool_call_handler");
+const { safeWorkspacePath } = require("../src/util/workspace_roots");
 
 async function waitFor(predicate, timeoutMs = 5000) {
   const started = Date.now();
@@ -98,6 +99,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   for (const tool of tools) assert.equal(publicLoadedNames.has(tool.name), false, `public leak: ${tool.name}`);
 
   let runtimeAuditCallback = null;
+  const runtimeAuditEvents = [];
   await tryHandleOptionalToolCall({
     id: 1,
     name: "process_status",
@@ -111,14 +113,43 @@ async function waitFor(predicate, timeoutMs = 5000) {
         return { ok: true };
       },
     }),
-    auditLog() {},
+    auditLog(event, payload) { runtimeAuditEvents.push({ event, payload }); },
   });
   assert.equal(typeof runtimeAuditCallback, "function");
+  assert.equal(runtimeAuditEvents.at(-1).event, "tool_call_end");
+  assert.equal(runtimeAuditEvents.at(-1).payload.is_error, false);
+  assert.equal(runtimeAuditEvents.at(-1).payload.error_code, null);
+
+  const rejectedAuditEvents = [];
+  await tryHandleOptionalToolCall({
+    id: 2,
+    name: "process_start",
+    args: { command: "node" },
+    context: { requestId: "process-rejected-audit-context" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    getOptionalTool: () => ({
+      execute() {
+        return {
+          success: false,
+          error: {
+            code: "process_cwd_not_allowed",
+            message: "Working directory is outside the configured workspace roots.",
+            retryable: false,
+          },
+        };
+      },
+    }),
+    auditLog(event, payload) { rejectedAuditEvents.push({ event, payload }); },
+  });
+  assert.equal(rejectedAuditEvents.at(-1).event, "tool_call_end");
+  assert.equal(rejectedAuditEvents.at(-1).payload.is_error, true);
+  assert.equal(rejectedAuditEvents.at(-1).payload.error_code, "process_cwd_not_allowed");
 
   const started = await processStartTool.execute({
     command: "node",
     args: ["-e", "process.stdout.write('async-tool-output')"],
-    cwd: "mcp-tests",
+    cwd: safeWorkspacePath("mcp-tests").absolutePath,
   }, context);
   assert.equal(started.command, "node");
   assert.equal(started.terminal, false);
@@ -128,6 +159,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     return status.terminal ? status : null;
   });
   assert.equal(completed.status, "ok");
+  assert.equal(completed.cwd, "mcp-tests");
   const hiddenStatus = await processStatusTool.execute({ job_id: started.job_id }, otherClientContext);
   assert.deepEqual(hiddenStatus, {
     success: false,

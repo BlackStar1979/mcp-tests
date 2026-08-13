@@ -33,20 +33,20 @@ limit — that is working around the wrong tool.
 
 ## 2. Why the synchronous tool is capped at 90 s — read this once
 
-The path to this server crosses a **Cloudflare tunnel that closes a connection after 120
-seconds with no data transfer**.
+The path to this server crosses Cloudflare's proxy, whose documented **Proxy Read Timeout is
+125 seconds**.
 
 `run_process` **buffers** the child's output and returns it only when the process exits, so
-**nothing crosses the tunnel while the job runs**. A process printing to stdout every 10 seconds
-is, from the tunnel's point of view, exactly as idle as `sleep`. Measured: a 200-second job that
+**no response bytes reach Cloudflare while the job runs**. A process printing to stdout every
+10 seconds is, from the proxy's point of view, exactly as idle as `sleep`. Measured: a 200-second job that
 printed continuously died the same way a pure sleep did.
 
 The asynchronous tools are immune for a structural reason, not by luck: `process_start`,
 `process_status` and `process_output` are all short calls, so no single request is ever idle.
 A 240-second job completes cleanly through them.
 
-**Do not ask for a higher synchronous ceiling.** 90 000 ms is deliberately below the tunnel's
-cut point; 120 000 would place it exactly at the cut.
+**Do not ask for a higher synchronous ceiling.** 90 000 ms leaves 35 seconds of margin below
+the documented proxy read timeout.
 
 ---
 
@@ -55,7 +55,7 @@ cut point; 120 000 would place it exactly at the cut.
 | what you see | what it means | what to do |
 |---|---|---|
 | `Invalid tool arguments` on `run_process` | you asked for `timeout_ms > 90000` | use `process_start` |
-| `ExceptionGroup: unhandled errors in a TaskGroup` | **your MCP client's session died**, not the server | the job exceeded the tunnel's idle window — use `process_start` |
+| `ExceptionGroup: unhandled errors in a TaskGroup` | the MCP request transport closed, not the child process | the synchronous response exceeded Cloudflare's read window — use `process_start` |
 | `the connector's server isn't responding` | same cause, different client's wording | as above |
 | `status: timeout` in the job record | the **process** hit its `timeout_ms` | a real result: the command was too slow |
 | `ModuleNotFoundError` for a project package | wrong interpreter, not a tool defect | see §7 |
@@ -80,8 +80,9 @@ server is broken", first check whether the call was synchronous and long.
      "max_output_chars": 1000000
    })
    ```
-   `cwd` is **workspace-relative** (`papers-memory-mcp`, `mcp-tests`). No absolute paths, no
-   traversal.
+   Prefer a **workspace-relative** `cwd` (`papers-memory-mcp`, `mcp-tests`). Absolute paths are
+   also accepted when they resolve inside a configured workspace root; paths outside those roots
+   and traversal escapes are rejected with `process_cwd_not_allowed`.
 3. **Persist the returned `job_id` in durable task/state memory immediately.** Conversational
    context is not storage.
 4. Poll `process_status` every 2–3 s at first, then 5–10 s. Do not busy-loop.

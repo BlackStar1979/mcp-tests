@@ -60,12 +60,16 @@ async function tryHandleOptionalToolCall({
   }
 
   const result = toolResult(outputMode, output, resolveToolResultFreshness(name));
+  const controlledError = output?.success === false && output?.error && typeof output.error === "object";
 
   auditLog("tool_call_end", {
     request_id: context.requestId,
     tool: name,
     duration_ms: Date.now() - startedAt,
-    is_error: false,
+    is_error: Boolean(controlledError),
+    error_code: controlledError && typeof output.error.code === "string"
+      ? output.error.code.slice(0, 100)
+      : null,
     ...getToolResultStats(getOptionalTool, name, output),
   });
 

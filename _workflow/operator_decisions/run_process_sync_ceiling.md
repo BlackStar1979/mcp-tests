@@ -15,7 +15,7 @@ ExceptionGroup: unhandled errors in a TaskGroup (1 sub-exception)
 ```
 
 It concluded "defect in the TaskGroup layer of TESTS_MCP", routed around the workbench, and
-fell back to another connector with a hard 120 s cap — which then also timed out. The server
+fell back to another connector path — which then also timed out. The server
 was healthy the entire time.
 
 ## Measured, not inferred
@@ -35,17 +35,21 @@ the decisive control: it isolates the failure to the synchronous request path, n
 
 ## What actually cuts the connection
 
-**The Cloudflare tunnel's 120 s no-transfer timeout** — identified by the operator, and it
-matches every measurement above to the second.
+**Cloudflare's documented 125 s Proxy Read Timeout** — identified by the operator as the
+relevant boundary and confirmed against current Cloudflare documentation. It is consistent with
+the measured 122-second success and 130-second failure.
 
-`run_process` BUFFERS output and returns it only when the process exits, so **nothing crosses
-the tunnel while the job runs**. A process printing to stdout every 10 s still looks completely
-idle from the tunnel's side: the 200 s job above ticked continuously and died exactly like a
-pure `sleep`. The variable is not elapsed time and not output volume — it is *time with no
-bytes on the wire*.
+Authoritative reference: [Cloudflare connection limits](https://developers.cloudflare.com/fundamentals/reference/connection-limits/)
+lists the proxied origin `Proxy Read Timeout` as 125 seconds.
+
+`run_process` BUFFERS output and returns it only when the process exits, so **no response bytes
+reach Cloudflare while the job runs**. A process printing to stdout every 10 s still looks
+completely idle from the proxy's side: the 200 s job above ticked continuously and died exactly
+like a pure `sleep`. The variable is not child-process output volume; it is the absence of
+response bytes on the proxied request.
 
 This is also why the asynchronous path is immune. `process_start`, `process_status` and
-`process_output` are all short calls, so no single request is ever idle for 120 s. The 240 s
+`process_output` are all short calls, so no single request approaches 125 s. The 240 s
 job survived because it never waited inside one request.
 
 Different clients report the cut differently — `ExceptionGroup: unhandled errors in a
@@ -73,10 +77,9 @@ transport cannot hold is worse than a lower one, because the failure it produces
   `process_start` — the consumer had those six tools available the whole time and never called
   one, so stating a limit without naming the alternative would not have been enough.
 
-`90000` must stay **strictly below** the tunnel's 120 s cutoff, not equal to it. **`120000` is
-the one value that must never be chosen**: it places the ceiling exactly where the tunnel cuts,
-so every job that actually uses its budget dies. If the tunnel's no-transfer timeout changes,
-that is the number this must be re-derived from.
+`90000` stays 35 seconds below Cloudflare's 125 s Proxy Read Timeout. If that external limit
+changes, re-derive this ceiling from the verified transport boundary; do not raise it as a local
+tuning preference.
 
 ## Live verification, after `node scripts/request-restart.js --code=42 --reason=manual`
 
@@ -101,6 +104,15 @@ No tool added or removed. `connector_refresh_required_now` stays `false`: what t
 governs — enumeration and tool names — did not move. A client holding a cached `tools/list`
 still sees the old *description* until it re-maps, so consumers should reconnect to get the
 routing hint; the *protection* (rejection above 90 s) is server-side and already live.
+
+### 2026-08-13 contract correction
+
+The follow-up review corrected the external boundary from an inferred `120 s no-transfer`
+limit to Cloudflare's documented `125 s Proxy Read Timeout`, while preserving the conservative
+90-second server ceiling. It also documented the process runner's existing acceptance of
+absolute `cwd` values contained by configured workspace roots. This intentionally changed the
+current input/descriptor/combined fingerprints to `1f5b5da0c19cc673`, `6956be69f3cd3c7b`, and
+`f4512a756f780113`; tool names, output schemas, and tool count remain unchanged.
 
 ## Guard
 

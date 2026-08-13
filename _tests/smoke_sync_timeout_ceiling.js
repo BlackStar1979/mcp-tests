@@ -30,13 +30,13 @@ const syncMax = SYNC_RUN_PROCESS_INPUT_SCHEMA.properties.timeout_ms.maximum;
 
 assert.equal(syncMax, SYNC_TIMEOUT_CEILING_MS, "sync ceiling must come from the named constant");
 assert.ok(syncMax < asyncMax, `sync ceiling ${syncMax} must be below async ceiling ${asyncMax}`);
-// STRICTLY below, not equal. The cutter is the Cloudflare tunnel's 120 s no-transfer timeout,
-// and `run_process` buffers its output, so nothing crosses the tunnel while a job runs — a job
-// printing every 10 s is as idle as a `sleep`. Setting the ceiling AT 120000 would place it
-// exactly where the tunnel cuts, so every job that actually used its budget would die.
-const TUNNEL_NO_TRANSFER_MS = 120000;
-assert.ok(syncMax < TUNNEL_NO_TRANSFER_MS,
-  `sync ceiling ${syncMax} must be strictly below the tunnel no-transfer cutoff ${TUNNEL_NO_TRANSFER_MS}`);
+// Keep a substantial margin below Cloudflare's documented 125 s Proxy Read Timeout.
+// `run_process` buffers its output, so the proxy receives no response bytes until completion.
+const CLOUDFLARE_PROXY_READ_TIMEOUT_MS = 125000;
+assert.ok(syncMax < CLOUDFLARE_PROXY_READ_TIMEOUT_MS,
+  `sync ceiling ${syncMax} must stay below the proxy read timeout ${CLOUDFLARE_PROXY_READ_TIMEOUT_MS}`);
+assert.ok(CLOUDFLARE_PROXY_READ_TIMEOUT_MS - syncMax >= 30000,
+  "sync ceiling must retain at least 30 seconds of proxy margin");
 
 // The tools must not share the schema object again.
 assert.equal(
@@ -71,6 +71,7 @@ for (const key of Object.keys(RUN_PROCESS_INPUT_SCHEMA.properties)) {
 const description = String(runProcessTool.descriptor.description || "");
 assert.ok(/process_start/.test(description), "run_process description must name process_start");
 assert.ok(/90 seconds|90s/i.test(description), "run_process description must state the real ceiling");
+assert.ok(/125-second proxy read timeout/i.test(description), "run_process description must name the real transport limit");
 
 console.log("smoke_sync_timeout_ceiling: ok");
 console.log(`  sync  run_process   timeout_ms max = ${syncMax} ms`);

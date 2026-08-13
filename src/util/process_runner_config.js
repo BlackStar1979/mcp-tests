@@ -499,7 +499,7 @@ function prepareProcessInvocation(options = {}, config = PROCESS_RUNNER_CONFIG, 
   const logicalCommand = normalizeCommand(options.command, config);
   const args = normalizeArgs(options.args);
   enforcePowerShellPolicy(logicalCommand, args, dependencies.parentEnv || process.env);
-  const cwdInfo = safeWorkspacePath(options.cwd || ".");
+  const cwdInfo = safeWorkspacePath(options.cwd || ".", { allowAbsolute: true });
   const family = COMMAND_FAMILIES[logicalCommand];
   const resolved = resolveExecutable(logicalCommand, cwdInfo, dependencies);
   return {

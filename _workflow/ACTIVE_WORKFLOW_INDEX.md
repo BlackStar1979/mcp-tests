@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-09
+Date: 2026-08-13
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository, live OAuth21 `3008`, and the refreshed Codex connector map are aligned at `91` (`13 public + 78 authorized-visible`) at `server_start_id = 2026-08-09T18:09:11.902Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, corrected Windows `py`/PowerShell resolution, and PID-reuse-safe instance leases. Direct `process_list`, `process_status`, `process_output`, and `process_events` calls are accepted.
+Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are aligned at `91` (`13 public + 78 authorized-visible`) with fingerprint `f4512a756f780113` at `server_start_id = 2026-08-13T16:41:07.289Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, corrected Windows `py`/PowerShell resolution, PID-reuse-safe instance leases, and contained absolute-`cwd` support. Direct `process_start`, `process_list`, `process_status`, `process_output`, and `process_events` calls are accepted.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=279`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=280`.
 - Public section count: `7`.
-- Authenticated smoke count: `279`.
+- Authenticated smoke count: `280`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -85,7 +85,7 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-09T18:09:11.902Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-13T16:41:07.289Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
