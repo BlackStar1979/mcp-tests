@@ -29,6 +29,17 @@ const { DOCS } = require("./static_docs");
 const { defaultToolSurfaceStateFile, evaluateToolSurfaceState } = require("../tool_surface_state");
 const { resolveRuntimeOutputConfig } = require("./runtime_output_config");
 const { getDefaultProcessJobManager, shutdownDefaultProcessJobManager } = require("../util/process_job_manager");
+const { closeDefaultContentStageManager, getDefaultContentStageManager } = require("../util/content_stage_manager");
+const { closeDefaultFileComposeManager, getDefaultFileComposeManager } = require("../util/file_compose");
+
+function resolveStructuredFileStoragePaths({ env = process.env, port }) {
+  return {
+    contentStageStorageFile: env.MCP_CONTENT_STAGE_STORAGE_FILE
+      || path.join(os.homedir(), ".romion", `tests_content_stages_${port}.sqlite`),
+    fileComposeStorageFile: env.MCP_FILE_COMPOSE_STORAGE_FILE
+      || path.join(os.homedir(), ".romion", `tests_file_compose_${port}.sqlite`),
+  };
+}
 
 function runServerBootstrapRuntime({ argv = process.argv, env = process.env, rootDir = path.resolve(__dirname, "../..") } = {}) {
   const serverCliConfig = parseServerCliArgs(argv.slice(2));
@@ -140,6 +151,21 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   }
 
   if (runtimeSideEffectsEnabled) {
+    const { contentStageStorageFile, fileComposeStorageFile } = resolveStructuredFileStoragePaths({ env, port });
+    getDefaultContentStageManager({
+      audit: (payload) => {
+        const { event, ...details } = payload;
+        auditLog(event, details);
+      },
+      storageFile: contentStageStorageFile,
+    });
+    getDefaultFileComposeManager({
+      audit: (payload) => {
+        const { event, ...details } = payload;
+        auditLog(event, details);
+      },
+      storageFile: fileComposeStorageFile,
+    });
     const processJobStorageFile = env.MCP_PROCESS_JOB_STORAGE_FILE
       || path.join(os.homedir(), ".romion", `tests_process_jobs_${port}.sqlite`);
     getDefaultProcessJobManager({
@@ -159,7 +185,14 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     env,
     rootDir,
     rateLimiter,
-    beforeExit: () => shutdownDefaultProcessJobManager("server_restart"),
+    beforeExit: async () => {
+      try {
+        await shutdownDefaultProcessJobManager("server_restart");
+      } finally {
+        closeDefaultContentStageManager();
+        closeDefaultFileComposeManager();
+      }
+    },
   });
   if (runtimeSideEffectsEnabled) restartController.start();
 
@@ -247,5 +280,6 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
 }
 
 module.exports = {
+  resolveStructuredFileStoragePaths,
   runServerBootstrapRuntime,
 };

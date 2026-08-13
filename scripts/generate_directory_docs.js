@@ -76,6 +76,25 @@ const CONFIG = {
     },
     tail: "Keep skills in a flat namespace. Each skill must contain `SKILL.md`; load supporting references only when their `Load when:` condition matches the task.",
   },
+  ".agents/skills": {
+    title: "project-local skills directory map",
+    updated: "2026-08-13",
+    entries: {
+      "using-codebase-memory/": "Project-local routing and interpretation guidance for TEST MCP codebase-memory and knowledge-index tools.",
+      "using-structured-file-tools/": "Project-local decision workflow for bounded structured file inspection, mutation, split, merge, staging, and Markdown operations.",
+      "DIRECTORY.md": "Functional map of the project-local skills namespace.",
+    },
+    tail: "Keep this namespace flat and route by task intent. Skills define agent procedure; repository code and current runtime evidence remain authoritative.",
+  },
+  ".agents/skills/using-structured-file-tools": {
+    title: "using-structured-file-tools skill directory map",
+    updated: "2026-08-13",
+    entries: {
+      "SKILL.md": "Entrypoint decision workflow for exact-range file edits, durable staged content, physical split/merge, and heading-aware Markdown changes.",
+      "DIRECTORY.md": "Functional map of the `using-structured-file-tools` skill boundary.",
+    },
+    tail: "Keep this skill concise and selection-oriented. Exact schemas remain in the MCP descriptors and canonical server specs.",
+  },
   ".agents/skills/using-codebase-memory": {
     title: "using-codebase-memory skill directory map",
     updated: "2026-08-01",

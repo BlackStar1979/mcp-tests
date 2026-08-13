@@ -191,6 +191,8 @@ async function compileTransform(input = {}, context = {}) {
   }
   const compiled = [];
   const checks = [];
+  const markdownResolver = context.markdownResolver
+    || require("./markdown_structure").resolveMarkdownSection;
   for (let ordinal = 0; ordinal < input.operations.length; ordinal += 1) {
     const operation = input.operations[ordinal] || {};
     const kind = String(operation.kind || "");
@@ -199,7 +201,7 @@ async function compileTransform(input = {}, context = {}) {
       : await resolveSelector(resolved.absolutePath, operation.selector, {
           fileInfo: sourceInfo,
           maxFileBytes: maxBytes,
-          markdownResolver: context.markdownResolver,
+          markdownResolver,
         });
     const range = operationRange(kind, selected, sourceInfo.bytes);
     const content = kind === "delete" ? null : await resolveContentSource(operation.content, sourceInfo, context);

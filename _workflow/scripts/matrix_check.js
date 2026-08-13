@@ -89,7 +89,8 @@ function auditEvents(findings){
   const oauthEvents = [...text.matchAll(/auditOAuth\(\"(oauth21_[a-z0-9_]+)\"/g)].map(m=>m[1]);
   const oauthWrapperEvents = [...text.matchAll(/emitAudit\([^,]+,[^,]+,\s*\"(oauth21_[a-z0-9_]+)\"/g)].map(m=>m[1]);
   const processJobEvents = [...text.matchAll(/emit\(\"(process_job_[a-z0-9_]+)\"/g)].map(m=>m[1]);
-  const uniqEvents = uniq(events.concat(runtimeControllerEvents, oauthEvents, oauthWrapperEvents, processJobEvents));
+  const structuredFileEvents = [...text.matchAll(/emit\("((?:content_stages?|file_compose_operation)_[a-z0-9_]+)"/g)].map(m=>m[1]);
+  const uniqEvents = uniq(events.concat(runtimeControllerEvents, oauthEvents, oauthWrapperEvents, processJobEvents, structuredFileEvents));
   if (!exists("SERVER_EVENT_CATALOG_SPEC.json")) { push(findings,"warn","missing_audit_events_spec",{event_count:uniqEvents.length, events:uniqEvents}); return; }
   const spec = json("SERVER_EVENT_CATALOG_SPEC.json");
   const listed = (spec.events||[]).map(e=>typeof e==="string"?e:e.name).sort();

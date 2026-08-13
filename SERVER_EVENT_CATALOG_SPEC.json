@@ -168,6 +168,46 @@
       "status": "active_code_event"
     },
     {
+      "name": "content_stage_created",
+      "status": "active_code_event"
+    },
+    {
+      "name": "content_stage_chunk_appended",
+      "status": "active_code_event"
+    },
+    {
+      "name": "content_stage_sealed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "content_stage_released",
+      "status": "active_code_event"
+    },
+    {
+      "name": "content_stages_pruned",
+      "status": "active_code_event"
+    },
+    {
+      "name": "file_compose_operation_started",
+      "status": "active_code_event"
+    },
+    {
+      "name": "file_compose_operation_prepared",
+      "status": "active_code_event"
+    },
+    {
+      "name": "file_compose_operation_committed",
+      "status": "active_code_event"
+    },
+    {
+      "name": "file_compose_operation_rolled_back",
+      "status": "active_code_event"
+    },
+    {
+      "name": "file_compose_operation_recovery_failed",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_state_missing",
       "status": "active_code_event"
     },

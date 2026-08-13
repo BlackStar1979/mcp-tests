@@ -7,6 +7,7 @@ const EXPECTED_TOOL_NAMES = [
 
 function auditToolDescriptors(tools, options = {}) {
   const errors = [];
+  const annotationMode = options.annotationMode || "read_only";
   const names = tools.map((tool) => tool.name);
   const sortedNames = [...names].sort();
   const expectedNames = Array.isArray(options.expectedToolNames) ? options.expectedToolNames : EXPECTED_TOOL_NAMES;
@@ -45,13 +46,23 @@ function auditToolDescriptors(tools, options = {}) {
     if (!tool.annotations) errors.push(`${tool.name} missing annotations`);
 
     const annotations = tool.annotations || {};
-    if (annotations.readOnlyHint !== true) errors.push(`${tool.name} readOnlyHint must be true`);
-    if (annotations.destructiveHint !== false) errors.push(`${tool.name} destructiveHint must be false`);
-    if (annotations.idempotentHint !== true) errors.push(`${tool.name} idempotentHint must be true`);
+    for (const key of ["readOnlyHint", "destructiveHint", "idempotentHint", "openWorldHint"]) {
+      if (typeof annotations[key] !== "boolean") {
+        errors.push(`${tool.name} ${key} must be boolean`);
+      }
+    }
 
-    const expectedOpenWorld = tool.name.startsWith("net_");
-    if (annotations.openWorldHint !== expectedOpenWorld) {
-      errors.push(`${tool.name} openWorldHint must be ${expectedOpenWorld}`);
+    if (annotationMode === "read_only") {
+      if (annotations.readOnlyHint !== true) errors.push(`${tool.name} readOnlyHint must be true`);
+      if (annotations.destructiveHint !== false) errors.push(`${tool.name} destructiveHint must be false`);
+      if (annotations.idempotentHint !== true) errors.push(`${tool.name} idempotentHint must be true`);
+
+      const expectedOpenWorld = tool.name.startsWith("net_");
+      if (annotations.openWorldHint !== expectedOpenWorld) {
+        errors.push(`${tool.name} openWorldHint must be ${expectedOpenWorld}`);
+      }
+    } else if (annotationMode !== "structural") {
+      errors.push(`unsupported annotation mode: ${annotationMode}`);
     }
 
     if (tool.inputSchema?.type !== "object") {

@@ -22,7 +22,7 @@ async function inspect(args = {}, context = {}) {
     const range = await resolveSelector(resolved.absolutePath, args.selector, {
       fileInfo: info,
       maxFileBytes: context.maxFileBytes,
-      markdownResolver: context.markdownResolver,
+      markdownResolver: context.markdownResolver || require("../src/util/markdown_structure").resolveMarkdownSection,
     });
     selector = {
       kind: String(args.selector.kind || ""),

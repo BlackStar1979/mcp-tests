@@ -95,6 +95,8 @@ async function compileSplit(input = {}, context = {}) {
   }
   const destinations = new Set();
   const outputs = [];
+  const markdownResolver = context.markdownResolver
+    || require("./markdown_structure").resolveMarkdownSection;
   for (let ordinal = 0; ordinal < input.parts.length; ordinal += 1) {
     const part = input.parts[ordinal] || {};
     const destination = resolveWritableWorkspacePath(part.destination, { allowProtected: input.allow_protected === true });
@@ -109,7 +111,7 @@ async function compileSplit(input = {}, context = {}) {
     const selected = await resolveSelector(source.absolutePath, part.selector, {
       fileInfo: sourceInfo,
       maxFileBytes: maxBytes,
-      markdownResolver: context.markdownResolver,
+      markdownResolver,
     });
     const prior = await inspectDestination(destination, Number.MAX_SAFE_INTEGER);
     outputs.push({
@@ -245,6 +247,7 @@ function createFileComposeManager(options = {}) {
   if (normalizedStorage !== ":memory:") fs.mkdirSync(path.dirname(normalizedStorage), { recursive: true });
   const db = options.database || new DatabaseSync(normalizedStorage, { timeout: 5000 });
   const dependencies = options.dependencies || {};
+  const audit = typeof options.audit === "function" ? options.audit : () => {};
   let executionTail = Promise.resolve();
   db.exec("PRAGMA foreign_keys=ON");
   db.exec("PRAGMA busy_timeout=5000");
@@ -278,6 +281,14 @@ function createFileComposeManager(options = {}) {
     CREATE INDEX IF NOT EXISTS idx_file_compose_operations_status
       ON file_compose_operations(status, updated_at_ms);
   `);
+
+  function emit(event, metadata = {}) {
+    try {
+      audit({ event, ...metadata });
+    } catch {
+      // Audit transport failure must not change the durable composition state.
+    }
+  }
 
   function transaction(callback) {
     db.exec("BEGIN IMMEDIATE");
@@ -442,7 +453,7 @@ function createFileComposeManager(options = {}) {
     }
   }
 
-  async function rollbackOperation(operationId) {
+  async function rollbackOperation(operationId, { recovery = false } = {}) {
     const operation = getOperation(operationId);
     if (!operation) throw composeError("Unknown file composition operation.", "file_compose_operation_not_found");
     const failures = [];
@@ -464,16 +475,29 @@ function createFileComposeManager(options = {}) {
     }
     if (failures.length) {
       setOperationStatus(operationId, "recovery_failed", JSON.stringify(failures));
+      emit("file_compose_operation_recovery_failed", {
+        operation_id: operationId,
+        kind: operation.kind,
+        output_count: operation.targets.length,
+        failure_count: failures.length,
+        recovery,
+      });
       throw composeError("File composition rollback could not restore every destination.", "file_compose_recovery_failed");
     }
     setOperationStatus(operationId, "rolled_back");
+    emit("file_compose_operation_rolled_back", {
+      operation_id: operationId,
+      kind: operation.kind,
+      output_count: operation.targets.length,
+      recovery,
+    });
     return { operation_id: operationId, status: "rolled_back" };
   }
 
   async function recoverPending() {
     const rows = db.prepare(`SELECT operation_id FROM file_compose_operations WHERE status NOT IN ('committed', 'rolled_back', 'recovery_failed') ORDER BY created_at_ms`).all();
     const recovered = [];
-    for (const row of rows) recovered.push(await rollbackOperation(row.operation_id));
+    for (const row of rows) recovered.push(await rollbackOperation(row.operation_id, { recovery: true }));
     return recovered;
   }
 
@@ -510,9 +534,20 @@ function createFileComposeManager(options = {}) {
         insert.run(operationId, output.ordinal, output.destination.displayPath, output.prior.exists ? 1 : 0, output.prior.sha256, output.resultSha256);
       }
     });
+    emit("file_compose_operation_started", {
+      operation_id: operationId,
+      kind: compiled.kind,
+      source_count: compiled.sourceManifest.length,
+      output_count: compiled.outputs.length,
+    });
     try {
       for (const output of compiled.outputs) await prepareTarget(operationId, output);
       setOperationStatus(operationId, "prepared");
+      emit("file_compose_operation_prepared", {
+        operation_id: operationId,
+        kind: compiled.kind,
+        output_count: compiled.outputs.length,
+      });
       for (const source of compiled.sourceManifest) {
         const current = await inspectTextFile(source.absolutePath, { maxFileBytes: compiled.maxBytes || DEFAULT_MAX_FILE_BYTES });
         if (current.fileSha256 !== source.sha256) throw composeError("Composition source changed during preparation.", "file_compose_source_changed");
@@ -530,12 +565,17 @@ function createFileComposeManager(options = {}) {
         if (typeof dependencies.afterTargetCommit === "function") await dependencies.afterTargetCommit({ operationId, ordinal: output.ordinal });
       }
       setOperationStatus(operationId, "committed");
+      emit("file_compose_operation_committed", {
+        operation_id: operationId,
+        kind: compiled.kind,
+        output_count: compiled.outputs.length,
+      });
       return { operationId, operation_id: operationId, status: "committed" };
     } catch (error) {
       error.operationId = operationId;
       if (error?.code === "file_compose_simulated_crash") throw error;
       try {
-        await rollbackOperation(operationId);
+        await rollbackOperation(operationId, { recovery: false });
       } catch (rollbackError) {
         error.rollbackError = rollbackError;
       }
@@ -560,12 +600,23 @@ function createFileComposeManager(options = {}) {
 
 function resolveManager(context = {}) {
   if (context.composeManager) return context.composeManager;
+  return getDefaultFileComposeManager();
+}
+
+function getDefaultFileComposeManager(options = {}) {
   if (!defaultManager) {
-    const storageFile = process.env.MCP_FILE_COMPOSE_STORAGE_FILE
+    const storageFile = options.storageFile
+      || process.env.MCP_FILE_COMPOSE_STORAGE_FILE
       || path.resolve(__dirname, "..", "..", "_control", "file-compose.sqlite");
-    defaultManager = createFileComposeManager({ storageFile });
+    defaultManager = createFileComposeManager({ ...options, storageFile });
   }
   return defaultManager;
+}
+
+function closeDefaultFileComposeManager() {
+  if (!defaultManager) return;
+  defaultManager.close();
+  defaultManager = null;
 }
 
 async function prepareSplit(input = {}, context = {}) {
@@ -598,6 +649,8 @@ module.exports = {
   commitMerge,
   commitSplit,
   createFileComposeManager,
+  closeDefaultFileComposeManager,
+  getDefaultFileComposeManager,
   prepareMerge,
   prepareSplit,
 };

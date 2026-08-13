@@ -88,7 +88,7 @@ function assertModel(label, model, expected) {
   const authorizedRegistry = buildRegistry({ profileName: "tests", authMode: "oauth21" });
   const authorizedModel = buildRegistryPolicyReadModel({ registry: authorizedRegistry, toolsSpec });
   assertModel("authorized", authorizedModel, {
-    tool_count: 91,
+    tool_count: 98,
     required: ["memory_save", "get_info", "read_file", "project_truth_audit", "deploy_decision_guard", "index_status", "code_orchestrate", "code_apply_patch", "code_rollback_patch", "tool_dispatch"],
   });
   assert.equal(authorizedModel.get("memory_save").catalog_summary.operation_class, "write");

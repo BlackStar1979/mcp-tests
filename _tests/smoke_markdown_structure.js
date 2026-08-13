@@ -97,7 +97,7 @@ const ORIGINAL = [
       },
       context_before_chars: 8,
       context_after_chars: 8,
-    }, { markdownResolver: resolveMarkdownSection });
+    });
     assert.equal(genericInspection.success, true);
     assert.equal(genericInspection.selector.range_sha256, inspected.headings[3].section_sha256);
 

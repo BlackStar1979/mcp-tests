@@ -25,7 +25,7 @@
     },
     "authorized_mcp_tools": {
       "description": "MCP-callable tools exposed only through authenticated/authorized profile surfaces and intended for model/agent use",
-      "tool_count": 78,
+      "tool_count": 85,
       "tools": [
         "code_sample_js",
         "cbm_status",
@@ -43,6 +43,13 @@
         "cbm_detect_changes",
         "cbm_manage_adr",
         "cbm_ingest_traces",
+        "file_inspect",
+        "content_stage",
+        "file_transform",
+        "file_split",
+        "file_merge",
+        "markdown_inspect",
+        "markdown_transform",
         "write_file",
         "append_file",
         "copy_path",
@@ -154,7 +161,7 @@
       ]
     }
   },
-  "total_mcp_callable_tool_count": 91,
+  "total_mcp_callable_tool_count": 98,
   "server_implementation_modules": {
     "mcp_callable": false,
     "included_in_this_spec": false,
@@ -419,6 +426,100 @@
       "auth_required": true,
       "public_safe": false,
       "profile_surface": "tests.authenticated"
+    },
+    "file_inspect": {
+      "name": "file_inspect",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "content_stage": {
+      "name": "content_stage",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json",
+        "SERVER_DATABASE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "file_transform": {
+      "name": "file_transform",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "file_split": {
+      "name": "file_split",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json",
+        "SERVER_DATABASE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "file_merge": {
+      "name": "file_merge",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json",
+        "SERVER_DATABASE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "markdown_inspect": {
+      "name": "markdown_inspect",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_readonly",
+      "operation_class": "read",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
+    },
+    "markdown_transform": {
+      "name": "markdown_transform",
+      "surface_class": "authorized_mcp_tools",
+      "tool_category": "filesystem",
+      "resource_class": "filesystem_workspace_structured_mutation",
+      "operation_class": "write",
+      "resource_policy_refs": [
+        "SERVER_RESOURCE_POLICY_SPEC.json"
+      ],
+      "audit_required": true,
+      "auth_required": true,
+      "public_safe": false
     },
     "write_file": {
       "name": "write_file",

@@ -13,14 +13,14 @@ const { buildMechanismParityReport } = require("../mechanism_parity_matrix");
 
 const EXPECTED = Object.freeze({
   server_version: "0.40.0",
-  authenticated_tool_count: 91,
+  authenticated_tool_count: 98,
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
-  tool_names_hash: "79c3b49ba27e604a",
-  input_schema_fingerprint: "1f5b5da0c19cc673",
-  output_schema_fingerprint: "340b8e314db66eee",
-  descriptor_fingerprint: "10bfaa7dd8c8dfd1",
-  combined_fingerprint: "27371fd38809e356",
+  tool_names_hash: "b6526b6d88ccbee3",
+  input_schema_fingerprint: "49377884818b3896",
+  output_schema_fingerprint: "64961bbb24c85de3",
+  descriptor_fingerprint: "5fb3b6032e1f5919",
+  combined_fingerprint: "d9a5ad467f77e1b7",
 });
 
 function readText(repoRoot, relPath) {

@@ -20,7 +20,13 @@ Node.js >= 20
 PowerShell available for control-plane smoke tests
 ```
 
-The project currently uses Node built-ins only; no `npm install` step is required for the committed runtime and smoke suite.
+Install the pinned runtime and test dependencies before first use:
+
+```powershell
+npm install
+```
+
+The structured Markdown tools use the unified/remark parser stack. Dependency versions are pinned in `package.json`; do not replace the parser with regular-expression-only heading detection.
 
 ## Common Commands
 
@@ -70,6 +76,19 @@ The operator-facing documentation contract lives in:
 Authorized workspace-readonly filesystem tools resolve bare paths under `C:\Work` on Windows by default. Extra explicit roots can be added with `MCP_TEST_EXTRA_ROOTS` using `alias=path;alias2=path2`, then addressed as `@alias/...`.
 
 The authorized/tests surface also exposes bounded read-only truth tools for repo/workflow drift inspection and change-flow planning. They do not mutate runtime, connector config, auth state, or files.
+
+## Structured File Operations
+
+The authorized surface includes tools for exact large-file work without transferring the whole file through model context:
+
+- `file_inspect` resolves byte, line, anchor, or Markdown-section selectors and returns bounded context plus hashes.
+- `content_stage` stores large generated UTF-8 content as owner-bound chunks for later mutation calls.
+- `file_transform` inserts, replaces, deletes, or appends exact ranges in one physical file.
+- `file_split` writes one source into multiple files without deleting the source implicitly.
+- `file_merge` combines ordered source files into one destination without deleting the sources implicitly.
+- `markdown_inspect` and `markdown_transform` use a Markdown AST for heading-aware inspection and mutation.
+
+Mutations use `preview -> receipt -> commit`. Re-inspect and re-preview whenever a receipt is stale or a hash no longer matches. Agents should load `.agents/skills/using-structured-file-tools/SKILL.md` for routing rules and recovery behavior.
 
 ## GitHub Import Policy
 

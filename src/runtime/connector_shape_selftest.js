@@ -40,7 +40,10 @@ async function assertConnectorShapeSelfTest({
     .sort();
 
   const expectedDescriptorNames = runtimeProfile === "public" ? descriptorAudit.PUBLIC_TOOL_NAMES : descriptorAudit.EXPECTED_TOOL_NAMES;
-  assertToolDescriptors(tools, { expectedToolNames: expectedDescriptorNames });
+  assertToolDescriptors(tools, {
+    expectedToolNames: expectedDescriptorNames,
+    annotationMode: runtimeProfile === "public" ? "read_only" : "structural",
+  });
   assertToolSchemas(tools);
   assertProfilePolicy(tools, { profile: runtimeProfile, authMode: authPolicy.mode });
 
@@ -67,7 +70,9 @@ async function assertConnectorShapeSelfTest({
       throw new Error(`${tool.name} missing annotations`);
     }
 
-    assertReadOnlyAnnotations(tool);
+    if (runtimeProfile === "public") {
+      assertReadOnlyAnnotations(tool);
+    }
 
     if (outputMode === "structured" && !tool.outputSchema) {
       throw new Error(`${tool.name} missing outputSchema in structured mode`);

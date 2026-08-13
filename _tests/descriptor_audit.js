@@ -19,7 +19,10 @@ async function rpc(method, params = {}) {
   const listed = await rpc("tools/list", {});
   const tools = listed.result?.tools || [];
   const expectedToolNames = EXPECTED_PROFILE === "tests-full" ? EXPECTED_TOOL_NAMES : PUBLIC_TOOL_NAMES;
-  const auditResult = auditToolDescriptors(tools, { expectedToolNames });
+  const auditResult = auditToolDescriptors(tools, {
+    expectedToolNames,
+    annotationMode: EXPECTED_PROFILE === "tests-full" ? "structural" : "read_only",
+  });
 
   assert.equal(auditResult.ok, true, auditResult.errors.join("; "));
   assert.equal(auditResult.count, expectedToolNames.length);

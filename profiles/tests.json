@@ -63,6 +63,8 @@
         "codebase_memory_mutation",
         "codebase_memory_destructive",
         "filesystem_workspace_mutation",
+        "filesystem_workspace_structured_readonly",
+        "filesystem_workspace_structured_mutation",
         "runtime_status_readonly",
         "process_execution_bounded",
         "process_job_registry_readonly",
@@ -87,7 +89,9 @@
       ],
       "denied_network_scopes": [],
       "allowed_database_scopes": [
-        "process_job_registry"
+        "process_job_registry",
+        "content_stage_store",
+        "file_compose_journal"
       ],
       "denied_database_scopes": [],
       "allowed_plugin_scopes": [

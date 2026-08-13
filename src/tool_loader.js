@@ -122,6 +122,13 @@ function loadOptionalTools(options = {}) {
   }
 
   if (groupEnabled("authorized") && envFlagEnabled("MCP_TEST_ENABLE_WORKSPACE_MUTATION_TOOLS", true)) {
+    add("../tools/authorized/file_inspect", "fileInspectTool", "file_inspect");
+    add("../tools/authorized/content_stage", "contentStageTool", "content_stage");
+    add("../tools/authorized/file_transform", "fileTransformTool", "file_transform");
+    add("../tools/authorized/file_split", "fileSplitTool", "file_split");
+    add("../tools/authorized/file_merge", "fileMergeTool", "file_merge");
+    add("../tools/authorized/markdown_inspect", "markdownInspectTool", "markdown_inspect");
+    add("../tools/authorized/markdown_transform", "markdownTransformTool", "markdown_transform");
     add("../tools/authorized/write_file", "writeFileTool", "write_file");
     add("../tools/authorized/append_file", "appendFileTool", "append_file");
     add("../tools/authorized/copy_path", "copyPathTool", "copy_path");

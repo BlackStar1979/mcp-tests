@@ -43,6 +43,21 @@
       ],
       "public_surface_allowed": false
     },
+    "filesystem_workspace_structured_readonly": {
+      "description": "Authenticated bounded UTF-8 and Markdown structure inspection using exact ranges and hashes without returning complete files.",
+      "allowed_operations": [
+        "read",
+        "analyze"
+      ],
+      "public_surface_allowed": false
+    },
+    "filesystem_workspace_structured_mutation": {
+      "description": "Authenticated hash-bound, preview/receipt-gated, atomic or journaled UTF-8 file transformation, staging, physical split, merge, and Markdown section mutation.",
+      "allowed_operations": [
+        "write"
+      ],
+      "public_surface_allowed": false
+    },
     "network_allowlisted": {
       "description": "Read-only outbound HTTP(S) access restricted by allowlist, redirect limits, timeout, byte cap and SSRF guard.",
       "allowed_operations": [

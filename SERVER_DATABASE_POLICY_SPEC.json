@@ -23,7 +23,9 @@
     "memory_embedding_cache_plaintext": false,
     "current_plugin_visibility_state_mode": "preview_pipeline_existing_runtime",
     "current_audit_backend": "_logs/.mcp-tests-audit.jsonl",
-    "current_process_job_backend": "sqlite_wal_owner_bound_job_and_append_only_event_store"
+    "current_process_job_backend": "sqlite_wal_owner_bound_job_and_append_only_event_store",
+    "current_content_stage_backend": "sqlite_wal_owner_bound_chunk_store",
+    "current_file_compose_backend": "sqlite_wal_multi_file_transaction_journal"
   },
   "database_scopes": {
     "state_store": {
@@ -106,6 +108,30 @@
       "public_surface_allowed": false,
       "raw_arguments_or_environment_persisted": false,
       "automatic_command_replay_allowed": false
+    },
+    "content_stage_store": {
+      "description": "Owner-scoped bounded UTF-8 content chunks used to transport large generated mutation content across MCP calls.",
+      "operations": [
+        "read",
+        "write",
+        "append",
+        "prune"
+      ],
+      "public_surface_allowed": false,
+      "content_returned_by_status": false,
+      "oauth_owner_isolation_required": true
+    },
+    "file_compose_journal": {
+      "description": "Durable multi-file split/merge operation and per-target transition journal used for deterministic rollback and crash recovery.",
+      "operations": [
+        "read",
+        "write",
+        "append",
+        "prune"
+      ],
+      "public_surface_allowed": false,
+      "source_content_persisted": false,
+      "prepared_files_stored_outside_database": true
     }
   },
   "operation_classes": {

@@ -44,6 +44,7 @@ async function read(name) {
   await fs.rm(FIXTURE, { recursive: true, force: true });
   await fs.rm(BACKUP_FIXTURE, { recursive: true, force: true });
   await fs.mkdir(FIXTURE, { recursive: true });
+  const auditEvents = [];
   const spec = `# Specification\n${"S".repeat(42 * 1024)}\n`;
   const history = `# Historical log\n${"H".repeat(52 * 1024)}\n`;
   const current = `# Current log\n${"C".repeat(31 * 1024)}\n`;
@@ -51,7 +52,10 @@ async function read(name) {
   assert.ok(Buffer.byteLength(source) > 122 * 1024);
   await fs.writeFile(path.join(FIXTURE, "large.md"), source, "utf8");
 
-  const manager = createFileComposeManager({ storageFile: path.join(FIXTURE, "compose.sqlite") });
+  const manager = createFileComposeManager({
+    storageFile: path.join(FIXTURE, "compose.sqlite"),
+    audit: (event) => auditEvents.push(event),
+  });
   try {
     const splitInput = {
       source: workspacePath("large.md"),
@@ -127,6 +131,10 @@ async function read(name) {
       (error) => error?.code === "file_compose_source_changed"
     );
     await fs.writeFile(path.join(FIXTURE, "log-3.md"), "three", "utf8");
+    assert.ok(auditEvents.some((event) => event.event === "file_compose_operation_started" && event.kind === "split"));
+    assert.ok(auditEvents.some((event) => event.event === "file_compose_operation_prepared"));
+    assert.ok(auditEvents.some((event) => event.event === "file_compose_operation_committed" && event.kind === "merge"));
+    assert.equal(auditEvents.some((event) => "path" in event || "content" in event), false);
   } finally {
     manager.close();
   }
@@ -135,6 +143,7 @@ async function read(name) {
   await fs.writeFile(path.join(FIXTURE, "rollback-two.md"), "old two", "utf8");
   const rollbackManager = createFileComposeManager({
     storageFile: path.join(FIXTURE, "rollback.sqlite"),
+    audit: (event) => auditEvents.push(event),
     dependencies: {
       beforeTargetCommit: async ({ ordinal }) => {
         if (ordinal === 1) throw Object.assign(new Error("injected second commit failure"), { code: "injected_commit_failure" });
@@ -157,6 +166,7 @@ async function read(name) {
     );
     assert.equal(await read("rollback-one.md"), "old one");
     assert.equal(await read("rollback-two.md"), "old two");
+    assert.ok(auditEvents.some((event) => event.event === "file_compose_operation_rolled_back" && event.recovery === false));
   } finally {
     rollbackManager.close();
   }
@@ -198,13 +208,17 @@ async function read(name) {
     crashingManager.close();
   }
 
-  const recoveredManager = createFileComposeManager({ storageFile: recoveryDb });
+  const recoveredManager = createFileComposeManager({
+    storageFile: recoveryDb,
+    audit: (event) => auditEvents.push(event),
+  });
   try {
     const recovered = await recoveredManager.recover();
     assert.ok(recovered.some((item) => item.operation_id === crashedOperationId && item.status === "rolled_back"));
     assert.equal(await read("recover-one.md"), "recover old one");
     assert.equal(await read("recover-two.md"), "recover old two");
     assert.equal(recoveredManager.getOperation(crashedOperationId).status, "rolled_back");
+    assert.ok(auditEvents.some((event) => event.event === "file_compose_operation_rolled_back" && event.recovery === true));
     const leftovers = (await fs.readdir(FIXTURE)).filter((name) => name.includes(".mcp-compose-"));
     assert.deepEqual(leftovers, []);
   } finally {

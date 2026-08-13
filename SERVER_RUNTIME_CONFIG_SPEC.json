@@ -19,6 +19,9 @@
     "src/runtime/server_discover_message_handler.js",
     "src/integrations/codebase_memory/cbm_cli_bridge.js",
     "src/util/process_runner_config.js",
+    "src/util/content_stage_manager.js",
+    "src/util/file_compose.js",
+    "src/runtime/server_bootstrap_runtime.js",
     "src/runtime/restart_controller.js"
   ],
   "cli_flags": [
@@ -137,6 +140,10 @@
     "MCP_PROCESS_MAX_TIMEOUT_MS",
     "MCP_PROCESS_RETENTION_MS",
     "MCP_PROCESS_TIMEOUT_MS",
+    "MCP_CONTENT_STAGE_STORAGE_FILE",
+    "MCP_FILE_COMPOSE_STORAGE_FILE",
+    "MCP_MARKDOWN_MAX_BYTES",
+    "MCP_STRUCTURED_FILE_MAX_BYTES",
     "MCP_TEST_SCIENCE_TIMEOUT_MS",
     "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "MCP_TEST_TOKEN_FILE",
@@ -277,6 +284,20 @@
       "unclean_restart_marks_active_jobs_interrupted": true,
       "automatic_command_replay_after_restart": false,
       "arguments_and_environment_persisted": false
+    },
+    "structured_file_mutation": {
+      "max_file_bytes_env": "MCP_STRUCTURED_FILE_MAX_BYTES",
+      "default_max_file_bytes": 268435456,
+      "markdown_max_bytes_env": "MCP_MARKDOWN_MAX_BYTES",
+      "default_markdown_max_bytes": 16777216,
+      "content_stage_storage_env": "MCP_CONTENT_STAGE_STORAGE_FILE",
+      "content_stage_storage_default": "~/.romion/tests_content_stages_<port>.sqlite",
+      "content_stage_chunk_chars": 8192,
+      "content_stage_default_max_bytes": 8388608,
+      "compose_storage_env": "MCP_FILE_COMPOSE_STORAGE_FILE",
+      "compose_storage_default": "~/.romion/tests_file_compose_<port>.sqlite",
+      "compose_recovery": "rollback_nonterminal_operations_before_next_commit",
+      "source_files_deleted_implicitly": false
     },
     "default_trigger_file": "_control/restart-request.json",
     "surface_change": false,
