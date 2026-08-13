@@ -12,7 +12,7 @@ const { movePathTool } = require("../tools/move_path");
 const { restorePathTool } = require("../tools/restore_path");
 const { writeFileTool } = require("../tools/write_file");
 const { safeWorkspacePath } = require("../src/util/workspace_roots");
-const { deletePath, restorePath } = require("../src/util/workspace_mutation");
+const { deletePath, restorePath, writeFile } = require("../src/util/workspace_mutation");
 
 const WORK_ROOT = safeWorkspacePath(".").absolutePath;
 const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tools");
@@ -28,9 +28,12 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
   try {
     const writeResult = await writeFileTool.execute({ path: file, content: "alpha\nbeta\n" });
     assert.equal(writeResult.status, "written");
+    assert.equal(writeResult.result_sha256.length, 64);
 
     const appendResult = await appendFileTool.execute({ path: file, content: "gamma\n" });
     assert.equal(appendResult.status, "appended");
+    assert.equal(appendResult.source_sha256.length, 64);
+    assert.equal(appendResult.result_sha256.length, 64);
 
     const dryRun = await editFilePatchTool.execute({
       path: file,
@@ -41,6 +44,8 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
     });
     assert.equal(dryRun.status, "dry_run");
     assert.equal(dryRun.anchor_matches, 1);
+    assert.equal(dryRun.source_sha256.length, 64);
+    assert.equal(dryRun.receipt.length, 64);
 
     const patchResult = await editFilePatchTool.execute({
       path: file,
@@ -52,6 +57,28 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
     });
     assert.equal(patchResult.status, "patched");
     assert.ok(patchResult.backup, "patched write should create backup");
+    assert.equal(patchResult.result_sha256.length, 64);
+
+    const atomicFailure = "_control/smoke_workspace_mutation_tools/atomic-failure.txt";
+    await writeFileTool.execute({ path: atomicFailure, content: "before\n" });
+    await assert.rejects(
+      () => writeFile(atomicFailure, "after\n", {}, {
+        fileTransactionDependencies: {
+          rename: async () => {
+            throw new Error("injected workspace rename failure");
+          },
+        },
+      }),
+      /injected workspace rename failure/
+    );
+    assert.equal(await fs.readFile(path.join(WORK_ROOT, atomicFailure), "utf8"), "before\n");
+    assert.deepEqual((await fs.readdir(path.dirname(path.join(WORK_ROOT, atomicFailure)))).filter((name) => name.includes(".mcp-tmp-")), []);
+
+    const largeExisting = "_control/smoke_workspace_mutation_tools/large-existing.txt";
+    await fs.writeFile(path.join(WORK_ROOT, largeExisting), "x".repeat(6 * 1024 * 1024), "utf8");
+    const largeReplacement = await writeFileTool.execute({ path: largeExisting, content: "small replacement\n" });
+    assert.equal(largeReplacement.status, "written");
+    assert.equal(await fs.readFile(path.join(WORK_ROOT, largeExisting), "utf8"), "small replacement\n");
 
     const copyResult = await copyPathTool.execute({ from: file, to: copy });
     assert.equal(copyResult.status, "copied");

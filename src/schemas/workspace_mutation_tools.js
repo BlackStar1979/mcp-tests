@@ -91,24 +91,30 @@ const EDIT_FILE_PATCH_INPUT_SCHEMA = {
 const WRITE_FILE_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["status", "path", "bytes", "backup"],
+  required: ["status", "path", "bytes", "backup", "source_sha256", "result_sha256", "receipt"],
   properties: {
     status: { type: "string", enum: ["written"] },
     path: { type: "string" },
     bytes: { type: "integer", minimum: 0 },
     backup: { type: ["string", "null"] },
+    source_sha256: { type: ["string", "null"] },
+    result_sha256: { type: "string" },
+    receipt: { type: "string" },
   },
 };
 
 const APPEND_FILE_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["status", "path", "bytes", "backup"],
+  required: ["status", "path", "bytes", "backup", "source_sha256", "result_sha256", "receipt"],
   properties: {
     status: { type: "string", enum: ["appended"] },
     path: { type: "string" },
     bytes: { type: "integer", minimum: 0 },
     backup: { type: ["string", "null"] },
+    source_sha256: { type: ["string", "null"] },
+    result_sha256: { type: "string" },
+    receipt: { type: "string" },
   },
 };
 
@@ -165,7 +171,7 @@ const RESTORE_PATH_OUTPUT_SCHEMA = {
 const EDIT_FILE_PATCH_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["status", "path", "mode", "anchor_matches", "bytes_before", "bytes_after", "delta_bytes", "dry_run", "backup"],
+  required: ["status", "path", "mode", "anchor_matches", "bytes_before", "bytes_after", "delta_bytes", "dry_run", "backup", "source_sha256", "result_sha256", "receipt"],
   properties: {
     status: { type: "string", enum: ["dry_run", "patched"] },
     path: { type: "string" },
@@ -176,6 +182,9 @@ const EDIT_FILE_PATCH_OUTPUT_SCHEMA = {
     delta_bytes: { type: "integer" },
     dry_run: { type: "boolean" },
     backup: { type: ["string", "null"] },
+    source_sha256: { type: "string" },
+    result_sha256: { type: "string" },
+    receipt: { type: "string" },
   },
 };
 

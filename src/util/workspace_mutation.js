@@ -1,9 +1,12 @@
 "use strict";
 
+const crypto = require("node:crypto");
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
 const { PRIMARY_WORK_ROOT_ALIAS, safeWorkspacePath } = require("./workspace_roots");
+const { atomicReplaceFile } = require("./file_transaction");
+const { inspectTextFile } = require("./file_selectors");
 
 const MAX_WRITE_BYTES = Number(process.env.MCP_TEST_MAX_WRITE_BYTES || 5 * 1024 * 1024);
 const PROTECTED_SEGMENTS = new Set([
@@ -73,37 +76,95 @@ async function createBackupIfExists(resolvedTarget) {
   return makeDisplayPath(resolvedTarget.rootAlias, backupRelative);
 }
 
-async function writeFile(relativePath, content, { allowProtected = false } = {}) {
+function hashText(text) {
+  return crypto.createHash("sha256").update(String(text), "utf8").digest("hex");
+}
+
+function mutationReceipt(payload) {
+  return crypto.createHash("sha256").update(JSON.stringify(payload), "utf8").digest("hex");
+}
+
+async function writeFile(relativePath, content, { allowProtected = false } = {}, dependencies = {}) {
   const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected });
-  const bytes = Buffer.byteLength(String(content), "utf8");
+  const value = String(content);
+  const bytes = Buffer.byteLength(value, "utf8");
   if (bytes > MAX_WRITE_BYTES) {
     throw new Error(`Write blocked: content is larger than ${MAX_WRITE_BYTES} bytes.`);
   }
-  const backup = await createBackupIfExists(resolved);
-  await fs.mkdir(path.dirname(resolved.absolutePath), { recursive: true });
-  await fs.writeFile(resolved.absolutePath, String(content), "utf8");
+  const existed = await pathExists(resolved.absolutePath);
+  const source = existed ? await inspectTextFile(resolved.absolutePath) : null;
+  const resultSha256 = hashText(value);
+  const transaction = await atomicReplaceFile({
+    targetPath: resolved.absolutePath,
+    mode: source?.mode || 0o600,
+    maxBytes: MAX_WRITE_BYTES,
+    dependencies: dependencies.fileTransactionDependencies,
+    createBackup: () => createBackupIfExists(resolved),
+    verifyBeforeRename: async () => {
+      const stillExists = await pathExists(resolved.absolutePath);
+      if (!existed && stillExists) {
+        const error = new Error("Write blocked: target appeared during preparation.");
+        error.code = "file_transform_source_changed";
+        throw error;
+      }
+      if (existed) {
+        if (!stillExists) {
+          const error = new Error("Write blocked: target disappeared during preparation.");
+          error.code = "file_transform_source_changed";
+          throw error;
+        }
+        const current = await inspectTextFile(resolved.absolutePath);
+        if (current.fileSha256 !== source.fileSha256) {
+          const error = new Error("Write blocked: target changed during preparation.");
+          error.code = "file_transform_source_changed";
+          throw error;
+        }
+      }
+    },
+    writeContent: (writer) => writer.write(value),
+  });
   return {
     status: "written",
     path: resolved.displayPath,
     bytes,
-    backup,
+    backup: transaction.backup,
+    source_sha256: source?.fileSha256 || null,
+    result_sha256: transaction.sha256,
+    receipt: mutationReceipt({ operation: "write", path: resolved.displayPath, source: source?.fileSha256 || null, result: resultSha256 }),
   };
 }
 
-async function appendFile(relativePath, content, { allowProtected = false } = {}) {
+async function appendFile(relativePath, content, { allowProtected = false } = {}, dependencies = {}) {
   const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected });
-  const bytes = Buffer.byteLength(String(content), "utf8");
+  const value = String(content);
+  const bytes = Buffer.byteLength(value, "utf8");
   if (bytes > MAX_WRITE_BYTES) {
     throw new Error(`Append blocked: content is larger than ${MAX_WRITE_BYTES} bytes.`);
   }
-  const backup = await createBackupIfExists(resolved);
-  await fs.mkdir(path.dirname(resolved.absolutePath), { recursive: true });
-  await fs.appendFile(resolved.absolutePath, String(content), "utf8");
+  if (!(await pathExists(resolved.absolutePath))) {
+    const written = await writeFile(relativePath, value, { allowProtected }, dependencies);
+    return { ...written, status: "appended", bytes };
+  }
+  const source = await inspectTextFile(resolved.absolutePath);
+  const input = {
+    path: relativePath,
+    expected_file_sha256: source.fileSha256,
+    operations: [{ kind: "append", content: { inline: value } }],
+    allow_protected: allowProtected,
+  };
+  const { prepareFileTransform, commitFileTransform } = require("./file_transform_engine");
+  const preview = await prepareFileTransform(input);
+  const committed = await commitFileTransform({ ...input, receipt: preview.receipt }, {
+    fileTransactionDependencies: dependencies.fileTransactionDependencies,
+  });
   return {
     status: "appended",
     path: resolved.displayPath,
     bytes,
-    backup,
+    backup: committed.backup,
+    source_sha256: committed.source_sha256,
+    result_sha256: committed.result_sha256,
+    receipt: committed.receipt,
   };
 }
 
@@ -324,14 +385,23 @@ function countPatchAnchorMatches(source, anchor) {
   return findSingleAnchorRange(source, anchor).matches;
 }
 
-async function editFilePatch(relativePath, { anchor, content, mode = "replace", dry_run = true, allow_protected = false, require_markers = [] } = {}) {
+async function editFilePatch(relativePath, {
+  anchor,
+  content,
+  mode = "replace",
+  dry_run = true,
+  allow_protected = false,
+  require_markers = [],
+  expected_source_sha256 = "",
+} = {}, dependencies = {}) {
   const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected: allow_protected });
   const stat = await fs.stat(resolved.absolutePath);
   if (!stat.isFile()) {
     throw new Error("Not a file.");
   }
   const original = await fs.readFile(resolved.absolutePath, "utf8");
-  const matches = countPatchAnchorMatches(original, anchor);
+  const anchorRange = findSingleAnchorRange(original, anchor);
+  const matches = anchorRange.matches;
   const patched = applyTextPatch(original, { mode, anchor, content });
   for (const marker of require_markers || []) {
     if (!patched.includes(marker)) {
@@ -340,9 +410,27 @@ async function editFilePatch(relativePath, { anchor, content, mode = "replace", 
   }
   const bytesBefore = Buffer.byteLength(original, "utf8");
   const bytesAfter = Buffer.byteLength(patched, "utf8");
-  if (bytesAfter > MAX_WRITE_BYTES) {
-    throw new Error(`Patch blocked: patched file is larger than ${MAX_WRITE_BYTES} bytes.`);
+  const sourceSha256 = hashText(original);
+  if (expected_source_sha256 && sourceSha256 !== String(expected_source_sha256).toLowerCase()) {
+    const error = new Error("Patch blocked: target changed after preview.");
+    error.code = "file_transform_source_changed";
+    throw error;
   }
+  const startByte = Buffer.byteLength(original.slice(0, anchorRange.start), "utf8");
+  const endByte = Buffer.byteLength(original.slice(0, anchorRange.end), "utf8");
+  const operationKind = mode === "before" ? "insert_before" : mode === "after" ? "insert_after" : "replace";
+  const input = {
+    path: relativePath,
+    expected_file_sha256: sourceSha256,
+    operations: [{
+      kind: operationKind,
+      selector: { kind: "bytes", start_byte: startByte, end_byte: endByte },
+      content: { inline: content },
+    }],
+    allow_protected,
+  };
+  const { prepareFileTransform, commitFileTransform } = require("./file_transform_engine");
+  const preview = await prepareFileTransform(input);
   const payload = {
     status: dry_run ? "dry_run" : "patched",
     path: resolved.displayPath,
@@ -353,12 +441,18 @@ async function editFilePatch(relativePath, { anchor, content, mode = "replace", 
     delta_bytes: bytesAfter - bytesBefore,
     dry_run: Boolean(dry_run),
     backup: null,
+    source_sha256: sourceSha256,
+    result_sha256: hashText(patched),
+    receipt: preview.receipt,
   };
   if (dry_run) {
     return payload;
   }
-  payload.backup = await createBackupIfExists(resolved);
-  await fs.writeFile(resolved.absolutePath, patched, "utf8");
+  const committed = await commitFileTransform({ ...input, receipt: preview.receipt }, {
+    fileTransactionDependencies: dependencies.fileTransactionDependencies,
+  });
+  payload.backup = committed.backup;
+  payload.result_sha256 = committed.result_sha256;
   return payload;
 }
 

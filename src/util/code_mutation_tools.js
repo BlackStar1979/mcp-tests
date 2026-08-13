@@ -18,6 +18,7 @@ const { editFilePatch, resolveWritableWorkspacePath } = require("./workspace_mut
 const { safeWorkspacePath } = require("./workspace_roots");
 
 const AUDIT_LOG_REL = ".mcp_audit/actions.jsonl";
+const CODE_WORKSPACE_ROOT = path.resolve(__dirname, "..", "..");
 const WRITABLE_APPLY_STATUSES = new Set(["committed_after_validation"]);
 
 function newOperationId() {
@@ -32,15 +33,15 @@ function hashText(text) {
   return crypto.createHash("sha256").update(String(text || ""), "utf8").digest("hex");
 }
 
-async function appendActionLedger(record) {
-  const full = safeWorkspacePath(AUDIT_LOG_REL).absolutePath;
+async function appendActionLedger(record, options = {}) {
+  const full = safeWorkspacePath(options.auditLogPath || AUDIT_LOG_REL).absolutePath;
   await fs.mkdir(path.dirname(full), { recursive: true });
   const entry = { timestamp: new Date().toISOString(), ...record };
   await fs.appendFile(full, JSON.stringify(entry) + "\n", "utf8");
 }
 
-async function readActionLedger() {
-  const full = safeWorkspacePath(AUDIT_LOG_REL).absolutePath;
+async function readActionLedger(options = {}) {
+  const full = safeWorkspacePath(options.auditLogPath || AUDIT_LOG_REL).absolutePath;
   try {
     const text = await fs.readFile(full, "utf8");
     return text.split(/\r?\n/).filter(Boolean).map((line) => JSON.parse(line));
@@ -48,6 +49,11 @@ async function readActionLedger() {
     if (error?.code === "ENOENT") return [];
     throw error;
   }
+}
+
+function codeTargetToWorkspacePath(repoRelativePath) {
+  const absolutePath = path.resolve(CODE_WORKSPACE_ROOT, String(repoRelativePath || ""));
+  return safeWorkspacePath(absolutePath, { allowAbsolute: true }).displayPath;
 }
 
 function findLedgerEntry(records, operationId) {
@@ -87,7 +93,9 @@ async function buildPatchPlan(args = {}) {
   };
 }
 
-async function executeCodeApplyPatch(args = {}) {
+async function executeCodeApplyPatch(args = {}, options = {}) {
+  const appendLedger = (record) => appendActionLedger(record, options);
+  const readLedger = () => readActionLedger(options);
   const operationId = newOperationId();
   const commitRef = typeof args.commit_ref === "string" && args.commit_ref.trim() ? args.commit_ref.trim() : "";
   const dryRun = args.dry_run !== false;
@@ -107,7 +115,7 @@ async function executeCodeApplyPatch(args = {}) {
 
   const { graph, plan } = await buildPatchPlan(args);
   if (plan.decision?.status === "blocked") {
-    await appendActionLedger({ ...baseAudit, status: "plan_blocked", applied: false, plan_status: plan.decision?.status || "blocked" });
+    await appendLedger({ ...baseAudit, status: "plan_blocked", applied: false, plan_status: plan.decision?.status || "blocked" });
     return {
       success: false,
       error: "Patch plan blocked.",
@@ -119,7 +127,8 @@ async function executeCodeApplyPatch(args = {}) {
     };
   }
 
-  const targetPath = plan.scenario?.target || plan.patch_scope?.target || String(args.target || "");
+  const codeTargetPath = plan.scenario?.target || plan.patch_scope?.target || String(args.target || "");
+  const targetPath = codeTargetToWorkspacePath(codeTargetPath);
   const dryRunPatch = await editFilePatch(targetPath, {
     anchor: args.anchor,
     content: args.content,
@@ -128,6 +137,7 @@ async function executeCodeApplyPatch(args = {}) {
     allow_protected: args.allow_protected === true,
     require_markers: Array.isArray(args.require_markers) ? args.require_markers : [],
   });
+  const patchAudit = { ...baseAudit, source_sha256: dryRunPatch.source_sha256 };
 
   const readyPayload = {
     success: true,
@@ -137,6 +147,7 @@ async function executeCodeApplyPatch(args = {}) {
     operation_id: operationId,
     scope: graph.path,
     target: targetPath,
+    source_sha256: dryRunPatch.source_sha256,
     mode: dryRunPatch.mode,
     anchor_matches: dryRunPatch.anchor_matches,
     bytes_before: dryRunPatch.bytes_before,
@@ -147,8 +158,8 @@ async function executeCodeApplyPatch(args = {}) {
   };
 
   if (dryRun) {
-    await appendActionLedger({
-      ...baseAudit,
+    await appendLedger({
+      ...patchAudit,
       status: "dry_run_ready",
       applied: false,
       target: targetPath,
@@ -160,7 +171,7 @@ async function executeCodeApplyPatch(args = {}) {
   }
 
   if (!confirm) {
-    await appendActionLedger({ ...baseAudit, status: "confirmation_required", applied: false, target: targetPath });
+    await appendLedger({ ...patchAudit, status: "confirmation_required", applied: false, target: targetPath });
     return {
       ...readyPayload,
       success: false,
@@ -170,7 +181,7 @@ async function executeCodeApplyPatch(args = {}) {
   }
 
   if (!commitRef) {
-    await appendActionLedger({ ...baseAudit, status: "commit_ref_missing", applied: false, target: targetPath });
+    await appendLedger({ ...patchAudit, status: "commit_ref_missing", applied: false, target: targetPath });
     return {
       ...readyPayload,
       success: false,
@@ -179,10 +190,10 @@ async function executeCodeApplyPatch(args = {}) {
     };
   }
 
-  const records = await readActionLedger();
+  const records = await readLedger();
   const reference = findLedgerEntry(records, commitRef);
   if (!reference || reference.status !== "dry_run_ready") {
-    await appendActionLedger({ ...baseAudit, status: "commit_ref_invalid", applied: false, target: targetPath });
+    await appendLedger({ ...patchAudit, status: "commit_ref_invalid", applied: false, target: targetPath });
     return {
       ...readyPayload,
       success: false,
@@ -196,8 +207,9 @@ async function executeCodeApplyPatch(args = {}) {
     || reference.anchor_hash !== baseAudit.anchor_hash
     || reference.content_hash !== baseAudit.content_hash
     || reference.mode !== baseAudit.mode
+    || reference.source_sha256 !== dryRunPatch.source_sha256
   ) {
-    await appendActionLedger({ ...baseAudit, status: "commit_integrity_violation", applied: false, target: targetPath });
+    await appendLedger({ ...patchAudit, status: "commit_integrity_violation", applied: false, target: targetPath });
     return {
       ...readyPayload,
       success: false,
@@ -206,22 +218,38 @@ async function executeCodeApplyPatch(args = {}) {
     };
   }
 
-  const committedPatch = await editFilePatch(targetPath, {
-    anchor: args.anchor,
-    content: args.content,
-    mode: args.mode || "replace",
-    dry_run: false,
-    allow_protected: args.allow_protected === true,
-    require_markers: Array.isArray(args.require_markers) ? args.require_markers : [],
-  });
-  const validation = await syntaxCheck(targetPath);
+  if (typeof options.beforeCommit === "function") {
+    await options.beforeCommit({ codeTargetPath, targetPath, sourceSha256: reference.source_sha256 });
+  }
+  let committedPatch;
+  try {
+    committedPatch = await editFilePatch(targetPath, {
+      anchor: args.anchor,
+      content: args.content,
+      mode: args.mode || "replace",
+      dry_run: false,
+      allow_protected: args.allow_protected === true,
+      require_markers: Array.isArray(args.require_markers) ? args.require_markers : [],
+      expected_source_sha256: reference.source_sha256,
+    });
+  } catch (error) {
+    if (error?.code !== "file_transform_source_changed") throw error;
+    await appendLedger({ ...patchAudit, status: "commit_integrity_violation", applied: false, target: targetPath });
+    return {
+      ...readyPayload,
+      success: false,
+      error: "Target changed after the referenced preview.",
+      status: "commit_integrity_violation",
+    };
+  }
+  const validation = await syntaxCheck(codeTargetPath);
 
   if (!validation.ok) {
     if (committedPatch.backup) {
       await restoreBackupToTarget(targetPath, committedPatch.backup);
     }
-    await appendActionLedger({
-      ...baseAudit,
+    await appendLedger({
+      ...patchAudit,
       status: "auto_rolled_back_validation_error",
       applied: false,
       target: targetPath,
@@ -238,8 +266,8 @@ async function executeCodeApplyPatch(args = {}) {
     };
   }
 
-  await appendActionLedger({
-    ...baseAudit,
+  await appendLedger({
+    ...patchAudit,
     status: "committed_after_validation",
     applied: true,
     source_operation: commitRef,
