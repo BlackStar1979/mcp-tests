@@ -295,6 +295,41 @@ const FILE_MERGE_INPUT_SCHEMA = Object.freeze(closedObject(["action", "sources",
   allow_protected: { type: "boolean", default: false },
 }, "Use only when several physical source files must be concatenated into one destination. Sources are preserved."));
 
+const FILE_COMPOSE_OUTPUT_ITEM_SCHEMA = Object.freeze(closedObject([
+  "ordinal", "destination", "bytes", "result_sha256", "prior_sha256", "prior_exists", "selector",
+], {
+  ordinal: { type: "integer", minimum: 0 },
+  destination: { type: "string" },
+  bytes: { type: "integer", minimum: 0 },
+  result_sha256: SHA256_SCHEMA,
+  prior_sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  prior_exists: { type: "boolean" },
+  selector: {
+    anyOf: [
+      closedObject(["start_byte", "end_byte", "range_sha256"], {
+        start_byte: { type: "integer", minimum: 0 },
+        end_byte: { type: "integer", minimum: 0 },
+        range_sha256: SHA256_SCHEMA,
+      }),
+      { type: "null" },
+    ],
+  },
+}));
+
+const FILE_COMPOSE_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "success", "status", "kind", "operation_id", "source_count", "output_count", "outputs", "receipt", "error",
+], {
+  success: { type: "boolean" },
+  status: { type: "string", enum: ["preview", "committed", "error"] },
+  kind: { type: "string", enum: ["split", "merge"] },
+  operation_id: { anyOf: [{ type: "string" }, { type: "null" }] },
+  source_count: { type: "integer", minimum: 0 },
+  output_count: { type: "integer", minimum: 0 },
+  outputs: { type: "array", maxItems: 100, items: FILE_COMPOSE_OUTPUT_ITEM_SCHEMA },
+  receipt: { type: "string" },
+  error: { anyOf: [TOOL_ERROR_SCHEMA, { type: "null" }] },
+}));
+
 const MARKDOWN_INSPECT_INPUT_SCHEMA = Object.freeze(closedObject(["path"], {
   path: WORKSPACE_PATH_SCHEMA,
   max_nodes: { type: "integer", minimum: 1, maximum: 500, default: 100 },
@@ -336,6 +371,7 @@ module.exports = {
   CONTENT_STAGE_OUTPUT_SCHEMA,
   FILE_INSPECT_INPUT_SCHEMA,
   FILE_INSPECT_OUTPUT_SCHEMA,
+  FILE_COMPOSE_OUTPUT_SCHEMA,
   FILE_MERGE_INPUT_SCHEMA,
   FILE_SELECTOR_SCHEMA,
   FILE_SPLIT_INPUT_SCHEMA,
