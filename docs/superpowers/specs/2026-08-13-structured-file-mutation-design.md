@@ -41,7 +41,7 @@ Existing `write_file`, `append_file`, `edit_file_patch`, and `code_apply_patch` 
 
 ## Input budgets and staged content
 
-The global 10,000-character input guard remains for ordinary strings. Content-bearing schemas opt into a smaller explicit per-chunk maximum of 8,192 characters through a schema extension understood by the validator. No global guard is weakened.
+The global 10,000-character input guard remains for ordinary strings. Content-bearing schemas use the standard JSON Schema `maxLength: 8192` keyword, so bounded chunks remain below the global guard without a custom validator extension. No global guard is weakened.
 
 `content_stage` uses an `action` enum:
 

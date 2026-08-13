@@ -23,22 +23,21 @@
 
 ---
 
-### Task 1: Per-schema input budgets and selector contracts
+### Task 1: Bounded input schemas and selector contracts
 
 **Files:**
 - Create: `src/schemas/structured_file_tools.js`
 - Create: `_tests/smoke_structured_file_schemas.js`
-- Modify: `src/runtime/tool_input_validator.js`
 - Modify: `_tests/smoke_tool_input_budget_guards.js`
 
 **Interfaces:**
 - Produces: `FILE_SELECTOR_SCHEMA`, `CONTENT_SOURCE_SCHEMA`, and seven closed tool schemas.
-- Produces: schema extension `x-mcp-max-string-length` consumed only by `validateToolInput`.
+- Uses standard JSON Schema `maxLength: 8192` for staged and inline content while retaining the global 10,000-character validator ceiling.
 
 - [ ] **Step 1: Write RED schema and budget tests**
 
 ```js
-const chunkSchema = { type: "string", "x-mcp-max-string-length": 8192 };
+const chunkSchema = { type: "string", maxLength: 8192 };
 assert.equal(validateToolInput("stage", { chunk: "x".repeat(8192) }, objectWith(chunkSchema)).ok, true);
 assert.equal(validateToolInput("stage", { chunk: "x".repeat(8193) }, objectWith(chunkSchema)).ok, false);
 assert.equal(validateToolInput("ordinary", { value: "x".repeat(10001) }, objectWith({ type: "string" })).ok, false);
@@ -47,11 +46,11 @@ assert.equal(FILE_SELECTOR_SCHEMA.oneOf.length, 5);
 
 - [ ] **Step 2: Run RED tests**
 
-Run `node _tests/smoke_structured_file_schemas.js` and `node _tests/smoke_tool_input_budget_guards.js`. Expected: missing schema module and unsupported per-schema budget.
+Run `node _tests/smoke_structured_file_schemas.js` and `node _tests/smoke_tool_input_budget_guards.js`. Expected: missing schema module.
 
-- [ ] **Step 3: Implement strict schema-aware budgets**
+- [ ] **Step 3: Implement strict bounded schemas**
 
-Resolve the effective string limit as `Math.min(schema["x-mcp-max-string-length"] || limits.maxStringLength, limits.maxStringLength)` unless the validator call explicitly enables the trusted content-chunk profile. The trusted profile may raise only the named `chunk` field to 8,192 and must not change ordinary fields.
+Set `maxLength: 8192` on every inline or staged content field. Keep the global validator unchanged at 10,000 characters so no new trusted-input bypass exists.
 
 - [ ] **Step 4: Run GREEN tests**
 

@@ -95,8 +95,12 @@ assert.ok(superpowersDirectory.includes("Status: active superpowers documentatio
 assert.ok(superpowersDirectory.includes("supporting workflow material"));
 assert.ok(superpowersPlansDirectory.includes("Status: active superpowers plans directory map"));
 assert.ok(superpowersPlansDirectory.includes("2026-07-26-cbm-full-tool-surface.md"));
+assert.ok(superpowersPlansDirectory.includes("2026-08-09-process-runner-async.md"));
+assert.ok(superpowersPlansDirectory.includes("2026-08-13-structured-file-mutation.md"));
 assert.ok(superpowersSpecsDirectory.includes("Status: active superpowers specs directory map"));
 assert.ok(superpowersSpecsDirectory.includes("2026-07-26-cbm-full-tool-surface-design.md"));
+assert.ok(superpowersSpecsDirectory.includes("2026-08-09-process-runner-async-design.md"));
+assert.ok(superpowersSpecsDirectory.includes("2026-08-13-structured-file-mutation-design.md"));
 assert.ok(srcDirectory.includes("`integrations/`"));
 assert.ok(integrationsDirectory.includes("Updated: 2026-07-27"));
 assert.ok(codebaseMemoryDirectory.includes("Updated: 2026-07-27"));

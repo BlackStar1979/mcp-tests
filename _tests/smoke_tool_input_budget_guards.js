@@ -19,6 +19,16 @@ const longString = validateToolInput("budget", { s: "x".repeat(DEFAULT_VALIDATIO
 assert.equal(longString.ok, false);
 assert.ok(longString.errors.some((item) => item.includes("max string length")));
 
+const boundedSchema = {
+  type: "object",
+  additionalProperties: false,
+  properties: { chunk: { type: "string", maxLength: 8192 } },
+};
+assert.equal(validateToolInput("bounded", { chunk: "x".repeat(8192) }, boundedSchema).ok, true);
+const overBoundedSchema = validateToolInput("bounded", { chunk: "x".repeat(8193) }, boundedSchema);
+assert.equal(overBoundedSchema.ok, false);
+assert.ok(overBoundedSchema.errors.some((item) => item.includes("maxLength")));
+
 const longArray = validateToolInput("budget", { a: Array.from({ length: DEFAULT_VALIDATION_LIMITS.maxArrayItems + 1 }, () => "x") }, schema);
 assert.equal(longArray.ok, false);
 assert.ok(longArray.errors.some((item) => item.includes("max array items")));
