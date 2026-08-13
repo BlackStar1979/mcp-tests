@@ -15,6 +15,8 @@ Updated: 2026-08-02
   Authorized code-change planning and execution facades.
 - `memory_create_task.js`, `memory_get_state.js`, `memory_get_tasks.js`, `memory_save.js`, `memory_search.js`, `memory_set_state.js`, `memory_update_task.js`
   Authorized memory/task facades.
+- `content_stage.js`
+  Authorized durable bounded-content staging facade for later file and Markdown transforms.
 - `plugin_catalog_describe.js`, `plugin_catalog_search.js`, `plugin_execute_readonly.js`, `plugin_execution_governance.js`, `plugin_execution_preflight.js`, `plugin_execution_verify_receipt.js`, `plugin_registry_audit.js`, `plugin_registry_get.js`, `plugin_registry_list.js`, `plugin_registry_status.js`, `plugin_visibility_plan.js`, `plugin_visibility_status.js`
   Authorized plugin governance and registry facades.
 - `test_mcp_runtime_status.js`, `observability_status.js`, `tool_usage_snapshot.js`, `project_truth_audit.js`, `change_workflow_simulator.js`

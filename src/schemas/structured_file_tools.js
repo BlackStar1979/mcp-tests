@@ -117,6 +117,33 @@ const CONTENT_STAGE_INPUT_SCHEMA = Object.freeze(closedObject(["action"], {
   expected_sha256: SHA256_SCHEMA,
 }, "Create, append, seal, inspect, or release durable owner-scoped content. Append requires stage_id, sequence, and chunk; seal requires stage_id and integrity expectations."));
 
+const CONTENT_STAGE_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "success", "action", "stage_id", "state", "next_sequence", "chars", "bytes",
+  "sha256", "expires_at", "accepted_chars", "accepted_bytes", "error",
+], {
+  success: { type: "boolean" },
+  action: { type: "string", enum: ["create", "append", "seal", "status", "release", "unknown"] },
+  stage_id: { type: "string" },
+  state: { type: "string", enum: ["open", "sealed", "released", "error"] },
+  next_sequence: { type: "integer", minimum: 0 },
+  chars: { type: "integer", minimum: 0 },
+  bytes: { type: "integer", minimum: 0 },
+  sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  expires_at: { anyOf: [{ type: "string" }, { type: "null" }] },
+  accepted_chars: { type: "integer", minimum: 0 },
+  accepted_bytes: { type: "integer", minimum: 0 },
+  error: {
+    anyOf: [
+      { type: "null" },
+      closedObject(["code", "message", "retryable"], {
+        code: { type: "string" },
+        message: { type: "string" },
+        retryable: { type: "boolean" },
+      }),
+    ],
+  },
+}));
+
 const FILE_TRANSFORM_OPERATION_SCHEMA = Object.freeze({
   oneOf: [
     closedObject(["kind", "selector", "content"], {
@@ -227,6 +254,7 @@ const MARKDOWN_TRANSFORM_INPUT_SCHEMA = Object.freeze(closedObject(["action", "p
 module.exports = {
   CONTENT_SOURCE_SCHEMA,
   CONTENT_STAGE_INPUT_SCHEMA,
+  CONTENT_STAGE_OUTPUT_SCHEMA,
   FILE_INSPECT_INPUT_SCHEMA,
   FILE_MERGE_INPUT_SCHEMA,
   FILE_SELECTOR_SCHEMA,

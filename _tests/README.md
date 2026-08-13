@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-08-09`:
 
-- `373` JavaScript files total in `_tests`
-- `289` active scripts currently listed in `run_all_smoke_scripts.json`
+- `375` JavaScript files total in `_tests`
+- `291` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs
@@ -20,7 +20,7 @@ Latest full active validation:
 - `node _tests/run_all_smokes.js --skip-network`
 - last confirmed result from `2026-08-09`: `ok=true`
 - last confirmed section counts from that full run: `7` public scripts and `279` authenticated scripts
-- current manifest file contains `289` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `288` sectioned scripts, not all `289` manifest entries
+- current manifest file contains `291` entries, including `_tests/smoke_network.js`; `--skip-network` therefore validates `290` sectioned scripts, not all `291` manifest entries
 
 ## Orientation
 

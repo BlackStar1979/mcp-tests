@@ -158,6 +158,8 @@
   "_tests/smoke_http_boundary_guards.js",
   "_tests/smoke_tool_input_budget_guards.js",
   "_tests/smoke_structured_file_schemas.js",
+  "_tests/smoke_content_stage_manager.js",
+  "_tests/smoke_content_stage_tool.js",
   "_tests/smoke_connector_surface_split_guard.js",
   "_tests/smoke_connector_refresh_readiness_spec.js",
   "_tests/smoke_server_spec_fixture_validator.js",
