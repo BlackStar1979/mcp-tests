@@ -28,21 +28,21 @@ Summarize the current validated product state in one operator-facing place witho
   - port `3008`
   - auth mode `oauth21`
   - profile `tests/internal`
-  - repository target connector-visible tools `91`
+  - repository target connector-visible tools `98`
 
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=280`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=291`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `280`
+- Latest validated authenticated smoke count: `291`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
-- Authorized MCP-visible tools: `78`
-- Authenticated repo target for profile `tests`: `91`
-- Live OAuth21 runtime exposes `91` tools at `server_start_id = 2026-08-13T16:41:07.289Z` with fingerprint `f4512a756f780113`. Direct named async lifecycle calls succeeded with an absolute in-root `cwd`; the full-suite job survived the controlled restart as `recovered_after_restart=true`, and a post-restart job returned `POST_RESTART_ASYNC_OK` without OAuth relogin.
+- Authorized MCP-visible tools: `85`
+- Authenticated repo target for profile `tests`: `98`
+- Live OAuth21 runtime exposes `98` tools at `server_start_id = 2026-08-13T18:45:01.480Z` with fingerprint `05a85f87dfb3304d`. The refreshed model surface directly called all seven structured-file tools; live preview/commit probes proved staged append, hash-bound Markdown replacement, source-preserving three-part split, and byte-identical merge without OAuth relogin.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track

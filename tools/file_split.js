@@ -59,7 +59,7 @@ const fileSplitTool = {
     description: "Copy hash-bound ranges from one physical UTF-8 source into several physical destination files without transmitting source content. Use only for physical file decomposition; sources are never deleted. Preview first, then commit with the receipt.",
     inputSchema: FILE_SPLIT_INPUT_SCHEMA,
     outputSchema: FILE_COMPOSE_OUTPUT_SCHEMA,
-    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   execute,
   summarizeArgs(args = {}) {

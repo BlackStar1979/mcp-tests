@@ -75,7 +75,7 @@ const markdownTransformTool = {
     description: "Replace, append to, or insert around one hash-bound Markdown section selected by heading ancestry and occurrence. It edits exact source bytes through file_transform and never serializes the whole Markdown AST. Preview first, then commit with the receipt.",
     inputSchema: MARKDOWN_TRANSFORM_INPUT_SCHEMA,
     outputSchema: MARKDOWN_TRANSFORM_OUTPUT_SCHEMA,
-    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   execute,
   summarizeArgs(args = {}) {

@@ -75,10 +75,10 @@ function buildHarnessResult() {
 
   assert.equal(currentRoute, "/mcp");
   assert.equal(candidateRoute, "/mcp/sessionless");
-  assert.equal(toolCount, 91);
-  assert.equal(serverSpec.server.authenticated_tool_count, 91);
-  assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 91);
-  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 91);
+  assert.equal(toolCount, 98);
+  assert.equal(serverSpec.server.authenticated_tool_count, 98);
+  assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 98);
+  assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
   assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
   assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
   assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);

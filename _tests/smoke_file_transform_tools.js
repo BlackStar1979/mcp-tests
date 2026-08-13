@@ -8,7 +8,7 @@ const { fileTransformTool } = require("../tools/file_transform");
   assert.equal(fileInspectTool.descriptor.annotations.readOnlyHint, true);
   assert.equal(fileInspectTool.descriptor.annotations.destructiveHint, false);
   assert.equal(fileTransformTool.descriptor.annotations.readOnlyHint, false);
-  assert.equal(fileTransformTool.descriptor.annotations.destructiveHint, true);
+  assert.equal(fileTransformTool.descriptor.annotations.destructiveHint, false);
   assert.match(fileTransformTool.descriptor.description, /one file/i);
   assert.match(fileTransformTool.descriptor.description, /file_split/i);
 

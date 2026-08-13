@@ -3,6 +3,8 @@
 const assert = require("node:assert/strict");
 
 const { loadOptionalTools } = require("../src/tool_loader");
+const { buildDecisionRuntimeContext } = require("../src/runtime/decision_runtime_context_builder");
+const { evaluateDecisionRuntimePolicy } = require("../src/runtime/decision_runtime_policy");
 const { auditToolDescriptors } = require("../src/descriptor_audit");
 const { resolveStructuredFileStoragePaths } = require("../src/runtime/server_bootstrap_runtime");
 const {
@@ -85,8 +87,18 @@ for (const name of STRUCTURED_NAMES) {
 assert.equal(internalByName.get("file_inspect").descriptor.annotations.readOnlyHint, true);
 assert.equal(internalByName.get("markdown_inspect").descriptor.annotations.readOnlyHint, true);
 assert.equal(internalByName.get("content_stage").descriptor.annotations.readOnlyHint, false);
-for (const name of ["file_transform", "file_split", "file_merge", "markdown_transform"]) {
-  assert.equal(internalByName.get(name).descriptor.annotations.destructiveHint, true);
+for (const name of ["content_stage", "file_transform", "file_split", "file_merge", "markdown_transform"]) {
+  assert.equal(internalByName.get(name).descriptor.annotations.destructiveHint, false, `${name} is reversible or source-preserving`);
+  const decisionContext = buildDecisionRuntimeContext({
+    toolName: name,
+    args: {},
+    authMode: "oauth21",
+    profile: "internal",
+    getOptionalTool: (toolName) => internalByName.get(toolName),
+    requestMeta: { requestId: `structured-${name}` },
+  });
+  const decision = evaluateDecisionRuntimePolicy({ decisionContext });
+  assert.equal(decision.allow, true, `${name} must reach its handler under the authenticated tests profile`);
 }
 
 const descriptions = Object.fromEntries(STRUCTURED_NAMES.map((name) => [name, internalByName.get(name).descriptor.description]));

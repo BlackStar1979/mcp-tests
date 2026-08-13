@@ -59,7 +59,7 @@ const fileMergeTool = {
     description: "Stream several hash-bound physical UTF-8 source files into one destination in explicit order. Use only for physical concatenation; sources are never deleted. Preview first, then commit with the receipt.",
     inputSchema: FILE_MERGE_INPUT_SCHEMA,
     outputSchema: FILE_COMPOSE_OUTPUT_SCHEMA,
-    annotations: { readOnlyHint: false, destructiveHint: true, idempotentHint: false, openWorldHint: false },
+    annotations: { readOnlyHint: false, destructiveHint: false, idempotentHint: false, openWorldHint: false },
   },
   execute,
   summarizeArgs(args = {}) {

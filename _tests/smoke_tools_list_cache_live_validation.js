@@ -13,7 +13,7 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo91_runtime91_model91_aligned";
+const expectedCurrentStatus = "repo98_runtime98_model98_aligned";
 const expectedCurrentFingerprint = SURFACE.combined_fingerprint;
 const expectedCurrentHash = SURFACE.tool_names_hash;
 
@@ -24,8 +24,8 @@ assert.match(currentServerStartId, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z
 assert.equal(c.server_start_id, currentServerStartId);
 assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
-assert.equal(c.tool_count, 91);
-assert.equal(c.repo_current_expected_tool_count, 91);
+assert.equal(c.tool_count, 98);
+assert.equal(c.repo_current_expected_tool_count, 98);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, false);
 assert.equal(c.model_runtime_callable_verified_now, true);
@@ -38,7 +38,7 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("repository and live OAuth21 `3008` are aligned at `91`"));
+assert.ok(index.includes("repository and live OAuth21 `3008` are aligned at `98`"));
 assert.ok(index.includes(`fingerprint \`${expectedCurrentFingerprint}\``));
 assert.ok(index.includes("`PROC-1B` provides durable SQLite jobs/events"));
 assert.ok(index.includes("restart recovery without replay"));
@@ -50,8 +50,8 @@ assert.ok(index.includes("canonical PKCE"));
 assert.ok(index.includes("No OAuth relogin is required"));
 assert.ok(index.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(index.includes("knowledge index"));
-assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `91`"));
-assert.ok(canon.includes("`PROC-1B` is accepted and live on the `91`-tool runtime"));
+assert.ok(canon.includes("Repo current connector-visible authenticated tool target is `98`"));
+assert.ok(canon.includes("`PROC-1B` is accepted and remains live on the `98`-tool runtime"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

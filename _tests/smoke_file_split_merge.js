@@ -37,7 +37,8 @@ async function read(name) {
 (async () => {
   assert.equal(fileSplitTool.name, "file_split");
   assert.equal(fileMergeTool.name, "file_merge");
-  assert.equal(fileSplitTool.descriptor.annotations.destructiveHint, true);
+  assert.equal(fileSplitTool.descriptor.annotations.destructiveHint, false);
+  assert.equal(fileMergeTool.descriptor.annotations.destructiveHint, false);
   assert.equal(fileMergeTool.descriptor.annotations.openWorldHint, false);
   assert.equal((await fileSplitTool.execute({ action: "unknown" })).error.code, "file_compose_action_invalid");
   assert.equal((await fileMergeTool.execute({ action: "unknown" })).error.code, "file_compose_action_invalid");

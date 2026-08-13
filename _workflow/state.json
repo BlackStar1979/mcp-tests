@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-09T17:30:00.000Z",
+  "updated_at": "2026-08-13T18:49:00.000Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -32,7 +32,7 @@
       "port": 3008,
       "auth_mode": "oauth21",
       "profile": "tests/internal",
-      "expected_tool_count": 91,
+      "expected_tool_count": 98,
       "public_base_url": "https://mcp-tests-oauth21.romionologic.dev"
     },
     "retired": {
@@ -46,11 +46,11 @@
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authorized_mcp_tools": {
-      "count": 78,
+      "count": 85,
       "source_spec": "SERVER_TOOLS_SPEC.json"
     },
     "authenticated_total": {
-      "count": 91,
+      "count": 98,
       "source_spec": "SERVER_SPEC.json / SERVER_TOOLS_SPEC.json"
     }
   },
@@ -281,8 +281,8 @@
     "oauth21_3008": {
       "auth_mode": "oauth21",
       "profile": "internal",
-      "expected_tool_count": 91,
-      "server_start_id": "2026-08-13T16:41:07.289Z",
+      "expected_tool_count": 98,
+      "server_start_id": "2026-08-13T18:45:01.480Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -304,15 +304,15 @@
   },
   "current_connector_truth": {
     "oauth21_3008_tools": {
-      "tool_count": 91,
-      "tool_names_hash": "79c3b49ba27e604a",
-      "input_schema_fingerprint": "1f5b5da0c19cc673",
-      "output_schema_fingerprint": "9f6c18c944887291",
-      "descriptor_fingerprint": "6956be69f3cd3c7b",
-      "combined_fingerprint": "f4512a756f780113",
-      "connector_map_status": "repo91_runtime91_model91_aligned",
-      "repo_current_expected_tool_count": 91,
-      "server_start_id": "2026-08-13T16:41:07.289Z",
+      "tool_count": 98,
+      "tool_names_hash": "b6526b6d88ccbee3",
+      "input_schema_fingerprint": "49377884818b3896",
+      "output_schema_fingerprint": "64961bbb24c85de3",
+      "descriptor_fingerprint": "62ec04eac2adec14",
+      "combined_fingerprint": "05a85f87dfb3304d",
+      "connector_map_status": "repo98_runtime98_model98_aligned",
+      "repo_current_expected_tool_count": 98,
+      "server_start_id": "2026-08-13T18:45:01.480Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

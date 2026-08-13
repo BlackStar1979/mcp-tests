@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-13
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are aligned at `91` (`13 public + 78 authorized-visible`) with fingerprint `f4512a756f780113` at `server_start_id = 2026-08-13T16:41:07.289Z`. `PROC-1B` provides durable SQLite jobs/events, restart recovery without replay, controlled domain errors, corrected Windows `py`/PowerShell resolution, PID-reuse-safe instance leases, and contained absolute-`cwd` support. Direct `process_start`, `process_list`, `process_status`, `process_output`, and `process_events` calls are accepted.
+Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are aligned at `98` (`13 public + 85 authorized-visible`) with fingerprint `05a85f87dfb3304d` at `server_start_id = 2026-08-13T18:45:01.480Z`. `PROC-1B` provides durable SQLite jobs/events and restart recovery without replay; `FILE-1` provides bounded inspection, owner-bound staging, exact transforms, source-preserving split/merge, and heading-aware Markdown mutation. Direct calls for both subsystems are accepted.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=280`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=291`.
 - Public section count: `7`.
-- Authenticated smoke count: `280`.
+- Authenticated smoke count: `291`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -85,11 +85,11 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 Checkpoint topology:
 
 - public runtime: `auth:none`, port `3009`, 13 tools;
-- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `91` at `server_start_id = 2026-08-13T16:41:07.289Z`;
+- authorized runtime: `auth:oauth21`, port `3008`, repository and live runtime `98` at `server_start_id = 2026-08-13T18:45:01.480Z`;
 - access/bearer runtime paths retired;
 - public connector remains disconnected unless UI validation is explicitly needed;
 - OAuth connector was refreshed and validated in the earlier authenticated reconnect checkpoint;
-- Repository, live runtime, and this model map are aligned at `91`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, and final dual-era protocol contracts remain unchanged.
+- Repository, live runtime, and this model map are aligned at `98`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, structured file subsystem, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
 - Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.

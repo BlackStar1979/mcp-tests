@@ -19,8 +19,8 @@ const EXPECTED = Object.freeze({
   tool_names_hash: "b6526b6d88ccbee3",
   input_schema_fingerprint: "49377884818b3896",
   output_schema_fingerprint: "64961bbb24c85de3",
-  descriptor_fingerprint: "5fb3b6032e1f5919",
-  combined_fingerprint: "d9a5ad467f77e1b7",
+  descriptor_fingerprint: "62ec04eac2adec14",
+  combined_fingerprint: "05a85f87dfb3304d",
 });
 
 function readText(repoRoot, relPath) {

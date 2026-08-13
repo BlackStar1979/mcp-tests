@@ -59,6 +59,7 @@ const ORIGINAL = [
   try {
     assert.equal(markdownInspectTool.name, "markdown_inspect");
     assert.equal(markdownTransformTool.name, "markdown_transform");
+    assert.equal(markdownTransformTool.descriptor.annotations.destructiveHint, false);
     const inspected = await inspectMarkdown(workspacePath("document.md"), { maxNodes: 100 });
     assert.equal(inspected.file_sha256, sha256(ORIGINAL));
     assert.equal(inspected.has_final_newline, false);

@@ -70,8 +70,8 @@ for (const spec of [
 assert.equal(state.runtime_topology.public.port, 3009);
 assert.equal(state.runtime_topology.authorized.port, 3008);
 assert.equal(state.tool_surfaces.public_mcp_tools.count, 13);
-assert.equal(state.tool_surfaces.authorized_mcp_tools.count, 78);
-assert.equal(state.tool_surfaces.authenticated_total.count, 91);
+assert.equal(state.tool_surfaces.authorized_mcp_tools.count, 85);
+assert.equal(state.tool_surfaces.authenticated_total.count, 98);
 assert.equal(state.sessionless_inventory.coverage.official_final_seps, 41);
 assert.equal(state.sessionless_inventory.coverage.unclassified, 0);
 assert.equal(state.current_work_constraints.do_not_use_state_json_as_log, true);

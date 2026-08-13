@@ -68,7 +68,7 @@ const contentStageTool = {
     outputSchema: CONTENT_STAGE_OUTPUT_SCHEMA,
     annotations: {
       readOnlyHint: false,
-      destructiveHint: true,
+      destructiveHint: false,
       idempotentHint: false,
       openWorldHint: false,
     },

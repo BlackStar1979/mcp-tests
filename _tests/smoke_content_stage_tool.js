@@ -29,7 +29,7 @@ const manager = {
 
 (async () => {
   assert.equal(contentStageTool.descriptor.annotations.readOnlyHint, false);
-  assert.equal(contentStageTool.descriptor.annotations.destructiveHint, true);
+  assert.equal(contentStageTool.descriptor.annotations.destructiveHint, false);
 
   const context = { authResult: { clientId: "oauth-client-a" }, contentStageManager: manager };
   const created = await contentStageTool.execute({ action: "create" }, context);

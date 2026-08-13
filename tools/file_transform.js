@@ -87,7 +87,7 @@ const fileTransformTool = {
     outputSchema: FILE_TRANSFORM_OUTPUT_SCHEMA,
     annotations: {
       readOnlyHint: false,
-      destructiveHint: true,
+      destructiveHint: false,
       idempotentHint: false,
       openWorldHint: false,
     },
