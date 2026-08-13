@@ -132,6 +132,10 @@
       "status": "active_code_event"
     },
     {
+      "name": "process_job_idempotency_reused",
+      "status": "active_code_event"
+    },
+    {
       "name": "process_job_started",
       "status": "active_code_event"
     },

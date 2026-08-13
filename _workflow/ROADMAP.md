@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-09
+Updated: 2026-08-13
 
 ## Purpose
 
@@ -33,28 +33,27 @@ Current derivation:
 
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
-| P0 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but the last measured operational Codex client used legacy `initialize`. | Inspect current audit traffic; preserve both version-gated paths unless a newer client entry sample changes the verdict. |
-| P1 | Execute `OPS-1B` only when a live boundary becomes available | completed `OPS-1A`, recovered SFTP config or real reconnect event | The remaining gaps require external infrastructure or operator credential entry and must not be fabricated. | Run the existing bounded matrix against the newly available boundary and repair only reproduced defects. |
-| P2 | Execute one bounded `DOC-2A` fallback only when `COMP-1A` and `OPS-1B` are externally blocked | P0 and P1 externally blocked | Documentation maintenance may reduce future handoff cost without fabricating protocol evidence. | Current top25/churn>=5 audit is clean; rerun `scripts/audit_directory_docs.js` before any further directory-map work. |
-| P3 | Preserve accepted `MEM-1` behavior | live provider and complete cache | Cross-language memory retrieval is now a production support layer rather than an activation task. | Reopen only on a measured ranking, provider, cache, confidentiality, or fallback regression. |
-| P4 | Preserve the hardened CBM and governed tool surface | stable live runtime | The repaired bridge, indexes, connector identity, manual multi-repo stress harness, upstream issue reviews through ordinal 277, and snippet source-integrity recovery are production support truth. | Reopen CBM work only on a reproduced regression, failed stress run, new upstream issue with local impact, or approved capability change. |
-| P5 | Execute `COMP-1B` only if `COMP-1A` changes the blocker shape | P1 | Retirement-decision work is useful only when fresh evidence narrows the client boundary. | Preserve bounded compatibility until a real decision delta exists. |
-| P6 | Execute `SURF-1A` only when UI-visible truth changes the decision | stable live connector | UI truth remains a separate layer and should not become default churn. | Use only when it materially changes a protocol or deployment decision. |
-| P7 | Hold OAuth21 runtime hardening steady | live PKCE and startup-prune validation | Prevent stable auth from becoming a source of speculative churn. | Preserve PKCE, durable-state, startup-prune, backup, and audit guards; reopen only on reproduced evidence or a current standards delta. |
+| P0 | Add the MCP Tasks process adapter | accepted `PROC-1B-R2`, negotiated task capability | Standard task polling/cancellation should reuse one execution truth rather than create another scheduler/store. | Implement the thin capability-gated adapter in task `d8bf92e0-a6e9-4baf-b7bc-444abb9ebe64`; preserve owner authorization and cooperative cancellation races. |
+| P1 | Add bounded W3C Trace Context correlation | durable task/execution identity | Request, execution, task, artifact, and receipt need one safe correlation spine before artifact schemas harden. | Validate `traceparent`; persist extracted correlation only; bound or omit raw `tracestate` and `baggage`. |
+| P2 | Add owner-bound process output artifacts | durable execution plus tracing contract | Large terminal output needs immutable, rediscoverable artifacts without expanding `resources/list`. | Use opaque `resource_link` handles and a bounded chunk reader; do not rely on `resources/read` as a cursor protocol. |
+| P3 | Implement CIMD as an isolated SSRF-hardened compatibility package | stable Tasks/artifacts/tracing | DCR is deprecated but still required for real clients; CIMD adds remote metadata fetching and a new security boundary. | Require HTTPS, DNS/IP/redirect revalidation, private-address denial, bounded size/time, validation, cache policy, and separate adversarial fixtures. |
+| P4 | Add the MRTR conformance fixture | stable protocol adapters | MRTR is useful conformance evidence but should not complicate the execution foundation. | Keep it fixture-scoped and resolve required pre-task interaction synchronously. |
+| P5 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but the last measured operational Codex client used legacy `initialize`. | Preserve both version-gated paths unless a newer client entry sample changes the verdict. |
+| P6 | Execute `OPS-1B` only when a live boundary becomes available | completed `OPS-1A`, recovered SFTP config or real reconnect event | The remaining gaps require external infrastructure or operator credential entry and must not be fabricated. | Run the existing bounded matrix against the newly available boundary and repair only reproduced defects. |
 
 ## Bounded package queue
 
-0. `COMP-1A` — event-gated protocol course
-   Inspect current traffic for a client entry newer than the August 2 sample; rerun the operational verdict only when the evidence window is meaningfully new.
+0. `MCP-TASKS-PROCESS-ADAPTER` — active protocol package
+   Expose negotiated MCP Tasks as a thin view over the accepted durable process registry.
 
-1. `OPS-1B` — event-gated live boundary completion
-   Reopen only for recovered SFTP infrastructure, a real reconnect incident, or a reproduced operational regression.
+1. `TRACE-CONTEXT` / `PROCESS-ARTIFACTS`
+   Establish safe correlation, then add owner-bound immutable output artifacts with bounded reads.
 
-2. `DOC-2A` — bounded fallback
-   Execute only when one real current high-churn orientation gap can be closed without repo-wide documentation churn.
+2. `CIMD` / `MRTR`
+   Add current-protocol compatibility only with the explicit SSRF and fixture boundaries above.
 
-3. `COMP-1B` / `SURF-1A`
-   Execute only when fresh `COMP-1A` or UI evidence materially changes the decision surface.
+3. `COMP-1A` / `OPS-1B` / `DOC-2A`
+   Preserve as event-gated or bounded fallback work; they no longer block the internally actionable protocol queue.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed official client interoperability: `MCP-OFFICIAL-SDK-V2-INTEROP` pins `@modelcontextprotocol/client@2.0.0` for tests and guards default legacy, automatic modern, pinned modern, full OAuth21 DCR/PKCE/callback/refresh behavior, process-restart recovery from SQLite, authorized list/call, and server-side evidence without touching production runtime.
@@ -64,6 +63,7 @@ Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/o
 Completed upstream review extension: `CBM-UPSTREAM-201-277` records the remaining July 29, 2026 open-issue batch and updates the project-local skill boundary so documentation/workflow retrieval uses `workbench` `profile=knowledge` while CBM remains the indexed code graph.
 Completed retrieval quality pass: `RETR-1-ACTIVE-WORKFLOW-RANKING` guards that active workflow documents outrank historical decision records for natural planning questions in `search_index`, `search_index_context`, and `collect_context`; live `workbench` validation after restart `manual-1785343566402` confirms the same behavior on the running connector.
 Completed process execution: `PROC-1A` introduced the shared hardened sync/async core; `PROC-1B` adds durable recovery, rediscovery/history, controlled errors, and resolver fixes. Restarts `manual-1786291985998` and `manual-1786292134573` loaded the `91`-tool runtime and proved same-job terminal status/output recovery without OAuth relogin.
+Completed execution identity: `PROC-1B-R2` adds transactional owner-scoped `process_start` idempotency before spawn. Full `7 + 291`, direct same-key/conflict probes, and restart recovery of job `1121654d-5016-4cac-84e3-30b4d69630de` are green at fingerprint `ec7d3af5b4ea17f5`.
 Completed structured file operations: `FILE-1` adds bounded inspection, owner-bound durable staging, exact hash-preconditioned transforms, source-preserving split/merge, and heading-aware Markdown mutation. Restart `manual-1786646699884` loaded the corrected non-destructive policy; live preview/commit E2E proved staged append, section replacement, three-part split, and byte-identical merge.
 Completed operational E2E package: `OPS-1A` classifies eight risk families, adds a bounded hermetic/live runner, prevents server-dependent network tests from being run as standalone evidence, and records `56/56` green invocations in `_workflow/operator_decisions/ops_1a_operational_e2e_closeout.md`.
 Completed structural document graph pass: `RETR-1-DOCUMENT-GRAPH` exposes deterministic document-link topology in `knowledge_summary.document_graph`; the latest July 29 validation reports `252` docs, `514` internal document links, all `36` source-of-truth docs linked, and `40` unresolved-reference samples after wildcard/glob noise filtering.

@@ -4,15 +4,15 @@ Status: active navigation index
 Date: 2026-08-13
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are aligned at `98` (`13 public + 85 authorized-visible`) with fingerprint `05a85f87dfb3304d` at `server_start_id = 2026-08-13T18:45:01.480Z`. `PROC-1B` provides durable SQLite jobs/events and restart recovery without replay; `FILE-1` provides bounded inspection, owner-bound staging, exact transforms, source-preserving split/merge, and heading-aware Markdown mutation. Direct calls for both subsystems are accepted.
+Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are aligned at `98` (`13 public + 85 authorized-visible`) with fingerprint `ec7d3af5b4ea17f5` at `server_start_id = 2026-08-13T19:41:25.994Z`. `PROC-1B` provides durable SQLite jobs/events and restart recovery without replay; R2 adds accepted transactional owner-scoped retry identity before spawn. Live same-key, conflict, and post-restart probes passed. `FILE-1` remains accepted.
 
 The connector remained authorized through the process-package restart. No OAuth relogin is required.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = protocol-compatibility-evidence`
-- `next_primary = comp-1a-client-entry-evidence-on-new-version`
-- `next_secondary = ops-1b-live-sftp-and-reauth-evidence-when-available`
+- `current_working_course = durable-task-protocol-foundation`
+- `next_primary = mcp-tasks-process-adapter`
+- `next_secondary = trace-context-and-process-artifacts`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation

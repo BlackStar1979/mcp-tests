@@ -7,6 +7,8 @@ const MESSAGE_RULES = [
   [/outside configured workspace roots|outside.*workspace|path is not allowed/i, "process_cwd_not_allowed", "Working directory is outside the configured workspace roots."],
   [/environment variable|PYTHONPATH|NODE_OPTIONS|KUBECONFIG/i, "process_env_not_allowed", "Environment override is not allowed by the process policy."],
   [/queue.*full|queued process job capacity/i, "process_queue_full", "Process queue capacity is exhausted."],
+  [/idempotency key.*different process arguments/i, "process_idempotency_conflict", "Idempotency key was already used with different process arguments."],
+  [/idempotency key must be/i, "process_idempotency_key_invalid", "Idempotency key is invalid."],
   [/PowerShell/i, "process_powershell_policy_denied", "PowerShell invocation is not allowed by the configured process policy."],
 ];
 

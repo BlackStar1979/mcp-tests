@@ -134,6 +134,19 @@ const RUN_PROCESS_INPUT_SCHEMA = {
   },
 };
 
+const PROCESS_START_INPUT_SCHEMA = {
+  ...RUN_PROCESS_INPUT_SCHEMA,
+  properties: {
+    ...RUN_PROCESS_INPUT_SCHEMA.properties,
+    idempotency_key: {
+      type: "string",
+      minLength: 1,
+      maxLength: 200,
+      description: "Opaque retry key. The same OAuth client, key, and canonical process arguments return the existing durable job; reusing the key with different arguments is rejected.",
+    },
+  },
+};
+
 // The SYNCHRONOUS runner cannot deliver the asynchronous runner's ceiling, and until
 // 2026-08-10 both advertised the same 600000 ms because they share the input schema above.
 //
@@ -456,6 +469,7 @@ module.exports = {
   PROCESS_EVENTS_OUTPUT_SCHEMA,
   PROCESS_OUTPUT_INPUT_SCHEMA,
   PROCESS_OUTPUT_OUTPUT_SCHEMA,
+  PROCESS_START_INPUT_SCHEMA,
   PROCESS_TOOL_ANNOTATIONS,
   PROCESS_TOOL_ERROR_OUTPUT_SCHEMA,
   READ_ONLY_PROCESS_ANNOTATIONS,

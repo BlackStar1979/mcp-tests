@@ -92,16 +92,19 @@ assert.ok(readiness.includes("`codex-mcp-client 0.146.0-alpha.9.2`, with `2` mat
 assert.ok(roadmap.includes("## Priority matrix"));
 assert.ok(roadmap.includes("Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`"));
 assert.ok(roadmap.includes("Completed memory activation: `MEM-1-LIVE`"));
-assert.ok(roadmap.includes("`COMP-1A` — event-gated protocol course"));
+assert.ok(roadmap.includes("Completed execution identity: `PROC-1B-R2`"));
+assert.ok(roadmap.includes("`MCP-TASKS-PROCESS-ADAPTER` — active protocol package"));
 assert.ok(roadmap.includes("Completed operational E2E package: `OPS-1A`"));
 assert.ok(roadmap.includes("Completed process execution: `PROC-1A`"));
-assert.ok(roadmap.includes("`DOC-2A` — bounded fallback"));
+assert.ok(roadmap.includes("`COMP-1A` / `OPS-1B` / `DOC-2A`"));
 assert.ok(roadmap.includes("the August 2 operational `codex-mcp-client 0.146.0-alpha.9.2` sample"));
 assert.ok(processPersistenceAcceptance.includes("Status: GREEN / LIVE / ACCEPTED"));
 assert.ok(processPersistenceAcceptance.includes("manual-1786292134573"));
 assert.ok(processPersistenceAcceptance.includes("recovered_after_restart=true"));
 assert.ok(processPersistenceAcceptance.includes("does not persist command arguments or environment values"));
 assert.ok(processPersistenceAcceptance.includes("never replays commands after restart"));
+assert.ok(processPersistenceAcceptance.includes("owner-scoped transactional idempotency"));
+assert.ok(processPersistenceAcceptance.includes("keyed HMAC"));
 assert.ok(initializeEvidence.includes("## Live evidence refresh on 2026-07-27"));
 assert.ok(initializeEvidence.includes("## Live evidence refresh on 2026-07-28"));
 assert.ok(initializeEvidence.includes("`--latest-entry-window`"));
@@ -123,9 +126,9 @@ assert.ok(cbmSkillDirectory.includes("Status: active using-codebase-memory skill
 assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
-assert.equal(workflowState.workflow_progress_markers.current_working_course, "protocol-compatibility-evidence");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "comp-1a-client-entry-evidence-on-new-version");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "ops-1b-live-sftp-and-reauth-evidence-when-available");
+assert.equal(workflowState.workflow_progress_markers.current_working_course, "durable-task-protocol-foundation");
+assert.equal(workflowState.workflow_progress_markers.next_primary, "mcp-tasks-process-adapter");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "trace-context-and-process-artifacts");
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -138,9 +141,9 @@ assert.ok(workflowIndex.includes("the latest bounded `DOC-2A` passes refreshed t
 assert.ok(workflowIndex.includes("no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
-assert.ok(workflowIndex.includes("`current_working_course = protocol-compatibility-evidence`"));
-assert.ok(workflowIndex.includes("`next_primary = comp-1a-client-entry-evidence-on-new-version`"));
-assert.ok(workflowIndex.includes("`next_secondary = ops-1b-live-sftp-and-reauth-evidence-when-available`"));
+assert.ok(workflowIndex.includes("`current_working_course = durable-task-protocol-foundation`"));
+assert.ok(workflowIndex.includes("`next_primary = mcp-tasks-process-adapter`"));
+assert.ok(workflowIndex.includes("`next_secondary = trace-context-and-process-artifacts`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

@@ -52,6 +52,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(processStartTool.descriptor.annotations.readOnlyHint, false);
   assert.equal(processStartTool.descriptor.annotations.destructiveHint, true);
   assert.equal(processStartTool.descriptor.annotations.openWorldHint, true);
+  assert.equal(processStartTool.descriptor.inputSchema.properties.idempotency_key.maxLength, 200);
   assert.equal(processCancelTool.descriptor.annotations.destructiveHint, true);
   assert.equal(processCancelTool.descriptor.annotations.openWorldHint, true);
   assert.equal(processStatusTool.descriptor.annotations.readOnlyHint, true);
@@ -145,6 +146,35 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(rejectedAuditEvents.at(-1).event, "tool_call_end");
   assert.equal(rejectedAuditEvents.at(-1).payload.is_error, true);
   assert.equal(rejectedAuditEvents.at(-1).payload.error_code, "process_cwd_not_allowed");
+
+  const idempotentInput = {
+    command: "node",
+    args: ["-e", "setTimeout(() => {}, 5000)"],
+    cwd: "mcp-tests",
+    idempotency_key: "tool-retry-key",
+  };
+  const idempotentFirst = await processStartTool.execute(idempotentInput, context);
+  const idempotentRetry = await processStartTool.execute({
+    ...idempotentInput,
+    trace_id: "new-retry-trace",
+  }, context);
+  assert.equal(idempotentRetry.job_id, idempotentFirst.job_id);
+  const idempotentConflict = await processStartTool.execute({
+    ...idempotentInput,
+    args: ["-e", "process.stdout.write('different')"],
+  }, context);
+  assert.deepEqual(idempotentConflict, {
+    success: false,
+    error: {
+      code: "process_idempotency_conflict",
+      message: "Idempotency key was already used with different process arguments.",
+      retryable: false,
+    },
+  });
+  const otherOwnerIdempotent = await processStartTool.execute(idempotentInput, otherClientContext);
+  assert.notEqual(otherOwnerIdempotent.job_id, idempotentFirst.job_id);
+  await processCancelTool.execute({ job_id: otherOwnerIdempotent.job_id }, otherClientContext);
+  await processCancelTool.execute({ job_id: idempotentFirst.job_id }, context);
 
   const started = await processStartTool.execute({
     command: "node",

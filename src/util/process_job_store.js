@@ -99,6 +99,19 @@ function createProcessJobStore(options = {}) {
     );
     CREATE INDEX IF NOT EXISTS idx_process_job_events_job
       ON process_job_events(job_id, id);
+    CREATE TABLE IF NOT EXISTS process_job_idempotency (
+      runtime_scope TEXT NOT NULL,
+      owner_key TEXT NOT NULL,
+      operation TEXT NOT NULL,
+      idempotency_key_hash TEXT NOT NULL,
+      canonical_input_hash TEXT NOT NULL,
+      job_id TEXT NOT NULL,
+      created_at_ms INTEGER NOT NULL,
+      PRIMARY KEY(runtime_scope, owner_key, operation, idempotency_key_hash),
+      FOREIGN KEY(job_id) REFERENCES process_jobs(job_id) ON DELETE CASCADE
+    );
+    CREATE INDEX IF NOT EXISTS idx_process_job_idempotency_job
+      ON process_job_idempotency(job_id);
     CREATE TABLE IF NOT EXISTS process_job_instances (
       runtime_scope TEXT NOT NULL,
       server_instance_id TEXT NOT NULL,
@@ -168,6 +181,32 @@ function createProcessJobStore(options = {}) {
     ).get(runtimeScope, String(jobId || "")));
   }
 
+  function selectIdempotency(ownerKey, operation, keyHash) {
+    return db.prepare(`
+      SELECT canonical_input_hash, job_id
+      FROM process_job_idempotency
+      WHERE runtime_scope=? AND owner_key=? AND operation=? AND idempotency_key_hash=?
+    `).get(runtimeScope, ownerKey, operation, keyHash) || null;
+  }
+
+  function validateIdempotencyMatch(mapping, inputHash) {
+    if (!mapping) return null;
+    if (mapping.canonical_input_hash !== inputHash) {
+      throw createStoreError(
+        "Idempotency key was already used with different process arguments.",
+        "process_idempotency_conflict"
+      );
+    }
+    const record = selectAny(mapping.job_id);
+    if (!record) {
+      throw createStoreError(
+        "Idempotency registry refers to a missing process job.",
+        "process_job_store_corrupt"
+      );
+    }
+    return record;
+  }
+
   function refreshInstanceLease(updatedAtMs = now()) {
     transaction(() => {
       db.prepare(`
@@ -204,9 +243,8 @@ function createProcessJobStore(options = {}) {
     return processExists(record.serverPid, processKill);
   }
 
-  function create(job) {
-    return transaction(() => {
-      db.prepare(`
+  function insertJob(job) {
+    db.prepare(`
         INSERT INTO process_jobs (
           job_id, runtime_scope, owner_key, command, family, resolution_class, cwd, workspace,
           status, created_at_ms, updated_at_ms, timeout_ms, output_limit_chars,
@@ -217,8 +255,47 @@ function createProcessJobStore(options = {}) {
         job.cwd, job.workspace, job.createdAtMs, job.createdAtMs, job.timeoutMs,
         job.outputLimit, serverInstanceId, serverPid
       );
-      insertEvent(job.id, null, "queued", "process_job_queued", null, job.createdAtMs);
+    insertEvent(job.id, null, "queued", "process_job_queued", null, job.createdAtMs);
+  }
+
+  function create(job) {
+    return transaction(() => {
+      insertJob(job);
       return selectAny(job.id);
+    });
+  }
+
+  function lookupIdempotent({ ownerKey, operation, keyHash, inputHash }) {
+    return validateIdempotencyMatch(
+      selectIdempotency(ownerKey, operation, keyHash),
+      inputHash
+    );
+  }
+
+  function createIdempotent(job, { operation, keyHash, inputHash }) {
+    return transaction(() => {
+      const existing = validateIdempotencyMatch(
+        selectIdempotency(job.ownerKey, operation, keyHash),
+        inputHash
+      );
+      if (existing) return { created: false, record: existing };
+
+      insertJob(job);
+      db.prepare(`
+        INSERT INTO process_job_idempotency (
+          runtime_scope, owner_key, operation, idempotency_key_hash,
+          canonical_input_hash, job_id, created_at_ms
+        ) VALUES (?, ?, ?, ?, ?, ?, ?)
+      `).run(
+        runtimeScope,
+        job.ownerKey,
+        operation,
+        keyHash,
+        inputHash,
+        job.id,
+        job.createdAtMs
+      );
+      return { created: true, record: selectAny(job.id) };
     });
   }
 
@@ -398,10 +475,12 @@ function createProcessJobStore(options = {}) {
     close,
     counts,
     create,
+    createIdempotent,
     events,
     finish,
     get,
     list,
+    lookupIdempotent,
     markRunning,
     prune,
     reconcileOrphans,

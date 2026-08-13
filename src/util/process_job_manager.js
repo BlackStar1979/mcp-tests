@@ -1,6 +1,6 @@
 "use strict";
 
-const { createHash, randomUUID } = require("node:crypto");
+const { createHash, createHmac, randomUUID } = require("node:crypto");
 
 const {
   prepareProcessExecution,
@@ -23,6 +23,7 @@ const TERMINAL_STATUSES = new Set([
 ]);
 const DEFAULT_INSTANCE_LEASE_HEARTBEAT_MS = 5000;
 const MIN_INSTANCE_LEASE_HEARTBEAT_MS = 250;
+const PROCESS_START_OPERATION = "process_start";
 
 function normalizeInstanceLeaseHeartbeatMs(value, leaseTtlMs) {
   const parsed = Number(value);
@@ -60,6 +61,42 @@ function cancellationReasonCode(reason) {
   return reason === "server_restart" ? "server_restart" : "requested";
 }
 
+function sha256(value) {
+  return createHash("sha256").update(String(value), "utf8").digest("hex");
+}
+
+function normalizeIdempotencyKey(value) {
+  if (value === undefined || value === null) return "";
+  if (typeof value !== "string" || value.trim() === "" || value.length > 200) {
+    const error = new Error("Process idempotency key must be a non-empty string of at most 200 characters.");
+    error.code = "process_idempotency_key_invalid";
+    throw error;
+  }
+  return value;
+}
+
+function canonicalProcessInputHash(input, prepared) {
+  const normalizedEnv = {};
+  if (input.env && typeof input.env === "object" && !Array.isArray(input.env)) {
+    for (const [key, value] of Object.entries(input.env)) {
+      normalizedEnv[String(key).toUpperCase()] = String(value);
+    }
+  }
+  const callerEnv = Object.fromEntries(Object.entries(normalizedEnv).sort(([left], [right]) => (
+    left < right ? -1 : left > right ? 1 : 0
+  )));
+  const absoluteCwd = prepared.invocation.cwdInfo.absolutePath;
+  return sha256(JSON.stringify({
+    version: 1,
+    command: prepared.invocation.logicalCommand,
+    args: prepared.invocation.originalArgs,
+    cwd: process.platform === "win32" ? absoluteCwd.toLowerCase() : absoluteCwd,
+    timeout_ms: prepared.timeoutMs,
+    max_output_chars: prepared.outputLimit,
+    env: callerEnv,
+  }));
+}
+
 function createProcessJobManager(options = {}) {
   const config = options.config || PROCESS_RUNNER_CONFIG;
   const prepareExecution = options.prepareExecution || prepareProcessExecution;
@@ -67,6 +104,7 @@ function createProcessJobManager(options = {}) {
   const now = options.now || Date.now;
   const createId = options.randomUUID || randomUUID;
   const executionDependencies = options.executionDependencies || {};
+  const idempotencySecret = String(options.idempotencySecret || "");
   const runtimeScope = String(options.runtimeScope || "default");
   const serverInstanceId = String(options.serverInstanceId || `process-${process.pid}`);
   const instanceLeaseTtlMs = normalizeInstanceLeaseTtlMs(
@@ -344,21 +382,45 @@ function createProcessJobManager(options = {}) {
     };
   }
 
+  function reuseIdempotent(record) {
+    const job = jobs.get(record.id) || hydrate(record);
+    emit("process_job_idempotency_reused", job, {
+      existing_status: job.status,
+    });
+    return toStatus(job);
+  }
+
   function start(input = {}, owner = {}) {
     if (shuttingDown) throw new Error("Process job manager is shutting down.");
     prune();
+    const prepared = prepareExecution(input, { ...executionDependencies, config });
+    const jobOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    const idempotencyKey = normalizeIdempotencyKey(input.idempotency_key);
+    const idempotency = idempotencyKey ? {
+      operation: PROCESS_START_OPERATION,
+      keyHash: idempotencySecret
+        ? createHmac("sha256", idempotencySecret)
+            .update(`${PROCESS_START_OPERATION}\0${idempotencyKey}`, "utf8")
+            .digest("hex")
+        : sha256(`${PROCESS_START_OPERATION}\0${idempotencyKey}`),
+      inputHash: canonicalProcessInputHash(input, prepared),
+    } : null;
+    if (idempotency) {
+      const existing = store.lookupIdempotent({ ownerKey: jobOwnerKey, ...idempotency });
+      if (existing) return reuseIdempotent(existing);
+    }
     if (runningCount() >= config.maxConcurrent && queue.length >= config.maxQueued) {
       const error = new Error("Process job queue is full.");
       error.code = "process_job_queue_full";
       throw error;
     }
 
-    const prepared = prepareExecution(input, { ...executionDependencies, config });
     const createdAtMs = now();
+    const { idempotency_key: _idempotencyKey, ...executionInput } = input;
     const job = {
       id: createId(),
-      ownerKey: ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true),
-      input: { ...input },
+      ownerKey: jobOwnerKey,
+      input: executionInput,
       prepared,
       status: "queued",
       createdAtMs,
@@ -370,7 +432,7 @@ function createProcessJobManager(options = {}) {
       recoveredAfterRestart: false,
       persistedOnly: false,
     };
-    store.create({
+    const record = {
       id: job.id,
       ownerKey: job.ownerKey,
       command: prepared.invocation.logicalCommand,
@@ -381,7 +443,13 @@ function createProcessJobManager(options = {}) {
       createdAtMs,
       timeoutMs: prepared.timeoutMs,
       outputLimit: prepared.outputLimit,
-    });
+    };
+    if (idempotency) {
+      const created = store.createIdempotent(record, idempotency);
+      if (!created.created) return reuseIdempotent(created.record);
+    } else {
+      store.create(record);
+    }
     jobs.set(job.id, job);
     queue.push(job.id);
     emit("process_job_queued", job, {

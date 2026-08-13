@@ -71,6 +71,62 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(outputRest.stdout, "-output");
   assert.equal(outputRest.stdout_eof, true);
 
+  const idempotentInput = {
+    command: "node",
+    args: ["-e", "setTimeout(() => process.stdout.write('idempotent-output'), 5000)"],
+    cwd: "mcp-tests",
+    idempotency_key: "manager-retry-key",
+  };
+  const idempotentFirst = manager.start(idempotentInput, { ownerId: "idempotent-client" });
+  const idempotentRetry = manager.start({
+    ...idempotentInput,
+    trace_id: "retry-trace-may-change",
+  }, { ownerId: "idempotent-client" });
+  assert.equal(idempotentRetry.job_id, idempotentFirst.job_id);
+  const envOrderedFirst = manager.start({
+    command: "node",
+    args: ["-e", "process.stdout.write('env-order')"],
+    cwd: "mcp-tests",
+    env: { NODE_ENV: "test", NO_COLOR: "1" },
+    idempotency_key: "manager-env-order-key",
+  }, { ownerId: "env-order-client" });
+  const envOrderedRetry = manager.start({
+    command: "node",
+    args: ["-e", "process.stdout.write('env-order')"],
+    cwd: "mcp-tests",
+    env: { no_color: "1", node_env: "test" },
+    idempotency_key: "manager-env-order-key",
+  }, { ownerId: "env-order-client" });
+  assert.equal(envOrderedRetry.job_id, envOrderedFirst.job_id);
+  await manager.cancel(envOrderedFirst.job_id, "idempotency-test-cleanup", { ownerId: "env-order-client" });
+  assert.throws(
+    () => manager.start({
+      ...idempotentInput,
+      args: ["-e", "process.stdout.write('different-command')"],
+    }, { ownerId: "idempotent-client" }),
+    (error) => error && error.code === "process_idempotency_conflict"
+  );
+  const otherOwnerJob = manager.start(idempotentInput, { ownerId: "other-idempotent-client" });
+  assert.notEqual(otherOwnerJob.job_id, idempotentFirst.job_id);
+  const queueFiller = manager.start({
+    command: "node",
+    args: ["-e", "process.stdout.write('queue-filler')"],
+    cwd: "mcp-tests",
+  });
+  assert.equal(queueFiller.status, "queued");
+  assert.equal(
+    manager.start(idempotentInput, { ownerId: "idempotent-client" }).job_id,
+    idempotentFirst.job_id,
+    "idempotent retry must bypass exhausted queue capacity"
+  );
+  assert.throws(
+    () => manager.start({ command: "node", args: ["--version"], cwd: "mcp-tests" }),
+    (error) => error && error.code === "process_job_queue_full"
+  );
+  await manager.cancel(queueFiller.job_id, "idempotency-test-cleanup");
+  await manager.cancel(otherOwnerJob.job_id, "idempotency-test-cleanup", { ownerId: "other-idempotent-client" });
+  await manager.cancel(idempotentFirst.job_id, "idempotency-test-cleanup", { ownerId: "idempotent-client" });
+
   const running = manager.start({
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
@@ -124,8 +180,10 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(auditText.includes("first-secret"), false);
   assert.equal(auditText.includes("audit-secret-value"), false);
   assert.equal(auditText.includes("cancel-secret-value"), false);
+  assert.equal(auditText.includes("manager-retry-key"), false);
   assert.equal(auditText.includes("process_job_queued"), true);
   assert.equal(auditText.includes("process_job_completed"), true);
+  assert.equal(auditText.includes("process_job_idempotency_reused"), true);
   assert.equal(audits.every((event) => !Object.hasOwn(event, "args")), true);
   assert.equal(audits.every((event) => !Object.hasOwn(event, "env")), true);
   assert.equal(audits.every((event) => !Object.hasOwn(event, "executable")), true);

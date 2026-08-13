@@ -51,6 +51,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
       storageFile,
       runtimeScope,
       serverInstanceId: "instance-one",
+      idempotencySecret: "persistent-idempotency-test-secret",
     });
     resources.push(firstManager);
     const first = firstManager.start({
@@ -64,6 +65,21 @@ async function waitFor(predicate, timeoutMs = 5000) {
     });
     assert.equal(firstDone.status, "ok");
     assert.equal(firstDone.durable, true);
+    const durableIdempotencyKey = "durable-retry-key-must-not-persist";
+    const durableIdempotentInput = {
+      command: "node",
+      args: ["-e", "process.stdout.write('durable-idempotent-output')"],
+      cwd: "mcp-tests",
+      idempotency_key: durableIdempotencyKey,
+    };
+    const durableIdempotent = firstManager.start(
+      durableIdempotentInput,
+      { ownerId: "client-a" }
+    );
+    await waitFor(() => {
+      const status = firstManager.status(durableIdempotent.job_id, { ownerId: "client-a" });
+      return status.terminal ? status : null;
+    });
     firstManager.close();
 
     const secondManager = createProcessJobManager({
@@ -71,6 +87,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
       storageFile,
       runtimeScope,
       serverInstanceId: "instance-two",
+      idempotencySecret: "persistent-idempotency-test-secret",
     });
     resources.push(secondManager);
     const recovered = secondManager.status(first.job_id, { ownerId: "client-a" });
@@ -89,6 +106,25 @@ async function waitFor(predicate, timeoutMs = 5000) {
     assert.equal(listed.jobs.some((job) => job.job_id === first.job_id), true);
     const completedEvents = secondManager.events(first.job_id, { limit: 50 }, { ownerId: "client-a" });
     assert.equal(completedEvents.events.some((event) => event.to_status === "ok"), true);
+    const retriedAfterRestart = secondManager.start({
+      ...durableIdempotentInput,
+      trace_id: "post-restart-trace",
+    }, { ownerId: "client-a" });
+    assert.equal(retriedAfterRestart.job_id, durableIdempotent.job_id);
+    assert.equal(retriedAfterRestart.status, "ok");
+    assert.throws(
+      () => secondManager.start({
+        ...durableIdempotentInput,
+        args: ["-e", "process.stdout.write('conflicting-retry')"],
+      }, { ownerId: "client-a" }),
+      (error) => error && error.code === "process_idempotency_conflict"
+    );
+    const otherOwnerRetry = secondManager.start(durableIdempotentInput, { ownerId: "client-b" });
+    assert.notEqual(otherOwnerRetry.job_id, durableIdempotent.job_id);
+    await waitFor(() => {
+      const status = secondManager.status(otherOwnerRetry.job_id, { ownerId: "client-b" });
+      return status.terminal ? status : null;
+    });
     secondManager.close();
 
     const orphanStore = createProcessJobStore({
@@ -244,6 +280,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     const databaseBytes = fs.readFileSync(storageFile).toString("latin1");
     assert.equal(databaseBytes.includes(secretArg), false);
     assert.equal(databaseBytes.includes("must-not-persist-process-env"), false);
+    assert.equal(databaseBytes.includes(durableIdempotencyKey), false);
 
     console.log("smoke_process_job_persistence ok");
   } finally {

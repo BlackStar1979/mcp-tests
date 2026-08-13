@@ -21,6 +21,8 @@ The server persists owner-scoped job metadata, bounded stdout/stderr, and append
 
 Independent adversarial stress later found that PID existence alone could preserve a crashed instance's job forever after PID reuse. `PROC-1B-R1` replaces that inference with a renewable `(runtime_scope, server_instance_id, PID)` lease and periodic orphan reconciliation. The regression keeps PID existence true, proves that a fresh lease protects a genuinely live overlapping instance, then proves that lease expiry produces the durable `interrupted` transition. See `process_job_pid_reuse_recovery.md`.
 
+`PROC-1B-R2` adds owner-scoped transactional idempotency for `process_start`. The SQLite transaction creates the durable `queued` job and its unique `(runtime_scope, owner, operation, key)` mapping before the process can spawn. Equal retries return the existing job across queue exhaustion and restart; reuse with different effective command semantics fails deterministically. OAuth runtime keys use keyed HMAC, raw keys/args/env are not persisted or audited, and missing mapped jobs fail closed as store corruption. This is the execution-identity foundation for the later MCP Tasks adapter, not a parallel task store.
+
 ## Live evidence
 
 - First deployment restart: `manual-1786291985998`.
@@ -35,6 +37,10 @@ Independent adversarial stress later found that PID existence alone could preser
 - The existing OAuth connector remained callable; no relogin was required.
 - Unknown job IDs return `process_job_not_found` as a controlled result instead of a transport exception.
 - Live `powershell -Command` and `py -3.14` jobs completed with exit code 0; `py` reported `resolution_class=windows_python_launcher`.
+- R2 deployment receipts: `manual-1786650044493` and restart-recovery proof `manual-1786650084406`.
+- R2 final server start: `2026-08-13T19:41:25.994Z`, fingerprint `ec7d3af5b4ea17f5`, tools `98`.
+- R2 live job `1121654d-5016-4cac-84e3-30b4d69630de` returned the same handle for an equal retry, rejected changed arguments with `process_idempotency_conflict`, then returned the same terminal output after restart with `recovered_after_restart=true`.
+- R2 full offline acceptance: `7 public + 291 authenticated`, `ok=true`; self-test, matrix, workflow truth, and direct `project_truth_audit` are green.
 
 ## Connector surface acceptance
 

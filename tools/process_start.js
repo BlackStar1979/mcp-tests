@@ -2,8 +2,8 @@
 
 const {
   PROCESS_JOB_STATUS_OUTPUT_SCHEMA,
+  PROCESS_START_INPUT_SCHEMA,
   PROCESS_TOOL_ANNOTATIONS,
-  RUN_PROCESS_INPUT_SCHEMA,
   processToolOutputSchema,
 } = require("../src/schemas/process_tools");
 const { executeProcessTool } = require("../src/util/process_tool_errors");
@@ -19,8 +19,8 @@ const processStartTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Start bounded workspace process",
-    description: "Validate and enqueue an allowlisted workspace process, returning immediately with a bounded OAuth-client-bound durable job handle.",
-    inputSchema: RUN_PROCESS_INPUT_SCHEMA,
+    description: "Validate and enqueue an allowlisted workspace process, returning immediately with a bounded OAuth-client-bound durable job handle. Supply idempotency_key when a lost response may be retried: the same key and canonical arguments return the existing job, while conflicting reuse is rejected.",
+    inputSchema: PROCESS_START_INPUT_SCHEMA,
     outputSchema: processToolOutputSchema(PROCESS_JOB_STATUS_OUTPUT_SCHEMA),
     annotations: PROCESS_TOOL_ANNOTATIONS,
   },

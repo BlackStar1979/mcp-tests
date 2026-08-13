@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-13T18:49:00.000Z",
+  "updated_at": "2026-08-13T19:42:00.000Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "protocol-compatibility-evidence",
-    "next_primary": "comp-1a-client-entry-evidence-on-new-version",
-    "next_secondary": "ops-1b-live-sftp-and-reauth-evidence-when-available",
+    "current_working_course": "durable-task-protocol-foundation",
+    "next_primary": "mcp-tasks-process-adapter",
+    "next_secondary": "trace-context-and-process-artifacts",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -181,7 +181,7 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 103,
+    "env_var_count": 104,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -282,7 +282,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 98,
-      "server_start_id": "2026-08-13T18:45:01.480Z",
+      "server_start_id": "2026-08-13T19:41:25.994Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -306,13 +306,13 @@
     "oauth21_3008_tools": {
       "tool_count": 98,
       "tool_names_hash": "b6526b6d88ccbee3",
-      "input_schema_fingerprint": "49377884818b3896",
+      "input_schema_fingerprint": "440c0f660abff822",
       "output_schema_fingerprint": "64961bbb24c85de3",
-      "descriptor_fingerprint": "62ec04eac2adec14",
-      "combined_fingerprint": "05a85f87dfb3304d",
+      "descriptor_fingerprint": "19512cb09a5bc329",
+      "combined_fingerprint": "ec7d3af5b4ea17f5",
       "connector_map_status": "repo98_runtime98_model98_aligned",
       "repo_current_expected_tool_count": 98,
-      "server_start_id": "2026-08-13T18:45:01.480Z",
+      "server_start_id": "2026-08-13T19:41:25.994Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

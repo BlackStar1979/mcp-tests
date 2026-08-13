@@ -42,14 +42,14 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `85`
 - Authenticated repo target for profile `tests`: `98`
-- Live OAuth21 runtime exposes `98` tools at `server_start_id = 2026-08-13T18:45:01.480Z` with fingerprint `05a85f87dfb3304d`. The refreshed model surface directly called all seven structured-file tools; live preview/commit probes proved staged append, hash-bound Markdown replacement, source-preserving three-part split, and byte-identical merge without OAuth relogin.
+- Live OAuth21 runtime exposes `98` tools at `server_start_id = 2026-08-13T19:41:25.994Z` with governed fingerprint `ec7d3af5b4ea17f5`. The refreshed model surface directly validated R2 same-job retry, deterministic conflict, and post-restart recovery; the accepted structured-file behaviors remain unchanged.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = protocol-compatibility-evidence`
-- `next_primary = comp-1a-client-entry-evidence-on-new-version`
-- `next_secondary = ops-1b-live-sftp-and-reauth-evidence-when-available`
+- `current_working_course = durable-task-protocol-foundation`
+- `next_primary = mcp-tasks-process-adapter`
+- `next_secondary = trace-context-and-process-artifacts`
 
 ## Verified documentation authorities
 
@@ -81,6 +81,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
 - `PROC-1A` remains accepted and live. `PROC-1B` provides a SQLite WAL owner-scoped job/event registry, restart recovery without command replay, controlled error envelopes, Windows `py` launcher fidelity, and functional PowerShell resolution. `PROC-1B-R1` adds renewable server-instance leases plus periodic orphan reconciliation to prevent PID reuse from preserving a crashed job indefinitely; two controlled restarts loaded the correction, one active lease remains, and the same live job retained terminal state, output, and event history with `recovered_after_restart=true`.
+- `PROC-1B-R2` is live and accepted: `process_start` reserves one logical execution atomically by OAuth owner plus opaque idempotency key and canonical effective command semantics. Equal retries reuse the durable job before queue-capacity checks and after restart; conflicts are deterministic; OAuth runtime key hashes are HMAC-bound; raw keys, args, and env remain excluded. Live job `1121654d-5016-4cac-84e3-30b4d69630de` retained identity and output after restart with `recovered_after_restart=true`.
 - The persistent Codex queue now contains one active package (`Build operational E2E coverage matrix`). Two stale completed entries were transitioned to `done` through append-only snapshots, and live `memory_get_tasks` resolves the latest status correctly.
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.

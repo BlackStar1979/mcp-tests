@@ -1,13 +1,13 @@
 # TESTS MCP workbench — process runner instruction (consumers)
 
-Revision 2026-08-10. Supersedes the previous instruction, whose stated limits were wrong for
+Revision 2026-08-13. Supersedes the previous instruction, whose stated limits were wrong for
 the synchronous tool. Every number here was read from the running server, not from a spec.
 
 ---
 
 ## Runtime status
 
-- workbench exposes **91** tools;
+- workbench exposes **98** tools;
 - `run_process` (synchronous) plus `process_start`, `process_status`, `process_output`,
   `process_cancel`, `process_list`, `process_events` (asynchronous) are callable;
 - jobs, bounded output and lifecycle events persist in SQLite WAL and survive restart;
@@ -60,6 +60,7 @@ the documented proxy read timeout.
 | `status: timeout` in the job record | the **process** hit its `timeout_ms` | a real result: the command was too slow |
 | `ModuleNotFoundError` for a project package | wrong interpreter, not a tool defect | see §7 |
 | `process_job_not_found` | job belongs to a different OAuth client | correct behaviour, not an error |
+| `process_idempotency_conflict` | the same owner/key was reused with different effective execution arguments | generate a new key for the new logical execution |
 
 **The first three are not server defects and not test failures.** None of those messages names
 its own cause, which is exactly why they get misread. If a diagnosis is heading toward "the MCP
@@ -77,13 +78,20 @@ server is broken", first check whether the call was synchronous and long.
      "args": ["run", "--locked", "pytest", "-q", "tests/test_x.py"],
      "cwd": "papers-memory-mcp",
      "timeout_ms": 600000,
-     "max_output_chars": 1000000
+     "max_output_chars": 1000000,
+     "idempotency_key": "agent-task-uuid-or-other-opaque-retry-key"
    })
    ```
    Prefer a **workspace-relative** `cwd` (`papers-memory-mcp`, `mcp-tests`). Absolute paths are
    also accepted when they resolve inside a configured workspace root; paths outside those roots
    and traversal escapes are rejected with `process_cwd_not_allowed`.
-3. **Persist the returned `job_id` in durable task/state memory immediately.** Conversational
+   Use one stable, opaque `idempotency_key` for every logical execution that may be retried after
+   a lost response. The server transactionally reserves `queued` job state before spawn. The same
+   OAuth owner, key, and effective command semantics return that existing job even after restart;
+   a conflicting reuse is rejected. The key is stored only as a keyed HMAC in the OAuth runtime,
+   is excluded from job input, output, and audit, and must not contain a secret.
+3. **Persist the returned `job_id` and chosen `idempotency_key` in durable task/state memory
+   immediately.** Conversational
    context is not storage.
 4. Poll `process_status` every 2–3 s at first, then 5–10 s. Do not busy-loop.
 5. Read output incrementally with `process_output`, reusing `stdout_next_offset` /
