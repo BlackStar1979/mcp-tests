@@ -3,7 +3,7 @@
 Status: authorized tools facade directory map
 Updated: 2026-08-02
 
-- `read_file.js`, `read_file_lines.js`, `read_file_chunk.js`, `write_file.js`, `append_file.js`, `edit_file_patch.js`
+- `read_file.js`, `read_file_lines.js`, `read_file_chunk.js`, `file_inspect.js`, `file_transform.js`, `write_file.js`, `append_file.js`, `edit_file_patch.js`
   Authorized workspace file-read and file-mutation facades.
 - `copy_path.js`, `move_path.js`, `delete_path.js`, `restore_path.js`, `list_directory.js`, `get_info.js`, `inventory_tree.js`
   Authorized workspace path and inventory facades.

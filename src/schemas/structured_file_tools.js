@@ -54,7 +54,7 @@ const ANCHOR_SELECTOR_SCHEMA = closedObject(["kind", "text"], {
   include_anchor: { type: "boolean", default: true },
   expected_matches: { type: "integer", minimum: 1, maximum: 100, default: 1 },
   expected_sha256: SHA256_SCHEMA,
-}, "Select one exact text occurrence. Mutations fail closed when expected_matches does not match reality.");
+}, "Select one exact text occurrence. Mutations fail closed when expected_matches does not match reality. include_anchor=false selects a zero-length insertion point immediately after the anchor.");
 
 const MARKDOWN_SECTION_SELECTOR_SCHEMA = closedObject(["kind", "heading_path"], {
   kind: { type: "string", enum: ["markdown_section"] },
@@ -105,8 +105,51 @@ const FILE_INSPECT_INPUT_SCHEMA = Object.freeze(closedObject(["path"], {
   selector: FILE_SELECTOR_SCHEMA,
   context_before_chars: { type: "integer", minimum: 0, maximum: 4096, default: 0 },
   context_after_chars: { type: "integer", minimum: 0, maximum: 4096, default: 0 },
-  max_results: { type: "integer", minimum: 1, maximum: 100, default: 20 },
 }, "Inspect hashes and bounded ranges without returning the complete file."));
+
+const TOOL_ERROR_SCHEMA = Object.freeze(closedObject(["code", "message", "retryable"], {
+  code: { type: "string" },
+  message: { type: "string" },
+  retryable: { type: "boolean" },
+}));
+
+const RESOLVED_SELECTOR_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "kind", "start_byte", "end_byte", "bytes", "range_sha256", "matches", "line_start", "line_end",
+], {
+  kind: { type: "string" },
+  start_byte: { type: "integer", minimum: 0 },
+  end_byte: { type: "integer", minimum: 0 },
+  bytes: { type: "integer", minimum: 0 },
+  range_sha256: SHA256_SCHEMA,
+  matches: { type: "integer", minimum: 0 },
+  line_start: { anyOf: [{ type: "integer", minimum: 1 }, { type: "null" }] },
+  line_end: { anyOf: [{ type: "integer", minimum: 1 }, { type: "null" }] },
+}));
+
+const FILE_INSPECT_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "success", "path", "bytes", "file_sha256", "has_utf8_bom", "dominant_eol", "total_lines", "selector", "context", "error",
+], {
+  success: { type: "boolean" },
+  path: { type: "string" },
+  bytes: { type: "integer", minimum: 0 },
+  file_sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  has_utf8_bom: { type: "boolean" },
+  dominant_eol: { type: "string", enum: ["\n", "\r\n", "\r"] },
+  total_lines: { type: "integer", minimum: 0 },
+  selector: { anyOf: [RESOLVED_SELECTOR_OUTPUT_SCHEMA, { type: "null" }] },
+  context: {
+    anyOf: [
+      closedObject(["before", "selected", "after", "truncated"], {
+        before: { type: "string", maxLength: 4096 },
+        selected: { type: "string", maxLength: STRUCTURED_CONTENT_CHUNK_MAX_CHARS },
+        after: { type: "string", maxLength: 4096 },
+        truncated: { type: "boolean" },
+      }),
+      { type: "null" },
+    ],
+  },
+  error: { anyOf: [TOOL_ERROR_SCHEMA, { type: "null" }] },
+}));
 
 const CONTENT_STAGE_INPUT_SCHEMA = Object.freeze(closedObject(["action"], {
   action: { type: "string", enum: ["create", "append", "seal", "status", "release"] },
@@ -175,6 +218,42 @@ const FILE_TRANSFORM_INPUT_SCHEMA = Object.freeze(closedObject(["action", "path"
   receipt: { type: "string", minLength: 16, maxLength: 4096 },
   allow_protected: { type: "boolean", default: false },
 }, "Use for exact single-file insert, replace, delete, or append operations. Preview first; commit must include its receipt."));
+
+const FILE_TRANSFORM_OPERATION_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "ordinal", "kind", "start_byte", "end_byte", "range_sha256", "content_kind", "content_fingerprint", "content_bytes", "stage_sha256", "source_path",
+], {
+  ordinal: { type: "integer", minimum: 0 },
+  kind: { type: "string" },
+  start_byte: { type: "integer", minimum: 0 },
+  end_byte: { type: "integer", minimum: 0 },
+  range_sha256: SHA256_SCHEMA,
+  content_kind: { anyOf: [{ type: "string" }, { type: "null" }] },
+  content_fingerprint: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  content_bytes: { type: "integer", minimum: 0 },
+  stage_sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  source_path: { anyOf: [{ type: "string" }, { type: "null" }] },
+}));
+
+const FILE_TRANSFORM_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "success", "status", "path", "source_sha256", "result_sha256", "source_bytes", "bytes_before", "bytes_after",
+  "delta_bytes", "operation_count", "operations", "receipt", "backup", "warnings", "error",
+], {
+  success: { type: "boolean" },
+  status: { type: "string", enum: ["preview", "committed", "error"] },
+  path: { type: "string" },
+  source_sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  result_sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  source_bytes: { type: "integer", minimum: 0 },
+  bytes_before: { type: "integer", minimum: 0 },
+  bytes_after: { type: "integer", minimum: 0 },
+  delta_bytes: { type: "integer" },
+  operation_count: { type: "integer", minimum: 0 },
+  operations: { type: "array", maxItems: 100, items: FILE_TRANSFORM_OPERATION_OUTPUT_SCHEMA },
+  receipt: { type: "string" },
+  backup: { anyOf: [{ type: "string" }, { type: "null" }] },
+  warnings: { type: "array", items: { type: "string" } },
+  error: { anyOf: [TOOL_ERROR_SCHEMA, { type: "null" }] },
+}));
 
 const FILE_SPLIT_PART_SCHEMA = Object.freeze(closedObject(["destination", "selector"], {
   destination: WORKSPACE_PATH_SCHEMA,
@@ -256,10 +335,12 @@ module.exports = {
   CONTENT_STAGE_INPUT_SCHEMA,
   CONTENT_STAGE_OUTPUT_SCHEMA,
   FILE_INSPECT_INPUT_SCHEMA,
+  FILE_INSPECT_OUTPUT_SCHEMA,
   FILE_MERGE_INPUT_SCHEMA,
   FILE_SELECTOR_SCHEMA,
   FILE_SPLIT_INPUT_SCHEMA,
   FILE_TRANSFORM_INPUT_SCHEMA,
+  FILE_TRANSFORM_OUTPUT_SCHEMA,
   MARKDOWN_INSPECT_INPUT_SCHEMA,
   MARKDOWN_TRANSFORM_INPUT_SCHEMA,
   STRUCTURED_CONTENT_CHUNK_MAX_CHARS,

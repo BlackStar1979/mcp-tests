@@ -9,6 +9,8 @@ Updated: 2026-08-01
   Shared runtime policy, pinned command resolution, process execution, durable SQLite job lifecycle, and controlled process-tool error helpers.
 - `content_stage_manager.js`, `content_stage_store.js`
   Owner-isolated durable SQLite staging for bounded generated content chunks.
+- `file_selectors.js`, `file_transaction.js`, `file_transform_engine.js`
+  Streaming UTF-8 selector resolution, hash-bound previews, and atomic single-file replacement.
 - `code_mutation_tools.js`, `remote_site_tools.js`, `science_tools.js`
   Utility helpers shared by code-mutation, remote-site, and science tooling.
 - `science_scripts/`
