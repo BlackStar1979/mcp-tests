@@ -165,6 +165,7 @@
   "_tests/smoke_file_transform_tools.js",
   "_tests/smoke_code_apply_patch_source_binding.js",
   "_tests/smoke_file_split_merge.js",
+  "_tests/smoke_markdown_structure.js",
   "_tests/smoke_connector_surface_split_guard.js",
   "_tests/smoke_connector_refresh_readiness_spec.js",
   "_tests/smoke_server_spec_fixture_validator.js",

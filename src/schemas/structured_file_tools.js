@@ -336,6 +336,52 @@ const MARKDOWN_INSPECT_INPUT_SCHEMA = Object.freeze(closedObject(["path"], {
   include_document_features: { type: "boolean", default: true },
 }, "Inspect Markdown headings, section hashes, source ranges, and document features without rewriting the document."));
 
+const MARKDOWN_HEADING_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "title", "heading_path", "depth", "occurrence", "start_byte", "heading_end_byte", "body_start_byte",
+  "end_byte", "line_start", "line_end", "section_sha256", "child_count",
+], {
+  title: { type: "string" },
+  heading_path: { type: "array", maxItems: 16, items: { type: "string" } },
+  depth: { type: "integer", minimum: 1, maximum: 6 },
+  occurrence: { type: "integer", minimum: 1 },
+  start_byte: { type: "integer", minimum: 0 },
+  heading_end_byte: { type: "integer", minimum: 0 },
+  body_start_byte: { type: "integer", minimum: 0 },
+  end_byte: { type: "integer", minimum: 0 },
+  line_start: { type: "integer", minimum: 1 },
+  line_end: { type: "integer", minimum: 1 },
+  section_sha256: SHA256_SCHEMA,
+  child_count: { type: "integer", minimum: 0 },
+}));
+
+const MARKDOWN_FEATURES_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "frontmatter", "gfm_table", "task_list", "code_block", "html",
+], {
+  frontmatter: { type: "boolean" },
+  gfm_table: { type: "boolean" },
+  task_list: { type: "boolean" },
+  code_block: { type: "boolean" },
+  html: { type: "boolean" },
+}));
+
+const MARKDOWN_INSPECT_OUTPUT_SCHEMA = Object.freeze(closedObject([
+  "success", "path", "bytes", "file_sha256", "has_final_newline", "dominant_eol", "total_lines",
+  "heading_count", "headings", "features", "truncated", "error",
+], {
+  success: { type: "boolean" },
+  path: { type: "string" },
+  bytes: { type: "integer", minimum: 0 },
+  file_sha256: { anyOf: [SHA256_SCHEMA, { type: "null" }] },
+  has_final_newline: { type: "boolean" },
+  dominant_eol: { type: "string", enum: ["\n", "\r\n", "\r"] },
+  total_lines: { type: "integer", minimum: 0 },
+  heading_count: { type: "integer", minimum: 0 },
+  headings: { type: "array", maxItems: 500, items: MARKDOWN_HEADING_OUTPUT_SCHEMA },
+  features: { anyOf: [MARKDOWN_FEATURES_OUTPUT_SCHEMA, { type: "null" }] },
+  truncated: { type: "boolean" },
+  error: { anyOf: [TOOL_ERROR_SCHEMA, { type: "null" }] },
+}));
+
 const MARKDOWN_SECTION_REFERENCE_SCHEMA = Object.freeze(closedObject(["heading_path"], {
   heading_path: {
     type: "array",
@@ -378,7 +424,9 @@ module.exports = {
   FILE_TRANSFORM_INPUT_SCHEMA,
   FILE_TRANSFORM_OUTPUT_SCHEMA,
   MARKDOWN_INSPECT_INPUT_SCHEMA,
+  MARKDOWN_INSPECT_OUTPUT_SCHEMA,
   MARKDOWN_TRANSFORM_INPUT_SCHEMA,
+  MARKDOWN_TRANSFORM_OUTPUT_SCHEMA: FILE_TRANSFORM_OUTPUT_SCHEMA,
   STRUCTURED_CONTENT_CHUNK_MAX_CHARS,
   WORKSPACE_PATH_SCHEMA,
 };
