@@ -11,5 +11,9 @@ Updated: 2026-07-29
   Design specification for CBM bridge reliability hardening.
 - `2026-07-26-cbm-v0-9-0-compatibility-hardening-design.md`
   Design specification for CBM v0.9.0 compatibility hardening.
+- `2026-08-09-process-runner-async-design.md`
+  Design specification for durable asynchronous process execution and policy hardening.
+- `2026-08-13-structured-file-mutation-design.md`
+  Design specification for staged content, streaming file mutation, physical split/merge, and Markdown structure tools.
 
 Use these specs as supporting design evidence only. Current runtime and connector behavior must still be verified through tests, live probes, and canonical specs.

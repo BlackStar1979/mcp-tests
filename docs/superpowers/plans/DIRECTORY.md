@@ -11,5 +11,9 @@ Updated: 2026-07-29
   Execution plan for CBM bridge reliability hardening.
 - `2026-07-26-cbm-v0-9-0-compatibility-hardening.md`
   Execution plan for CBM v0.9.0 compatibility hardening.
+- `2026-08-09-process-runner-async.md`
+  Execution plan for durable asynchronous process execution and policy hardening.
+- `2026-08-13-structured-file-mutation.md`
+  Execution plan for staged content, streaming file mutation, physical split/merge, and Markdown structure tools.
 
 Keep these plans bounded to historical or supporting package execution. Active priority still comes from `_workflow/ROADMAP.md`.
