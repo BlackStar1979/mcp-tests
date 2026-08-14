@@ -23,6 +23,8 @@ Updated: 2026-08-14
   Post-acceptance correction and regression evidence for PID-reuse-safe durable process recovery.
 - `w3c_trace_context_closeout.md`
   Repository acceptance evidence for bounded W3C request/execution/task correlation, privacy boundaries, SQLite migration, and the not-yet-live runtime boundary.
+- `process_artifacts_closeout.md`
+  Repository acceptance evidence for immutable owner-bound process output artifacts, opaque resource reads, retention, and the not-yet-live runtime boundary.
 - `run_process_sync_ceiling.md`
   Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.
 - `ops_1a_operational_e2e_closeout.md`

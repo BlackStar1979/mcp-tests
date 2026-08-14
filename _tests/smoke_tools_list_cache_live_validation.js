@@ -41,10 +41,15 @@ assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43
 assert.ok(index.includes("the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98`"));
 assert.ok(index.includes(`fingerprint \`${expectedCurrentFingerprint}\``));
 assert.ok(index.includes("`MCP-TASKS-PROCESS-ADAPTER` remains repo-validated at `7 + 294`"));
-assert.ok(index.includes("has not been loaded into runtime `3008`") || index.includes("Neither package has been loaded into runtime `3008`"));
+assert.ok(
+  index.includes("has not been loaded into runtime `3008`")
+  || index.includes("Neither package has been loaded into runtime `3008`")
+  || index.includes("None of these repo-only packages has been loaded into runtime `3008`")
+);
 assert.ok(index.includes("No runtime restart, connector refresh, or OAuth relogin was performed"));
-assert.ok(index.includes("`TRACE-CONTEXT` is now repo-validated at `7 + 298`"));
-assert.ok(index.includes("`next_primary = process-artifacts`"));
+assert.ok(index.includes("`TRACE-CONTEXT` remains repo-validated at `7 + 298`"));
+assert.ok(index.includes("`PROCESS-ARTIFACTS` is now repo-validated at `7 + 301`"));
+assert.ok(index.includes("`next_primary = cimd`"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 2, 2026"));
@@ -58,7 +63,8 @@ assert.ok(canon.includes("`PROC-1B` is accepted and remains live on the `98`-too
 assert.ok(canon.includes("`MCP-TASKS-PROCESS-ADAPTER` is repo-validated and closed at the repository layer"));
 assert.ok(canon.includes("This package is not live-loaded on OAuth21 `3008`"));
 assert.ok(canon.includes("`TRACE-CONTEXT` is repo-validated and closed at the repository layer"));
-assert.ok(canon.includes("Next internal package: owner-bound process artifacts"));
+assert.ok(canon.includes("`PROCESS-ARTIFACTS` is repo-validated and closed at the repository layer"));
+assert.ok(canon.includes("Next internal package: CIMD"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

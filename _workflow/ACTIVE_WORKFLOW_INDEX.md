@@ -4,15 +4,15 @@ Status: active navigation index
 Date: 2026-08-14
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98` (`13 public + 85 authorized-visible`) and fingerprint `ec7d3af5b4ea17f5`, while runtime behavior remains live-loaded from `server_start_id = 2026-08-13T19:41:25.994Z`. `MCP-TASKS-PROCESS-ADAPTER` remains repo-validated at `7 + 294`; `TRACE-CONTEXT` is now repo-validated at `7 + 298` with bounded request/execution/task correlation and restart/owner-isolation evidence. Neither package has been loaded into runtime `3008`. No runtime restart, connector refresh, or OAuth relogin was performed for these repo-only packages.
+Current repo/runtime note: profile `tests`; the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98` (`13 public + 85 authorized-visible`) and fingerprint `ec7d3af5b4ea17f5`, while runtime behavior remains live-loaded from `server_start_id = 2026-08-13T19:41:25.994Z`. `MCP-TASKS-PROCESS-ADAPTER` remains repo-validated at `7 + 294`; `TRACE-CONTEXT` remains repo-validated at `7 + 298`; `PROCESS-ARTIFACTS` is now repo-validated at `7 + 301`. None of these repo-only packages has been loaded into runtime `3008`. No runtime restart, connector refresh, or OAuth relogin was performed.
 
-The connector remains authorized; the Tasks and Trace Context closeouts are repository truth only until a later controlled runtime load provides fresh live evidence.
+The connector remains authorized; the Tasks, Trace Context, and Process Artifacts closeouts are repository truth only until a later controlled runtime load provides fresh live evidence.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = process-artifacts-and-cimd`
-- `next_primary = process-artifacts`
-- `next_secondary = cimd`
+- `current_working_course = cimd-and-mrtr`
+- `next_primary = cimd`
+- `next_secondary = mrtr`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=298`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=301`.
 - Public section count: `7`.
-- Authenticated smoke count: `298`.
+- Authenticated smoke count: `301`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
