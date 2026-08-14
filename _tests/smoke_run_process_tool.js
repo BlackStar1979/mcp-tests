@@ -16,6 +16,7 @@ const { runProcessTool } = require("../tools/run_process");
   assert.equal(result.status, "ok");
   assert.equal(result.command, "node");
   assert.equal(result.timed_out, false);
+  assert.deepEqual(result.args, [], "run_process must not echo raw argv into the tool result");
   assert.match(result.stdout, /run-process-ok/);
   console.log("smoke_run_process_tool ok");
 })().catch((error) => {

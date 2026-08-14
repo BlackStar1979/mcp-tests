@@ -1,18 +1,18 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-13
+Date: 2026-08-14
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; repository and live OAuth21 `3008` are aligned at `98` (`13 public + 85 authorized-visible`) with fingerprint `ec7d3af5b4ea17f5` at `server_start_id = 2026-08-13T19:41:25.994Z`. `PROC-1B` provides durable SQLite jobs/events and restart recovery without replay; R2 adds accepted transactional owner-scoped retry identity before spawn. Live same-key, conflict, and post-restart probes passed. `FILE-1` remains accepted.
+Current repo/runtime note: profile `tests`; the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98` (`13 public + 85 authorized-visible`) and fingerprint `ec7d3af5b4ea17f5`, while runtime behavior remains live-loaded from `server_start_id = 2026-08-13T19:41:25.994Z`. `MCP-TASKS-PROCESS-ADAPTER` is repo-validated on clean history with full `7 + 294` and restart/owner-isolation evidence, but has not been loaded into runtime `3008`. No runtime restart, connector refresh, or OAuth relogin was performed for the Tasks package.
 
-The connector remained authorized through the process-package restart. No OAuth relogin is required.
+The connector remains authorized; the Tasks closeout is repository truth only until a later controlled runtime load provides fresh live evidence.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = durable-task-protocol-foundation`
-- `next_primary = mcp-tasks-process-adapter`
-- `next_secondary = trace-context-and-process-artifacts`
+- `current_working_course = trace-context-and-process-artifacts`
+- `next_primary = trace-context`
+- `next_secondary = process-artifacts`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=291`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=294`.
 - Public section count: `7`.
-- Authenticated smoke count: `291`.
+- Authenticated smoke count: `294`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.

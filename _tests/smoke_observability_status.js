@@ -95,21 +95,33 @@ const noConnector = buildObservabilityStatus({
 assert.equal(noConnector.connector_map.comparison_available, false);
 assert.equal(noConnector.connector_map.status, "external_connector_tool_map_not_provided");
 
+const scopedAuditLogPath = path.join(os.tmpdir(), `mcp-tests-observability-scoped-${process.pid}.jsonl`);
+fs.writeFileSync(scopedAuditLogPath, `${JSON.stringify({
+  ts: "2026-07-16T12:00:00.000Z",
+  event: "server_discover_received",
+  server_start_id: "2026-07-15T17:49:45.348Z",
+  client_name: "codex-mcp-client",
+  client_version: "1.0.0",
+  protocol_version: "2026-07-28",
+})}\n`, "utf8");
+
 const scoped = buildObservabilityStatus({
   args: { window_size: 200, client_name: "codex-mcp-client", evidence_scope: "operational", max_age_days: 2 },
   runtimeStatusProvider: () => ({
     ...runtimeStatus,
     server_start_id: "2026-07-15T17:49:45.348Z",
   }),
-  auditLogPath,
+  auditLogPath: scopedAuditLogPath,
 });
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.client_name, "codex-mcp-client");
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.evidence_scope, "operational");
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.max_age_days, 2);
 assert.equal(typeof scoped.client_entry_path_diagnostics.evidence_filter.retained_evidence_since_ts, "string");
+assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.length, 1);
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_name === "codex-mcp-client"), true);
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_class === "operational_known"), true);
 assert.equal(scoped.client_entry_path_diagnostics.retained_blocker_matrix.every((item) => Array.isArray(item.sample_client_families)), true);
+fs.rmSync(scopedAuditLogPath, { force: true });
 
 const customWindows = buildObservabilityStatus({
   args: { window_size: 200, client_name: "codex-mcp-client", evidence_scope: "operational", blocker_windows: "2,all" },

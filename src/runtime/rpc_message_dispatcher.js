@@ -8,6 +8,7 @@ const { handlePromptsListMessage } = require("./prompts_list_message_handler");
 const { handlePingMessage } = require("./ping_message_handler");
 const { handleServerDiscoverMessage } = require("./server_discover_message_handler");
 const { handleToolsCall } = require("./tools_call_handler");
+const { handleTaskProtocolMethod } = require("./mcp_tasks_extension");
 const { buildMethodNotFoundResponse } = require("./method_not_found_response");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
 
@@ -130,6 +131,20 @@ async function dispatchRpcMessage({
         getOptionalTool,
         rateLimiter,
       });
+    }
+
+    case "tasks/get":
+    case "tasks/update":
+    case "tasks/cancel": {
+      if (!isModernProtocolVersion(context.protocolVersion)) return buildMethodNotFoundResponse(id, method);
+      const response = await handleTaskProtocolMethod({
+        id,
+        method,
+        params,
+        context,
+        outputMode,
+      });
+      return response || buildMethodNotFoundResponse(id, method);
     }
 
     default: {

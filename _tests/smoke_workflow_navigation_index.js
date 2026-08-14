@@ -96,15 +96,15 @@ for (const stale of [
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.equal(state.workflow_progress_markers.current_working_course, "durable-task-protocol-foundation");
-assert.equal(state.workflow_progress_markers.next_primary, "mcp-tasks-process-adapter");
-assert.equal(state.workflow_progress_markers.next_secondary, "trace-context-and-process-artifacts");
-assert.ok(index.includes("`current_working_course = durable-task-protocol-foundation`"));
-assert.ok(index.includes("`next_primary = mcp-tasks-process-adapter`"));
-assert.ok(index.includes("`next_secondary = trace-context-and-process-artifacts`"));
-assert.ok(canon.includes("`current_working_course = durable-task-protocol-foundation`"));
-assert.ok(canon.includes("`next_primary = mcp-tasks-process-adapter`"));
-assert.ok(canon.includes("`next_secondary = trace-context-and-process-artifacts`"));
+assert.equal(state.workflow_progress_markers.current_working_course, "trace-context-and-process-artifacts");
+assert.equal(state.workflow_progress_markers.next_primary, "trace-context");
+assert.equal(state.workflow_progress_markers.next_secondary, "process-artifacts");
+assert.ok(index.includes("`current_working_course = trace-context-and-process-artifacts`"));
+assert.ok(index.includes("`next_primary = trace-context`"));
+assert.ok(index.includes("`next_secondary = process-artifacts`"));
+assert.ok(canon.includes("`current_working_course = trace-context-and-process-artifacts`"));
+assert.ok(canon.includes("`next_primary = trace-context`"));
+assert.ok(canon.includes("`next_secondary = process-artifacts`"));
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);

@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-13T19:42:00.000Z",
+  "updated_at": "2026-08-14T08:55:00.000Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "durable-task-protocol-foundation",
-    "next_primary": "mcp-tasks-process-adapter",
-    "next_secondary": "trace-context-and-process-artifacts",
+    "current_working_course": "trace-context-and-process-artifacts",
+    "next_primary": "trace-context",
+    "next_secondary": "process-artifacts",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",

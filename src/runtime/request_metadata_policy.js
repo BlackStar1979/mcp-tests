@@ -140,9 +140,12 @@ function validateModernHttpHeaders({ headers = {}, message = {} } = {}) {
     return headerMismatch(id, "method_header_mismatch", { header: methodHeader, body: method });
   }
 
+  const taskMethod = method === "tasks/get" || method === "tasks/update" || method === "tasks/cancel";
   const nameSource = method === "tools/call" || method === "prompts/get"
     ? message.params?.name
-    : method === "resources/read" ? message.params?.uri : undefined;
+    : method === "resources/read"
+      ? message.params?.uri
+      : taskMethod ? message.params?.taskId : undefined;
   if (nameSource !== undefined) {
     const decoded = decodeMirroredHeader(headers[NAME_HEADER]);
     if (!normalizeHeaderValue(headers[NAME_HEADER])) {

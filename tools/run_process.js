@@ -9,6 +9,14 @@ const { runProcess } = require("../src/util/process_runner");
 
 const TOOL_NAME = "run_process";
 
+function redactProcessResultArgs(result = {}) {
+  if (!result || typeof result !== "object") return result;
+  return {
+    ...result,
+    args: [],
+  };
+}
+
 const runProcessTool = {
   name: TOOL_NAME,
   descriptor: {
@@ -19,8 +27,8 @@ const runProcessTool = {
     outputSchema: RUN_PROCESS_OUTPUT_SCHEMA,
     annotations: PROCESS_TOOL_ANNOTATIONS,
   },
-  execute(args = {}) {
-    return runProcess(args);
+  async execute(args = {}) {
+    return redactProcessResultArgs(await runProcess(args));
   },
   summarizeArgs(args = {}) {
     return {
@@ -38,4 +46,4 @@ const runProcessTool = {
   },
 };
 
-module.exports = { runProcessTool };
+module.exports = { redactProcessResultArgs, runProcessTool };

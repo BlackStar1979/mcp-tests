@@ -10,6 +10,25 @@ const SCRIPT = path.join(ROOT, "scripts", "generate_directory_docs.js");
 const SNAPSHOT_ROOT = path.join(ROOT, "_workflow", "control_plane", "snapshots");
 const FILE_BACKUPS_ROOT = path.join(ROOT, "_workflow", "control_plane", "file_backups");
 const PRUNE_BACKUPS_ROOT = path.join(ROOT, "_workflow", "control_plane", "oauth21_prune_backups");
+const SMOKE_SNAPSHOT_ROOT = path.join(SNAPSHOT_ROOT, "smoke-directory-docs-generator");
+const TRACKED_PRUNE_BUNDLE_ROOT = path.join(PRUNE_BACKUPS_ROOT, "live-prune-2026-07-15");
+const TRACKED_PRUNE_FIXTURES = [
+  "oauth21-prune-14996-1784134322605.apply-receipt.json",
+  "oauth21-prune-14996-1784134322605.oauth_storage.backup.sqlite",
+  "oauth21-prune-14996-1784134322605.rollback-receipt.json",
+];
+
+fs.mkdirSync(SMOKE_SNAPSHOT_ROOT, { recursive: true });
+fs.writeFileSync(path.join(SMOKE_SNAPSHOT_ROOT, "fixture.txt"), "fixture\n", "utf8");
+for (const fixture of TRACKED_PRUNE_FIXTURES) {
+  fs.writeFileSync(path.join(TRACKED_PRUNE_BUNDLE_ROOT, fixture), "", "utf8");
+}
+process.on("exit", () => {
+  fs.rmSync(SMOKE_SNAPSHOT_ROOT, { recursive: true, force: true });
+  for (const fixture of TRACKED_PRUNE_FIXTURES) {
+    fs.rmSync(path.join(TRACKED_PRUNE_BUNDLE_ROOT, fixture), { force: true });
+  }
+});
 
 function read(relPath) {
   return fs.readFileSync(path.join(ROOT, relPath), "utf8");
@@ -25,18 +44,19 @@ function runGenerator() {
 
 const result = runGenerator();
 assert.equal(result.status, 0, `directory docs generator must succeed\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
-assert.match(result.stdout, /wrote DIRECTORY\.md/);
-assert.match(result.stdout, /wrote \.agents\\skills\\using-codebase-memory\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote \.agents\\skills\\using-codebase-memory\\references\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote _workflow\\control_plane\\snapshots\\/);
-assert.match(result.stdout, /wrote _workflow\\control_plane\\file_backups\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote _workflow\\control_plane\\oauth21_prune_backups\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote _workflow\\operator_decisions\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote src\\integrations\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote src\\integrations\\codebase_memory\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote docs\\superpowers\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote docs\\superpowers\\plans\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote docs\\superpowers\\specs\\DIRECTORY\.md/);
+const normalizedStdout = result.stdout.replace(/\\/g, "/");
+assert.match(normalizedStdout, /wrote DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote \.agents\/skills\/using-codebase-memory\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote \.agents\/skills\/using-codebase-memory\/references\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote _workflow\/control_plane\/snapshots\//);
+assert.match(normalizedStdout, /wrote _workflow\/control_plane\/file_backups\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote _workflow\/control_plane\/oauth21_prune_backups\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote _workflow\/operator_decisions\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote src\/integrations\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote src\/integrations\/codebase_memory\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote docs\/superpowers\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote docs\/superpowers\/plans\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote docs\/superpowers\/specs\/DIRECTORY\.md/);
 
 const packageJson = read("package.json");
 const scriptSource = read(path.join("scripts", "generate_directory_docs.js"));

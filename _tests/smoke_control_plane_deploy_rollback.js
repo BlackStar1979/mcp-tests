@@ -19,8 +19,33 @@ function cleanupSelftestArtifacts() {
 
 process.on("exit", cleanupSelftestArtifacts);
 
+function resolvePowerShellExecutable() {
+  const candidates = process.platform === "win32"
+    ? ["powershell", "pwsh"]
+    : ["pwsh", "powershell"];
+  const failures = [];
+
+  for (const candidate of candidates) {
+    const probe = spawnSync(candidate, ["-NoProfile", "-Command", "$PSVersionTable.PSVersion.ToString()"], {
+      cwd: root,
+      encoding: "utf8",
+    });
+    if (!probe.error && probe.status === 0) return candidate;
+    failures.push({
+      candidate,
+      status: probe.status,
+      error: probe.error?.code || probe.error?.message || null,
+      stderr: String(probe.stderr || "").trim().slice(0, 300),
+    });
+  }
+
+  throw new Error(`No usable PowerShell executable found: ${JSON.stringify(failures)}`);
+}
+
+const powerShellExecutable = resolvePowerShellExecutable();
+
 function run(args) {
-  const result = spawnSync("powershell", ["-NoProfile", "-ExecutionPolicy", "Bypass", ...args], {
+  const result = spawnSync(powerShellExecutable, ["-NoProfile", "-ExecutionPolicy", "Bypass", ...args], {
     cwd: root,
     encoding: "utf8",
   });

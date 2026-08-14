@@ -9,6 +9,7 @@ const { tryHandleOptionalToolCall } = require("./optional_tool_call_handler");
 const { handleUnknownToolCall } = require("./unknown_tool_call_handler");
 const { logToolCallException } = require("./tool_call_exception_handler");
 const { rpcError } = require("./rpc_responses");
+const { tryStartTaskAugmentedToolCall } = require("./mcp_tasks_extension");
 const { buildDecisionRuntimeContext } = require("./decision_runtime_context_builder");
 const { evaluateDecisionRuntimePolicy } = require("./decision_runtime_policy");
 const { buildDecisionRuntimeReceipt } = require("./decision_runtime_receipt");
@@ -166,6 +167,16 @@ async function handleToolsCall({
       });
     }
 
+    const taskResponse = tryStartTaskAugmentedToolCall({
+      id,
+      name,
+      args,
+      context,
+      startedAt,
+      auditLog,
+    });
+    if (taskResponse) return taskResponse;
+
     const optionalResponse = await tryHandleOptionalToolCall({
       id,
       name,
@@ -177,9 +188,7 @@ async function handleToolsCall({
       auditLog,
     });
 
-    if (optionalResponse) {
-      return optionalResponse;
-    }
+    if (optionalResponse) return optionalResponse;
 
     return handleUnknownToolCall({
       id,

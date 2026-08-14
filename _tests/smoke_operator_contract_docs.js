@@ -20,7 +20,6 @@ for (const rel of [
   [".agents", "skills", "using-codebase-memory", "references", "DIRECTORY.md"],
   ["tools", "DIRECTORY.md"],
   ["_tests", "DIRECTORY.md"],
-  ["_control", "DIRECTORY.md"],
   ["_logs", "DIRECTORY.md"],
   ["docs", "superpowers", "DIRECTORY.md"],
   ["docs", "superpowers", "plans", "DIRECTORY.md"],
@@ -33,6 +32,7 @@ for (const rel of [
   ["_workflow", "READINESS.md"],
   ["_workflow", "ROADMAP.md"],
   ["_workflow", "operator_decisions", "mcp_official_sdk_v2_interop_closeout.md"],
+  ["_workflow", "operator_decisions", "mcp_tasks_process_adapter_closeout.md"],
 ]) {
   assert.equal(exists(...rel), true, `missing required documentation file: ${rel.join("/")}`);
 }
@@ -49,6 +49,7 @@ const cbmSkillReferencesDirectory = read(".agents", "skills", "using-codebase-me
 const operatorDecisionsDirectory = read("_workflow", "operator_decisions", "DIRECTORY.md");
 const initializeEvidence = read("_workflow", "operator_decisions", "initialize_client_compatibility_evidence.md");
 const officialSdkCloseout = read("_workflow", "operator_decisions", "mcp_official_sdk_v2_interop_closeout.md");
+const tasksCloseout = read("_workflow", "operator_decisions", "mcp_tasks_process_adapter_closeout.md");
 const processPersistenceAcceptance = read("_workflow", "operator_decisions", "process_job_persistence_live_acceptance.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
 const rootDirectory = read("DIRECTORY.md");
@@ -58,8 +59,8 @@ assert.ok(northstar.includes("Single-route on `/mcp`"));
 assert.ok(northstar.includes("Streamable HTTP only"));
 assert.ok(stateDoc.includes("Server version: `0.40.0`"));
 assert.ok(stateDoc.includes("repository target connector-visible tools `98`"));
-assert.ok(stateDoc.includes("tests_authenticated=291"));
-assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `291`"));
+assert.ok(stateDoc.includes("tests_authenticated=294"));
+assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `294`"));
 assert.ok(stateDoc.includes("`mcp__workbench` is callable again"));
 assert.ok(stateDoc.includes("`src/integrations/codebase_memory/DIRECTORY.md`"));
 assert.ok(stateDoc.includes("`codex-mcp-client 0.146.0-alpha.9.2`"));
@@ -93,7 +94,7 @@ assert.ok(roadmap.includes("## Priority matrix"));
 assert.ok(roadmap.includes("Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`"));
 assert.ok(roadmap.includes("Completed memory activation: `MEM-1-LIVE`"));
 assert.ok(roadmap.includes("Completed execution identity: `PROC-1B-R2`"));
-assert.ok(roadmap.includes("`MCP-TASKS-PROCESS-ADAPTER` — active protocol package"));
+assert.ok(roadmap.includes("Completed MCP Tasks foundation: `MCP-TASKS-PROCESS-ADAPTER`"));
 assert.ok(roadmap.includes("Completed operational E2E package: `OPS-1A`"));
 assert.ok(roadmap.includes("Completed process execution: `PROC-1A`"));
 assert.ok(roadmap.includes("`COMP-1A` / `OPS-1B` / `DOC-2A`"));
@@ -118,6 +119,9 @@ assert.ok(officialSdkCloseout.includes("@modelcontextprotocol/client@2.0.0"));
 assert.ok(officialSdkCloseout.includes("`7 public + 272 authenticated`"));
 assert.ok(officialSdkCloseout.includes("## Authenticated OAuth21 extension"));
 assert.ok(officialSdkCloseout.includes("production port `3008`: not touched"));
+assert.ok(tasksCloseout.includes("Status: repo-validated, not live-loaded"));
+assert.ok(tasksCloseout.includes("Clean-history GitHub Actions run `31784712342`"));
+assert.ok(tasksCloseout.includes("`TRACE-CONTEXT` is now the highest-leverage"));
 assert.ok(operatorDecisionsDirectory.includes("Status: active workflow operator decisions directory map"));
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(operatorDecisionsDirectory.includes("run_process_sync_ceiling.md"));
@@ -126,9 +130,9 @@ assert.ok(cbmSkillDirectory.includes("Status: active using-codebase-memory skill
 assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
-assert.equal(workflowState.workflow_progress_markers.current_working_course, "durable-task-protocol-foundation");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "mcp-tasks-process-adapter");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "trace-context-and-process-artifacts");
+assert.equal(workflowState.workflow_progress_markers.current_working_course, "trace-context-and-process-artifacts");
+assert.equal(workflowState.workflow_progress_markers.next_primary, "trace-context");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "process-artifacts");
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -141,9 +145,9 @@ assert.ok(workflowIndex.includes("the latest bounded `DOC-2A` passes refreshed t
 assert.ok(workflowIndex.includes("no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
-assert.ok(workflowIndex.includes("`current_working_course = durable-task-protocol-foundation`"));
-assert.ok(workflowIndex.includes("`next_primary = mcp-tasks-process-adapter`"));
-assert.ok(workflowIndex.includes("`next_secondary = trace-context-and-process-artifacts`"));
+assert.ok(workflowIndex.includes("`current_working_course = trace-context-and-process-artifacts`"));
+assert.ok(workflowIndex.includes("`next_primary = trace-context`"));
+assert.ok(workflowIndex.includes("`next_secondary = process-artifacts`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

@@ -699,7 +699,7 @@ function fixtureOptions(overrides = {}) {
   );
   const repoPath = resolveCbmRepositoryPath("mcp-tests", fixtureOptions());
   assert.equal(repoPath.displayPath, "mcp-tests");
-  assert.equal(repoPath.absolutePath, path.resolve("C:\\Work\\mcp-tests"));
+  assert.equal(repoPath.absolutePath, fs.realpathSync(path.join(__dirname, "..")));
 
   resetCbmBridgeForTests();
   getCbmAvailability(fixtureOptions());
