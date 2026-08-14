@@ -1,0 +1,159 @@
+name: Close out Process Artifacts P2
+
+on:
+  push:
+    branches:
+      - validation/process-artifacts-green-20260814
+
+permissions:
+  contents: write
+
+jobs:
+  closeout:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Apply P2 current-truth closeout
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json, re
+          from pathlib import Path
+
+          def read(path): return Path(path).read_text(encoding='utf-8')
+          def write(path, text): Path(path).write_text(text, encoding='utf-8', newline='\n')
+          def once(path, old, new):
+              text = read(path)
+              n = text.count(old)
+              if n != 1: raise SystemExit(f'{path}: expected 1 match, found {n}: {old[:100]!r}')
+              write(path, text.replace(old, new, 1))
+          def sub1(path, pattern, repl, flags=0):
+              text = read(path)
+              out, n = re.subn(pattern, repl, text, count=1, flags=flags)
+              if n != 1: raise SystemExit(f'{path}: regex expected 1 match, found {n}: {pattern[:100]!r}')
+              write(path, out)
+
+          closeout = Path('_workflow/operator_decisions/process_artifacts_closeout.md')
+          if closeout.exists(): raise SystemExit('process artifacts closeout already exists')
+          closeout.write_text('''# Process Artifacts closeout\n\nStatus: repo-validated, not live-loaded\nDate: 2026-08-14\nPackage: `PROCESS-ARTIFACTS`\n\n## Decision\n\nThe repository now materializes immutable owner-bound stdout/stderr artifacts from terminal durable process jobs without creating a second execution store.\n\n## Accepted contract\n\n- The existing owner-bound SQLite/WAL process registry remains execution truth.\n- Terminal stdout/stderr is materialized into immutable rows in the same SQLite database.\n- Artifact identifiers are opaque random values and expose neither owner nor job identity.\n- Artifact retention is independent from job retention, so materialized output can survive process-job pruning until its own bounded expiry.\n- Metadata is limited to stream, UTF-8 size, SHA-256, creation/expiry timestamps, and bounded W3C trace/span ancestry.\n- Raw argv, environment values, OAuth material, baggage, and tracestate are excluded.\n- `resources/list` remains empty.\n- `resources/read` accepts only explicit `mcp-artifact://process/<opaque-id>` URIs with bounded offset/max_chars, rechecks the authenticated owner, uses private cache scope, and returns `-32002` for missing or cross-owner resources.\n- Large terminal Task-backed `run_process` results keep a bounded inline excerpt and add standard MCP `resource_link` blocks. Small results remain inline.\n- No new connector-visible tool name or schema was added.\n\n## Regression evidence\n\nThe canonical run-all includes `_tests/smoke_process_artifact_store.js`, `_tests/smoke_process_artifact_resources.js`, and `_tests/smoke_process_artifact_task_links.js`.\n\nFull repository validation run `31805313181` passed:\n\n```text\nok=true, version=0.40.0, public=7, tests_authenticated=301\n```\n\nThe same run passed P0/P1, matrix, generator, resource-policy, event-catalog, repository-hygiene, and clean-tree guards.\n\n## Runtime boundary\n\nOAuth21 runtime `3008` was not restarted or reloaded for this package. The live connector remains on the preceding `98`-tool runtime and fingerprint `ec7d3af5b4ea17f5`. Repository artifact behavior is not claimed as live runtime truth yet. No connector refresh or OAuth relogin was performed.\n\n## Next package\n\n`CIMD` is now the highest-leverage internally actionable package, followed by fixture-scoped `MRTR`. CIMD must preserve DCR compatibility while adding explicit SSRF protections for remote client metadata retrieval.\n''', encoding='utf-8', newline='\n')
+
+          state_path = Path('_workflow/state.json')
+          state = json.loads(state_path.read_text(encoding='utf-8'))
+          state['updated_at'] = '2026-08-14T14:30:00.000Z'
+          state['workflow_progress_markers']['current_working_course'] = 'cimd-and-mrtr'
+          state['workflow_progress_markers']['next_primary'] = 'cimd'
+          state['workflow_progress_markers']['next_secondary'] = 'mrtr'
+          if state['audit_events_spec']['event_count'] != 97:
+              raise SystemExit(f"unexpected prior audit event count {state['audit_events_spec']['event_count']}")
+          state['audit_events_spec']['event_count'] = 100
+          state_path.write_text(json.dumps(state, indent=2) + '\n', encoding='utf-8')
+
+          once('_tests/helpers/workflow_baseline.js', 'tests_authenticated=298', 'tests_authenticated=301')
+          once('_tests/helpers/workflow_baseline.js', 'const latestAuthenticatedSmokeCount = 298;', 'const latestAuthenticatedSmokeCount = 301;')
+
+          # STATE current truth.
+          once('_workflow/STATE.md', 'tests_authenticated=298', 'tests_authenticated=301')
+          once('_workflow/STATE.md', 'Latest validated authenticated smoke count: `298`', 'Latest validated authenticated smoke count: `301`')
+          p1 = '- Repository W3C Trace Context P1 is validated but not live-loaded: modern `_meta` correlation creates bounded request/execution spans, persists only extracted identifiers/flags/source in the same owner-bound process registry, migrates existing SQLite/WAL stores in place, rejects raw baggage/tracestate persistence, and preserves the stable 98-tool connector surface. Full repository validation is `7 + 298`; runtime `3008` remains on the preceding live load.\n'
+          once('_workflow/STATE.md', p1, p1 + '- Repository Process Artifacts P2 is validated but not live-loaded: terminal stdout/stderr is materialized immutably in the same owner-bound SQLite/WAL registry with opaque IDs, SHA-256, independent bounded retention, private `resources/read`, no `resources/list` enumeration, and `resource_link` fallbacks for large Task results. Full repository validation is `7 + 301`; runtime `3008` remains on the preceding live load and the 98-tool connector surface is unchanged.\n')
+          once('_workflow/STATE.md', '`current_working_course = process-artifacts-and-cimd`', '`current_working_course = cimd-and-mrtr`')
+          once('_workflow/STATE.md', '`next_primary = process-artifacts`', '`next_primary = cimd`')
+          once('_workflow/STATE.md', '`next_secondary = cimd`', '`next_secondary = mrtr`')
+
+          # Active index.
+          sub1('_workflow/ACTIVE_WORKFLOW_INDEX.md', r'Current repo/runtime note:.*?\n\nThe connector remains authorized;.*?\n',
+               'Current repo/runtime note: profile `tests`; the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98` (`13 public + 85 authorized-visible`) and fingerprint `ec7d3af5b4ea17f5`, while runtime behavior remains live-loaded from `server_start_id = 2026-08-13T19:41:25.994Z`. `MCP-TASKS-PROCESS-ADAPTER` remains repo-validated at `7 + 294`; `TRACE-CONTEXT` remains repo-validated at `7 + 298`; `PROCESS-ARTIFACTS` is now repo-validated at `7 + 301`. None of these repo-only packages has been loaded into runtime `3008`. No runtime restart, connector refresh, or OAuth relogin was performed.\n\nThe connector remains authorized; the Tasks, Trace Context, and Process Artifacts closeouts are repository truth only until a later controlled runtime load provides fresh live evidence.\n', re.S)
+          once('_workflow/ACTIVE_WORKFLOW_INDEX.md', '`current_working_course = process-artifacts-and-cimd`', '`current_working_course = cimd-and-mrtr`')
+          once('_workflow/ACTIVE_WORKFLOW_INDEX.md', '`next_primary = process-artifacts`', '`next_primary = cimd`')
+          once('_workflow/ACTIVE_WORKFLOW_INDEX.md', '`next_secondary = cimd`', '`next_secondary = mrtr`')
+          once('_workflow/ACTIVE_WORKFLOW_INDEX.md', 'tests_authenticated=298', 'tests_authenticated=301')
+          once('_workflow/ACTIVE_WORKFLOW_INDEX.md', 'Authenticated smoke count: `298`', 'Authenticated smoke count: `301`')
+
+          # Canon current state/queue.
+          once('_workflow/WORKFLOW_CANON.md', 'tests_authenticated=298', 'tests_authenticated=301')
+          once('_workflow/WORKFLOW_CANON.md', 'Latest validated authenticated smoke count: `298`', 'Latest validated authenticated smoke count: `301`')
+          p1c = '- `TRACE-CONTEXT` is repo-validated and closed at the repository layer. Modern `_meta.traceparent` creates a bounded request span; process execution receives a child span; only trace/span ancestry, flags, and source persist in owner-bound SQLite/WAL; invalid trace context restarts locally without failing the MCP request; and raw baggage/tracestate never enter durable state or audit. Full run `31801918351` passed `7 + 298` plus clean-tree checks. This package is not live-loaded on OAuth21 `3008`; the connector-visible 98-tool surface remains unchanged. Next internal package: owner-bound process artifacts.\n'
+          once('_workflow/WORKFLOW_CANON.md', p1c, p1c.replace(' Next internal package: owner-bound process artifacts.', '') + '- `PROCESS-ARTIFACTS` is repo-validated and closed at the repository layer. Terminal stdout/stderr is materialized immutably in the same owner-bound SQLite/WAL database with opaque IDs, SHA-256, independent bounded retention, W3C correlation metadata, private bounded `resources/read`, no `resources/list` enumeration, and standard `resource_link` content for large Task-backed results. Full run `31805313181` passed `7 + 301` plus clean-tree checks. This package is not live-loaded on OAuth21 `3008`; the connector-visible 98-tool surface remains unchanged. Next internal package: CIMD.\n')
+          once('_workflow/WORKFLOW_CANON.md', '`current_working_course = process-artifacts-and-cimd`', '`current_working_course = cimd-and-mrtr`')
+          once('_workflow/WORKFLOW_CANON.md', '`next_primary = process-artifacts`', '`next_primary = cimd`')
+          once('_workflow/WORKFLOW_CANON.md', '`next_secondary = cimd`', '`next_secondary = mrtr`')
+          sub1('_workflow/WORKFLOW_CANON.md', r'1\. Execute `PROCESS-ARTIFACTS`.*?\n2\. Follow with `CIMD`, then the fixture-scoped `MRTR` conformance package, preserving the explicit SSRF and protocol boundaries already recorded in the roadmap\.',
+               '1. Execute `CIMD` as the active internally actionable package with HTTPS-only metadata retrieval, DNS/IP/redirect revalidation, private-address denial, bounded size/time, validation, and cache controls while preserving DCR compatibility.\n2. Follow with the fixture-scoped `MRTR` conformance package without turning it into a second execution architecture.', re.S)
+          sub1('_workflow/WORKFLOW_CANON.md', r'Next recommended action: execute `PROCESS-ARTIFACTS`.*?`DOC-2A` remain event-gated or bounded fallback work\.',
+               'Next recommended action: execute `CIMD` on repository truth with an explicit SSRF boundary while preserving DCR compatibility and the current live OAuth21 `3008` runtime. `MRTR` follows after the CIMD contract is stable; `COMP-1A`, `OPS-1B`, and `DOC-2A` remain event-gated or bounded fallback work.', re.S)
+
+          # Roadmap/readiness.
+          p1r = '- `TRACE-CONTEXT` is repo-complete: modern request metadata creates bounded W3C correlation, process execution receives child spans, owner-bound SQLite/WAL persists only extracted identifiers/flags/source, old stores migrate in place, invalid trace metadata cannot fail the business request, raw baggage/tracestate are excluded from durable/audit state, and full `7 + 298` plus clean-tree validation passed. It is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.\n'
+          once('_workflow/ROADMAP.md', p1r, p1r + '- `PROCESS-ARTIFACTS` is repo-complete: immutable owner-bound stdout/stderr artifacts use opaque IDs, SHA-256, independent bounded retention, explicit chunk URIs, private `resources/read`, no `resources/list` enumeration, and standard `resource_link` fallbacks for large Task results. Full `7 + 301` plus clean-tree validation passed. It is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.\n')
+          once('_workflow/ROADMAP.md', '| P2 | Add owner-bound process output artifacts — active |', '| P2 | Owner-bound process output artifacts — complete in repo |')
+          once('_workflow/ROADMAP.md', '| P3 | Implement CIMD as an isolated SSRF-hardened compatibility package |', '| P3 | Implement CIMD as an isolated SSRF-hardened compatibility package — active |')
+          sub1('_workflow/ROADMAP.md', r'0\. `PROCESS-ARTIFACTS` — active protocol package.*?\n\n1\. `CIMD`\n', '0. `CIMD` — active protocol package\n   Add current-protocol client metadata discovery with HTTPS-only retrieval, DNS/IP/redirect revalidation, private-address denial, bounded size/time, validation, cache policy, and DCR compatibility.\n\n1. `MRTR`\n', re.S)
+          # Remove the now-duplicated old MRTR queue entry introduced by the replacement above.
+          sub1('_workflow/ROADMAP.md', r'\n2\. `MRTR`\n   Add current-protocol compatibility only with the explicit SSRF and fixture boundaries above\.\n', '\n')
+          trace_done = 'Completed trace correlation: `TRACE-CONTEXT` validates and restarts W3C correlation safely, creates request/execution ancestry, persists only bounded extracted identifiers in owner-bound SQLite/WAL, excludes raw baggage/tracestate from durable and audit state, migrates old process stores in place, and passed full `7 + 298` plus clean-tree validation without changing the 98-tool connector fingerprint. Runtime `3008` remains intentionally not reloaded.\n'
+          once('_workflow/ROADMAP.md', trace_done, trace_done + 'Completed process artifacts: `PROCESS-ARTIFACTS` materializes immutable owner-bound stdout/stderr in the same SQLite/WAL store, retains opaque SHA-256-addressed resources independently from jobs, exposes private bounded `resources/read` without list enumeration, and adds standard `resource_link` fallbacks for large Task results. Full `7 + 301` plus clean-tree validation passed without changing the 98-tool connector fingerprint. Runtime `3008` remains intentionally not reloaded.\n')
+
+          once('_workflow/READINESS.md', 'current full offline smoke baseline is `7 + 298`', 'current full offline smoke baseline is `7 + 301`')
+          once('_workflow/READINESS.md', 'Preserve the Tasks/process/W3C correlation contract and move the internally actionable protocol queue to owner-bound process output artifacts.', 'Preserve the Tasks/process/W3C/artifact contract and move the internally actionable protocol queue to SSRF-hardened CIMD compatibility.')
+          once('_workflow/READINESS.md', 'Active internally actionable selection is now `PROCESS-ARTIFACTS`, followed by `CIMD` and fixture-scoped `MRTR`.', 'Active internally actionable selection is now `CIMD`, followed by fixture-scoped `MRTR`.')
+
+          # Generator ownership for the closeout record.
+          once('scripts/generate_directory_docs.js', '      "w3c_trace_context_closeout.md": "Repository acceptance evidence for bounded W3C request/execution/task correlation, privacy boundaries, SQLite migration, and the not-yet-live runtime boundary.",', '      "w3c_trace_context_closeout.md": "Repository acceptance evidence for bounded W3C request/execution/task correlation, privacy boundaries, SQLite migration, and the not-yet-live runtime boundary.",\n      "process_artifacts_closeout.md": "Repository acceptance evidence for immutable owner-bound process output artifacts, opaque resource reads, retention, and the not-yet-live runtime boundary.",')
+          
+          # Operator/document guards.
+          once('_tests/smoke_operator_contract_docs.js', '["_workflow", "operator_decisions", "mcp_tasks_process_adapter_closeout.md"],', '["_workflow", "operator_decisions", "mcp_tasks_process_adapter_closeout.md"],\n  ["_workflow", "operator_decisions", "process_artifacts_closeout.md"],')
+          once('_tests/smoke_operator_contract_docs.js', 'const traceCloseout = read("_workflow", "operator_decisions", "w3c_trace_context_closeout.md");', 'const traceCloseout = read("_workflow", "operator_decisions", "w3c_trace_context_closeout.md");\nconst artifactsCloseout = read("_workflow", "operator_decisions", "process_artifacts_closeout.md");')
+          once('_tests/smoke_operator_contract_docs.js', 'stateDoc.includes("tests_authenticated=298")', 'stateDoc.includes("tests_authenticated=301")')
+          once('_tests/smoke_operator_contract_docs.js', 'stateDoc.includes("Latest validated authenticated smoke count: `298`")', 'stateDoc.includes("Latest validated authenticated smoke count: `301`")')
+          once('_tests/smoke_operator_contract_docs.js', 'assert.ok(traceCloseout.includes("tests_authenticated=298"));', 'assert.ok(traceCloseout.includes("tests_authenticated=298"));\nassert.ok(artifactsCloseout.includes("Status: repo-validated, not live-loaded"));\nassert.ok(artifactsCloseout.includes("`CIMD` is now the highest-leverage"));\nassert.ok(artifactsCloseout.includes("tests_authenticated=301"));')
+          once('_tests/smoke_operator_contract_docs.js', 'assert.equal(workflowState.workflow_progress_markers.current_working_course, "process-artifacts-and-cimd");\nassert.equal(workflowState.workflow_progress_markers.next_primary, "process-artifacts");\nassert.equal(workflowState.workflow_progress_markers.next_secondary, "cimd");', 'assert.equal(workflowState.workflow_progress_markers.current_working_course, "cimd-and-mrtr");\nassert.equal(workflowState.workflow_progress_markers.next_primary, "cimd");\nassert.equal(workflowState.workflow_progress_markers.next_secondary, "mrtr");\nassert.equal(workflowState.audit_events_spec.event_count, 100);')
+          once('_tests/smoke_operator_contract_docs.js', 'assert.ok(workflowIndex.includes("`current_working_course = process-artifacts-and-cimd`"));\nassert.ok(workflowIndex.includes("`next_primary = process-artifacts`"));\nassert.ok(workflowIndex.includes("`next_secondary = cimd`"));', 'assert.ok(workflowIndex.includes("`current_working_course = cimd-and-mrtr`"));\nassert.ok(workflowIndex.includes("`next_primary = cimd`"));\nassert.ok(workflowIndex.includes("`next_secondary = mrtr`"));')
+
+          once('_tests/smoke_workflow_navigation_index.js', 'assert.equal(state.workflow_progress_markers.current_working_course, "process-artifacts-and-cimd");\nassert.equal(state.workflow_progress_markers.next_primary, "process-artifacts");\nassert.equal(state.workflow_progress_markers.next_secondary, "cimd");\nassert.ok(index.includes("`current_working_course = process-artifacts-and-cimd`"));\nassert.ok(index.includes("`next_primary = process-artifacts`"));\nassert.ok(index.includes("`next_secondary = cimd`"));\nassert.ok(canon.includes("`current_working_course = process-artifacts-and-cimd`"));\nassert.ok(canon.includes("`next_primary = process-artifacts`"));\nassert.ok(canon.includes("`next_secondary = cimd`"));', 'assert.equal(state.workflow_progress_markers.current_working_course, "cimd-and-mrtr");\nassert.equal(state.workflow_progress_markers.next_primary, "cimd");\nassert.equal(state.workflow_progress_markers.next_secondary, "mrtr");\nassert.ok(index.includes("`current_working_course = cimd-and-mrtr`"));\nassert.ok(index.includes("`next_primary = cimd`"));\nassert.ok(index.includes("`next_secondary = mrtr`"));\nassert.ok(canon.includes("`current_working_course = cimd-and-mrtr`"));\nassert.ok(canon.includes("`next_primary = cimd`"));\nassert.ok(canon.includes("`next_secondary = mrtr`"));')
+          once('_tests/smoke_workflow_navigation_index.js', 'assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);', 'assert.equal(state.audit_events_spec.event_count, 100);\nassert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);')
+
+          once('_tests/smoke_tools_list_cache_live_validation.js', 'assert.ok(index.includes("`TRACE-CONTEXT` is now repo-validated at `7 + 298`"));\nassert.ok(index.includes("`next_primary = process-artifacts`"));', 'assert.ok(index.includes("`TRACE-CONTEXT` remains repo-validated at `7 + 298`"));\nassert.ok(index.includes("`PROCESS-ARTIFACTS` is now repo-validated at `7 + 301`"));\nassert.ok(index.includes("`next_primary = cimd`"));')
+          once('_tests/smoke_tools_list_cache_live_validation.js', 'assert.ok(canon.includes("Next internal package: owner-bound process artifacts"));', 'assert.ok(canon.includes("`PROCESS-ARTIFACTS` is repo-validated and closed at the repository layer"));\nassert.ok(canon.includes("Next internal package: CIMD"));')
+          PY
+          node scripts/generate_directory_docs.js
+      - name: Validate closeout guards
+        run: |
+          node _tests/smoke_operator_contract_docs.js
+          node _tests/smoke_workflow_navigation_index.js
+          node _tests/smoke_workflow_state_orientation_map.js
+          node _tests/smoke_tools_list_cache_live_validation.js
+          node _tests/smoke_registry_policy_consistency_guard.js
+          node _tests/smoke_matrix_check.js
+          node _tests/smoke_directory_docs_generator.js
+          node _tests/smoke_process_artifact_store.js
+          node _tests/smoke_process_artifact_resources.js
+          node _tests/smoke_process_artifact_task_links.js
+      - name: Commit closeout and self-clean
+        shell: bash
+        run: |
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/closeout-process-artifacts-p2.yml
+          git add _workflow _tests scripts
+          git commit -m "docs(artifacts): close P2 and activate CIMD"
+          git push origin HEAD:validation/process-artifacts-green-20260814
+      - name: Remove failed workflow
+        if: failure()
+        shell: bash
+        run: |
+          git reset --hard HEAD
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -f .github/workflows/closeout-process-artifacts-p2.yml ]; then
+            git rm .github/workflows/closeout-process-artifacts-p2.yml
+            git commit -m "chore(validation): remove failed P2 closeout workflow"
+            git push origin HEAD:validation/process-artifacts-green-20260814
+          fi
