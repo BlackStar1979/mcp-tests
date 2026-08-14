@@ -1,0 +1,101 @@
+name: Apply Process Artifact Runtime
+
+on:
+  push:
+    branches:
+      - validation/process-artifacts-red-20260814
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Wire manager, resources/read, and bounded Task excerpts
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace_once(path, old, new):
+              p = Path(path)
+              text = p.read_text(encoding='utf-8')
+              count = text.count(old)
+              if count != 1:
+                  raise SystemExit(f'{path}: expected one match, found {count}: {old[:100]!r}')
+              p.write_text(text.replace(old, new, 1), encoding='utf-8', newline='\n')
+
+          replace_once('src/util/process_job_manager.js',
+          '''  function trace(jobId, owner = {}) {\n    return storedTraceFields(getJob(jobId, owner).traceContext);\n  }\n\n  function output(jobId, cursor = {}, owner = {}) {''',
+          '''  function trace(jobId, owner = {}) {\n    return storedTraceFields(getJob(jobId, owner).traceContext);\n  }\n\n  function artifacts(jobId, owner = {}) {\n    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);\n    const rows = store.artifacts(jobId, expectedOwnerKey);\n    if (rows === null) throw unknownJob(jobId);\n    return rows;\n  }\n\n  function readArtifact(artifactId, cursor = {}, owner = {}) {\n    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);\n    const artifact = store.readArtifact(artifactId, expectedOwnerKey, cursor);\n    if (artifact) {\n      try {\n        audit({\n          event: "process_artifact_read",\n          artifact_id: artifact.artifactId,\n          returned_chars: String(artifact.text || "").length,\n          offset: artifact.offset,\n          next_offset: artifact.nextOffset,\n          eof: artifact.eof === true,\n          trace_id: artifact.traceId || null,\n          span_id: artifact.spanId || null,\n        });\n      } catch {}\n    }\n    return artifact;\n  }\n\n  function output(jobId, cursor = {}, owner = {}) {''')
+          replace_once('src/util/process_job_manager.js',
+          '''    cancel,\n    close,''',
+          '''    artifacts,\n    cancel,\n    close,''')
+          replace_once('src/util/process_job_manager.js',
+          '''    output,\n    setAudit,''',
+          '''    output,\n    readArtifact,\n    setAudit,''')
+
+          replace_once('src/runtime/rpc_message_dispatcher.js',
+          '''const { handleResourcesListMessage } = require("./resources_list_message_handler");''',
+          '''const { handleResourcesListMessage } = require("./resources_list_message_handler");\nconst { handleResourcesReadMessage } = require("./resources_read_message_handler");''')
+          replace_once('src/runtime/rpc_message_dispatcher.js',
+          '''    case "resources/list": {\n      return handleResourcesListMessage(id, { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId });\n    }\n\n    case "resources/templates/list": {''',
+          '''    case "resources/list": {\n      return handleResourcesListMessage(id, { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId });\n    }\n\n    case "resources/read": {\n      return handleResourcesReadMessage({ id, params, context, auditLog });\n    }\n\n    case "resources/templates/list": {''')
+
+          replace_once('src/runtime/mcp_tasks_extension.js',
+          '''const { createChildTraceContext, traceAuditFields } = require("./trace_context");''',
+          '''const { createChildTraceContext, traceAuditFields } = require("./trace_context");\nconst { buildProcessArtifactResourceLink } = require("./process_artifact_resource");''')
+          replace_once('src/runtime/mcp_tasks_extension.js',
+          '''const TASK_OUTPUT_READ_CHARS = 65536;''',
+          '''const TASK_OUTPUT_READ_CHARS = 65536;\nconst TASK_INLINE_OUTPUT_CHARS = 32768;''')
+
+          start = '''function readDurableRunResult(manager, taskId, ownerId, status = {}) {\n  let stdout = "";\n  let stderr = "";\n  let stdoutOffset = 0;\n  let stderrOffset = 0;\n  const hardLimit = Math.max(1, Number(status.output_limit_chars || 1000000));\n  const maxIterations = Math.ceil((hardLimit * 2) / TASK_OUTPUT_READ_CHARS) + 4;\n\n  for (let iteration = 0; iteration < maxIterations; iteration += 1) {\n    const chunk = manager.output(taskId, {\n      stdout_offset: stdoutOffset,\n      stderr_offset: stderrOffset,\n      max_chars: TASK_OUTPUT_READ_CHARS,\n    }, { ownerId });\n\n    stdout += String(chunk.stdout || "");\n    stderr += String(chunk.stderr || "");\n\n    const nextStdout = Number(chunk.stdout_next_offset ?? stdoutOffset);\n    const nextStderr = Number(chunk.stderr_next_offset ?? stderrOffset);\n    const madeProgress = nextStdout > stdoutOffset || nextStderr > stderrOffset;\n    stdoutOffset = nextStdout;\n    stderrOffset = nextStderr;\n\n    if (chunk.stdout_eof === true && chunk.stderr_eof === true) break;\n    if (!madeProgress) {\n      const error = new Error("Process task output cursor made no progress.");\n      error.code = "process_task_output_cursor_stalled";\n      throw error;\n    }\n    if (iteration === maxIterations - 1) {\n      const error = new Error("Process task output exceeded bounded reconstruction iterations.");\n      error.code = "process_task_output_reconstruction_limit";\n      throw error;\n    }\n  }\n\n  const persistedTrace = typeof manager.trace === "function" ? manager.trace(taskId, { ownerId }) : null;\n\n  return {\n    status: status.status,\n    command: status.command,\n    // Raw argv is deliberately not persisted by the durable process registry.\n    // `run_process` now follows the same contract and returns an empty echo.\n    args: [],\n    cwd: status.cwd,\n    workspace: status.workspace,\n    exit_code: status.exit_code,\n    signal: status.signal,\n    timed_out: status.timed_out === true,\n    duration_ms: Number(status.duration_ms || 0),\n    stdout,\n    stderr,\n    stdout_truncated: status.stdout_truncated === true,\n    stderr_truncated: status.stderr_truncated === true,\n    output_limit_chars: Number(status.output_limit_chars || hardLimit),\n    trace_id: persistedTrace?.trace_id || null,\n    error: status.error ?? null,\n  };\n}\n'''
+          replacement = '''function readDurableRunResult(manager, taskId, ownerId, status = {}) {\n  const hardLimit = Math.max(1, Number(status.output_limit_chars || 1000000));\n  const chunk = manager.output(taskId, {\n    stdout_offset: 0,\n    stderr_offset: 0,\n    max_chars: TASK_INLINE_OUTPUT_CHARS,\n  }, { ownerId });\n  const persistedTrace = typeof manager.trace === "function" ? manager.trace(taskId, { ownerId }) : null;\n  return {\n    status: status.status,\n    command: status.command,\n    args: [],\n    cwd: status.cwd,\n    workspace: status.workspace,\n    exit_code: status.exit_code,\n    signal: status.signal,\n    timed_out: status.timed_out === true,\n    duration_ms: Number(status.duration_ms || 0),\n    stdout: String(chunk.stdout || ""),\n    stderr: String(chunk.stderr || ""),\n    stdout_truncated: status.stdout_truncated === true || chunk.stdout_eof !== true,\n    stderr_truncated: status.stderr_truncated === true || chunk.stderr_eof !== true,\n    output_limit_chars: Number(status.output_limit_chars || hardLimit),\n    trace_id: persistedTrace?.trace_id || null,\n    error: status.error ?? null,\n  };\n}\n'''
+          replace_once('src/runtime/mcp_tasks_extension.js', start, replacement)
+
+          replace_once('src/runtime/mcp_tasks_extension.js',
+          '''    result._meta = {\n      ...(result._meta || {}),\n      [PROCESS_ARGS_REDACTED_META_KEY]: true,\n      [PROCESS_TASK_BACKED_META_KEY]: true,\n    };\n    task.result = result;''',
+          '''    const outputChars = Number(status.stdout_chars || 0) + Number(status.stderr_chars || 0);\n    const needsArtifacts = outputChars > TASK_INLINE_OUTPUT_CHARS\n      || status.stdout_truncated === true\n      || status.stderr_truncated === true;\n    result._meta = {\n      ...(result._meta || {}),\n      [PROCESS_ARGS_REDACTED_META_KEY]: true,\n      [PROCESS_TASK_BACKED_META_KEY]: true,\n      ...(needsArtifacts ? { "mcp-tests/processArtifactOutputExcerpt": true } : {}),\n    };\n    if (needsArtifacts && typeof manager.artifacts === "function") {\n      const artifacts = manager.artifacts(task.taskId, { ownerId });\n      const links = Array.isArray(artifacts)\n        ? artifacts.map(buildProcessArtifactResourceLink)\n        : [];\n      result.content.push(...links);\n      result._meta["mcp-tests/processArtifactCount"] = links.length;\n    }\n    task.result = result;''')
+          replace_once('src/runtime/mcp_tasks_extension.js',
+          '''  TASK_OUTPUT_READ_CHARS,\n  TASK_POLL_INTERVAL_MS,''',
+          '''  TASK_INLINE_OUTPUT_CHARS,\n  TASK_OUTPUT_READ_CHARS,\n  TASK_POLL_INTERVAL_MS,''')
+          PY
+      - name: Validate artifact resource and Task contracts
+        run: |
+          node _tests/smoke_process_artifact_store.js
+          node _tests/smoke_process_artifact_resources.js
+          node _tests/smoke_process_artifact_task_links.js
+          node _tests/smoke_mcp_tasks_process_adapter.js
+          node _tests/smoke_process_job_persistence.js
+          node _tests/smoke_w3c_trace_runtime_integration.js
+      - name: Commit runtime integration and self-clean
+        shell: bash
+        run: |
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/apply-process-artifact-runtime.yml
+          git add src _tests
+          git commit -m "feat(artifacts): expose bounded owner-bound process resources"
+          git push origin HEAD:validation/process-artifacts-red-20260814
+      - name: Remove failed workflow
+        if: failure()
+        shell: bash
+        run: |
+          git reset --hard HEAD
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          if [ -f .github/workflows/apply-process-artifact-runtime.yml ]; then
+            git rm .github/workflows/apply-process-artifact-runtime.yml
+            git commit -m "chore(validation): remove failed artifact runtime workflow"
+            git push origin HEAD:validation/process-artifacts-red-20260814
+          fi
