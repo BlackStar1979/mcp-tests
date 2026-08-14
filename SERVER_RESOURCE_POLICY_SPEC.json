@@ -209,6 +209,13 @@
       ],
       "public_surface_allowed": false
     },
+    "process_artifact_readonly": {
+      "description": "Owner-bound immutable stdout/stderr artifact reads by opaque process-artifact URI with bounded chunk size, independent retention, and no resources/list enumeration.",
+      "allowed_operations": [
+        "read"
+      ],
+      "public_surface_allowed": false
+    },
     "process_job_control": {
       "description": "Authenticated owner-bound cancellation and confirmed process-tree termination for queued or running durable process jobs.",
       "allowed_operations": [

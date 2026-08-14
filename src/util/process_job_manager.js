@@ -538,22 +538,7 @@ function createProcessJobManager(options = {}) {
 
   function readArtifact(artifactId, cursor = {}, owner = {}) {
     const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
-    const artifact = store.readArtifact(artifactId, expectedOwnerKey, cursor);
-    if (artifact) {
-      try {
-        audit({
-          event: "process_artifact_read",
-          artifact_id: artifact.artifactId,
-          returned_chars: String(artifact.text || "").length,
-          offset: artifact.offset,
-          next_offset: artifact.nextOffset,
-          eof: artifact.eof === true,
-          trace_id: artifact.traceId || null,
-          span_id: artifact.spanId || null,
-        });
-      } catch {}
-    }
-    return artifact;
+    return store.readArtifact(artifactId, expectedOwnerKey, cursor);
   }
 
   function output(jobId, cursor = {}, owner = {}) {

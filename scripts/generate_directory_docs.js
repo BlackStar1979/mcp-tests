@@ -131,6 +131,7 @@ const CONFIG = {
       "NEXT_CHAT_HANDOFF.md": "Handoff-oriented continuity file for fast re-entry.",
       "NORTHSTAR.md": "Accepted end-state vision for the product.",
       "OAUTH_PRODUCTION_HARDENING_PLAN.md": "OAuth production-hardening plan and related evidence.",
+      "PROCESS_ARTIFACTS_DESIGN.md": "Active design contract for owner-bound immutable process output artifacts and bounded MCP resource reads.",
       "README.md": "Workflow usage rules and read order.",
       "READINESS.md": "Maturity map between current state and NorthStar.",
       "ROADMAP.md": "Dependency-aware prioritized operator-facing TODO plan.",
