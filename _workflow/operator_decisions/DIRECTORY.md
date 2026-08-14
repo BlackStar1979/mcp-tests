@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active workflow operator decisions directory map
-Updated: 2026-08-13
+Updated: 2026-08-14
 
 - `initialize_client_compatibility_evidence.md`
   Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.
@@ -21,6 +21,8 @@ Updated: 2026-08-13
   Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.
 - `process_job_pid_reuse_recovery.md`
   Post-acceptance correction and regression evidence for PID-reuse-safe durable process recovery.
+- `w3c_trace_context_closeout.md`
+  Repository acceptance evidence for bounded W3C request/execution/task correlation, privacy boundaries, SQLite migration, and the not-yet-live runtime boundary.
 - `run_process_sync_ceiling.md`
   Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.
 - `ops_1a_operational_e2e_closeout.md`

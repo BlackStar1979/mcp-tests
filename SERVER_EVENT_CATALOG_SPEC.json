@@ -394,6 +394,16 @@
     {
       "name": "tool_surface_changed",
       "status": "active_code_event"
+    },
+    {
+      "name": "trace_context_resolved",
+      "status": "active_code_event",
+      "privacy_boundary": "bounded identifiers/flags and baggage metadata only; raw baggage/tracestate prohibited"
+    },
+    {
+      "name": "process_execution_trace",
+      "status": "active_code_event",
+      "privacy_boundary": "bounded execution trace/span ancestry only; raw baggage/tracestate prohibited"
     }
   ],
   "rules": {

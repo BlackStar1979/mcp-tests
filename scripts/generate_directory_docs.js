@@ -151,7 +151,7 @@ const CONFIG = {
   },
   "_workflow/operator_decisions": {
     title: "workflow operator decisions directory map",
-    updated: "2026-08-13",
+    updated: "2026-08-14",
     entries: {
       "initialize_client_compatibility_evidence.md": "Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.",
       "initialize_retirement_decision_prep.md": "Bounded decision-preparation record for any future legacy `initialize` retirement package.",
@@ -162,6 +162,7 @@ const CONFIG = {
       "retr_1_quality_regression_closeout.md": "Acceptance evidence for freshness-aware workspace retrieval, complete canonical extraction, and authoritative current-state ranking.",
       "process_job_persistence_live_acceptance.md": "Live acceptance evidence for durable owner-scoped async process jobs, same-job restart recovery, controlled errors, and resolver fixes.",
       "process_job_pid_reuse_recovery.md": "Post-acceptance correction and regression evidence for PID-reuse-safe durable process recovery.",
+      "w3c_trace_context_closeout.md": "Repository acceptance evidence for bounded W3C request/execution/task correlation, privacy boundaries, SQLite migration, and the not-yet-live runtime boundary.",
       "run_process_sync_ceiling.md": "Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.",
       "ops_1a_operational_e2e_closeout.md": "Evidence-classified closeout for the bounded operational E2E matrix, hermetic/live soak, and remaining external boundaries.",
       "stage*.md, p*.md, post_stage*.md": "Historical stage/package records retained for traceability; current authority stays in active workflow files.",

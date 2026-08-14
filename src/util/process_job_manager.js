@@ -101,6 +101,29 @@ function canonicalProcessInputHash(input, prepared) {
   }));
 }
 
+function normalizeStoredTraceContext(value = {}) {
+  const traceId = String(value?.traceId || "");
+  const spanId = String(value?.spanId || "");
+  if (!/^[0-9a-f]{32}$/.test(traceId) || /^0+$/.test(traceId)) return null;
+  if (!/^[0-9a-f]{16}$/.test(spanId) || /^0+$/.test(spanId)) return null;
+  const parentSpanId = /^[0-9a-f]{16}$/.test(String(value?.parentSpanId || "")) && !/^0+$/.test(String(value.parentSpanId))
+    ? String(value.parentSpanId) : null;
+  const traceFlags = /^[0-9a-f]{2}$/.test(String(value?.traceFlags || "")) ? String(value.traceFlags) : "00";
+  const rawSource = String(value?.source || "internal");
+  const source = /^[a-z0-9_-]{1,40}$/.test(rawSource) ? rawSource : "internal";
+  return { traceId, spanId, parentSpanId, traceFlags, source };
+}
+
+function storedTraceFields(traceContext) {
+  return {
+    trace_id: traceContext?.traceId || null,
+    span_id: traceContext?.spanId || null,
+    parent_span_id: traceContext?.parentSpanId || null,
+    trace_flags: traceContext?.traceFlags || null,
+    trace_source: traceContext?.source || null,
+  };
+}
+
 function createProcessJobManager(options = {}) {
   const config = options.config || PROCESS_RUNNER_CONFIG;
   const prepareExecution = options.prepareExecution || prepareProcessExecution;
@@ -142,6 +165,7 @@ function createProcessJobManager(options = {}) {
       job_id: job.id,
       command: job.prepared.invocation.logicalCommand,
       status: job.status,
+      ...storedTraceFields(job.traceContext),
       ...details,
     };
     try {
@@ -160,6 +184,10 @@ function createProcessJobManager(options = {}) {
     return {
       id: record.id,
       ownerKey: record.ownerKey,
+      traceContext: normalizeStoredTraceContext({
+        traceId: record.traceId, spanId: record.spanId, parentSpanId: record.parentSpanId,
+        traceFlags: record.traceFlags, source: record.traceSource,
+      }),
       prepared: {
         timeoutMs: record.timeoutMs,
         outputLimit: record.outputLimit,
@@ -396,7 +424,7 @@ function createProcessJobManager(options = {}) {
     return toStatus(job);
   }
 
-  function start(input = {}, owner = {}) {
+  function start(input = {}, owner = {}, executionContext = {}) {
     if (shuttingDown) throw new Error("Process job manager is shutting down.");
     prune();
     const prepared = prepareExecution(input, { ...executionDependencies, config });
@@ -431,10 +459,12 @@ function createProcessJobManager(options = {}) {
     }
 
     const createdAtMs = now();
+    const traceContext = normalizeStoredTraceContext(executionContext.traceContext);
     const { idempotency_key: _idempotencyKey, ...executionInput } = input;
     const job = {
       id: createId(),
       ownerKey: jobOwnerKey,
+      traceContext,
       input: executionInput,
       prepared,
       status: "queued",
@@ -455,6 +485,11 @@ function createProcessJobManager(options = {}) {
       resolutionClass: prepared.invocation.resolutionClass,
       cwd: prepared.invocation.cwdInfo.displayPath,
       workspace: prepared.invocation.cwdInfo.rootAlias,
+      traceId: traceContext?.traceId || null,
+      spanId: traceContext?.spanId || null,
+      parentSpanId: traceContext?.parentSpanId || null,
+      traceFlags: traceContext?.traceFlags || null,
+      traceSource: traceContext?.source || null,
       createdAtMs,
       timeoutMs: prepared.timeoutMs,
       outputLimit: prepared.outputLimit,
@@ -488,6 +523,10 @@ function createProcessJobManager(options = {}) {
 
   function status(jobId, owner = {}) {
     return toStatus(getJob(jobId, owner));
+  }
+
+  function trace(jobId, owner = {}) {
+    return storedTraceFields(getJob(jobId, owner).traceContext);
   }
 
   function output(jobId, cursor = {}, owner = {}) {
@@ -634,6 +673,7 @@ function createProcessJobManager(options = {}) {
     snapshot,
     start,
     status,
+    trace,
   };
 }
 

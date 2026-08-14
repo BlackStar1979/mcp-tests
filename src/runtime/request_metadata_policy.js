@@ -1,6 +1,7 @@
 "use strict";
 
 const { rpcError } = require("./rpc_responses");
+const { resolveTraceContext } = require("./trace_context");
 
 const PROTOCOL_VERSION_HEADER = "mcp-protocol-version";
 const METHOD_HEADER = "mcp-method";
@@ -128,6 +129,7 @@ function validatePerRequestMetadata({
     protocolVersion: headerVersion,
     clientInfo: clientInfo || null,
     clientCapabilities,
+    traceContext: resolveTraceContext(meta),
   };
 }
 

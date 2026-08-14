@@ -11,6 +11,7 @@ const { createSessionReplayTracker } = require("./session_tracker");
 const { validateModernHttpHeaders, validatePerRequestMetadata } = require("./request_metadata_policy");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
 const { decorateModernRpcResponse } = require("./modern_protocol_adapter");
+const { traceAuditFields } = require("./trace_context");
 
 function createMcpRuntimeHandlers({
   serverName,
@@ -70,6 +71,10 @@ function createMcpRuntimeHandlers({
         return requestMetadata.response;
       }
       enrichedContext.requestMetadata = requestMetadata;
+      enrichedContext.traceContext = requestMetadata.traceContext;
+      auditLog("trace_context_resolved", {
+        request_id: context.requestId, method: prelude.method, ...traceAuditFields(requestMetadata.traceContext),
+      });
     }
 
     if (modernRequest) {

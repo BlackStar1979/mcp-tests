@@ -62,6 +62,11 @@ function createProcessJobStore(options = {}) {
       resolution_class TEXT NOT NULL,
       cwd TEXT NOT NULL,
       workspace TEXT NOT NULL,
+      trace_id TEXT,
+      span_id TEXT,
+      parent_span_id TEXT,
+      trace_flags TEXT,
+      trace_source TEXT,
       status TEXT NOT NULL,
       created_at_ms INTEGER NOT NULL,
       started_at_ms INTEGER,
@@ -123,6 +128,19 @@ function createProcessJobStore(options = {}) {
       ON process_job_instances(runtime_scope, lease_updated_at_ms);
   `);
 
+  const processJobColumns = new Set(
+    db.prepare("PRAGMA table_info(process_jobs)").all().map((row) => String(row.name))
+  );
+  for (const [column, type] of [
+    ["trace_id", "TEXT"],
+    ["span_id", "TEXT"],
+    ["parent_span_id", "TEXT"],
+    ["trace_flags", "TEXT"],
+    ["trace_source", "TEXT"],
+  ]) {
+    if (!processJobColumns.has(column)) db.exec(`ALTER TABLE process_jobs ADD COLUMN ${column} ${type}`);
+  }
+
   function transaction(callback) {
     db.exec("BEGIN IMMEDIATE");
     try {
@@ -153,6 +171,11 @@ function createProcessJobStore(options = {}) {
       resolutionClass: row.resolution_class,
       cwd: row.cwd,
       workspace: row.workspace,
+      traceId: row.trace_id,
+      spanId: row.span_id,
+      parentSpanId: row.parent_span_id,
+      traceFlags: row.trace_flags,
+      traceSource: row.trace_source,
       status: row.status,
       createdAtMs: Number(row.created_at_ms),
       startedAtMs: row.started_at_ms === null ? null : Number(row.started_at_ms),
@@ -247,13 +270,15 @@ function createProcessJobStore(options = {}) {
     db.prepare(`
         INSERT INTO process_jobs (
           job_id, runtime_scope, owner_key, command, family, resolution_class, cwd, workspace,
+          trace_id, span_id, parent_span_id, trace_flags, trace_source,
           status, created_at_ms, updated_at_ms, timeout_ms, output_limit_chars,
           server_instance_id, server_pid
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?, ?, ?)
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?, ?, ?)
       `).run(
         job.id, runtimeScope, job.ownerKey, job.command, job.family, job.resolutionClass,
-        job.cwd, job.workspace, job.createdAtMs, job.createdAtMs, job.timeoutMs,
-        job.outputLimit, serverInstanceId, serverPid
+        job.cwd, job.workspace, job.traceId || null, job.spanId || null,
+        job.parentSpanId || null, job.traceFlags || null, job.traceSource || null,
+        job.createdAtMs, job.createdAtMs, job.timeoutMs, job.outputLimit, serverInstanceId, serverPid
       );
     insertEvent(job.id, null, "queued", "process_job_queued", null, job.createdAtMs);
   }

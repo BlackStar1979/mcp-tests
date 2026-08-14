@@ -5,6 +5,7 @@ const { toolResult } = require("./tool_result");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
 const { resolveProcessJobManager } = require("../util/process_job_manager");
 const { resolveProcessJobOwner } = require("../util/process_job_owner");
+const { createChildTraceContext, traceAuditFields } = require("./trace_context");
 
 const TASKS_EXTENSION_ID = "io.modelcontextprotocol/tasks";
 const TASKABLE_PROCESS_TOOL = "run_process";
@@ -87,6 +88,8 @@ function readDurableRunResult(manager, taskId, ownerId, status = {}) {
     }
   }
 
+  const persistedTrace = typeof manager.trace === "function" ? manager.trace(taskId, { ownerId }) : null;
+
   return {
     status: status.status,
     command: status.command,
@@ -104,7 +107,7 @@ function readDurableRunResult(manager, taskId, ownerId, status = {}) {
     stdout_truncated: status.stdout_truncated === true,
     stderr_truncated: status.stderr_truncated === true,
     output_limit_chars: Number(status.output_limit_chars || hardLimit),
-    trace_id: null,
+    trace_id: persistedTrace?.trace_id || null,
     error: status.error ?? null,
   };
 }
@@ -173,12 +176,13 @@ function taskCreationError(id, error) {
 }
 
 function shouldTaskAugmentTool(name, context = {}, args = {}) {
-  // P0 deliberately excludes the legacy caller-supplied trace_id field because
-  // the process registry does not persist it. P1 W3C Trace Context will replace
-  // that ad-hoc field with a durable bounded correlation contract.
+  // Legacy callers may still send `trace_id`. When a canonical W3C request
+  // context exists it is authoritative for the task-backed execution; without
+  // W3C context the legacy field keeps the synchronous compatibility path.
   const hasLegacyTraceId = args.trace_id !== undefined && args.trace_id !== null;
+  const legacyTraceWithoutW3cContext = hasLegacyTraceId && !context.traceContext;
   return name === TASKABLE_PROCESS_TOOL
-    && !hasLegacyTraceId
+    && !legacyTraceWithoutW3cContext
     && isModernProtocolVersion(context.protocolVersion)
     && clientSupportsTasks(context);
 }
@@ -196,7 +200,8 @@ function tryStartTaskAugmentedToolCall({
   try {
     const ownerId = resolveProcessJobOwner(context);
     const manager = resolveProcessJobManager(context);
-    const status = manager.start(args, { ownerId });
+    const executionTrace = context.traceContext ? createChildTraceContext(context.traceContext) : null;
+    const status = manager.start(args, { ownerId }, { traceContext: executionTrace });
     const task = buildTaskMetadata(status);
 
     auditLog("tool_call_end", {
@@ -210,6 +215,9 @@ function tryStartTaskAugmentedToolCall({
       task_id: task.taskId,
       task_status: task.status,
       task_extension: TASKS_EXTENSION_ID,
+      ...traceAuditFields(context.traceContext),
+      execution_trace_id: executionTrace?.traceId || null,
+      execution_span_id: executionTrace?.spanId || null,
     });
 
     return rpcResult(id, {
@@ -222,6 +230,7 @@ function tryStartTaskAugmentedToolCall({
       tool: name,
       duration_ms: Date.now() - startedAt,
       error_kind: typeof error?.code === "string" ? error.code : "process_task_creation_failed",
+      ...traceAuditFields(context.traceContext),
     });
     return taskCreationError(id, error);
   }

@@ -6,6 +6,7 @@ const {
   RUN_PROCESS_OUTPUT_SCHEMA,
 } = require("../src/schemas/process_tools");
 const { runProcess } = require("../src/util/process_runner");
+const { createChildTraceContext, traceAuditFields } = require("../src/runtime/trace_context");
 
 const TOOL_NAME = "run_process";
 
@@ -27,8 +28,17 @@ const runProcessTool = {
     outputSchema: RUN_PROCESS_OUTPUT_SCHEMA,
     annotations: PROCESS_TOOL_ANNOTATIONS,
   },
-  async execute(args = {}) {
-    return redactProcessResultArgs(await runProcess(args));
+  async execute(args = {}, context = {}) {
+    const executionTrace = context.traceContext ? createChildTraceContext(context.traceContext) : null;
+    if (executionTrace && typeof context.auditLog === "function") {
+      context.auditLog("process_execution_trace", {
+        request_id: context.requestId || null,
+        tool: TOOL_NAME,
+        ...traceAuditFields(executionTrace),
+      });
+    }
+    const executionArgs = executionTrace ? { ...args, trace_id: executionTrace.traceId } : args;
+    return redactProcessResultArgs(await runProcess(executionArgs));
   },
   summarizeArgs(args = {}) {
     return {

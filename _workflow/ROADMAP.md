@@ -27,6 +27,7 @@ Current derivation:
 - The shared task queue lifecycle repair is live: `memory_update_task` appends provenance-bearing snapshots and `memory_get_tasks` resolves the latest snapshot per task. Connector re-enumeration is complete at `98` tools without OAuth relogin.
 - `PROC-1B` is live and accepted: jobs and transitions are durable in owner-scoped SQLite, terminal status/output survive restart, unclean orphans become `interrupted`, policy failures are controlled responses, and the `py`/PowerShell resolver defects from external stress testing are repaired. Follow-up `PROC-1B-R1` adds renewable instance leases and periodic reconciliation so PID reuse cannot preserve a crashed job indefinitely. The same live job survived the second controlled restart with status and output intact.
 - `MCP-TASKS-PROCESS-ADAPTER` is repo-complete on clean history: negotiated modern `run_process` calls use the same durable process registry, `tasks/get/update/cancel` are owner-bound, `tasks/list` is absent, task results survive registry reopen, raw argv is redacted, and full `7 + 294` plus clean-tree validation passed. This package is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.
+- `TRACE-CONTEXT` is repo-complete: modern request metadata creates bounded W3C correlation, process execution receives child spans, owner-bound SQLite/WAL persists only extracted identifiers/flags/source, old stores migrate in place, invalid trace metadata cannot fail the business request, raw baggage/tracestate are excluded from durable/audit state, and full `7 + 298` plus clean-tree validation passed. It is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.
 - The active autonomous quality package is persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`: build an operational E2E coverage matrix across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process, and destructive rollback behavior, then close the highest-risk reproduced gaps.
 - `OPS-1A` is complete at `3/4`: the classified matrix and bounded runner produced `56/56` green invocations. Live SFTP remains externally blocked by a missing config, while full OAuth reconnect remains operator-driven; neither boundary is represented as automated proof.
 
@@ -35,8 +36,8 @@ Current derivation:
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
 | P0 | MCP Tasks process adapter — complete in repo | accepted `PROC-1B-R2`, negotiated task capability | Standard Tasks now reuse one execution truth rather than creating another scheduler/store. | Preserve as regression evidence; perform a controlled live load/probe only when runtime deployment is intentionally authorized. |
-| P1 | Add bounded W3C Trace Context correlation — active | durable task/execution identity | Request, execution, task, artifact, and receipt need one safe correlation spine before artifact schemas harden. | Validate `traceparent`; persist extracted correlation only; bound or omit raw `tracestate` and `baggage`. |
-| P2 | Add owner-bound process output artifacts | durable execution plus tracing contract | Large terminal output needs immutable, rediscoverable artifacts without expanding `resources/list`. | Use opaque `resource_link` handles and a bounded chunk reader; do not rely on `resources/read` as a cursor protocol. |
+| P1 | Bounded W3C Trace Context correlation — complete in repo | durable task/execution identity | Request, execution, and task now share one safe correlation spine without changing authorization. | Preserve as regression evidence; live-load only through a separate controlled deployment boundary. |
+| P2 | Add owner-bound process output artifacts — active | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts without expanding `resources/list`. | Use opaque `resource_link` handles, hashes, owner binding, retention, and a bounded chunk reader; do not rely on `resources/read` as a cursor protocol. |
 | P3 | Implement CIMD as an isolated SSRF-hardened compatibility package | stable Tasks/artifacts/tracing | DCR is deprecated but still required for real clients; CIMD adds remote metadata fetching and a new security boundary. | Require HTTPS, DNS/IP/redirect revalidation, private-address denial, bounded size/time, validation, cache policy, and separate adversarial fixtures. |
 | P4 | Add the MRTR conformance fixture | stable protocol adapters | MRTR is useful conformance evidence but should not complicate the execution foundation. | Keep it fixture-scoped and resolve required pre-task interaction synchronously. |
 | P5 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but the last measured operational Codex client used legacy `initialize`. | Preserve both version-gated paths unless a newer client entry sample changes the verdict. |
@@ -44,13 +45,13 @@ Current derivation:
 
 ## Bounded package queue
 
-0. `TRACE-CONTEXT` — active protocol package
-   Establish bounded W3C request/execution/task correlation without using trace metadata for authorization and without persisting raw baggage.
+0. `PROCESS-ARTIFACTS` — active protocol package
+   Add owner-bound immutable output artifacts with opaque resource links, hashes, retention, and bounded reads on top of the accepted W3C correlation contract.
 
-1. `PROCESS-ARTIFACTS`
-   Add owner-bound immutable output artifacts with opaque resource links and bounded reads on top of the correlation contract.
+1. `CIMD`
+   Add current-protocol client metadata discovery only with the explicit SSRF boundary above.
 
-2. `CIMD` / `MRTR`
+2. `MRTR`
    Add current-protocol compatibility only with the explicit SSRF and fixture boundaries above.
 
 3. `COMP-1A` / `OPS-1B` / `DOC-2A`
@@ -66,6 +67,7 @@ Completed retrieval quality pass: `RETR-1-ACTIVE-WORKFLOW-RANKING` guards that a
 Completed process execution: `PROC-1A` introduced the shared hardened sync/async core; `PROC-1B` adds durable recovery, rediscovery/history, controlled errors, and resolver fixes. Restarts `manual-1786291985998` and `manual-1786292134573` loaded the `91`-tool runtime and proved same-job terminal status/output recovery without OAuth relogin.
 Completed execution identity: `PROC-1B-R2` adds transactional owner-scoped `process_start` idempotency before spawn. Full `7 + 291`, direct same-key/conflict probes, and restart recovery of job `1121654d-5016-4cac-84e3-30b4d69630de` are green at fingerprint `ec7d3af5b4ea17f5`.
 Completed MCP Tasks foundation: `MCP-TASKS-PROCESS-ADAPTER` exposes negotiated `run_process` Tasks over the same registry, preserves `process_start` as the custom async surface, guards restart/owner semantics in `_tests/smoke_mcp_tasks_process_adapter.js`, and passed clean-history full `7 + 294` validation without changing the 98-tool connector fingerprint. Runtime `3008` remains intentionally not reloaded for this repo-only closeout.
+Completed trace correlation: `TRACE-CONTEXT` validates and restarts W3C correlation safely, creates request/execution ancestry, persists only bounded extracted identifiers in owner-bound SQLite/WAL, excludes raw baggage/tracestate from durable and audit state, migrates old process stores in place, and passed full `7 + 298` plus clean-tree validation without changing the 98-tool connector fingerprint. Runtime `3008` remains intentionally not reloaded.
 Completed structured file operations: `FILE-1` adds bounded inspection, owner-bound durable staging, exact hash-preconditioned transforms, source-preserving split/merge, and heading-aware Markdown mutation. Restart `manual-1786646699884` loaded the corrected non-destructive policy; live preview/commit E2E proved staged append, section replacement, three-part split, and byte-identical merge.
 Completed operational E2E package: `OPS-1A` classifies eight risk families, adds a bounded hermetic/live runner, prevents server-dependent network tests from being run as standalone evidence, and records `56/56` green invocations in `_workflow/operator_decisions/ops_1a_operational_e2e_closeout.md`.
 Completed structural document graph pass: `RETR-1-DOCUMENT-GRAPH` exposes deterministic document-link topology in `knowledge_summary.document_graph`; the latest July 29 validation reports `252` docs, `514` internal document links, all `36` source-of-truth docs linked, and `40` unresolved-reference samples after wildcard/glob noise filtering.
