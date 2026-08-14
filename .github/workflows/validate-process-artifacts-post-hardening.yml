@@ -1,0 +1,57 @@
+name: Validate Process Artifacts Post Hardening
+
+on:
+  push:
+    branches:
+      - validation/process-artifacts-green-20260814
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: P2 and current-truth guards
+        run: |
+          node _tests/smoke_process_artifact_store.js
+          node _tests/smoke_process_artifact_resources.js
+          node _tests/smoke_process_artifact_task_links.js
+          node _tests/smoke_mcp_tasks_process_adapter.js
+          node _tests/smoke_w3c_trace_runtime_integration.js
+          node _tests/smoke_operator_contract_docs.js
+          node _tests/smoke_workflow_navigation_index.js
+          node _tests/smoke_tools_list_cache_live_validation.js
+          node _tests/smoke_matrix_check.js
+          node _tests/smoke_directory_docs_generator.js
+      - name: Require clean tree after targeted guards
+        shell: bash
+        run: |
+          dirty="$(git status --porcelain --untracked-files=all)"
+          test -z "$dirty" || { printf '%s\n' "$dirty"; exit 1; }
+      - name: Full hermetic run-all
+        run: npm test
+      - name: Require clean repository after full suite
+        shell: bash
+        run: |
+          dirty="$(git status --porcelain --untracked-files=all)"
+          test -z "$dirty" || { printf '%s\n' "$dirty"; exit 1; }
+      - name: Self-clean validation workflow
+        if: always()
+        shell: bash
+        run: |
+          git reset --hard HEAD
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/validate-process-artifacts-post-hardening.yml
+          git commit -m "chore(validation): remove temporary P2 post-hardening workflow"
+          git push origin HEAD:validation/process-artifacts-green-20260814
