@@ -13,6 +13,7 @@ const MAX_ARTIFACT_RETENTION_MS = 604800000;
 const DEFAULT_ARTIFACT_MAX_RETAINED = 512;
 const MAX_ARTIFACT_MAX_RETAINED = 4096;
 const DEFAULT_ARTIFACT_READ_CHARS = 65536;
+const ARTIFACT_ID_GENERATION_ATTEMPTS = 4;
 
 function createStoreError(message, code = "process_job_store_error") {
   const error = new Error(message);
@@ -291,29 +292,46 @@ function createProcessJobStore(options = {}) {
       WHERE runtime_scope=? AND job_id=? AND stream=?
     `).get(runtimeScope, record.id, stream);
     if (existing) return rowToArtifact(existing);
-    const artifactId = normalizeArtifactId(createArtifactId());
     const text = String(content || "");
     const sha256 = createHash("sha256").update(text, "utf8").digest("hex");
-    db.prepare(`
+    const insert = db.prepare(`
       INSERT INTO process_artifacts (
         artifact_id, runtime_scope, owner_key, job_id, stream, mime_type, content,
         content_chars, content_bytes, sha256, created_at_ms, expires_at_ms,
         trace_id, span_id, parent_span_id, trace_flags, trace_source
       ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `).run(
-      artifactId, runtimeScope, record.ownerKey, record.id, stream, "text/plain; charset=utf-8", text,
-      text.length, Buffer.byteLength(text, "utf8"), sha256, createdAtMs, createdAtMs + artifactRetentionMs,
-      record.traceId || null, record.spanId || null, record.parentSpanId || null, record.traceFlags || null,
-      record.traceSource || null
+    `);
+    for (let attempt = 0; attempt < ARTIFACT_ID_GENERATION_ATTEMPTS; attempt += 1) {
+      const artifactId = normalizeArtifactId(createArtifactId());
+      try {
+        insert.run(
+          artifactId, runtimeScope, record.ownerKey, record.id, stream, "text/plain; charset=utf-8", text,
+          text.length, Buffer.byteLength(text, "utf8"), sha256, createdAtMs, createdAtMs + artifactRetentionMs,
+          record.traceId || null, record.spanId || null, record.parentSpanId || null, record.traceFlags || null,
+          record.traceSource || null
+        );
+        return rowToArtifact(db.prepare("SELECT * FROM process_artifacts WHERE artifact_id=?").get(artifactId));
+      } catch (error) {
+        const collision = db.prepare(
+          "SELECT 1 AS present FROM process_artifacts WHERE artifact_id=?"
+        ).get(artifactId);
+        if (!collision) throw error;
+      }
+    }
+    throw createStoreError(
+      "Unable to allocate a unique process artifact identifier.",
+      "process_artifact_id_collision"
     );
-    return rowToArtifact(db.prepare("SELECT * FROM process_artifacts WHERE artifact_id=?").get(artifactId));
   }
 
   function materializeArtifacts(record, createdAtMs) {
     if (!record || ACTIVE_STATUSES.has(record.status)) return [];
+    const artifactCreatedAtMs = Number(createdAtMs);
+    if (!Number.isFinite(artifactCreatedAtMs)) return [];
+    if (artifactCreatedAtMs + artifactRetentionMs <= now()) return [];
     return [
-      insertArtifact(record, "stdout", record.stdout, createdAtMs),
-      insertArtifact(record, "stderr", record.stderr, createdAtMs),
+      insertArtifact(record, "stdout", record.stdout, artifactCreatedAtMs),
+      insertArtifact(record, "stderr", record.stderr, artifactCreatedAtMs),
     ];
   }
 
@@ -609,17 +627,18 @@ function createProcessJobStore(options = {}) {
   }
 
   function artifacts(jobId, ownerKey) {
-    pruneArtifacts(now());
+    const nowMs = now();
+    pruneArtifacts(nowMs);
     return transaction(() => {
       const record = get(jobId, ownerKey);
       if (!record) return null;
       if (ACTIVE_STATUSES.has(record.status)) return [];
-      materializeArtifacts(record, record.finishedAtMs || record.updatedAtMs || now());
+      materializeArtifacts(record, record.finishedAtMs || record.updatedAtMs || nowMs);
       return db.prepare(`
         SELECT * FROM process_artifacts
-        WHERE runtime_scope=? AND job_id=? AND owner_key=?
+        WHERE runtime_scope=? AND job_id=? AND owner_key=? AND expires_at_ms>?
         ORDER BY CASE stream WHEN 'stdout' THEN 0 ELSE 1 END, artifact_id
-      `).all(runtimeScope, record.id, ownerKey).map(rowToArtifact);
+      `).all(runtimeScope, record.id, ownerKey, nowMs).map(rowToArtifact);
     });
   }
 
@@ -699,6 +718,7 @@ function createProcessJobStore(options = {}) {
 
 module.exports = {
   ACTIVE_STATUSES,
+  ARTIFACT_ID_GENERATION_ATTEMPTS,
   DEFAULT_ARTIFACT_MAX_RETAINED,
   DEFAULT_ARTIFACT_READ_CHARS,
   DEFAULT_ARTIFACT_RETENTION_MS,
