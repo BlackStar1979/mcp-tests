@@ -12,6 +12,7 @@ const {
   DEFAULT_INSTANCE_LEASE_TTL_MS,
   normalizeInstanceLeaseTtlMs,
 } = require("./process_job_store");
+const { resolveProcessJobOwner: resolveAuthenticatedProcessJobOwner } = require("./process_job_owner");
 
 const TERMINAL_STATUSES = new Set([
   "ok",
@@ -50,11 +51,7 @@ function ownerKey(ownerId, prehashed = false) {
 }
 
 function resolveProcessJobOwner(context = {}) {
-  return String(
-    context.authResult?.clientId
-      || context.authResult?.client_id
-      || "unknown_client"
-  );
+  return resolveAuthenticatedProcessJobOwner(context);
 }
 
 function cancellationReasonCode(reason) {
@@ -63,6 +60,13 @@ function cancellationReasonCode(reason) {
 
 function sha256(value) {
   return createHash("sha256").update(String(value), "utf8").digest("hex");
+}
+
+function hashIdempotencyKey(operation, idempotencyKey, secret = "") {
+  const material = `${operation}\0${idempotencyKey}`;
+  return secret
+    ? createHmac("sha256", secret).update(material, "utf8").digest("hex")
+    : sha256(material);
 }
 
 function normalizeIdempotencyKey(value) {
@@ -105,6 +109,7 @@ function createProcessJobManager(options = {}) {
   const createId = options.randomUUID || randomUUID;
   const executionDependencies = options.executionDependencies || {};
   const idempotencySecret = String(options.idempotencySecret || "");
+  const legacyIdempotencySecret = String(options.legacyIdempotencySecret || "");
   const runtimeScope = String(options.runtimeScope || "default");
   const serverInstanceId = String(options.serverInstanceId || `process-${process.pid}`);
   const instanceLeaseTtlMs = normalizeInstanceLeaseTtlMs(
@@ -382,10 +387,11 @@ function createProcessJobManager(options = {}) {
     };
   }
 
-  function reuseIdempotent(record) {
+  function reuseIdempotent(record, keyGeneration = "current") {
     const job = jobs.get(record.id) || hydrate(record);
     emit("process_job_idempotency_reused", job, {
       existing_status: job.status,
+      key_generation: keyGeneration,
     });
     return toStatus(job);
   }
@@ -396,17 +402,26 @@ function createProcessJobManager(options = {}) {
     const prepared = prepareExecution(input, { ...executionDependencies, config });
     const jobOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
     const idempotencyKey = normalizeIdempotencyKey(input.idempotency_key);
+    const inputHash = idempotencyKey ? canonicalProcessInputHash(input, prepared) : "";
     const idempotency = idempotencyKey ? {
       operation: PROCESS_START_OPERATION,
-      keyHash: idempotencySecret
-        ? createHmac("sha256", idempotencySecret)
-            .update(`${PROCESS_START_OPERATION}\0${idempotencyKey}`, "utf8")
-            .digest("hex")
-        : sha256(`${PROCESS_START_OPERATION}\0${idempotencyKey}`),
-      inputHash: canonicalProcessInputHash(input, prepared),
+      keyHash: hashIdempotencyKey(PROCESS_START_OPERATION, idempotencyKey, idempotencySecret),
+      inputHash,
     } : null;
+    const legacyKeyHash = idempotencyKey && legacyIdempotencySecret
+      ? hashIdempotencyKey(PROCESS_START_OPERATION, idempotencyKey, legacyIdempotencySecret)
+      : "";
     if (idempotency) {
-      const existing = store.lookupIdempotent({ ownerKey: jobOwnerKey, ...idempotency });
+      let existing = store.lookupIdempotent({ ownerKey: jobOwnerKey, ...idempotency });
+      if (!existing && legacyKeyHash && legacyKeyHash !== idempotency.keyHash) {
+        existing = store.lookupIdempotent({
+          ownerKey: jobOwnerKey,
+          operation: idempotency.operation,
+          keyHash: legacyKeyHash,
+          inputHash: idempotency.inputHash,
+        });
+        if (existing) return reuseIdempotent(existing, "legacy");
+      }
       if (existing) return reuseIdempotent(existing);
     }
     if (runningCount() >= config.maxConcurrent && queue.length >= config.maxQueued) {

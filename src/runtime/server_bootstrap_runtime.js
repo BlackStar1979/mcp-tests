@@ -72,11 +72,20 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   const optionalTools = [];
   let oauth21AuthorizationServer = null;
   let oauth21Issuer = env.MCP_TEST_OAUTH_ISSUER;
-  let processIdempotencySecret = String(env.MCP_PROCESS_IDEMPOTENCY_SECRET || "");
+  const processIdempotencySecret = String(env.MCP_PROCESS_IDEMPOTENCY_SECRET || "");
+  let legacyProcessIdempotencySecret = "";
   if (bootstrapConfig.authMode === "oauth21") {
     const secretConfig = loadOAuth21SecretConfig({ secretFile: bootstrapConfig.oauthConfigFile, env, fallbackIssuer: publicBaseUrl });
     oauth21Issuer = secretConfig.issuer;
-    processIdempotencySecret ||= secretConfig.operatorSecret;
+    if (processIdempotencySecret && processIdempotencySecret === secretConfig.operatorSecret) {
+      const error = new Error("MCP_PROCESS_IDEMPOTENCY_SECRET must be distinct from the OAuth21 operator secret.");
+      error.code = "process_idempotency_secret_reuse";
+      throw error;
+    }
+    // Before this separation, OAuth21 runtimes used operatorSecret as the idempotency HMAC key.
+    // Keep it lookup-only for retained mappings so an upgrade cannot turn a lost-response retry
+    // into duplicate execution. New mappings MUST use only processIdempotencySecret or SHA-256.
+    legacyProcessIdempotencySecret = secretConfig.operatorSecret;
     // Legacy JSON backend is selected only when BOTH file vars are set. Setting exactly
     // one used to silently select it anyway, leaving the unset half to default to a REAL
     // path under ~/.romion -- so a test that meant to be hermetic would quietly read and
@@ -179,6 +188,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
       runtimeScope: mcpResourceUrl,
       serverInstanceId: serverStartId,
       idempotencySecret: processIdempotencySecret,
+      legacyIdempotencySecret: legacyProcessIdempotencySecret,
     });
   }
 

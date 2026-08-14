@@ -7,7 +7,8 @@ const {
   processToolOutputSchema,
 } = require("../src/schemas/process_tools");
 const { executeProcessTool } = require("../src/util/process_tool_errors");
-const { resolveProcessJobManager, resolveProcessJobOwner } = require("../src/util/process_job_manager");
+const { resolveProcessJobOwner } = require("../src/util/process_job_owner");
+const { resolveProcessJobManager } = require("../src/util/process_job_manager");
 
 const processListTool = {
   name: "process_list",

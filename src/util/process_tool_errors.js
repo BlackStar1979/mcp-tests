@@ -2,6 +2,7 @@
 
 const MESSAGE_RULES = [
   [/Unknown process job/i, "process_job_not_found", "Process job was not found or is not owned by this client."],
+  [/Authenticated process job owner is required/i, "process_job_owner_required", "Authenticated process job owner is required."],
   [/Command not allowed/i, "process_command_not_allowed", "Command is not allowed by the process policy."],
   [/Command not found/i, "process_command_not_found", "Command could not be resolved in the trusted runtime."],
   [/outside configured workspace roots|outside.*workspace|path is not allowed/i, "process_cwd_not_allowed", "Working directory is outside the configured workspace roots."],

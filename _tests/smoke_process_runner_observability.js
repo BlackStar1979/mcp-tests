@@ -2,6 +2,9 @@ const assert = require("node:assert/strict");
 const path = require("node:path");
 const { analyzeProcessRunnerLog, detectMarkers } = require("../_workflow/scripts/process_runner_observability.js");
 
+require("./smoke_process_security_regressions");
+require("./smoke_process_idempotency_key_migration");
+
 const fixture = path.join(__dirname, "fixtures", "process_runner_audit_fixture.jsonl");
 
 const summary = analyzeProcessRunnerLog({
