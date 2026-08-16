@@ -34,6 +34,7 @@ for (const rel of [
   ["_workflow", "operator_decisions", "mcp_official_sdk_v2_interop_closeout.md"],
   ["_workflow", "operator_decisions", "mcp_tasks_process_adapter_closeout.md"],
   ["_workflow", "operator_decisions", "process_artifacts_closeout.md"],
+  ["_workflow", "operator_decisions", "oauth_cimd_closeout.md"],
 ]) {
   assert.equal(exists(...rel), true, `missing required documentation file: ${rel.join("/")}`);
 }
@@ -53,6 +54,7 @@ const officialSdkCloseout = read("_workflow", "operator_decisions", "mcp_officia
 const tasksCloseout = read("_workflow", "operator_decisions", "mcp_tasks_process_adapter_closeout.md");
 const traceCloseout = read("_workflow", "operator_decisions", "w3c_trace_context_closeout.md");
 const artifactsCloseout = read("_workflow", "operator_decisions", "process_artifacts_closeout.md");
+const cimdCloseout = read("_workflow", "operator_decisions", "oauth_cimd_closeout.md");
 const processPersistenceAcceptance = read("_workflow", "operator_decisions", "process_job_persistence_live_acceptance.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
 const rootDirectory = read("DIRECTORY.md");
@@ -62,8 +64,8 @@ assert.ok(northstar.includes("Single-route on `/mcp`"));
 assert.ok(northstar.includes("Streamable HTTP only"));
 assert.ok(stateDoc.includes("Server version: `0.40.0`"));
 assert.ok(stateDoc.includes("repository target connector-visible tools `98`"));
-assert.ok(stateDoc.includes("tests_authenticated=301"));
-assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `301`"));
+assert.ok(stateDoc.includes("tests_authenticated=304"));
+assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `304`"));
 assert.ok(stateDoc.includes("`mcp__workbench` is callable again"));
 assert.ok(stateDoc.includes("`src/integrations/codebase_memory/DIRECTORY.md`"));
 assert.ok(stateDoc.includes("`codex-mcp-client 0.146.0-alpha.9.2`"));
@@ -132,18 +134,24 @@ assert.ok(traceCloseout.includes("tests_authenticated=298"));
 assert.ok(artifactsCloseout.includes("Status: repo-validated, not live-loaded"));
 assert.ok(artifactsCloseout.includes("`CIMD` is now the highest-leverage"));
 assert.ok(artifactsCloseout.includes("tests_authenticated=301"));
+assert.ok(cimdCloseout.includes("Status: repo-validated, not live-loaded"));
+assert.ok(cimdCloseout.includes("draft-ietf-oauth-client-id-metadata-document-02"));
+assert.ok(cimdCloseout.includes("Clean-history validation run `31959846622`"));
+assert.ok(cimdCloseout.includes("tests_authenticated=304"));
+assert.ok(cimdCloseout.includes("`MRTR` is now the highest-leverage"));
 assert.ok(operatorDecisionsDirectory.includes("Status: active workflow operator decisions directory map"));
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(operatorDecisionsDirectory.includes("run_process_sync_ceiling.md"));
+assert.ok(operatorDecisionsDirectory.includes("oauth_cimd_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("This directory is a decision ledger, not the active queue."));
 assert.ok(cbmSkillDirectory.includes("Status: active using-codebase-memory skill directory map"));
 assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
-assert.equal(workflowState.workflow_progress_markers.current_working_course, "cimd-and-mrtr");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "cimd");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "mrtr");
-assert.equal(workflowState.audit_events_spec.event_count, 100);
+assert.equal(workflowState.workflow_progress_markers.current_working_course, "mrtr-and-protocol-compatibility-evidence");
+assert.equal(workflowState.workflow_progress_markers.next_primary, "mrtr");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "comp-1a-client-entry-evidence-on-new-version");
+assert.equal(workflowState.audit_events_spec.event_count, 103);
 
 assert.ok(rootDirectory.includes("This top-level map is intentional but not yet exhaustive"));
 assert.ok(rootDirectory.includes("npm run docs:directory"));
@@ -156,9 +164,9 @@ assert.ok(workflowIndex.includes("the latest bounded `DOC-2A` passes refreshed t
 assert.ok(workflowIndex.includes("no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
-assert.ok(workflowIndex.includes("`current_working_course = cimd-and-mrtr`"));
-assert.ok(workflowIndex.includes("`next_primary = cimd`"));
-assert.ok(workflowIndex.includes("`next_secondary = mrtr`"));
+assert.ok(workflowIndex.includes("`current_working_course = mrtr-and-protocol-compatibility-evidence`"));
+assert.ok(workflowIndex.includes("`next_primary = mrtr`"));
+assert.ok(workflowIndex.includes("`next_secondary = comp-1a-client-entry-evidence-on-new-version`"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

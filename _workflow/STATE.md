@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=301`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=304`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `301`
+- Latest validated authenticated smoke count: `304`
 
 ## Surface model
 
@@ -50,9 +50,9 @@ Summarize the current validated product state in one operator-facing place witho
 
 ## Current workflow track
 
-- `current_working_course = cimd-and-mrtr`
-- `next_primary = cimd`
-- `next_secondary = mrtr`
+- `current_working_course = mrtr-and-protocol-compatibility-evidence`
+- `next_primary = mrtr`
+- `next_secondary = comp-1a-client-entry-evidence-on-new-version`
 
 ## Verified documentation authorities
 

@@ -29,6 +29,7 @@ Current derivation:
 - `MCP-TASKS-PROCESS-ADAPTER` is repo-complete on clean history: negotiated modern `run_process` calls use the same durable process registry, `tasks/get/update/cancel` are owner-bound, `tasks/list` is absent, task results survive registry reopen, raw argv is redacted, and full `7 + 294` plus clean-tree validation passed. This package is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.
 - `TRACE-CONTEXT` is repo-complete: modern request metadata creates bounded W3C correlation, process execution receives child spans, owner-bound SQLite/WAL persists only extracted identifiers/flags/source, old stores migrate in place, invalid trace metadata cannot fail the business request, raw baggage/tracestate are excluded from durable/audit state, and full `7 + 298` plus clean-tree validation passed. It is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.
 - `PROCESS-ARTIFACTS` is repo-complete: immutable owner-bound stdout/stderr artifacts use opaque IDs, SHA-256, independent bounded retention, explicit chunk URIs, private `resources/read`, no `resources/list` enumeration, and standard `resource_link` fallbacks for large Task results. Full `7 + 301` plus clean-tree validation passed. It is not yet live-loaded on OAuth21 `3008`; the connector-visible 98-tool fingerprint remains unchanged.
+- `CIMD` is repo-complete: HTTPS client-id metadata resolution is ephemeral and SSRF-hardened, uses DNS/IP validation plus pinned transport, rejects automatic redirects and private JWK material, enforces a 5 KiB processing bound, preserves exact redirect matching for CIMD, honors HTTP freshness, and keeps DCR persistence separate. Clean-history run `31959846622` passed full `7 + 304`. It is not yet live-loaded on OAuth21 `3008`.
 - The active autonomous quality package is persisted as task `a6cf7cac-ba33-427f-bd14-70107c36f2ef`: build an operational E2E coverage matrix across restart, reconnect, cancellation, timeout, Cloudflare Tunnel, SFTP, network, process, and destructive rollback behavior, then close the highest-risk reproduced gaps.
 - `OPS-1A` is complete at `3/4`: the classified matrix and bounded runner produced `56/56` green invocations. Live SFTP remains externally blocked by a missing config, while full OAuth reconnect remains operator-driven; neither boundary is represented as automated proof.
 
@@ -39,18 +40,18 @@ Current derivation:
 | P0 | MCP Tasks process adapter — complete in repo | accepted `PROC-1B-R2`, negotiated task capability | Standard Tasks now reuse one execution truth rather than creating another scheduler/store. | Preserve as regression evidence; perform a controlled live load/probe only when runtime deployment is intentionally authorized. |
 | P1 | Bounded W3C Trace Context correlation — complete in repo | durable task/execution identity | Request, execution, and task now share one safe correlation spine without changing authorization. | Preserve as regression evidence; live-load only through a separate controlled deployment boundary. |
 | P2 | Owner-bound process output artifacts — complete in repo | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts without expanding `resources/list`. | Use opaque `resource_link` handles, hashes, owner binding, retention, and a bounded chunk reader; do not rely on `resources/read` as a cursor protocol. |
-| P3 | Implement CIMD as an isolated SSRF-hardened compatibility package — active | stable Tasks/artifacts/tracing | DCR is deprecated but still required for real clients; CIMD adds remote metadata fetching and a new security boundary. | Require HTTPS, DNS/IP/redirect revalidation, private-address denial, bounded size/time, validation, cache policy, and separate adversarial fixtures. |
-| P4 | Add the MRTR conformance fixture | stable protocol adapters | MRTR is useful conformance evidence but should not complicate the execution foundation. | Keep it fixture-scoped and resolve required pre-task interaction synchronously. |
+| P3 | Implement CIMD as an isolated SSRF-hardened compatibility package — complete in repo | stable Tasks/artifacts/tracing | DCR is deprecated but still required for real clients; CIMD adds remote metadata fetching and a new security boundary. | Preserve the `-02` SSRF/cache/exact-match contract as regression evidence; live-load only through a separate controlled deployment boundary. |
+| P4 | Add the MRTR conformance fixture — active | stable protocol adapters | MRTR is useful conformance evidence but should not complicate the execution foundation. | Keep it fixture-scoped: return `InputRequiredResult`, accept matching `inputResponses`, preserve opaque `requestState`, and complete on retry without a second task/session store. |
 | P5 | Refresh `COMP-1A` only on newer external client traffic | fresh evidence after the 2026-08-02 sample | Official SDK and server-side final-era support are complete, but the last measured operational Codex client used legacy `initialize`. | Preserve both version-gated paths unless a newer client entry sample changes the verdict. |
 | P6 | Execute `OPS-1B` only when a live boundary becomes available | completed `OPS-1A`, recovered SFTP config or real reconnect event | The remaining gaps require external infrastructure or operator credential entry and must not be fabricated. | Run the existing bounded matrix against the newly available boundary and repair only reproduced defects. |
 
 ## Bounded package queue
 
-0. `CIMD` — active protocol package
-   Add current-protocol client metadata discovery with HTTPS-only retrieval, DNS/IP/redirect revalidation, private-address denial, bounded size/time, validation, cache policy, and DCR compatibility.
+0. `MRTR` — active protocol package
+   Add a fixture-scoped 2026-07-28 multi-round-trip conformance path: return `InputRequiredResult`, require matching `inputResponses`, preserve opaque `requestState`, and complete on retry without a second task/session store.
 
-1. `MRTR`
-   Add current-protocol client metadata discovery only with the explicit SSRF boundary above.
+1. `COMP-1A`
+   Refresh only when newer external client traffic exists; preserve the version-gated compatibility paths until evidence changes the verdict.
 
 
 3. `COMP-1A` / `OPS-1B` / `DOC-2A`

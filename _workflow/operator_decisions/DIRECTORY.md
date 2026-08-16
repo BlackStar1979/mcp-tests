@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active workflow operator decisions directory map
-Updated: 2026-08-14
+Updated: 2026-08-16
 
 - `initialize_client_compatibility_evidence.md`
   Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.
@@ -25,6 +25,8 @@ Updated: 2026-08-14
   Repository acceptance evidence for bounded W3C request/execution/task correlation, privacy boundaries, SQLite migration, and the not-yet-live runtime boundary.
 - `process_artifacts_closeout.md`
   Repository acceptance evidence for immutable owner-bound process output artifacts, opaque resource reads, retention, and the not-yet-live runtime boundary.
+- `oauth_cimd_closeout.md`
+  Repository acceptance evidence for SSRF-hardened ephemeral Client ID Metadata Document resolution, DCR separation, clean-history validation, and the not-yet-live runtime boundary.
 - `run_process_sync_ceiling.md`
   Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.
 - `ops_1a_operational_e2e_closeout.md`

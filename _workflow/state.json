@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-14T14:30:00.000Z",
+  "updated_at": "2026-08-16T17:18:00.000Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "cimd-and-mrtr",
-    "next_primary": "cimd",
-    "next_secondary": "mrtr",
+    "current_working_course": "mrtr-and-protocol-compatibility-evidence",
+    "next_primary": "mrtr",
+    "next_secondary": "comp-1a-client-entry-evidence-on-new-version",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -186,7 +186,7 @@
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 100
+    "event_count": 103
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
