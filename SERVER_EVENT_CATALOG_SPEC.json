@@ -256,6 +256,14 @@
       "status": "active_code_event"
     },
     {
+      "name": "oauth21_cimd_resolved",
+      "status": "active_code_event"
+    },
+    {
+      "name": "oauth21_cimd_rejected",
+      "status": "active_code_event"
+    },
+    {
       "name": "oauth21_dead_clients_pruned",
       "status": "active_code_event"
     },

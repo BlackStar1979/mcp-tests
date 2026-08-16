@@ -171,9 +171,49 @@
       "application_type=native|web"
     ],
     "legacy_application_type_compatibility": "infer native for loopback-only redirect URIs, otherwise web",
-    "client_id_metadata_documents_supported": false,
-    "dcr_deprecation_posture": "retained for backward compatibility until operational clients support Client ID Metadata Documents",
+    "client_id_metadata_documents_supported": true,
+    "dcr_deprecation_posture": "retained for backward compatibility; Client ID Metadata Documents are preferred for unknown HTTPS client identifiers",
     "guard": "_tests/smoke_oauth_dcr_policy.js"
+  },
+  "client_id_metadata_document_policy": {
+    "status": "implemented_p3",
+    "ietf_reference": "draft-ietf-oauth-client-id-metadata-document-02",
+    "mcp_spec_version": "2026-07-28",
+    "authorization_server_metadata_flag": "client_id_metadata_document_supported=true",
+    "client_id_scheme_required": "https",
+    "client_id_path_required": true,
+    "userinfo_forbidden": true,
+    "fragment_forbidden": true,
+    "dot_segments_forbidden": true,
+    "query_string_posture": "allowed_for_interoperability_but_not_recommended_by_current_IETF_draft",
+    "http_redirects_followed": false,
+    "successful_http_status_required": 200,
+    "maximum_bytes_read_and_processed": 5120,
+    "dns_policy": "reject_any_special_use_RFC6890_resolution_before_connect",
+    "transport_policy": "connect_only_to_prevalidated_DNS_addresses_with_original_TLS_hostname",
+    "metadata_client_id_exact_string_match_required": true,
+    "redirect_uri_exact_string_match_required": true,
+    "metadata_required_fields": [
+      "client_id",
+      "client_name",
+      "redirect_uris"
+    ],
+    "allowed_token_endpoint_auth_methods": [
+      "none"
+    ],
+    "private_key_jwt_supported": false,
+    "shared_secret_metadata_forbidden": true,
+    "private_key_material_forbidden": true,
+    "secondary_metadata_urls_fetched": false,
+    "invalid_or_error_documents_cached": false,
+    "http_cache_headers_respected_with_bounded_lifetime": true,
+    "http_cache_age_accounted_for": true,
+    "persistent_client_registry_write": false,
+    "dcr_fallback_retained": true,
+    "guards": [
+      "_tests/smoke_oauth_cimd_resolver.js",
+      "_tests/smoke_oauth21_cimd_flow.js"
+    ]
   },
   "pkce_client_flow_policy": {
     "status": "implemented_h5_policy",

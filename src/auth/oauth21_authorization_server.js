@@ -20,6 +20,7 @@ const {
 const { buildOAuth21PrunePreview, collectReferencedClientIds } = require("./oauth21_prune_preview");
 const { createOAuth21PersistenceStore } = require("./oauth21_persistence_store");
 const { runOAuth21StartupPrune } = require("./oauth21_startup_prune");
+const { createClientIdMetadataResolver } = require("./oauth_cimd_resolver");
 const {
   choosePreferredRefreshToken,
   parseOAuthStateBody,
@@ -54,9 +55,18 @@ function escapeHtml(value) {
 function buildLoginPage(item, pid) {
   const safePid = escapeHtml(pid);
   const safeClientId = escapeHtml(item?.clientId || "");
+  const safeClientName = escapeHtml(item?.clientName || "");
   const safeRedirectUri = escapeHtml(item?.redirectUri || "");
   const safeScope = escapeHtml(item?.scope || "mcp:tools");
-  return `<!doctype html><html><body><h3>mcp-tests OAuth 2.1 operator authorization</h3><p>Client ID: <code>${safeClientId}</code></p><p>Redirect URI: <code>${safeRedirectUri}</code></p><p>Requested scope: <code>${safeScope}</code></p><form method="post" action="/oauth/operator-login"><input type="hidden" name="pid" value="${safePid}"><input type="hidden" name="client_id" value="${safeClientId}"><input type="hidden" name="redirect_uri" value="${safeRedirectUri}"><input type="hidden" name="scope" value="${safeScope}"><label>Operator secret <input name="password" type="password" autofocus></label><button type="submit">Authorize</button></form></body></html>`;
+  let safeClientHostname = "";
+  try {
+    safeClientHostname = escapeHtml(new URL(String(item?.clientId || "")).hostname);
+  } catch (_) {
+    safeClientHostname = "";
+  }
+  const clientNameMarkup = safeClientName ? `<p>Client name: <strong>${safeClientName}</strong></p>` : "";
+  const clientHostnameMarkup = safeClientHostname ? `<p>Client hostname: <code>${safeClientHostname}</code></p>` : "";
+  return `<!doctype html><html><body><h3>mcp-tests OAuth 2.1 operator authorization</h3>${clientNameMarkup}${clientHostnameMarkup}<p>Client ID: <code>${safeClientId}</code></p><p>Redirect URI: <code>${safeRedirectUri}</code></p><p>Requested scope: <code>${safeScope}</code></p><form method="post" action="/oauth/operator-login"><input type="hidden" name="pid" value="${safePid}"><input type="hidden" name="client_id" value="${safeClientId}"><input type="hidden" name="redirect_uri" value="${safeRedirectUri}"><input type="hidden" name="scope" value="${safeScope}"><label>Operator secret <input name="password" type="password" autofocus></label><button type="submit">Authorize</button></form></body></html>`;
 }
 
 function loginBindingMatches(item, form = {}) {
@@ -188,7 +198,7 @@ function isValidPkceS256Challenge(value) {
   return PKCE_S256_CHALLENGE_RE.test(String(value || ""));
 }
 
-function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, clientRegistryLimit = DEFAULT_CLIENT_REGISTRY_LIMIT, startupPruneEnabled = false, startupPruneBackupDir = "", warnLogger = console.warn } = {}) {
+function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecret, clientsFile, storageFile, trustedProxyHeaders = false, now = () => Date.now(), loginLimit = DEFAULT_LOGIN_LIMIT, loginWindowMs = DEFAULT_LOGIN_WINDOW_MS, publicRouteLimit = DEFAULT_PUBLIC_ROUTE_LIMIT, publicRouteWindowMs = DEFAULT_PUBLIC_ROUTE_WINDOW_MS, clientRegistryLimit = DEFAULT_CLIENT_REGISTRY_LIMIT, startupPruneEnabled = false, startupPruneBackupDir = "", warnLogger = console.warn, cimdResolver = null } = {}) {
   issuer = trimSlash(issuer);
   resource = trimSlash(resource || `${issuer}/mcp`);
   operatorSecret = String(operatorSecret || "");
@@ -196,6 +206,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   if (!resource) throw new Error("oauth21_resource_required");
   if (operatorSecret.length < 8) throw new Error("oauth21_operator_secret_required");
   const resourceAliases = resource === issuer ? [] : [issuer];
+  const cimd = cimdResolver || createClientIdMetadataResolver({ validateRedirectUri });
 
   // DCR client registry and OAuth access/refresh state are persisted to disk
   // so a controlled process restart does not invalidate the connector client_id
@@ -687,6 +698,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       revocation_endpoint_auth_methods_supported: ["none"],
       code_challenge_methods_supported: ["S256"],
       scopes_supported: ["mcp:tools"],
+      client_id_metadata_document_supported: true,
     };
   }
 
@@ -776,15 +788,15 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     return { status: 201, body: client };
   }
 
-  function authorize(query = {}) {
-    cleanup();
-    const client = clients.get(String(query.client_id || ""));
-    if (!client) return { status: 400, body: { error: "invalid_client" } };
+  function authorizeResolvedClient(query = {}, client, { exactRedirectUri = false } = {}) {
     const redirectUri = String(query.redirect_uri || "");
     const requestedResource = canonicalizeResource(query.resource, resource, resourceAliases);
     const state = String(query.state || "");
     const scopes = normalizeScopeTokens(query.scope || "mcp:tools");
-    if (!client.redirect_uris.some((item) => matchesRegisteredRedirectUri(item, redirectUri))) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
+    const redirectMatches = exactRedirectUri
+      ? client.redirect_uris.some((item) => String(item) === redirectUri)
+      : client.redirect_uris.some((item) => matchesRegisteredRedirectUri(item, redirectUri));
+    if (!redirectMatches) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") {
       auditOAuth("oauth21_authorize_rejected", { reason: "pkce_s256_required", client_id: client.client_id });
@@ -811,6 +823,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     const pid = randomToken(24);
     pending.set(pid, {
       clientId: client.client_id,
+      clientName: String(client.client_name || ""),
       redirectUri,
       resource: requestedResource,
       codeChallenge: String(query.code_challenge),
@@ -819,6 +832,21 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       expiresAt: now() + PENDING_TTL_MS,
     });
     return { status: 302, location: `${issuer}/oauth/operator-login?pid=${encodeURIComponent(pid)}` };
+  }
+
+  function authorize(query = {}) {
+    cleanup();
+    const clientId = String(query.client_id || "");
+    const registeredClient = clients.get(clientId);
+    if (registeredClient) return authorizeResolvedClient(query, registeredClient);
+    if (!clientId.startsWith("https://")) return { status: 400, body: { error: "invalid_client" } };
+    return cimd.resolve(clientId).then(({ client, cacheHit }) => {
+      auditOAuth("oauth21_cimd_resolved", { client_id: clientId, cache_hit: Boolean(cacheHit) });
+      return authorizeResolvedClient(query, client, { exactRedirectUri: true });
+    }).catch((error) => {
+      auditOAuth("oauth21_cimd_rejected", { client_id: clientId, reason: String(error?.code || "cimd_fetch_failed") });
+      return { status: 400, body: { error: "invalid_client", error_description: "client_metadata_unavailable" } };
+    });
   }
 
   function checkLoginThrottle(req) {
@@ -909,7 +937,8 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     cleanup();
     const grant = String(body.grant_type || "");
     if (grant === "authorization_code") {
-      const client = clients.get(String(body.client_id || ""));
+      const clientId = String(body.client_id || "");
+      const client = clientId ? { client_id: clientId } : null;
       const code = codes.get(String(body.code || ""));
       if (!client || !code || code.used || code.clientId !== client.client_id) return { status: 400, body: { error: "invalid_grant" } };
       if (String(body.redirect_uri || "") !== code.redirectUri) return { status: 400, body: { error: "invalid_grant", error_description: "redirect_uri_mismatch" } };
@@ -937,7 +966,8 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
       return { status: 200, body: issued };
     }
     if (grant === "refresh_token") {
-      const client = clients.get(String(body.client_id || ""));
+      const clientId = String(body.client_id || "");
+      const client = clientId ? { client_id: clientId } : null;
       const refresh = refreshTokens.get(String(body.refresh_token || ""));
       if (!client || !refresh || refresh.clientId !== client.client_id) {
         const replay = client ? usedRefreshTokens.get(String(body.refresh_token || "")) : null;
@@ -1084,13 +1114,12 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
   function revoke(body = {}) {
     const value = String(body.token || "");
     const clientId = String(body.client_id || "");
-    const client = clients.get(clientId);
-    if (!client) return { status: 400, body: { error: "invalid_client" } };
+    if (!clientId) return { status: 400, body: { error: "invalid_client" } };
     const access = accessTokens.get(value);
     const refresh = refreshTokens.get(value);
     const usedRefresh = usedRefreshTokens.get(value);
     const item = access || refresh || usedRefresh;
-    if (!item || item.clientId !== client.client_id) return { status: 200, body: {} };
+    if (!item || item.clientId !== clientId) return { status: 200, body: {} };
     let changed = false;
     let rollback = () => {};
     if (item.grantId) {
@@ -1112,7 +1141,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
         saveOAuthState({ throwOnError: true });
       } catch (error) {
         rollback();
-        auditOAuth("oauth21_revoke_failed", { client_id: client.client_id, reason: "state_persistence_failed", error_message: error.message });
+        auditOAuth("oauth21_revoke_failed", { client_id: clientId, reason: "state_persistence_failed", error_message: error.message });
         return { status: 500, body: { error: "server_error", error_description: "state_persistence_failed" } };
       }
     }
@@ -1148,7 +1177,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     }
     if (url.pathname === "/authorize" && req.method === "GET") {
       if (!checkPublicRouteThrottle(req, "authorize")) return rejectThrottledPublicRoute(res, "authorize", req);
-      const result = authorize(parseSearchParams(url.searchParams));
+      const result = await authorize(parseSearchParams(url.searchParams));
       if (result.status === 302) return redirectResponse(res, result.location);
       return jsonResponse(res, result.status, result.body);
     }

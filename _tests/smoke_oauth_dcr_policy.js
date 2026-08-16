@@ -20,7 +20,7 @@ assert.equal(policy.operator_approval_required_for_untrusted_public_clients,true
 for(const required of ["redirect_uris","token_endpoint_auth_method","application_type=native|web"]){assert.ok(policy.registration_metadata_requirements.includes(required),`${required} missing`);}
 assert.equal(policy.registration_metadata_requirements.length, 3);
 assert.match(policy.legacy_application_type_compatibility,/infer native/);
-assert.equal(policy.client_id_metadata_documents_supported,false);
+assert.equal(policy.client_id_metadata_documents_supported,true);
 assert.match(policy.dcr_deprecation_posture,/backward compatibility/);
 assert.equal(policy.guard,"_tests/smoke_oauth_dcr_policy.js");
 console.log("smoke_oauth_dcr_policy ok");
