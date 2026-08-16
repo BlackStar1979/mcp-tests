@@ -25,13 +25,15 @@ The repository now materializes immutable owner-bound stdout/stderr artifacts fr
 
 The canonical run-all includes `_tests/smoke_process_artifact_store.js`, `_tests/smoke_process_artifact_resources.js`, and `_tests/smoke_process_artifact_task_links.js`.
 
-Full repository validation run `31805313181` passed:
+Final squashed source commit: `8d8a70b029aa3294d72edc20e9d00c27e2fe8527`, based directly on `TRACE-CONTEXT` commit `786ab533ea7345f82e127715381ee46b72eceeca`.
+
+Clean-history validation run `31957637766` passed:
 
 ```text
 ok=true, version=0.40.0, public=7, tests_authenticated=301
 ```
 
-The same run passed P0/P1, matrix, generator, resource-policy, event-catalog, repository-hygiene, and clean-tree guards.
+The same run passed the source-tree ancestry/equality gate, P0/P1, matrix, generator, resource-policy, event-catalog, repository-hygiene, and pre/post full-suite clean-tree guards.
 
 ## Runtime boundary
 
