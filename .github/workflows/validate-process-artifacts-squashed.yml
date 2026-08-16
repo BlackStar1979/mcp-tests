@@ -1,0 +1,62 @@
+name: Validate Process Artifacts Squashed History
+
+on:
+  push:
+    branches:
+      - validation/process-artifacts-squashed-20260816
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Verify squashed history shape
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD^)" = "8d8a70b1ad54c472ddcf552d6fe7e2f0fd7de9ad" || { git log -3 --oneline; exit 1; }
+          test "$(git rev-parse HEAD^^)" = "786ab533ea7345f82e127715381ee46b72eceeca" || { git log -3 --oneline; exit 1; }
+      - name: P2 targeted guards
+        run: |
+          node _tests/smoke_process_artifact_store.js
+          node _tests/smoke_process_artifact_resources.js
+          node _tests/smoke_process_artifact_task_links.js
+          node _tests/smoke_mcp_tasks_process_adapter.js
+          node _tests/smoke_w3c_trace_runtime_integration.js
+          node _tests/smoke_operator_contract_docs.js
+          node _tests/smoke_workflow_navigation_index.js
+          node _tests/smoke_tools_list_cache_live_validation.js
+          node _tests/smoke_matrix_check.js
+          node _tests/smoke_directory_docs_generator.js
+      - name: Require clean tree after targeted guards
+        shell: bash
+        run: |
+          dirty="$(git status --porcelain --untracked-files=all)"
+          test -z "$dirty" || { printf '%s\n' "$dirty"; exit 1; }
+      - name: Full hermetic run-all
+        run: npm test
+      - name: Require clean repository after full suite
+        shell: bash
+        run: |
+          dirty="$(git status --porcelain --untracked-files=all)"
+          test -z "$dirty" || { printf '%s\n' "$dirty"; exit 1; }
+      - name: Self-clean validation workflow
+        if: always()
+        shell: bash
+        run: |
+          git reset --hard HEAD
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/validate-process-artifacts-squashed.yml
+          git commit -m "chore(validation): remove temporary P2 squashed-history workflow"
+          git push origin HEAD:validation/process-artifacts-squashed-20260816
