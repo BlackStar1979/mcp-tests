@@ -20,11 +20,11 @@ assert.ok(index.includes("Do not infer active work from historical plan files"))
 assert.ok(index.includes("## Active remaining work queue"));
 assert.ok(index.includes("Historical records remain traceability evidence, not the active queue."));
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
-assert.ok(index.includes("Inspect current audit traffic for a client-entry window newer than the August 2 sample before rerunning `COMP-1A`."));
+assert.ok(index.includes("Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 14 `0.147.0-alpha.6.6` sample exists."));
 assert.ok(index.includes("`COMP-1A` — event-gated protocol evidence"));
 assert.ok(index.includes("`OPS-1B` — event-gated live boundary completion"));
 assert.ok(index.includes("`DOC-2A` — bounded fallback"));
-assert.ok(index.includes("`COMP-1B` only when fresh client evidence changes the decision surface; `SURF-1` is accepted at `4/4`."));
+assert.ok(index.includes("Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`."));
 assert.ok(index.includes("Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026"));
 assert.ok(index.includes("Completed upstream issue review through ordinals 201-277 on July 29, 2026"));
 assert.ok(index.includes("documentation/workflow retrieval to `workbench` `profile=knowledge`"));
@@ -96,15 +96,15 @@ for (const stale of [
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.equal(state.workflow_progress_markers.current_working_course, "mrtr-and-protocol-compatibility-evidence");
-assert.equal(state.workflow_progress_markers.next_primary, "mrtr");
-assert.equal(state.workflow_progress_markers.next_secondary, "comp-1a-client-entry-evidence-on-new-version");
-assert.ok(index.includes("`current_working_course = mrtr-and-protocol-compatibility-evidence`"));
-assert.ok(index.includes("`next_primary = mrtr`"));
-assert.ok(index.includes("`next_secondary = comp-1a-client-entry-evidence-on-new-version`"));
-assert.ok(canon.includes("`current_working_course = mrtr-and-protocol-compatibility-evidence`"));
-assert.ok(canon.includes("`next_primary = mrtr`"));
-assert.ok(canon.includes("`next_secondary = comp-1a-client-entry-evidence-on-new-version`"));
+assert.equal(state.workflow_progress_markers.current_working_course, "event-gated-compatibility-and-operational-quality");
+assert.equal(state.workflow_progress_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
+assert.equal(state.workflow_progress_markers.next_secondary, "ops-1b-on-live-boundary");
+assert.ok(index.includes("`current_working_course = event-gated-compatibility-and-operational-quality`"));
+assert.ok(index.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
+assert.ok(index.includes("`next_secondary = ops-1b-on-live-boundary`"));
+assert.ok(canon.includes("`current_working_course = event-gated-compatibility-and-operational-quality`"));
+assert.ok(canon.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
+assert.ok(canon.includes("`next_secondary = ops-1b-on-live-boundary`"));
 assert.equal(state.audit_events_spec.event_count, 103);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");

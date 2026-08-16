@@ -259,6 +259,28 @@ Traffic newer than the August 1 snapshot created a current-window evidence point
 
 The same package now also has independent official SDK v2 proof in `_workflow/operator_decisions/mcp_official_sdk_v2_interop_closeout.md`: the repository server accepts both automatic and pinned modern `2026-07-28` negotiation through `server/discover`, while the SDK default legacy client remains functional through `initialize`. This separates server readiness from the unchanged operational Codex blocker.
 
+## Live evidence refresh on 2026-08-16
+
+Traffic newer than the August 2 sample creates a new operational Codex evidence point:
+
+- command: `node _workflow/scripts/client_entry_path_report.js --latest-entry-window --client-name=codex-mcp-client --evidence-scope=operational --max-age-days=14 --limit=20`
+- selected Codex entry identity: `server_start_id 2026-08-13T19:41:25.994Z`
+- latest matching Codex initialize: `2026-08-14T03:09:06.144Z`
+- client: `codex-mcp-client 0.147.0-alpha.6.6`
+- protocol: `2025-06-18`
+- selected-window result: `4` legacy `initialize` entries and `0` `server/discover` entries
+- retained matching result in the 14-day filter: `6` legacy `initialize` entries and `0` `server/discover` entries
+- retirement verdict: `blocked_by_operational_initialize_clients`
+
+Independent operational evidence now also proves the modern path outside the Codex family:
+
+- `openai-mcp 1.0.0`
+- `server/discover` observed at `2026-08-16T15:51:06.166Z`
+- protocol `2026-07-28`
+- response status `200` with a successful result
+
+This narrows the blocker again: modern `server/discover` is operational, but the latest Codex client family still requires legacy `initialize`. Do not reopen initialize retirement until Codex client-entry traffic newer than the August 14 sample changes that verdict.
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:

@@ -65,9 +65,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "mrtr-and-protocol-compatibility-evidence",
-    "next_primary": "mrtr",
-    "next_secondary": "comp-1a-client-entry-evidence-on-new-version",
+    "current_working_course": "event-gated-compatibility-and-operational-quality",
+    "next_primary": "comp-1a-on-fresh-external-client-traffic",
+    "next_secondary": "ops-1b-on-live-boundary",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",

@@ -49,12 +49,13 @@ assert.ok(
 assert.ok(index.includes("No runtime restart, connector refresh, or OAuth relogin was performed"));
 assert.ok(index.includes("`TRACE-CONTEXT` remains repo-validated at `7 + 298`"));
 assert.ok(index.includes("`PROCESS-ARTIFACTS` remains repo-validated at `7 + 301`"));
-assert.ok(index.includes("`CIMD` is now repo-validated at `7 + 304`"));
-assert.ok(index.includes("`next_primary = mrtr`"));
+assert.ok(index.includes("`CIMD` remains repo-validated at `7 + 304`"));
+assert.ok(index.includes("`MRTR` is now repo-validated at `7 + 305`"));
+assert.ok(index.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
-assert.ok(index.includes("Refreshed `COMP-1A` on August 2, 2026"));
-assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.9.2` remains `initialize_only` with `2` matching legacy entries and `0` `server/discover` entries"));
+assert.ok(index.includes("Refreshed `COMP-1A` on August 16, 2026"));
+assert.ok(index.includes("`codex-mcp-client 0.147.0-alpha.6.6` remains `initialize_only` with `4` matching legacy entries and `0` `server/discover` entries"));
 assert.ok(index.includes("canonical PKCE"));
 assert.ok(index.includes("The connector remains authorized"));
 assert.ok(index.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
@@ -65,7 +66,8 @@ assert.ok(canon.includes("`MCP-TASKS-PROCESS-ADAPTER` is repo-validated and clos
 assert.ok(canon.includes("This package is not live-loaded on OAuth21 `3008`"));
 assert.ok(canon.includes("`TRACE-CONTEXT` is repo-validated and closed at the repository layer"));
 assert.ok(canon.includes("`PROCESS-ARTIFACTS` is repo-validated and closed at the repository layer"));
-assert.ok(canon.includes("Next internal package: fixture-scoped MRTR"));
+assert.ok(canon.includes("`MRTR` is repo-validated and closed at the repository layer"));
+assert.ok(canon.includes("Next compatibility evidence gate: client traffic newer than the August 14 Codex sample"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

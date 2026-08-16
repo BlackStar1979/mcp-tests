@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=304`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=305`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `304`
+- Latest validated authenticated smoke count: `305`
 
 ## Surface model
 
@@ -46,13 +46,15 @@ Summarize the current validated product state in one operator-facing place witho
 - Repository MCP Tasks P0 is validated but not live-loaded: negotiated `run_process` Tasks reuse the same durable process registry, survive SQLite/WAL reopen, remain owner-isolated, and preserve the stable 98-tool connector fingerprint. Clean-history validation is `7 + 294`; runtime `3008` remains at the preceding server start until a controlled load is explicitly performed.
 - Repository W3C Trace Context P1 is validated but not live-loaded: modern `_meta` correlation creates bounded request/execution spans, persists only extracted identifiers/flags/source in the same owner-bound process registry, migrates existing SQLite/WAL stores in place, rejects raw baggage/tracestate persistence, and preserves the stable 98-tool connector surface. Full repository validation is `7 + 298`; runtime `3008` remains on the preceding live load.
 - Repository Process Artifacts P2 is validated but not live-loaded: terminal stdout/stderr is materialized immutably in the same owner-bound SQLite/WAL registry with opaque IDs, SHA-256, independent bounded retention, private `resources/read`, no `resources/list` enumeration, and `resource_link` fallbacks for large Task results. Full repository validation is `7 + 301`; runtime `3008` remains on the preceding live load and the 98-tool connector surface is unchanged.
+- Repository CIMD P3 is validated but not live-loaded: the SSRF-hardened `draft-ietf-oauth-client-id-metadata-document-02` compatibility path remains isolated from DCR semantics. Full repository validation is `7 + 304`; runtime `3008` and the 98-tool connector surface are unchanged.
+- Repository MRTR P4 is validated as fixture-only protocol evidence: the official v2 client proves `input_required` elicitation, one retry with a fresh JSON-RPC id, byte-exact opaque `requestState`, matching `inputResponses`, and final `complete` semantics without any production `src/` change or second task/session store. Clean-history validation run `31963602072` passed `7 + 305`; runtime `3008` was not restarted or reloaded.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = mrtr-and-protocol-compatibility-evidence`
-- `next_primary = mrtr`
-- `next_secondary = comp-1a-client-entry-evidence-on-new-version`
+- `current_working_course = event-gated-compatibility-and-operational-quality`
+- `next_primary = comp-1a-on-fresh-external-client-traffic`
+- `next_secondary = ops-1b-on-live-boundary`
 
 ## Verified documentation authorities
 
@@ -89,7 +91,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Fresh 2026-07-15 evidence confirms `mcp__workbench` is callable again from this Codex runtime session, but the 84-tool connector surface has now been re-enumerated through the refreshed ChatGPT connector.
 - Fresh 2026-07-15 client-entry observability now distinguishes stale entry windows from real reconnect evidence: a current window that shows only follow-up `tools/call` traffic does not by itself prove any change in client entry path.
 - The final MCP `2026-07-28` dual-era adapter and DCR `application_type` compatibility policy are live at `server_start_id 2026-08-01T20:29:11.207Z`. Official `@modelcontextprotocol/client@2.0.0` interop now proves default legacy plus automatic and pinned modern paths end-to-end, and a hermetic authenticated extension proves DCR, PKCE S256, callback `state`/`iss`, issuer-bound credentials, full authorized list/call, process-restart recovery of client and token state from SQLite, and automatic refresh-token rotation after restart. Modern requests use per-request metadata, `Mcp-Method`/`Mcp-Name` validation, final error codes, modern result envelopes, and server identity metadata; legacy initialize-era traffic remains isolated from that adapter.
-- Fresh August 2 `COMP-1A` evidence selects the same live server start and shows `initialize_only` for `codex-mcp-client 0.146.0-alpha.9.2` on protocol `2025-06-18`, with `2` matching legacy entries and `0` `server/discover` entries. Server capability is independently verified, but retirement remains blocked by client behavior.
+- Fresh August 16 `COMP-1A` evidence supersedes the August 2 sample: the latest Codex entry window selects `server_start_id 2026-08-13T19:41:25.994Z` and shows `initialize_only` for `codex-mcp-client 0.147.0-alpha.6.6` on protocol `2025-06-18`, with `4` matching legacy entries and `0` `server/discover` entries. Independent operational `openai-mcp 1.0.0` traffic uses `server/discover` with protocol `2026-07-28`; modern entry therefore works operationally, but retirement remains blocked by the Codex client family.
 - The July 28 `_workflow/operator_decisions` directory-map instance of `DOC-2A` is complete. `DOC-2A` remains a reusable bounded fallback, not a permanently open task, and may run again only for a demonstrable current high-churn orientation gap.
 - Live `observability_status` now exposes the same retained blocker-matrix view as the workflow helper, so current-window entry evidence and `1d`/`2d`/`7d`/`30d`/`all` blocker framing no longer depend on a script-only code path.
 - `state.json` is an orientation map, not a progress log.

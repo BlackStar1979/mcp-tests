@@ -18,7 +18,7 @@ Audit snapshot from `2026-08-16`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- last confirmed result from `2026-08-16`: `ok=true, public=7, tests_authenticated=304`; the MRTR-expanded manifest still requires a fresh full-suite result
+- last confirmed result from `2026-08-16`: `ok=true, version=0.40.0, public=7, tests_authenticated=305`; clean-history validation run `31963602072` also passed post-suite clean-tree verification
 - current manifest contains `313` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `312` sectioned scripts: `7` public and `305` authenticated
 ## Orientation
 

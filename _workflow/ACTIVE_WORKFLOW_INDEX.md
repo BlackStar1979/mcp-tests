@@ -4,15 +4,15 @@ Status: active navigation index
 Date: 2026-08-16
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98` (`13 public + 85 authorized-visible`) and fingerprint `ec7d3af5b4ea17f5`, while runtime behavior remains live-loaded from `server_start_id = 2026-08-13T19:41:25.994Z`. `MCP-TASKS-PROCESS-ADAPTER` remains repo-validated at `7 + 294`; `TRACE-CONTEXT` remains repo-validated at `7 + 298`; `PROCESS-ARTIFACTS` remains repo-validated at `7 + 301`; `CIMD` is now repo-validated at `7 + 304`. None of these repo-only packages has been loaded into runtime `3008`. No runtime restart, connector refresh, or OAuth relogin was performed.
+Current repo/runtime note: profile `tests`; the connector-visible repository surface remains aligned with live OAuth21 `3008` at `98` (`13 public + 85 authorized-visible`) and fingerprint `ec7d3af5b4ea17f5`, while runtime behavior remains live-loaded from `server_start_id = 2026-08-13T19:41:25.994Z`. `MCP-TASKS-PROCESS-ADAPTER` remains repo-validated at `7 + 294`; `TRACE-CONTEXT` remains repo-validated at `7 + 298`; `PROCESS-ARTIFACTS` remains repo-validated at `7 + 301`; `CIMD` remains repo-validated at `7 + 304`; `MRTR` is now repo-validated at `7 + 305`. None of these repo-only packages has been loaded into runtime `3008`. No runtime restart, connector refresh, or OAuth relogin was performed.
 
-The connector remains authorized; the Tasks, Trace Context, Process Artifacts, and CIMD closeouts are repository truth only until a later controlled runtime load provides fresh live evidence.
+The connector remains authorized; the Tasks, Trace Context, Process Artifacts, CIMD, and MRTR closeouts are repository truth only until a later controlled runtime load provides fresh live evidence.
 
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = mrtr-and-protocol-compatibility-evidence`
-- `next_primary = mrtr`
-- `next_secondary = comp-1a-client-entry-evidence-on-new-version`
+- `current_working_course = event-gated-compatibility-and-operational-quality`
+- `next_primary = comp-1a-on-fresh-external-client-traffic`
+- `next_secondary = ops-1b-on-live-boundary`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -73,9 +73,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=304`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=305`.
 - Public section count: `7`.
-- Authenticated smoke count: `304`.
+- Authenticated smoke count: `305`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -383,20 +383,21 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Inspect current audit traffic for a client-entry window newer than the August 2 sample before rerunning `COMP-1A`.
-2. Preserve completed `OPS-1A`; reopen `OPS-1B` only when live SFTP infrastructure or a real reconnect event exists.
-3. Use `DOC-2A` only as a bounded fallback after higher-value E2E work or when one real high-churn orientation gap exists.
-4. Run `COMP-1B` only when fresh client evidence changes the decision surface; `SURF-1` is accepted at `4/4`.
+1. Preserve completed MRTR/CIMD/Tasks/Trace/Artifacts regression evidence; no repo-only package requires an immediate runtime load.
+2. Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 14 `0.147.0-alpha.6.6` sample exists.
+3. Preserve completed `OPS-1A`; reopen `OPS-1B` only when live SFTP infrastructure, a real reconnect event, or a reproduced operational defect exists.
+4. Use `DOC-2A` only when a fresh top25/churn>=5 audit exposes one real high-churn orientation gap; the August 16 audit reports `missing: 0`.
+5. Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`.
 
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: inspect current audit traffic for a `COMP-1A` entry window newer than the August 2 `codex-mcp-client 0.146.0-alpha.9.2` sample. Keep the hardened OAuth21 runtime, final dual-era adapter, official SDK regression, and completed `OPS-1A` matrix stable.
+Next recommended action: keep the hardened OAuth21 runtime and completed `7 + 305` protocol regression line stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 14 `codex-mcp-client 0.147.0-alpha.6.6` sample; `OPS-1B` and `DOC-2A` remain boundary-gated.
 
 Readiness-derived default next package queue:
 
 1. `COMP-1A` — event-gated protocol evidence
-   Resume only when a new external-client evidence window exists.
+   Resume only for Codex client-entry traffic newer than the August 14 `0.147.0-alpha.6.6` sample.
 
 2. `OPS-1B` — event-gated live boundary completion
    Resume only for recovered SFTP infrastructure, a real reconnect event, or a reproduced operational defect.
@@ -405,9 +406,13 @@ Readiness-derived default next package queue:
    Current top25/churn>=5 audit is clean. Reopen only when a fresh audit exposes one real high-churn orientation gap, then stop.
 
 4. `COMP-1B`
-   Execute only when fresh evidence materially changes the protocol decision surface.
+   Execute only when fresh evidence materially changes the protocol retirement decision surface.
 
 Recently completed:
+
+- Completed `MRTR` on August 16, 2026: fixture-only official-client conformance proves `input_required` elicitation, exactly one retry with a fresh JSON-RPC id, preserved arguments, byte-exact opaque `requestState`, keyed `inputResponses`, and final `complete` semantics without production `src/` changes or a second task/session store. Clean-history run `31963602072` passed `7 + 305` plus post-suite clean-tree verification; runtime `3008` was not reloaded.
+
+- Refreshed `COMP-1A` on August 16, 2026: selected operational Codex entry window `server_start_id 2026-08-13T19:41:25.994Z` shows `codex-mcp-client 0.147.0-alpha.6.6` remains `initialize_only` with `4` matching legacy entries and `0` `server/discover` entries. Independent operational `openai-mcp 1.0.0` traffic uses `server/discover` with protocol `2026-07-28`; initialize retirement remains blocked only by the Codex family.
 
 - Completed `OPS-1A` on August 9, 2026: the evidence-classified operational matrix and bounded runner passed `56/56` invocations, including three live Cloudflare and three live MCP network probes. Full operator-driven reconnect and live SFTP remain explicit external boundaries, not automated green claims.
 
