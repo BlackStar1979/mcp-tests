@@ -96,15 +96,16 @@ for (const stale of [
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.equal(state.workflow_progress_markers.current_working_course, "process-artifacts-and-cimd");
-assert.equal(state.workflow_progress_markers.next_primary, "process-artifacts");
-assert.equal(state.workflow_progress_markers.next_secondary, "cimd");
-assert.ok(index.includes("`current_working_course = process-artifacts-and-cimd`"));
-assert.ok(index.includes("`next_primary = process-artifacts`"));
-assert.ok(index.includes("`next_secondary = cimd`"));
-assert.ok(canon.includes("`current_working_course = process-artifacts-and-cimd`"));
-assert.ok(canon.includes("`next_primary = process-artifacts`"));
-assert.ok(canon.includes("`next_secondary = cimd`"));
+assert.equal(state.workflow_progress_markers.current_working_course, "cimd-and-mrtr");
+assert.equal(state.workflow_progress_markers.next_primary, "cimd");
+assert.equal(state.workflow_progress_markers.next_secondary, "mrtr");
+assert.ok(index.includes("`current_working_course = cimd-and-mrtr`"));
+assert.ok(index.includes("`next_primary = cimd`"));
+assert.ok(index.includes("`next_secondary = mrtr`"));
+assert.ok(canon.includes("`current_working_course = cimd-and-mrtr`"));
+assert.ok(canon.includes("`next_primary = cimd`"));
+assert.ok(canon.includes("`next_secondary = mrtr`"));
+assert.equal(state.audit_events_spec.event_count, 100);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);

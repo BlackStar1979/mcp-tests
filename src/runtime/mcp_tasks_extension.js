@@ -6,12 +6,14 @@ const { isModernProtocolVersion } = require("./protocol_version_policy");
 const { resolveProcessJobManager } = require("../util/process_job_manager");
 const { resolveProcessJobOwner } = require("../util/process_job_owner");
 const { createChildTraceContext, traceAuditFields } = require("./trace_context");
+const { buildProcessArtifactResourceLink } = require("./process_artifact_resource");
 
 const TASKS_EXTENSION_ID = "io.modelcontextprotocol/tasks";
 const TASKABLE_PROCESS_TOOL = "run_process";
 const TASK_POLL_INTERVAL_MS = 1000;
 const TASK_TTL_MS = 0;
 const TASK_OUTPUT_READ_CHARS = 65536;
+const TASK_INLINE_OUTPUT_CHARS = 32768;
 const MISSING_REQUIRED_CLIENT_CAPABILITY = -32003;
 const PROCESS_ARGS_REDACTED_META_KEY = "mcp-tests/processArgsRedacted";
 const PROCESS_TASK_BACKED_META_KEY = "mcp-tests/taskBackedProcess";
@@ -52,49 +54,16 @@ function buildTaskMetadata(status = {}) {
 }
 
 function readDurableRunResult(manager, taskId, ownerId, status = {}) {
-  let stdout = "";
-  let stderr = "";
-  let stdoutOffset = 0;
-  let stderrOffset = 0;
   const hardLimit = Math.max(1, Number(status.output_limit_chars || 1000000));
-  const maxIterations = Math.ceil((hardLimit * 2) / TASK_OUTPUT_READ_CHARS) + 4;
-
-  for (let iteration = 0; iteration < maxIterations; iteration += 1) {
-    const chunk = manager.output(taskId, {
-      stdout_offset: stdoutOffset,
-      stderr_offset: stderrOffset,
-      max_chars: TASK_OUTPUT_READ_CHARS,
-    }, { ownerId });
-
-    stdout += String(chunk.stdout || "");
-    stderr += String(chunk.stderr || "");
-
-    const nextStdout = Number(chunk.stdout_next_offset ?? stdoutOffset);
-    const nextStderr = Number(chunk.stderr_next_offset ?? stderrOffset);
-    const madeProgress = nextStdout > stdoutOffset || nextStderr > stderrOffset;
-    stdoutOffset = nextStdout;
-    stderrOffset = nextStderr;
-
-    if (chunk.stdout_eof === true && chunk.stderr_eof === true) break;
-    if (!madeProgress) {
-      const error = new Error("Process task output cursor made no progress.");
-      error.code = "process_task_output_cursor_stalled";
-      throw error;
-    }
-    if (iteration === maxIterations - 1) {
-      const error = new Error("Process task output exceeded bounded reconstruction iterations.");
-      error.code = "process_task_output_reconstruction_limit";
-      throw error;
-    }
-  }
-
+  const chunk = manager.output(taskId, {
+    stdout_offset: 0,
+    stderr_offset: 0,
+    max_chars: TASK_INLINE_OUTPUT_CHARS,
+  }, { ownerId });
   const persistedTrace = typeof manager.trace === "function" ? manager.trace(taskId, { ownerId }) : null;
-
   return {
     status: status.status,
     command: status.command,
-    // Raw argv is deliberately not persisted by the durable process registry.
-    // `run_process` now follows the same contract and returns an empty echo.
     args: [],
     cwd: status.cwd,
     workspace: status.workspace,
@@ -102,10 +71,10 @@ function readDurableRunResult(manager, taskId, ownerId, status = {}) {
     signal: status.signal,
     timed_out: status.timed_out === true,
     duration_ms: Number(status.duration_ms || 0),
-    stdout,
-    stderr,
-    stdout_truncated: status.stdout_truncated === true,
-    stderr_truncated: status.stderr_truncated === true,
+    stdout: String(chunk.stdout || ""),
+    stderr: String(chunk.stderr || ""),
+    stdout_truncated: status.stdout_truncated === true || chunk.stdout_eof !== true,
+    stderr_truncated: status.stderr_truncated === true || chunk.stderr_eof !== true,
     output_limit_chars: Number(status.output_limit_chars || hardLimit),
     trace_id: persistedTrace?.trace_id || null,
     error: status.error ?? null,
@@ -130,11 +99,24 @@ function buildDetailedTask({ manager, ownerId, status, outputMode = "structured"
       outputMode,
       readDurableRunResult(manager, task.taskId, ownerId, status)
     );
+    const outputChars = Number(status.stdout_chars || 0) + Number(status.stderr_chars || 0);
+    const needsArtifacts = outputChars > TASK_INLINE_OUTPUT_CHARS
+      || status.stdout_truncated === true
+      || status.stderr_truncated === true;
     result._meta = {
       ...(result._meta || {}),
       [PROCESS_ARGS_REDACTED_META_KEY]: true,
       [PROCESS_TASK_BACKED_META_KEY]: true,
+      ...(needsArtifacts ? { "mcp-tests/processArtifactOutputExcerpt": true } : {}),
     };
+    if (needsArtifacts && typeof manager.artifacts === "function") {
+      const artifacts = manager.artifacts(task.taskId, { ownerId });
+      const links = Array.isArray(artifacts)
+        ? artifacts.map(buildProcessArtifactResourceLink)
+        : [];
+      result.content.push(...links);
+      result._meta["mcp-tests/processArtifactCount"] = links.length;
+    }
     task.result = result;
   } else if (task.status === "failed") {
     task.statusMessage = status.error
@@ -290,6 +272,7 @@ module.exports = {
   PROCESS_TASK_BACKED_META_KEY,
   TASKABLE_PROCESS_TOOL,
   TASKS_EXTENSION_ID,
+  TASK_INLINE_OUTPUT_CHARS,
   TASK_OUTPUT_READ_CHARS,
   TASK_POLL_INTERVAL_MS,
   TASK_TTL_MS,

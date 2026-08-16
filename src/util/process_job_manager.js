@@ -529,6 +529,18 @@ function createProcessJobManager(options = {}) {
     return storedTraceFields(getJob(jobId, owner).traceContext);
   }
 
+  function artifacts(jobId, owner = {}) {
+    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    const rows = store.artifacts(jobId, expectedOwnerKey);
+    if (rows === null) throw unknownJob(jobId);
+    return rows;
+  }
+
+  function readArtifact(artifactId, cursor = {}, owner = {}) {
+    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    return store.readArtifact(artifactId, expectedOwnerKey, cursor);
+  }
+
   function output(jobId, cursor = {}, owner = {}) {
     const job = getJob(jobId, owner);
     const payload = job.handle
@@ -663,11 +675,13 @@ function createProcessJobManager(options = {}) {
   }
 
   return {
+    artifacts,
     cancel,
     close,
     events,
     list,
     output,
+    readArtifact,
     setAudit,
     shutdown,
     snapshot,

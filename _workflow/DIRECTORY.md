@@ -29,6 +29,8 @@ Updated: 2026-07-17
   Accepted end-state vision for the product.
 - `OAUTH_PRODUCTION_HARDENING_PLAN.md`
   OAuth production-hardening plan and related evidence.
+- `PROCESS_ARTIFACTS_DESIGN.md`
+  Active design contract for owner-bound immutable process output artifacts and bounded MCP resource reads.
 - `README.md`
   Workflow usage rules and read order.
 - `READINESS.md`

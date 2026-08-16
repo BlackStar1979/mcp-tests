@@ -3,10 +3,17 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { DatabaseSync } = require("node:sqlite");
+const { createHash, randomUUID } = require("node:crypto");
 
 const ACTIVE_STATUSES = new Set(["queued", "running"]);
 const DEFAULT_INSTANCE_LEASE_TTL_MS = 15000;
 const MIN_INSTANCE_LEASE_TTL_MS = 1000;
+const DEFAULT_ARTIFACT_RETENTION_MS = 86400000;
+const MAX_ARTIFACT_RETENTION_MS = 604800000;
+const DEFAULT_ARTIFACT_MAX_RETAINED = 512;
+const MAX_ARTIFACT_MAX_RETAINED = 4096;
+const DEFAULT_ARTIFACT_READ_CHARS = 65536;
+const ARTIFACT_ID_GENERATION_ATTEMPTS = 4;
 
 function createStoreError(message, code = "process_job_store_error") {
   const error = new Error(message);
@@ -36,6 +43,20 @@ function normalizeInstanceLeaseTtlMs(value) {
   return Math.max(MIN_INSTANCE_LEASE_TTL_MS, Math.floor(parsed));
 }
 
+function normalizeBoundedInt(value, fallback, min, max) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return fallback;
+  return Math.max(min, Math.min(Math.floor(parsed), max));
+}
+
+function normalizeArtifactId(value) {
+  const normalized = String(value || "").replace(/-/g, "").toLowerCase();
+  if (!/^[0-9a-f]{32}$/.test(normalized) || /^0+$/.test(normalized)) {
+    throw createStoreError("Artifact identifier generator returned an invalid opaque identifier.", "process_artifact_id_invalid");
+  }
+  return normalized;
+}
+
 function createProcessJobStore(options = {}) {
   const storageFile = normalizeStorageFile(options.storageFile);
   const runtimeScope = String(options.runtimeScope || "default");
@@ -45,6 +66,16 @@ function createProcessJobStore(options = {}) {
   const now = options.now || Date.now;
   const instanceLeaseTtlMs = normalizeInstanceLeaseTtlMs(options.instanceLeaseTtlMs);
   const instanceLeaseRetentionMs = Math.max(60000, instanceLeaseTtlMs * 4);
+  const artifactRetentionMs = normalizeBoundedInt(
+    options.artifactRetentionMs, DEFAULT_ARTIFACT_RETENTION_MS, 60000, MAX_ARTIFACT_RETENTION_MS
+  );
+  const artifactMaxRetained = normalizeBoundedInt(
+    options.artifactMaxRetained, DEFAULT_ARTIFACT_MAX_RETAINED, 2, MAX_ARTIFACT_MAX_RETAINED
+  );
+  const artifactReadChars = normalizeBoundedInt(
+    options.artifactReadChars, DEFAULT_ARTIFACT_READ_CHARS, 1024, 262144
+  );
+  const createArtifactId = options.createArtifactId || randomUUID;
   if (storageFile !== ":memory:") fs.mkdirSync(path.dirname(storageFile), { recursive: true });
 
   const db = options.database || new DatabaseSync(storageFile, { timeout: 5000 });
@@ -126,6 +157,30 @@ function createProcessJobStore(options = {}) {
     );
     CREATE INDEX IF NOT EXISTS idx_process_job_instances_lease
       ON process_job_instances(runtime_scope, lease_updated_at_ms);
+    CREATE TABLE IF NOT EXISTS process_artifacts (
+      artifact_id TEXT PRIMARY KEY,
+      runtime_scope TEXT NOT NULL,
+      owner_key TEXT NOT NULL,
+      job_id TEXT NOT NULL,
+      stream TEXT NOT NULL,
+      mime_type TEXT NOT NULL,
+      content TEXT NOT NULL,
+      content_chars INTEGER NOT NULL,
+      content_bytes INTEGER NOT NULL,
+      sha256 TEXT NOT NULL,
+      created_at_ms INTEGER NOT NULL,
+      expires_at_ms INTEGER NOT NULL,
+      trace_id TEXT,
+      span_id TEXT,
+      parent_span_id TEXT,
+      trace_flags TEXT,
+      trace_source TEXT,
+      UNIQUE(runtime_scope, job_id, stream)
+    );
+    CREATE INDEX IF NOT EXISTS idx_process_artifacts_owner_created
+      ON process_artifacts(runtime_scope, owner_key, created_at_ms DESC);
+    CREATE INDEX IF NOT EXISTS idx_process_artifacts_expiry
+      ON process_artifacts(runtime_scope, expires_at_ms);
   `);
 
   const processJobColumns = new Set(
@@ -202,6 +257,82 @@ function createProcessJobStore(options = {}) {
     return rowToRecord(db.prepare(
       "SELECT * FROM process_jobs WHERE runtime_scope=? AND job_id=?"
     ).get(runtimeScope, String(jobId || "")));
+  }
+
+  function rowToArtifact(row) {
+    if (!row) return null;
+    return {
+      artifactId: row.artifact_id,
+      jobId: row.job_id,
+      stream: row.stream,
+      mimeType: row.mime_type,
+      chars: Number(row.content_chars),
+      bytes: Number(row.content_bytes),
+      sha256: row.sha256,
+      createdAtMs: Number(row.created_at_ms),
+      expiresAtMs: Number(row.expires_at_ms),
+      traceId: row.trace_id,
+      spanId: row.span_id,
+      parentSpanId: row.parent_span_id,
+      traceFlags: row.trace_flags,
+      traceSource: row.trace_source,
+    };
+  }
+
+  function selectArtifact(artifactId, ownerKey, nowMs = now()) {
+    return db.prepare(`
+      SELECT * FROM process_artifacts
+      WHERE runtime_scope=? AND artifact_id=? AND owner_key=? AND expires_at_ms>?
+    `).get(runtimeScope, String(artifactId || ""), String(ownerKey || ""), nowMs) || null;
+  }
+
+  function insertArtifact(record, stream, content, createdAtMs) {
+    const existing = db.prepare(`
+      SELECT * FROM process_artifacts
+      WHERE runtime_scope=? AND job_id=? AND stream=?
+    `).get(runtimeScope, record.id, stream);
+    if (existing) return rowToArtifact(existing);
+    const text = String(content || "");
+    const sha256 = createHash("sha256").update(text, "utf8").digest("hex");
+    const insert = db.prepare(`
+      INSERT INTO process_artifacts (
+        artifact_id, runtime_scope, owner_key, job_id, stream, mime_type, content,
+        content_chars, content_bytes, sha256, created_at_ms, expires_at_ms,
+        trace_id, span_id, parent_span_id, trace_flags, trace_source
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `);
+    for (let attempt = 0; attempt < ARTIFACT_ID_GENERATION_ATTEMPTS; attempt += 1) {
+      const artifactId = normalizeArtifactId(createArtifactId());
+      try {
+        insert.run(
+          artifactId, runtimeScope, record.ownerKey, record.id, stream, "text/plain; charset=utf-8", text,
+          text.length, Buffer.byteLength(text, "utf8"), sha256, createdAtMs, createdAtMs + artifactRetentionMs,
+          record.traceId || null, record.spanId || null, record.parentSpanId || null, record.traceFlags || null,
+          record.traceSource || null
+        );
+        return rowToArtifact(db.prepare("SELECT * FROM process_artifacts WHERE artifact_id=?").get(artifactId));
+      } catch (error) {
+        const collision = db.prepare(
+          "SELECT 1 AS present FROM process_artifacts WHERE artifact_id=?"
+        ).get(artifactId);
+        if (!collision) throw error;
+      }
+    }
+    throw createStoreError(
+      "Unable to allocate a unique process artifact identifier.",
+      "process_artifact_id_collision"
+    );
+  }
+
+  function materializeArtifacts(record, createdAtMs) {
+    if (!record || ACTIVE_STATUSES.has(record.status)) return [];
+    const artifactCreatedAtMs = Number(createdAtMs);
+    if (!Number.isFinite(artifactCreatedAtMs)) return [];
+    if (artifactCreatedAtMs + artifactRetentionMs <= now()) return [];
+    return [
+      insertArtifact(record, "stdout", record.stdout, artifactCreatedAtMs),
+      insertArtifact(record, "stderr", record.stderr, artifactCreatedAtMs),
+    ];
   }
 
   function selectIdempotency(ownerKey, operation, keyHash) {
@@ -394,7 +525,9 @@ function createProcessJobStore(options = {}) {
         jobId
       );
       insertEvent(jobId, current.status, result.status, "process_job_completed", reasonCode, finishedAtMs);
-      return selectAny(jobId);
+      const finished = selectAny(jobId);
+      materializeArtifacts(finished, finishedAtMs);
+      return finished;
     });
   }
 
@@ -458,14 +591,77 @@ function createProcessJobStore(options = {}) {
           WHERE runtime_scope=? AND job_id=?
         `).run(nowMs, nowMs, serverInstanceId, serverPid, runtimeScope, row.id);
         insertEvent(row.id, current.status, "interrupted", "process_job_recovered_interrupted", "unclean_restart", nowMs);
-        return selectAny(row.id);
+        const interrupted = selectAny(row.id);
+        materializeArtifacts(interrupted, nowMs);
+        return interrupted;
       });
       if (recovered) reconciled.push(recovered);
     }
     return reconciled;
   }
 
+  function pruneArtifacts(nowMs = now()) {
+    const removed = [];
+    transaction(() => {
+      const expired = db.prepare(`
+        SELECT artifact_id FROM process_artifacts
+        WHERE runtime_scope=? AND expires_at_ms<=?
+      `).all(runtimeScope, nowMs);
+      const deleteStatement = db.prepare("DELETE FROM process_artifacts WHERE runtime_scope=? AND artifact_id=?");
+      for (const row of expired) {
+        deleteStatement.run(runtimeScope, row.artifact_id);
+        removed.push(row.artifact_id);
+      }
+      const overflow = db.prepare(`
+        SELECT artifact_id FROM process_artifacts
+        WHERE runtime_scope=?
+        ORDER BY created_at_ms DESC, artifact_id DESC
+        LIMIT -1 OFFSET ?
+      `).all(runtimeScope, artifactMaxRetained);
+      for (const row of overflow) {
+        deleteStatement.run(runtimeScope, row.artifact_id);
+        removed.push(row.artifact_id);
+      }
+    });
+    return removed;
+  }
+
+  function artifacts(jobId, ownerKey) {
+    const nowMs = now();
+    pruneArtifacts(nowMs);
+    return transaction(() => {
+      const record = get(jobId, ownerKey);
+      if (!record) return null;
+      if (ACTIVE_STATUSES.has(record.status)) return [];
+      materializeArtifacts(record, record.finishedAtMs || record.updatedAtMs || nowMs);
+      return db.prepare(`
+        SELECT * FROM process_artifacts
+        WHERE runtime_scope=? AND job_id=? AND owner_key=? AND expires_at_ms>?
+        ORDER BY CASE stream WHEN 'stdout' THEN 0 ELSE 1 END, artifact_id
+      `).all(runtimeScope, record.id, ownerKey, nowMs).map(rowToArtifact);
+    });
+  }
+
+  function readArtifact(artifactId, ownerKey, cursor = {}) {
+    pruneArtifacts(now());
+    const row = selectArtifact(artifactId, ownerKey, now());
+    if (!row) return null;
+    const text = String(row.content || "");
+    const offset = Math.max(0, Math.min(Number(cursor.offset || 0), text.length));
+    const maxChars = Math.max(1, Math.min(Number(cursor.maxChars || artifactReadChars), artifactReadChars));
+    const chunk = text.slice(offset, offset + maxChars);
+    const nextOffset = offset + chunk.length;
+    return {
+      ...rowToArtifact(row),
+      text: chunk,
+      offset,
+      nextOffset,
+      eof: nextOffset >= text.length,
+    };
+  }
+
   function prune(nowMs, retentionMs, maxRetained) {
+    pruneArtifacts(nowMs);
     const terminalRows = db.prepare(`
       SELECT job_id, finished_at_ms FROM process_jobs
       WHERE runtime_scope=? AND status NOT IN ('queued','running')
@@ -497,6 +693,7 @@ function createProcessJobStore(options = {}) {
 
   return {
     appendOutput,
+    artifacts,
     close,
     counts,
     create,
@@ -508,6 +705,8 @@ function createProcessJobStore(options = {}) {
     lookupIdempotent,
     markRunning,
     prune,
+    pruneArtifacts,
+    readArtifact,
     reconcileOrphans,
     refreshInstanceLease,
     releaseInstanceLease,
@@ -519,6 +718,10 @@ function createProcessJobStore(options = {}) {
 
 module.exports = {
   ACTIVE_STATUSES,
+  ARTIFACT_ID_GENERATION_ATTEMPTS,
+  DEFAULT_ARTIFACT_MAX_RETAINED,
+  DEFAULT_ARTIFACT_READ_CHARS,
+  DEFAULT_ARTIFACT_RETENTION_MS,
   DEFAULT_INSTANCE_LEASE_TTL_MS,
   createProcessJobStore,
   normalizeInstanceLeaseTtlMs,

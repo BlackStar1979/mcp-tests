@@ -404,6 +404,11 @@
       "name": "process_execution_trace",
       "status": "active_code_event",
       "privacy_boundary": "bounded execution trace/span ancestry only; raw baggage/tracestate prohibited"
+    },
+    {
+      "name": "process_artifact_read",
+      "status": "active_code_event",
+      "privacy_boundary": "opaque artifact id, bounded offsets/counts, and trace/span ids only; owner key, job id, content, argv, env, baggage, and tracestate prohibited"
     }
   ],
   "rules": {

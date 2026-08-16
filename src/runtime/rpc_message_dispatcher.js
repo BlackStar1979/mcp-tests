@@ -3,6 +3,7 @@
 const { handleInitializeMessage } = require("./initialize_message_handler");
 const { handleToolsListMessage } = require("./tools_list_message_handler");
 const { handleResourcesListMessage } = require("./resources_list_message_handler");
+const { handleResourcesReadMessage } = require("./resources_read_message_handler");
 const { handleResourceTemplatesListMessage } = require("./resource_templates_list_message_handler");
 const { handlePromptsListMessage } = require("./prompts_list_message_handler");
 const { handlePingMessage } = require("./ping_message_handler");
@@ -108,6 +109,10 @@ async function dispatchRpcMessage({
 
     case "resources/list": {
       return handleResourcesListMessage(id, { authMode, auditLog, requestId: context.requestId, sessionId: context.sessionId });
+    }
+
+    case "resources/read": {
+      return handleResourcesReadMessage({ id, params, context, auditLog });
     }
 
     case "resources/templates/list": {

@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=298`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=301`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `298`
+- Latest validated authenticated smoke count: `301`
 
 ## Surface model
 
@@ -45,13 +45,14 @@ Summarize the current validated product state in one operator-facing place witho
 - Live OAuth21 runtime exposes `98` tools at `server_start_id = 2026-08-13T19:41:25.994Z` with governed fingerprint `ec7d3af5b4ea17f5`. The refreshed model surface directly validated R2 same-job retry, deterministic conflict, and post-restart recovery; the accepted structured-file behaviors remain unchanged.
 - Repository MCP Tasks P0 is validated but not live-loaded: negotiated `run_process` Tasks reuse the same durable process registry, survive SQLite/WAL reopen, remain owner-isolated, and preserve the stable 98-tool connector fingerprint. Clean-history validation is `7 + 294`; runtime `3008` remains at the preceding server start until a controlled load is explicitly performed.
 - Repository W3C Trace Context P1 is validated but not live-loaded: modern `_meta` correlation creates bounded request/execution spans, persists only extracted identifiers/flags/source in the same owner-bound process registry, migrates existing SQLite/WAL stores in place, rejects raw baggage/tracestate persistence, and preserves the stable 98-tool connector surface. Full repository validation is `7 + 298`; runtime `3008` remains on the preceding live load.
+- Repository Process Artifacts P2 is validated but not live-loaded: terminal stdout/stderr is materialized immutably in the same owner-bound SQLite/WAL registry with opaque IDs, SHA-256, independent bounded retention, private `resources/read`, no `resources/list` enumeration, and `resource_link` fallbacks for large Task results. Full repository validation is `7 + 301`; runtime `3008` remains on the preceding live load and the 98-tool connector surface is unchanged.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = process-artifacts-and-cimd`
-- `next_primary = process-artifacts`
-- `next_secondary = cimd`
+- `current_working_course = cimd-and-mrtr`
+- `next_primary = cimd`
+- `next_secondary = mrtr`
 
 ## Verified documentation authorities
 
