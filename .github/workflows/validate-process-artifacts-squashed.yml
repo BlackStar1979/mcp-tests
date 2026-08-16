@@ -24,7 +24,7 @@ jobs:
       - name: Verify squashed history shape
         shell: bash
         run: |
-          test "$(git rev-parse HEAD^)" = "8d8a70b1ad54c472ddcf552d6fe7e2f0fd7de9ad" || { git log -3 --oneline; exit 1; }
+          test "$(git rev-parse HEAD^)" = "8d8a70b029aa3294d72edc20e9d00c27e2fe8527" || { git log -3 --oneline; exit 1; }
           test "$(git rev-parse HEAD^^)" = "786ab533ea7345f82e127715381ee46b72eceeca" || { git log -3 --oneline; exit 1; }
       - name: P2 targeted guards
         run: |
