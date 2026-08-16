@@ -394,6 +394,22 @@
     {
       "name": "tool_surface_changed",
       "status": "active_code_event"
+    },
+    {
+      "name": "mcp_task_created",
+      "status": "active_code_event"
+    },
+    {
+      "name": "mcp_task_read",
+      "status": "active_code_event"
+    },
+    {
+      "name": "mcp_task_updated",
+      "status": "active_code_event"
+    },
+    {
+      "name": "mcp_task_cancel_requested",
+      "status": "active_code_event"
     }
   ],
   "rules": {

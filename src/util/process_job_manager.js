@@ -187,6 +187,8 @@ function createProcessJobManager(options = {}) {
       },
       recoveredAfterRestart: record.recoveredAfterRestart || record.serverInstanceId !== serverInstanceId,
       persistedOnly: true,
+      mcpTaskKind: record.mcpTaskKind,
+      mcpTaskToolName: record.mcpTaskToolName,
     };
   }
 
@@ -390,19 +392,20 @@ function createProcessJobManager(options = {}) {
     return toStatus(job);
   }
 
-  function start(input = {}, owner = {}) {
+  function start(input = {}, owner = {}, executionMetadata = {}) {
     if (shuttingDown) throw new Error("Process job manager is shutting down.");
     prune();
     const prepared = prepareExecution(input, { ...executionDependencies, config });
     const jobOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
     const idempotencyKey = normalizeIdempotencyKey(input.idempotency_key);
+    const operation = String(executionMetadata.operation || PROCESS_START_OPERATION);
     const idempotency = idempotencyKey ? {
-      operation: PROCESS_START_OPERATION,
+      operation,
       keyHash: idempotencySecret
         ? createHmac("sha256", idempotencySecret)
-            .update(`${PROCESS_START_OPERATION}\0${idempotencyKey}`, "utf8")
+            .update(`${operation}\0${idempotencyKey}`, "utf8")
             .digest("hex")
-        : sha256(`${PROCESS_START_OPERATION}\0${idempotencyKey}`),
+        : sha256(`${operation}\0${idempotencyKey}`),
       inputHash: canonicalProcessInputHash(input, prepared),
     } : null;
     if (idempotency) {
@@ -431,6 +434,8 @@ function createProcessJobManager(options = {}) {
       result: null,
       recoveredAfterRestart: false,
       persistedOnly: false,
+      mcpTaskKind: executionMetadata.taskKind || null,
+      mcpTaskToolName: executionMetadata.taskToolName || null,
     };
     const record = {
       id: job.id,
@@ -443,6 +448,8 @@ function createProcessJobManager(options = {}) {
       createdAtMs,
       timeoutMs: prepared.timeoutMs,
       outputLimit: prepared.outputLimit,
+      mcpTaskKind: job.mcpTaskKind,
+      mcpTaskToolName: job.mcpTaskToolName,
     };
     if (idempotency) {
       const created = store.createIdempotent(record, idempotency);
@@ -473,6 +480,16 @@ function createProcessJobManager(options = {}) {
 
   function status(jobId, owner = {}) {
     return toStatus(getJob(jobId, owner));
+  }
+
+  function taskRecord(jobId, owner = {}) {
+    prune();
+    const expectedOwnerKey = ownerKey(owner.ownerId, owner.ownerKeyIsPrehashed === true);
+    const record = store.get(jobId, expectedOwnerKey);
+    if (!record || record.mcpTaskKind !== "tools/call" || !record.mcpTaskToolName) {
+      throw unknownJob(jobId);
+    }
+    return record;
   }
 
   function output(jobId, cursor = {}, owner = {}) {
@@ -534,6 +551,11 @@ function createProcessJobManager(options = {}) {
   async function cancel(jobId, reason = "cancelled", owner = {}) {
     const job = getJob(jobId, owner);
     if (TERMINAL_STATUSES.has(job.status)) return toStatus(job);
+    if (job.persistedOnly && !job.handle) {
+      // Another live server instance may own this process. Cancellation is
+      // cooperative; do not forge a terminal transition without its handle.
+      return toStatus(job);
+    }
     job.cancelReason = String(reason || "cancelled").slice(0, 200);
     if (job.status === "queued") {
       const index = queue.indexOf(job.id);
@@ -619,6 +641,7 @@ function createProcessJobManager(options = {}) {
     snapshot,
     start,
     status,
+    taskRecord,
   };
 }
 

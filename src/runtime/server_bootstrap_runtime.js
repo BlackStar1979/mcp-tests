@@ -31,6 +31,7 @@ const { resolveRuntimeOutputConfig } = require("./runtime_output_config");
 const { getDefaultProcessJobManager, shutdownDefaultProcessJobManager } = require("../util/process_job_manager");
 const { closeDefaultContentStageManager, getDefaultContentStageManager } = require("../util/content_stage_manager");
 const { closeDefaultFileComposeManager, getDefaultFileComposeManager } = require("../util/file_compose");
+const { createMcpTasksProcessAdapter } = require("./mcp_tasks_process_adapter");
 
 function resolveStructuredFileStoragePaths({ env = process.env, port }) {
   return {
@@ -183,6 +184,11 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
   }
 
   const rateLimiter = createRuntimeRateLimiter({ env, rootDir });
+  const mcpTasksAdapter = createMcpTasksProcessAdapter({
+    outputMode,
+    auditLog,
+    enabled: runtimeProfile === "internal",
+  });
   const restartController = createRestartController({
     auditLog,
     env,
@@ -279,6 +285,7 @@ function runServerBootstrapRuntime({ argv = process.argv, env = process.env, roo
     rateLimiter,
     serverStartId,
     disableLegacyInitialize: bootstrapConfig.disableLegacyInitialize === true,
+    mcpTasksAdapter,
   });
 }
 

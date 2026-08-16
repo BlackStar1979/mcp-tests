@@ -1045,7 +1045,17 @@
       ],
       "audit_required": true,
       "auth_required": true,
-      "public_safe": false
+      "public_safe": false,
+      "mcp_tasks_extension": {
+        "extension": "io.modelcontextprotocol/tasks",
+        "protocol_version": "2026-07-28",
+        "server_directed": true,
+        "task_id_source": "durable_process_job_uuid",
+        "task_lifecycle_store": "existing_process_job_registry",
+        "non_task_sync_ceiling_ms": 90000,
+        "task_timeout_ceiling_ms": 600000,
+        "durable_result_excludes": ["args", "env", "raw_trace_metadata"]
+      }
     },
     "process_start": {
       "name": "process_start",

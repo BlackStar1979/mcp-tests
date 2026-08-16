@@ -29,6 +29,7 @@ async function handleToolsCall({
   profile,
   getOptionalTool,
   rateLimiter,
+  mcpTasksAdapter,
 }) {
   const name = params.name;
   const args = params.arguments || {};
@@ -140,6 +141,20 @@ async function handleToolsCall({
   auditLog("tool_call_start", buildToolStartAudit(getOptionalTool, context, id, name, args));
 
   try {
+    if (mcpTasksAdapter?.enabled === true) {
+      const taskResponse = await mcpTasksAdapter.tryAugmentToolCall({ id, name, args, context });
+      if (taskResponse) {
+        auditLog("tool_call_end", {
+          request_id: context.requestId,
+          tool: name,
+          duration_ms: Date.now() - startedAt,
+          is_error: Boolean(taskResponse.error),
+          task_created: taskResponse.result?.resultType === "task",
+        });
+        return taskResponse;
+      }
+    }
+
     if (name === "search") {
       return handleCoreSearchToolCall({
         id,

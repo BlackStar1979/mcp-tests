@@ -233,6 +233,24 @@
     "transport_mode_when_enabled": "streamable_http_stateless_no_initialize",
     "initialize_method_supported_when_enabled": false
   },
+  "mcp_tasks_extension": {
+    "extension": "io.modelcontextprotocol/tasks",
+    "protocol_version": "2026-07-28",
+    "advertised_profiles": ["internal"],
+    "supported_task_augmented_methods": ["tools/call"],
+    "supported_task_methods": ["tasks/get", "tasks/update", "tasks/cancel"],
+    "task_augmented_tools": ["run_process"],
+    "per_request_capability_required": true,
+    "missing_capability_error": -32003,
+    "invalid_task_id_error": -32602,
+    "task_routing_headers": {
+      "method": "Mcp-Method",
+      "name": "Mcp-Name=taskId"
+    },
+    "notifications_supported": false,
+    "subscriptions_supported": false,
+    "separate_task_store": false
+  },
   "protocol_versions": [
     "2026-07-28",
     "2025-11-25",

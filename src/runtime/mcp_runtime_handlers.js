@@ -28,6 +28,7 @@ function createMcpRuntimeHandlers({
   rateLimiter,
   serverStartId,
   disableLegacyInitialize,
+  mcpTasksAdapter,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
@@ -106,6 +107,7 @@ function createMcpRuntimeHandlers({
       rateLimiter,
       serverStartId,
       disableLegacyInitialize,
+      mcpTasksAdapter,
     });
     return decorateModernRpcResponse(response, {
       protocolVersion: context.protocolVersion,

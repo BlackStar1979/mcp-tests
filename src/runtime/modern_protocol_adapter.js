@@ -25,7 +25,7 @@ function decorateModernRpcResponse(response, { protocolVersion, serverInfo } = {
 }
 
 function modernHttpStatusForResponse(protocolVersion, response) {
-  if ([-32020, -32021, -32022].includes(response?.error?.code)) return 400;
+  if ([-32003, -32020, -32021, -32022].includes(response?.error?.code)) return 400;
   if (!isModernProtocolVersion(protocolVersion)) return 200;
   if (response?.error?.code === -32601) return 404;
   return 200;

@@ -80,7 +80,9 @@ function createProcessJobStore(options = {}) {
       cancellation_reason_code TEXT,
       server_instance_id TEXT NOT NULL,
       server_pid INTEGER,
-      recovered_after_restart INTEGER NOT NULL DEFAULT 0
+      recovered_after_restart INTEGER NOT NULL DEFAULT 0,
+      mcp_task_kind TEXT,
+      mcp_task_tool_name TEXT
     );
     CREATE INDEX IF NOT EXISTS idx_process_jobs_owner_created
       ON process_jobs(runtime_scope, owner_key, created_at_ms DESC);
@@ -122,6 +124,16 @@ function createProcessJobStore(options = {}) {
     CREATE INDEX IF NOT EXISTS idx_process_job_instances_lease
       ON process_job_instances(runtime_scope, lease_updated_at_ms);
   `);
+
+  const processJobColumns = new Set(
+    db.prepare("PRAGMA table_info(process_jobs)").all().map((row) => row.name)
+  );
+  if (!processJobColumns.has("mcp_task_kind")) {
+    db.exec("ALTER TABLE process_jobs ADD COLUMN mcp_task_kind TEXT");
+  }
+  if (!processJobColumns.has("mcp_task_tool_name")) {
+    db.exec("ALTER TABLE process_jobs ADD COLUMN mcp_task_tool_name TEXT");
+  }
 
   function transaction(callback) {
     db.exec("BEGIN IMMEDIATE");
@@ -172,6 +184,8 @@ function createProcessJobStore(options = {}) {
       serverInstanceId: row.server_instance_id,
       serverPid: row.server_pid === null ? null : Number(row.server_pid),
       recoveredAfterRestart: row.recovered_after_restart === 1,
+      mcpTaskKind: row.mcp_task_kind || null,
+      mcpTaskToolName: row.mcp_task_tool_name || null,
     };
   }
 
@@ -248,12 +262,13 @@ function createProcessJobStore(options = {}) {
         INSERT INTO process_jobs (
           job_id, runtime_scope, owner_key, command, family, resolution_class, cwd, workspace,
           status, created_at_ms, updated_at_ms, timeout_ms, output_limit_chars,
-          server_instance_id, server_pid
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?, ?, ?)
+          server_instance_id, server_pid, mcp_task_kind, mcp_task_tool_name
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, 'queued', ?, ?, ?, ?, ?, ?, ?, ?)
       `).run(
         job.id, runtimeScope, job.ownerKey, job.command, job.family, job.resolutionClass,
         job.cwd, job.workspace, job.createdAtMs, job.createdAtMs, job.timeoutMs,
-        job.outputLimit, serverInstanceId, serverPid
+        job.outputLimit, serverInstanceId, serverPid, job.mcpTaskKind || null,
+        job.mcpTaskToolName || null
       );
     insertEvent(job.id, null, "queued", "process_job_queued", null, job.createdAtMs);
   }

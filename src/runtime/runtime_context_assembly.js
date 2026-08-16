@@ -39,6 +39,7 @@ function runConfiguredRuntime({
   rateLimiter,
   serverStartId,
   disableLegacyInitialize,
+  mcpTasksAdapter,
 }) {
   const { handleMcp } = createMcpRuntimeHandlers({
     serverName,
@@ -56,6 +57,7 @@ function runConfiguredRuntime({
     rateLimiter,
     serverStartId,
     disableLegacyInitialize,
+    mcpTasksAdapter,
   });
 
   return runServerLifecycle({

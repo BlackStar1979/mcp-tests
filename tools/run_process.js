@@ -2,8 +2,9 @@
 
 const {
   PROCESS_TOOL_ANNOTATIONS,
-  SYNC_RUN_PROCESS_INPUT_SCHEMA,
-  RUN_PROCESS_OUTPUT_SCHEMA,
+  RUN_PROCESS_TOOL_OUTPUT_SCHEMA,
+  SYNC_TIMEOUT_CEILING_MS,
+  TASK_AWARE_RUN_PROCESS_INPUT_SCHEMA,
 } = require("../src/schemas/process_tools");
 const { runProcess } = require("../src/util/process_runner");
 
@@ -14,13 +15,20 @@ const runProcessTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Run bounded workspace process",
-    description: "Run a SHORT allowlisted workspace process synchronously and return its output in this call. Hard ceiling: 90 seconds. This call holds the MCP request open for the whole job; Cloudflare's 125-second proxy read timeout can close longer silent responses and surface only an opaque transport error. For ANY job that may exceed 90 seconds — full test suites, multi-node pytest runs, builds, installs — use process_start and poll process_status/process_output instead; it is durable, survives disconnects, and allows up to 600 seconds.",
-    inputSchema: SYNC_RUN_PROCESS_INPUT_SCHEMA,
-    outputSchema: RUN_PROCESS_OUTPUT_SCHEMA,
+    description: "Execute an allowlisted workspace process. A 2026-07-28 client declaring io.modelcontextprotocol/tasks receives a durable MCP Task backed by the existing process registry, up to 600 seconds. Other clients use the synchronous fallback, which is limited to 90 seconds below Cloudflare's proxy read timeout. Task results deliberately omit raw args, env, and trace metadata from durable state.",
+    inputSchema: TASK_AWARE_RUN_PROCESS_INPUT_SCHEMA,
+    outputSchema: RUN_PROCESS_TOOL_OUTPUT_SCHEMA,
     annotations: PROCESS_TOOL_ANNOTATIONS,
   },
   execute(args = {}) {
-    return runProcess(args);
+    const timeoutMs = Number(args.timeout_ms || 60000);
+    if (timeoutMs > SYNC_TIMEOUT_CEILING_MS) {
+      const error = new Error("run_process calls above 90 seconds require negotiated MCP Tasks.");
+      error.code = "process_tasks_capability_required";
+      throw error;
+    }
+    const { idempotency_key: _idempotencyKey, ...syncArgs } = args;
+    return runProcess(syncArgs);
   },
   summarizeArgs(args = {}) {
     return {

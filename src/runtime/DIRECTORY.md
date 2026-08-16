@@ -9,8 +9,8 @@ Updated: 2026-07-12
   HTTP route and top-level request dispatch handlers.
 - `rpc_message_dispatcher.js`, `rpc_message_prelude.js`, `rpc_protocol_validator.js`, `rpc_responses.js`, `rpc_response_audit.js`, `rpc_handler_exception_handler.js`, `rpc_no_response.js`
   RPC parsing, validation, response shaping, and audit helpers.
-- `initialize_message_handler.js`, `server_discover_message_handler.js`, `tools_list_message_handler.js`, `tools_call_handler.js`, `resources_list_message_handler.js`, `resource_templates_list_message_handler.js`, `prompts_list_message_handler.js`, `ping_message_handler.js`
-  MCP method handlers for the active runtime surface.
+- `initialize_message_handler.js`, `server_discover_message_handler.js`, `tools_list_message_handler.js`, `tools_call_handler.js`, `mcp_tasks_process_adapter.js`, `resources_list_message_handler.js`, `resource_templates_list_message_handler.js`, `prompts_list_message_handler.js`, `ping_message_handler.js`
+  MCP method handlers and the negotiated Tasks adapter for the active runtime surface.
 - `core_tool_call_handlers.js`, `tool_input_validator.js`, `tool_result.js`, `tool_result_assertion.js`, `tool_result_freshness.js`, `tool_call_exception_handler.js`, `unknown_tool_call_handler.js`
   Tool-call execution and result-validation helpers.
 - `audit_log.js`, `rpc_audit_summary.js`, `tool_audit_helpers.js`, `request_id.js`, `response_write_guard.js`

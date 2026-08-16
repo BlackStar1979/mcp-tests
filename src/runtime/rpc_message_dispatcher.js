@@ -29,6 +29,7 @@ async function dispatchRpcMessage({
   rateLimiter,
   serverStartId,
   disableLegacyInitialize,
+  mcpTasksAdapter,
 }) {
   const { id, method, params } = prelude;
   let resolvedTools = null;
@@ -91,6 +92,7 @@ async function dispatchRpcMessage({
         auditLog,
         requestId: context.requestId,
         sessionId: context.sessionId,
+        mcpTasksAdapter,
       });
     }
 
@@ -129,7 +131,17 @@ async function dispatchRpcMessage({
         profile,
         getOptionalTool,
         rateLimiter,
+        mcpTasksAdapter,
       });
+    }
+
+    case "tasks/get":
+    case "tasks/update":
+    case "tasks/cancel": {
+      if (!isModernProtocolVersion(context.protocolVersion) || mcpTasksAdapter?.enabled !== true) {
+        return buildMethodNotFoundResponse(id, method);
+      }
+      return mcpTasksAdapter.handleTaskRequest({ id, method, params, context });
     }
 
     default: {

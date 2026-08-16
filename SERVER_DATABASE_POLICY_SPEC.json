@@ -107,7 +107,10 @@
       ],
       "public_surface_allowed": false,
       "raw_arguments_or_environment_persisted": false,
-      "automatic_command_replay_allowed": false
+      "automatic_command_replay_allowed": false,
+      "mcp_task_lifecycle_uses_same_registry": true,
+      "mcp_task_marker_fields": ["mcp_task_kind", "mcp_task_tool_name"],
+      "separate_mcp_task_store_allowed": false
     },
     "content_stage_store": {
       "description": "Owner-scoped bounded UTF-8 content chunks used to transport large generated mutation content across MCP calls.",

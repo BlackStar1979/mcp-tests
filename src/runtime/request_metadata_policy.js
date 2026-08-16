@@ -142,7 +142,11 @@ function validateModernHttpHeaders({ headers = {}, message = {} } = {}) {
 
   const nameSource = method === "tools/call" || method === "prompts/get"
     ? message.params?.name
-    : method === "resources/read" ? message.params?.uri : undefined;
+    : method === "resources/read"
+      ? message.params?.uri
+      : ["tasks/get", "tasks/update", "tasks/cancel"].includes(method)
+        ? message.params?.taskId
+        : undefined;
   if (nameSource !== undefined) {
     const decoded = decodeMirroredHeader(headers[NAME_HEADER]);
     if (!normalizeHeaderValue(headers[NAME_HEADER])) {

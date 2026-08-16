@@ -22,6 +22,7 @@ function handleServerDiscoverMessage({
   auditLog,
   requestId,
   sessionId,
+  mcpTasksAdapter,
 } = {}) {
   const introspection = toolIntrospection && typeof toolIntrospection === "object"
     ? toolIntrospection
@@ -59,6 +60,9 @@ function handleServerDiscoverMessage({
         tools: {},
         resources: {},
         prompts: {},
+        ...(mcpTasksAdapter?.enabled === true
+          ? { extensions: mcpTasksAdapter.serverCapability() }
+          : {}),
       },
       instructions:
         "TEST MCP workbench server for connector compatibility, bounded code sampling, and controlled network tools.",

@@ -17,10 +17,10 @@ const EXPECTED = Object.freeze({
   runtime_compatibility_label: CURRENT_COMPATIBILITY_LABEL,
   runtime_stage_status: CURRENT_STAGE_STATUS,
   tool_names_hash: "b6526b6d88ccbee3",
-  input_schema_fingerprint: "440c0f660abff822",
-  output_schema_fingerprint: "64961bbb24c85de3",
-  descriptor_fingerprint: "19512cb09a5bc329",
-  combined_fingerprint: "ec7d3af5b4ea17f5",
+  input_schema_fingerprint: "6efd0220e7d5fb5c",
+  output_schema_fingerprint: "0da72aef24fe27ae",
+  descriptor_fingerprint: "c3fa2f190ed2d7c0",
+  combined_fingerprint: "8c03cb119be7350b",
 });
 
 function readText(repoRoot, relPath) {

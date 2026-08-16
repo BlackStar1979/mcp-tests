@@ -194,6 +194,17 @@ const SYNC_RUN_PROCESS_INPUT_SCHEMA = {
   },
 };
 
+const TASK_AWARE_RUN_PROCESS_INPUT_SCHEMA = {
+  ...PROCESS_START_INPUT_SCHEMA,
+  properties: {
+    ...PROCESS_START_INPUT_SCHEMA.properties,
+    idempotency_key: {
+      ...PROCESS_START_INPUT_SCHEMA.properties.idempotency_key,
+      description: "Opaque retry key used only when the server materializes this call as an MCP Task. It is ignored by the bounded synchronous fallback.",
+    },
+  },
+};
+
 const RUN_PROCESS_OUTPUT_SCHEMA = {
   type: "object",
   additionalProperties: false,
@@ -233,6 +244,64 @@ const RUN_PROCESS_OUTPUT_SCHEMA = {
     trace_id: { type: ["string", "null"] },
     error: { type: ["string", "null"] },
   },
+};
+
+const PROCESS_TASK_EXECUTION_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [
+    "job_id",
+    "status",
+    "command",
+    "family",
+    "resolution_class",
+    "cwd",
+    "workspace",
+    "exit_code",
+    "signal",
+    "timed_out",
+    "duration_ms",
+    "stdout",
+    "stderr",
+    "stdout_truncated",
+    "stderr_truncated",
+    "output_limit_chars",
+    "error",
+    "durable",
+    "recovered_after_restart",
+  ],
+  properties: {
+    job_id: { type: "string" },
+    status: { type: "string", enum: ["ok", "nonzero_exit", "timeout", "spawn_error", "interrupted"] },
+    command: { type: "string" },
+    family: { type: "string" },
+    resolution_class: { type: "string" },
+    cwd: { type: "string" },
+    workspace: { type: "string" },
+    exit_code: { type: ["integer", "null"] },
+    signal: { type: ["string", "null"] },
+    timed_out: { type: "boolean" },
+    duration_ms: { type: "integer", minimum: 0 },
+    stdout: { type: "string" },
+    stderr: { type: "string" },
+    stdout_truncated: { type: "boolean" },
+    stderr_truncated: { type: "boolean" },
+    output_limit_chars: { type: "integer", minimum: 1 },
+    error: { type: ["string", "null"] },
+    durable: { type: "boolean", enum: [true] },
+    recovered_after_restart: { type: "boolean" },
+  },
+};
+
+const RUN_PROCESS_TOOL_OUTPUT_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: [],
+  properties: {
+    ...RUN_PROCESS_OUTPUT_SCHEMA.properties,
+    ...PROCESS_TASK_EXECUTION_OUTPUT_SCHEMA.properties,
+  },
+  oneOf: [RUN_PROCESS_OUTPUT_SCHEMA, PROCESS_TASK_EXECUTION_OUTPUT_SCHEMA],
 };
 
 const PROCESS_JOB_STATUSES = [
@@ -470,13 +539,16 @@ module.exports = {
   PROCESS_OUTPUT_INPUT_SCHEMA,
   PROCESS_OUTPUT_OUTPUT_SCHEMA,
   PROCESS_START_INPUT_SCHEMA,
+  PROCESS_TASK_EXECUTION_OUTPUT_SCHEMA,
   PROCESS_TOOL_ANNOTATIONS,
   PROCESS_TOOL_ERROR_OUTPUT_SCHEMA,
   READ_ONLY_PROCESS_ANNOTATIONS,
   RUN_PROCESS_INPUT_SCHEMA,
   RUN_PROCESS_OUTPUT_SCHEMA,
+  RUN_PROCESS_TOOL_OUTPUT_SCHEMA,
   SYNC_RUN_PROCESS_INPUT_SCHEMA,
   SYNC_TIMEOUT_CEILING_MS,
+  TASK_AWARE_RUN_PROCESS_INPUT_SCHEMA,
   PROCESS_RUNNER_STATUS_OUTPUT_SCHEMA,
   processToolOutputSchema,
 };
