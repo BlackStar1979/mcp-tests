@@ -1,7 +1,6 @@
 # MRTR conformance closeout
 
-Status: repo-validated, fixture-only, not live-loaded
-Date: 2026-08-16
+Status: repo-validated, fixture-only, runtime-nonapplicableDate: 2026-08-16
 Package: `MRTR`
 
 ## Decision
@@ -34,10 +33,8 @@ The same run passed exact ancestry/source checks, targeted MRTR and official-SDK
 
 ## Runtime boundary
 
-OAuth21 runtime `3008` was not restarted or reloaded. Connector-visible tools remain `98`; no connector refresh or OAuth relogin was performed. MRTR is repository conformance evidence, not live runtime behavior.
-
-## Compatibility follow-up
+MRTR has no production runtime dispatch, tool, resource, durable store, or server capability to load, so runtime acceptance is non-applicable rather than pending. The later controlled restart `manual-1786907075795` loaded surrounding final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id = 2026-08-16T19:04:37.288Z`; the connector remained at `98` tools and fingerprint `ec7d3af5b4ea17f5`, confirming that MRTR did not introduce a runtime surface.## Compatibility follow-up
 
 A fresh `COMP-1A` evidence probe was run after MRTR validation. Operational `codex-mcp-client 0.147.0-alpha.6.6` remains `initialize_only` in the selected current entry window (`4` matching `initialize`, `0` `server/discover`), while independent `openai-mcp 1.0.0` traffic successfully uses `server/discover` with protocol `2026-07-28`.
 
-`COMP-1A` refresh remains blocked from retirement: modern entry is operational, but the Codex client family still requires the legacy compatibility path. The next compatibility evidence gate is client traffic newer than the August 14 Codex sample. `OPS-1B` remains gated on a real reconnect event or recovered live SFTP boundary; the current `DOC-2A` top25/churn>=5 audit reports `missing: 0`.
+`COMP-1A` refresh remains blocked from retirement: modern entry is operational, but the Codex client family still requires the legacy compatibility path. The next compatibility evidence gate is client traffic newer than the August 14 Codex sample. The operator-driven OAuth reconnect/recovery half of `OPS-1B` is now accepted; only recovered live SFTP remains open. The current `DOC-2A` top25/churn>=5 audit reports `missing: 0`.

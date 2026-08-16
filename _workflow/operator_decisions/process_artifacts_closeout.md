@@ -1,7 +1,6 @@
 # Process Artifacts closeout
 
-Status: repo-validated, not live-loaded
-Date: 2026-08-14
+Status: repo-validated, live-loaded and live-acceptedDate: 2026-08-14
 Package: `PROCESS-ARTIFACTS`
 
 ## Decision
@@ -37,8 +36,8 @@ The same run passed the source-tree ancestry/equality gate, P0/P1, matrix, gener
 
 ## Runtime boundary
 
-OAuth21 runtime `3008` was not restarted or reloaded for this package. The live connector remains on the preceding `98`-tool runtime and fingerprint `ec7d3af5b4ea17f5`. Repository artifact behavior is not claimed as live runtime truth yet. No connector refresh or OAuth relogin was performed.
+Controlled live load completed on 2026-08-16 at `server_start_id = 2026-08-16T19:04:37.288Z`, fingerprint `ec7d3af5b4ea17f5`, with the connector-visible surface unchanged at `98` tools.
 
-## Next package
+A live durable process job materialized immutable stdout/stderr rows in `tests_process_jobs_3008.sqlite` with opaque artifact IDs and SHA-256 digests. The Task-backed live job `b29ed763-93db-4427-9675-f7476656ce05` materialized both streams with the persisted execution correlation (`trace_id = 8dd0f95cfb76cfa719af99c69bc8e2ae`, `span_id = 1f4deb3e376e86f7`, `parent_span_id = addcaee3ad7e0838`). A subsequent authenticated MCP `resources/read` for its opaque stdout URI returned one `text/plain; charset=utf-8` resource containing the expected `LIVE_TASK_OK` output and the exact requested URI. This directly proves live materialization plus bounded private resource retrieval.## Next package
 
 `CIMD` is now the highest-leverage internally actionable package, followed by fixture-scoped `MRTR`. CIMD must preserve DCR compatibility while adding explicit SSRF protections for remote client metadata retrieval.

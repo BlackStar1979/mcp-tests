@@ -1,7 +1,6 @@
 # OAuth CIMD closeout
 
-Status: repo-validated, not live-loaded
-Date: 2026-08-16
+Status: repo-validated, live-loaded and live-acceptedDate: 2026-08-16
 Package: `CIMD`
 
 ## Decision
@@ -37,8 +36,8 @@ The same run passed source ancestry/tree checks, targeted CIMD/OAuth/DCR guards,
 
 ## Runtime boundary
 
-OAuth21 runtime `3008` was not restarted or reloaded for this package. Repository CIMD behavior is not claimed as live runtime truth. The connector-visible authenticated tool target remains `98`; no connector refresh or OAuth relogin was performed.
+Controlled live load completed on 2026-08-16 at `server_start_id = 2026-08-16T19:04:37.288Z` from final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6`. OAuth clients and token state reopened from the existing SQLite store, the connector remained callable, and the authenticated surface stayed at `98` tools with fingerprint `ec7d3af5b4ea17f5`.
 
-## Next package
+A bounded live SSRF-negative probe called `/authorize` with `client_id = https://127.0.0.1/oauth/client.json`. Runtime returned HTTP `400`, `error = invalid_client`, `error_description = client_metadata_unavailable`; audit recorded `oauth21_cimd_rejected` with `reason = cimd_special_use_ip`. The request was rejected at the special-use IP boundary before any client metadata fetch could proceed. This is direct live evidence that the CIMD resolver and its SSRF boundary are loaded.## Next package
 
 `MRTR` is now the highest-leverage internally actionable package. Keep it fixture-scoped: validate `InputRequiredResult`, matching `inputResponses`, and opaque `requestState` retry behavior without creating a second execution or session architecture. `COMP-1A` remains the next evidence-gated package after MRTR.

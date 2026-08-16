@@ -54,7 +54,7 @@ assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, S
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_aligned");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
 assert.ok(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence);
