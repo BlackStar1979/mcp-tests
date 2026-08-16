@@ -1,0 +1,69 @@
+name: Validate CIMD P3 Clean History
+
+on:
+  push:
+    branches:
+      - validation/cimd-green-20260816
+
+permissions:
+  contents: write
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci
+      - name: Verify P3 source ancestry and tree
+        shell: bash
+        run: |
+          source_sha="c6b706b4083dc4da67a45cc31356c2ffe4edb175"
+          p2_truth_sha="f1329f3ac5c0be3c098888967a7541eb7249e312"
+          test "$(git rev-parse "$source_sha^")" = "$p2_truth_sha" || { git log -5 --oneline "$source_sha"; exit 1; }
+          git merge-base --is-ancestor "$source_sha" HEAD
+          git diff --exit-code "$source_sha" HEAD -- . ':(exclude).github/workflows/validate-cimd-green.yml'
+      - name: CIMD and OAuth targeted guards
+        run: |
+          node _tests/smoke_oauth_cimd_policy.js
+          node _tests/smoke_oauth_cimd_resolver.js
+          node _tests/smoke_oauth21_cimd_flow.js
+          node _tests/smoke_oauth_dcr_policy.js
+          node _tests/smoke_oauth21_dcr_runtime_validation.js
+          node _tests/smoke_oauth21_revocation_binding.js
+          node _tests/smoke_oauth21_operator_login_context.js
+          node _tests/smoke_oauth_as_metadata_integration.js
+          node _tests/smoke_server_bootstrap_runtime.js
+          node _tests/smoke_operator_contract_docs.js
+          node _tests/smoke_workflow_navigation_index.js
+          node _tests/smoke_matrix_check.js
+          node _tests/smoke_directory_docs_generator.js
+          node _tests/smoke_repo_hygiene_audit.js
+      - name: Require clean tree after targeted guards
+        shell: bash
+        run: |
+          dirty="$(git status --porcelain --untracked-files=all)"
+          test -z "$dirty" || { printf '%s\n' "$dirty"; exit 1; }
+      - name: Full hermetic run-all
+        run: npm test
+      - name: Require clean repository after full suite
+        shell: bash
+        run: |
+          dirty="$(git status --porcelain --untracked-files=all)"
+          test -z "$dirty" || { printf '%s\n' "$dirty"; exit 1; }
+      - name: Self-clean validation workflow
+        if: always()
+        shell: bash
+        run: |
+          git reset --hard HEAD
+          git config user.name "mcp-tests validation"
+          git config user.email "actions@users.noreply.github.com"
+          git rm .github/workflows/validate-cimd-green.yml
+          git commit -m "chore(validation): remove temporary CIMD workflow"
+          git push origin HEAD:validation/cimd-green-20260816
