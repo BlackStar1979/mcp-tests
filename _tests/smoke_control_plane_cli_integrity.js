@@ -31,9 +31,9 @@ const NAMED_OPTION_SCRIPTS = [
   "_workflow/scripts/workflow_snapshot.js",
 ];
 
-function run(script, args, env = {}) {
+function run(script, args, env = {}, cwd = ROOT) {
   return spawnSync(process.execPath, [script, ...args], {
-    cwd: ROOT,
+    cwd,
     env: { ...process.env, ...env },
     encoding: "utf8",
   });
@@ -50,6 +50,7 @@ for (const relativePath of NAMED_OPTION_SCRIPTS) {
 }
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "control-plane-cli-integrity-"));
+const repoTempRoot = fs.mkdtempSync(path.join(ROOT, "_control", "control-plane-cli-root-"));
 try {
   const patchTarget = path.join(tempRoot, "target.md");
   const originalTarget = "before\n<!-- start -->\nold\n<!-- end -->\nafter\n";
@@ -147,6 +148,30 @@ try {
   assert.equal(JSON.parse(compactRun.stdout).tail_lines, 1);
   assert.equal(fs.readFileSync(rawLog, "utf8"), originalLog);
 
+  const repoPatchTarget = path.join(repoTempRoot, "relative-target.md");
+  const repoPatchRelative = path.relative(ROOT, repoPatchTarget);
+  fs.writeFileSync(repoPatchTarget, originalTarget, "utf8");
+  const foreignCwdPatch = run(PATCH_SCRIPT, [
+    "--path", repoPatchRelative,
+    "--start", "<!-- start -->",
+    "--end", "<!-- end -->",
+    "--replacement", "foreign cwd",
+  ], {}, tempRoot);
+  assert.equal(foreignCwdPatch.status, 0, foreignCwdPatch.stderr || foreignCwdPatch.stdout);
+  assert.match(fs.readFileSync(repoPatchTarget, "utf8"), /foreign cwd/);
+
+  const repoLog = path.join(repoTempRoot, "relative-runtime.jsonl");
+  const repoOut = path.join(repoTempRoot, "relative-compact");
+  fs.writeFileSync(repoLog, originalLog, "utf8");
+  const foreignCwdCompact = run(COMPACT_SCRIPT, [
+    "--log", path.relative(ROOT, repoLog),
+    "--out-dir", path.relative(ROOT, repoOut),
+    "--tail", "1",
+  ], {}, tempRoot);
+  assert.equal(foreignCwdCompact.status, 0, foreignCwdCompact.stderr || foreignCwdCompact.stdout);
+  assert.equal(JSON.parse(foreignCwdCompact.stdout).parsed, 2);
+  assert.ok(fs.existsSync(path.join(repoOut, "runtime_audit_summary.json")));
+
   const pruneAudit = path.join(tempRoot, "prune-audit.jsonl");
   const rejectedPrune = run(PRUNE_SCRIPT, ["--mode", "Status", "--surprise"], {
     MCP_TEST_AUDIT_LOG: pruneAudit,
@@ -171,6 +196,7 @@ try {
   assert.equal(parseCliError(invalidPruneTime).error_code, "cli_argument_value_invalid");
 } finally {
   fs.rmSync(tempRoot, { recursive: true, force: true });
+  fs.rmSync(repoTempRoot, { recursive: true, force: true });
 }
 
 console.log("smoke_control_plane_cli_integrity ok");

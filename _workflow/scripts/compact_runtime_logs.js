@@ -4,7 +4,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
-const ROOT = process.cwd();
+const ROOT = path.resolve(__dirname, "..", "..");
 const DEFAULT_LOG = path.join(ROOT, "_logs", ".mcp-tests-audit.jsonl");
 const DEFAULT_OUT_DIR = path.join(ROOT, "_logs", "compact");
 

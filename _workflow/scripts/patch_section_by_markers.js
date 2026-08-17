@@ -5,6 +5,8 @@ const crypto = require("node:crypto");
 const path = require("node:path");
 const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
+const ROOT = path.resolve(__dirname, "..", "..");
+
 function sha256(text) {
   return crypto.createHash("sha256").update(text, "utf8").digest("hex");
 }
@@ -44,7 +46,7 @@ function countOccurrences(text, needle) {
 }
 
 function patchSection({ filePath, startMarker, endMarker, replacement, expectedHash, dryRun = false }) {
-  const absolutePath = path.resolve(process.cwd(), filePath);
+  const absolutePath = path.resolve(ROOT, filePath);
   const before = fs.readFileSync(absolutePath, "utf8");
 
   const startCount = countOccurrences(before, startMarker);
@@ -98,7 +100,7 @@ if (require.main === module) {
     if (typeof args.replacement === "string") {
       replacement = args.replacement;
     } else if (typeof args.replacementFile === "string") {
-      replacement = fs.readFileSync(path.resolve(process.cwd(), args.replacementFile), "utf8");
+      replacement = fs.readFileSync(path.resolve(ROOT, args.replacementFile), "utf8");
     } else {
       throw new Error("missing required --replacement or --replacementFile");
     }
