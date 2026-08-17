@@ -5,7 +5,7 @@ const path = require("node:path");
 const crypto = require("node:crypto");
 const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
-const ROOT = process.cwd();
+const ROOT = path.resolve(__dirname, "..", "..");
 const DEFAULT_FILES = [
   "_workflow/WORKFLOW_CANON.md",
   "_workflow/state.json",

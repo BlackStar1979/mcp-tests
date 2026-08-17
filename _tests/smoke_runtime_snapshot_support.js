@@ -2,6 +2,7 @@
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
+const os = require("node:os");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 
@@ -32,9 +33,9 @@ const REQUIRED_RUNTIME_FILES = [
   "src/startup_report.js",
 ];
 
-function runSnapshot(args) {
+function runSnapshot(args, cwd = ROOT) {
   return spawnSync(process.execPath, [SCRIPT, ...args], {
-    cwd: ROOT,
+    cwd,
     encoding: "utf8",
     maxBuffer: 16 * 1024 * 1024,
   });
@@ -129,6 +130,21 @@ try {
     snapshotsBeforeIoFailure,
     "failed snapshot creation must not retain a partial directory"
   );
+
+  const foreignCwd = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-snapshot-cwd-"));
+  const foreignLabel = `${label}-foreign-cwd`;
+  let foreignManifest = null;
+  try {
+    const foreignResult = runSnapshot(["--label", foreignLabel, "--file", "server.js"], foreignCwd);
+    assert.equal(foreignResult.status, 0, foreignResult.stderr || foreignResult.stdout);
+    foreignManifest = parseManifestFromStdout(foreignResult.stdout);
+    assert.equal(foreignManifest.entries[0]?.copied, true, "foreign-cwd invocation must resolve files from repo root");
+    assert.ok(fs.existsSync(path.join(ROOT, foreignManifest.path, "server.js")));
+    assert.equal(fs.existsSync(path.join(foreignCwd, "_workflow")), false, "foreign cwd must remain untouched");
+  } finally {
+    removeTestSnapshot(foreignLabel, foreignManifest?.path);
+    fs.rmSync(foreignCwd, { recursive: true, force: true });
+  }
 } finally {
   removeTestSnapshot(label, manifest?.path);
   removeTestSnapshot(`${label}-io-failure`);
