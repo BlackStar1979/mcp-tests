@@ -23,6 +23,7 @@ const { spawnSync } = require("node:child_process");
 const REPO_ROOT = path.join(__dirname, "..");
 const PROD_AUDIT_LOG = path.join(REPO_ROOT, "_logs", ".mcp-tests-audit.jsonl");
 const SNAPSHOT_ROOT = path.join(REPO_ROOT, "_workflow", "control_plane", "snapshots");
+const RUN_TMP_PREFIX = "mcp-tests-run-all-";
 function expectedInnerResultCount() {
   const scriptsPath = path.join(__dirname, "run_all_smoke_scripts.json");
   const scripts = JSON.parse(fs.readFileSync(scriptsPath, "utf8"));
@@ -62,6 +63,13 @@ function snapshot(file) {
   };
 }
 
+function runTempDirectories() {
+  return fs.readdirSync(os.tmpdir(), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory() && entry.name.startsWith(RUN_TMP_PREFIX))
+    .map((entry) => entry.name)
+    .sort();
+}
+
 (async () => {
   const foreignCwd = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-run-all-cwd-"));
   try {
@@ -77,6 +85,7 @@ function snapshot(file) {
   // Snapshot production audit log immediately before the isolated child run.
   const before = snapshot(PROD_AUDIT_LOG);
   const snapshotsBefore = fs.readdirSync(SNAPSHOT_ROOT).sort();
+  const runTempBefore = runTempDirectories();
 
   const child = spawnSync(
     process.execPath,
@@ -122,6 +131,7 @@ function snapshot(file) {
     assert.equal(after.sha256, before.sha256, "prod audit log sha256 unchanged");
     assert.equal(after.lines, before.lines, "prod audit log line count unchanged");
     assert.deepEqual(fs.readdirSync(SNAPSHOT_ROOT).sort(), snapshotsBefore, "snapshot directories unchanged");
+    assert.deepEqual(runTempDirectories(), runTempBefore, "run_all temp directories unchanged");
 
     console.log("smoke_harness_no_pollution_guard ok");
   } finally {

@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { cleanupRunAllTemp, parseArgs: parseCleanupArgs } = require("../scripts/cleanup-run-all-temp");
 
 const ROOT = path.resolve(__dirname, "..");
 const PATCH_SCRIPT = path.join(ROOT, "_workflow", "scripts", "patch_section_by_markers.js");
@@ -14,10 +15,12 @@ const NAMED_OPTION_SCRIPTS = [
   "scripts/audit_directory_docs.js",
   "scripts/backfill-memory-embeddings.js",
   "scripts/capture_cbm_contract.js",
+  "scripts/cleanup-run-all-temp.js",
   "scripts/extract_upstream_repo_patterns.js",
   "scripts/repair_cbm_v090_edges_schema.js",
   "scripts/request-restart.js",
   "scripts/run_operational_e2e_soak.js",
+  "_tests/run_all_smokes.js",
   "_workflow/scripts/client_entry_blocker_matrix.js",
   "_workflow/scripts/client_entry_path_report.js",
   "_workflow/scripts/compact_runtime_logs.js",
@@ -52,6 +55,45 @@ for (const relativePath of NAMED_OPTION_SCRIPTS) {
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "control-plane-cli-integrity-"));
 const repoTempRoot = fs.mkdtempSync(path.join(ROOT, "_control", "control-plane-cli-root-"));
 try {
+  assert.throws(() => parseCleanupArgs(["--apply", "--apply"]), { code: "cli_argument_duplicate" });
+  assert.throws(() => parseCleanupArgs(["--min-age-minutes", "-1"]), { code: "cli_argument_value_invalid" });
+  const cleanupFixture = path.join(tempRoot, "run-all-cleanup");
+  const staleRun = path.join(cleanupFixture, "mcp-tests-run-all-99999999-1000");
+  const activeRun = path.join(cleanupFixture, `mcp-tests-run-all-${process.pid}-1001`);
+  const recentRun = path.join(cleanupFixture, "mcp-tests-run-all-99999998-1002");
+  const unrelated = path.join(cleanupFixture, "unrelated-temp");
+  for (const directory of [staleRun, activeRun, recentRun, unrelated]) fs.mkdirSync(directory, { recursive: true });
+  fs.writeFileSync(path.join(staleRun, "payload.bin"), "stale");
+  const oldTime = new Date(Date.now() - 60 * 60 * 1000);
+  fs.utimesSync(staleRun, oldTime, oldTime);
+  fs.utimesSync(activeRun, oldTime, oldTime);
+  const cleanupPlan = cleanupRunAllTemp({ tempRoot: cleanupFixture, minAgeMinutes: 15 });
+  assert.equal(cleanupPlan.mode, "plan");
+  assert.equal(cleanupPlan.candidate_count, 1);
+  assert.equal(cleanupPlan.removed_count, 0);
+  assert.equal(cleanupPlan.skipped_active_count, 1);
+  assert.equal(cleanupPlan.skipped_recent_count, 1);
+  assert.equal(fs.existsSync(staleRun), true);
+  const cleanupApply = cleanupRunAllTemp({ tempRoot: cleanupFixture, apply: true, minAgeMinutes: 15 });
+  assert.equal(cleanupApply.removed_count, 1);
+  assert.equal(cleanupApply.removed_bytes, 5);
+  assert.equal(fs.existsSync(staleRun), false);
+  assert.equal(fs.existsSync(activeRun), true);
+  assert.equal(fs.existsSync(recentRun), true);
+  assert.equal(fs.existsSync(unrelated), true);
+
+  const runAllScript = path.join(ROOT, "_tests", "run_all_smokes.js");
+  assert.equal(parseCliError(run(runAllScript, ["--surprise"], {}, tempRoot)).error_code, "cli_argument_unknown");
+  assert.equal(parseCliError(run(runAllScript, ["--manifest"], {}, tempRoot)).error_code, "cli_argument_value_missing");
+  assert.equal(
+    parseCliError(run(runAllScript, ["--manifest", "first.json", "--manifest", "second.json"], {}, tempRoot)).error_code,
+    "cli_argument_duplicate"
+  );
+  assert.equal(
+    parseCliError(run(runAllScript, ["--skip-network=true"], {}, tempRoot)).error_code,
+    "cli_argument_flag_value_not_allowed"
+  );
+
   const patchTarget = path.join(tempRoot, "target.md");
   const originalTarget = "before\n<!-- start -->\nold\n<!-- end -->\nafter\n";
   fs.writeFileSync(patchTarget, originalTarget, "utf8");

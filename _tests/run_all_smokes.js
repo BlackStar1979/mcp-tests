@@ -6,34 +6,38 @@ const crypto=require("node:crypto");
 const {spawn}=require("node:child_process");
 const {CURRENT_STAGE_STATUS,CURRENT_COMPATIBILITY_LABEL}=require("../src/stage_metadata");
 const {withHermeticServerControlEnv}=require("./helpers/hermetic_server_control_env");
+const {CliArgumentError,parseCliArgs}=require("../src/util/cli_args");
 const REPO_ROOT=path.resolve(__dirname,"..");
+function parseRunnerArgs(argv){const parsed=parseCliArgs(argv,{valueOptions:["manifest"],flagOptions:["skip-network"]});return {manifestPath:parsed.value("manifest",path.join(__dirname,"run_all_smoke_scripts.json")),skipNetwork:parsed.flag("skip-network")}}
+let CLI_ARGS;
+try{CLI_ARGS=parseRunnerArgs(process.argv.slice(2))}catch(error){if(error instanceof CliArgumentError){console.error(JSON.stringify({success:false,error_code:error.code,argument:error.argument,message:error.message}));process.exit(2)}throw error}
 const DEFAULT_PORT=Number(process.env.MCP_TEST_SMOKE_PORT||3095);
 const INTERNAL_PORT=Number(process.env.MCP_TEST_SMOKE_INTERNAL_PORT||(DEFAULT_PORT+100));
-const SKIP_NETWORK=process.argv.includes("--skip-network");
-const MANIFEST_ARG_INDEX=process.argv.indexOf("--manifest");
-const MANIFEST_PATH=MANIFEST_ARG_INDEX>=0?process.argv[MANIFEST_ARG_INDEX+1]:path.join(__dirname,"run_all_smoke_scripts.json");
+const SKIP_NETWORK=CLI_ARGS.skipNetwork;
+const MANIFEST_PATH=CLI_ARGS.manifestPath;
 const OAUTH_OPERATOR_SECRET="run-all-smokes-oauth21-operator-secret";
 const FETCH_PATCH=path.join(REPO_ROOT,"_tests","smoke_auth_fetch_patch.js");
 const FS_ROOT=path.join(REPO_ROOT,"_public_sandbox");
 const RUN_TMP=path.join(os.tmpdir(),"mcp-tests-run-all-"+process.pid+"-"+Date.now());
 const RUN_OAUTH_STORAGE_FILE=path.join(RUN_TMP,"oauth.sqlite");
 const RUN_PROCESS_JOB_STORAGE_FILE=path.join(RUN_TMP,"process-jobs.sqlite");
-fs.mkdirSync(RUN_TMP,{recursive:true});
-if(MANIFEST_ARG_INDEX>=0&&!MANIFEST_PATH)throw new Error("--manifest requires a manifest path");
 const ALL_SCRIPTS=JSON.parse(fs.readFileSync(path.resolve(REPO_ROOT,MANIFEST_PATH),"utf8"));
 const PUBLIC_SCRIPTS=new Set(["_tests/descriptor_audit.js","_tests/profile_policy_audit.js","_tests/smoke_profile_schema_validator.js","_tests/smoke_cross_category_spec.js","_tests/smoke_legacy_retired_auth_negative_controls.js","_tests/smoke_fs.js","_tests/smoke_fs_streaming.js"]);
 const NETWORK_SCRIPT="_tests/smoke_network.js";
 function wait(ms){return new Promise(r=>setTimeout(r,ms));}
+async function stopChild(child){if(!child||child.exitCode!==null||child.signalCode!==null)return;await new Promise((resolve,reject)=>{let settled=false;let forceTimer;let giveUpTimer;const onExit=()=>finish();const finish=(error)=>{if(settled)return;settled=true;clearTimeout(forceTimer);clearTimeout(giveUpTimer);child.removeListener("exit",onExit);if(error)reject(error);else resolve()};const signal=(name)=>{try{child.kill(name)}catch(error){if(error?.code==="ESRCH")finish();else finish(error)}};child.once("exit",onExit);signal();if(settled)return;forceTimer=setTimeout(()=>{if(child.exitCode===null&&child.signalCode===null)signal("SIGKILL")},1000);giveUpTimer=setTimeout(()=>finish(),3000)})}
 async function waitHealth(port,headers={}){for(let i=0;i<50;i++){try{const r=await fetch("http://127.0.0.1:"+port+"/healthz",{headers});if(r.ok)return r.json();}catch{}await wait(100)}throw new Error("health timeout on "+port)}
 function nodeOptions(env,file){const existing=env.NODE_OPTIONS?String(env.NODE_OPTIONS)+" ":"";return {...env,NODE_OPTIONS:existing+"--require "+JSON.stringify(file)}}
 function runNode(script,env,section){return new Promise((resolve,reject)=>{const child=spawn(process.execPath,[script],{cwd:REPO_ROOT,env,stdio:["ignore","pipe","pipe"]});let stdout="",stderr="";child.stdout.on("data",d=>stdout+=String(d));child.stderr.on("data",d=>stderr+=String(d));child.on("exit",code=>{const result={section,script,stdout:stdout.trim(),stderr:stderr.trim()};if(code===0)resolve(result);else reject(new Error(section+": "+script+" failed with "+code+"\nSTDOUT:\n"+stdout+"\nSTDERR:\n"+stderr))})})}
 function startServer(args,env){const child=spawn(process.execPath,["server.js",...args],{cwd:REPO_ROOT,env,stdio:["ignore","pipe","pipe"]});let output="";child.stdout.on("data",d=>output+=String(d));child.stderr.on("data",d=>output+=String(d));child.getOutput=()=>output;return child}
-async function startChecked(args,port,env,headers){const child=startServer([...args,"--port",String(port)],env);try{const health=await waitHealth(port,headers);assert.equal(health.version,"0.40.0");assert.equal(health.compatibility_label,CURRENT_COMPATIBILITY_LABEL);assert.equal(health.stage_status,CURRENT_STAGE_STATUS);return {child,health}}catch(e){child.kill();e.message=e.message+"\nSERVER OUTPUT:\n"+child.getOutput();throw e}}
+async function startChecked(args,port,env,headers){const child=startServer([...args,"--port",String(port)],env);try{const health=await waitHealth(port,headers);assert.equal(health.version,"0.40.0");assert.equal(health.compatibility_label,CURRENT_COMPATIBILITY_LABEL);assert.equal(health.stage_status,CURRENT_STAGE_STATUS);return {child,health}}catch(e){await stopChild(child);e.message=e.message+"\nSERVER OUTPUT:\n"+child.getOutput();throw e}}
 function b64(buf){return Buffer.from(buf).toString("base64").replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/g,"")}
 function sha256Base64Url(text){return b64(crypto.createHash("sha256").update(text).digest())}
 async function json(url,init){const r=await fetch(url,init);let body={};try{body=await r.json()}catch{}return {status:r.status,headers:r.headers,body}}
 async function oauth21SmokeHeaders(issuer){const resource=issuer+"/mcp";const reg=await json(issuer+"/register",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({redirect_uris:["http://localhost/cb"],token_endpoint_auth_method:"none",grant_types:["authorization_code","refresh_token"],response_types:["code"]})});assert.equal(reg.status,201);assert.ok(reg.body.client_id);const verifier=b64(crypto.randomBytes(32));const az=new URL(issuer+"/authorize");az.searchParams.set("response_type","code");az.searchParams.set("client_id",reg.body.client_id);az.searchParams.set("redirect_uri","http://localhost/cb");az.searchParams.set("code_challenge",sha256Base64Url(verifier));az.searchParams.set("code_challenge_method","S256");az.searchParams.set("state","run-all");az.searchParams.set("scope","mcp:tools");az.searchParams.set("resource",resource);const a=await fetch(az,{redirect:"manual"});assert.equal(a.status,302);const login=a.headers.get("location");assert.ok(login&&login.includes("/oauth/operator-login?pid="));const pid=new URL(login).searchParams.get("pid");const good=await fetch(issuer+"/oauth/operator-login",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({pid,client_id:reg.body.client_id,redirect_uri:"http://localhost/cb",scope:"mcp:tools",password:OAUTH_OPERATOR_SECRET}),redirect:"manual"});assert.equal(good.status,302);const cb=new URL(good.headers.get("location"));assert.equal(cb.searchParams.get("state"),"run-all");const tok=await json(issuer+"/token",{method:"POST",headers:{"content-type":"application/x-www-form-urlencoded"},body:new URLSearchParams({grant_type:"authorization_code",code:cb.searchParams.get("code"),redirect_uri:"http://localhost/cb",client_id:reg.body.client_id,code_verifier:verifier,resource})});assert.equal(tok.status,200);assert.ok(tok.body.access_token);return {authorization:"Bearer "+tok.body.access_token}}
 (async()=>{
+fs.mkdirSync(RUN_TMP,{recursive:true});
+try{
 const baseEnv=withHermeticServerControlEnv({...process.env,MCP_TEST_FS_ROOT:FS_ROOT,MCP_TEST_LOG_DIR:RUN_TMP,MCP_TEST_HEALTH_FULL:"1",MCP_TEST_ACCESS_TRUSTED_PROXY:"1",MCP_TEST_OAUTH_STORAGE_FILE:RUN_OAUTH_STORAGE_FILE,MCP_PROCESS_JOB_STORAGE_FILE:RUN_PROCESS_JOB_STORAGE_FILE},path.join(RUN_TMP,"control"));
 const results=[];
 const publicScripts=ALL_SCRIPTS.filter(s=>PUBLIC_SCRIPTS.has(s));
@@ -44,7 +48,7 @@ try{
  const env={...baseEnv,MCP_TEST_SMOKE_URL:"http://127.0.0.1:"+DEFAULT_PORT+"/mcp",MCP_TEST_EXPECTED_PROFILE:"public"};
  for(const script of publicScripts)results.push(await runNode(script,env,"public"));
  if(!SKIP_NETWORK)results.push(await runNode(NETWORK_SCRIPT,env,"public-network"));
-}finally{publicServer.child.kill()}
+}finally{await stopChild(publicServer.child)}
 const url="http://127.0.0.1:"+INTERNAL_PORT+"/mcp";
 const issuer="http://127.0.0.1:"+INTERNAL_PORT;
 const oauthConfigFile=path.join(RUN_TMP,"oauth21-secret.json");
@@ -60,6 +64,7 @@ try{
   if(script==="_tests/smoke_harness_no_pollution_guard.js"&&process.env.MCP_TEST_NO_POLLUTION_GUARD_INNER==="1")continue;
   results.push(await runNode(script,internalEnv,"tests-authenticated"));
  }
-}finally{internalServer.child.kill()}
+}finally{await stopChild(internalServer.child)}
 console.log(JSON.stringify({ok:true,version:"0.40.0",compatibility_label:CURRENT_COMPATIBILITY_LABEL,stage:CURRENT_STAGE_STATUS,manifest:path.relative(REPO_ROOT,path.resolve(REPO_ROOT,MANIFEST_PATH)).replace(/\\/g,"/"),sections:{public:publicScripts.length,tests_authenticated:internalScripts.length},results},null,2));
+}finally{fs.rmSync(RUN_TMP,{recursive:true,force:true,maxRetries:10,retryDelay:100})}
 })().catch(e=>{console.error(e?.stack||e?.message||String(e));process.exit(1)});
