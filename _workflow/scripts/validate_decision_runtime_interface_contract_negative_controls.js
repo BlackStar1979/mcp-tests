@@ -7,8 +7,8 @@ const path = require('path');
 const { loadCombinedServerSpec } = require('./load_server_specs');
 const { spawnSync } = require('child_process');
 
-const root = process.cwd();
-const specPath = process.argv[2] || path.join(root, 'SERVER_SPEC.json');
+const root = path.resolve(__dirname, '..', '..');
+const specPath = process.argv[2] ? path.resolve(root, process.argv[2]) : path.join(root, 'SERVER_SPEC.json');
 const validator = path.join(root, '_workflow', 'scripts', 'validate_decision_runtime_interface_contract.js');
 const base = process.argv[2] ? JSON.parse(fs.readFileSync(specPath, 'utf8')) : loadCombinedServerSpec();
 const tmpRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'mcp-runtime-iface-neg-'));

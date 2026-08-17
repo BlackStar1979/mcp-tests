@@ -4,7 +4,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 
-const root = process.cwd();
+const root = path.resolve(__dirname, "..", "..");
 const specPath = path.join(root, "SERVER_SPEC.json");
 const spec = JSON.parse(fs.readFileSync(specPath, "utf8"));
 const rules = spec.maintenance_rules || {};

@@ -18,7 +18,7 @@ Audit snapshot from `2026-08-16`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `cc676a5d-9e05-408c-aec5-38c9f044a27b`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
+- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `6dcdfb19-030f-4589-a5ed-8708777e9680`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
 - current manifest contains `314` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `313` sectioned scripts: `7` public and `306` authenticated
 ## Orientation
 
@@ -50,7 +50,7 @@ Latest full active validation:
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
 - Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks
 - Structured file operations: durable content staging, bounded streaming transforms, journaled split/merge recovery, Markdown AST selectors, and agent-routing guidance
-- Control-plane CLI integrity: shared fail-closed parsing, no-mutation rejection coverage, and foreign-cwd root-fidelity checks for OAuth pruning, marker-based patching, and runtime-log replacement
+- Control-plane CLI integrity: shared fail-closed parsing, no-mutation rejection coverage, and foreign-cwd root-fidelity checks for OAuth pruning, marker-based patching, runtime-log replacement, root-spec loading, validators, evaluators, and index-authority reporting
 - Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, snapshot/state consistency, transient Windows rename retry, and a no-retained-fixture foreign-cwd full-suite pollution harness
 
 ## Naming Notes

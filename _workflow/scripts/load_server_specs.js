@@ -1,33 +1,36 @@
 "use strict";
 
 const fs = require("node:fs");
+const path = require("node:path");
 
-function readJson(path) {
-  return JSON.parse(fs.readFileSync(path, "utf8"));
+const ROOT = path.resolve(__dirname, "..", "..");
+
+function readJson(filePath) {
+  return JSON.parse(fs.readFileSync(filePath, "utf8"));
 }
 
 function loadRootServerSpec() {
-  return readJson("SERVER_SPEC.json");
+  return readJson(path.join(ROOT, "SERVER_SPEC.json"));
 }
 
 function loadAuthSpec() {
-  return readJson("SERVER_AUTH_SPEC.json");
+  return readJson(path.join(ROOT, "SERVER_AUTH_SPEC.json"));
 }
 
 function loadProfilesSpec() {
-  return readJson("SERVER_PROFILES_SPEC.json");
+  return readJson(path.join(ROOT, "SERVER_PROFILES_SPEC.json"));
 }
 
 function loadToolsSpec() {
-  return readJson("SERVER_TOOLS_SPEC.json");
+  return readJson(path.join(ROOT, "SERVER_TOOLS_SPEC.json"));
 }
 
 function loadDecisionSpec() {
-  return readJson("SERVER_AUTHZ_DECISION_SPEC.json");
+  return readJson(path.join(ROOT, "SERVER_AUTHZ_DECISION_SPEC.json"));
 }
 
 function loadDecisionRuntimeSpec() {
-  return readJson("SERVER_DECISION_RUNTIME_SPEC.json");
+  return readJson(path.join(ROOT, "SERVER_DECISION_RUNTIME_SPEC.json"));
 }
 
 function loadStage12Spec() {

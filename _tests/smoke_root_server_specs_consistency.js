@@ -92,8 +92,9 @@ assert.ok(rootSpec.restart_supervisor.details_ref.includes("SERVER_RUNTIME_TOPOL
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_DECISION_RUNTIME_SPEC.json"));
 assert.ok(Object.hasOwn(state.root_spec_map, "SERVER_RUNTIME_TOPOLOGY_SPEC.json"));
 assert.ok(!Object.hasOwn(state.root_spec_map, retiredStage12Root));
-assert.ok(loader.includes('readJson("SERVER_DECISION_RUNTIME_SPEC.json")'));
-assert.equal(loader.includes('readJson("' + retiredStage12Root + '")'), false);
+assert.ok(loader.includes('const ROOT = path.resolve(__dirname, "..", "..")'));
+assert.ok(loader.includes('readJson(path.join(ROOT, "SERVER_DECISION_RUNTIME_SPEC.json"))'));
+assert.equal(loader.includes(retiredStage12Root), false);
 
 for (const rel of fs.readdirSync(ROOT).filter((name) => /^SERVER.*\.json$/.test(name))) {
   JSON.parse(read(rel));

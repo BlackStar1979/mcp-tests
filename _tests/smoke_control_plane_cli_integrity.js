@@ -11,6 +11,15 @@ const ROOT = path.resolve(__dirname, "..");
 const PATCH_SCRIPT = path.join(ROOT, "_workflow", "scripts", "patch_section_by_markers.js");
 const COMPACT_SCRIPT = path.join(ROOT, "_workflow", "scripts", "compact_runtime_logs.js");
 const PRUNE_SCRIPT = path.join(ROOT, "_workflow", "scripts", "test_mcp_oauth21_prune.js");
+const REPO_ROOT_READERS = [
+  "_workflow/scripts/evaluate_server_spec_decisions.js",
+  "_workflow/scripts/evaluate_server_spec_decision_negative_controls.js",
+  "_workflow/scripts/index_authority_report.js",
+  "_workflow/scripts/validate_decision_runtime_interface_contract.js",
+  "_workflow/scripts/validate_decision_runtime_interface_contract_negative_controls.js",
+  "_workflow/scripts/validate_server_spec_fixtures.js",
+  "_workflow/scripts/validate_server_spec_negative_controls.js",
+];
 const NAMED_OPTION_SCRIPTS = [
   "scripts/audit_directory_docs.js",
   "scripts/backfill-memory-embeddings.js",
@@ -55,6 +64,11 @@ for (const relativePath of NAMED_OPTION_SCRIPTS) {
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "control-plane-cli-integrity-"));
 const repoTempRoot = fs.mkdtempSync(path.join(ROOT, "_control", "control-plane-cli-root-"));
 try {
+  for (const relativePath of REPO_ROOT_READERS) {
+    const result = run(path.join(ROOT, relativePath), [], {}, tempRoot);
+    assert.equal(result.status, 0, `${relativePath} must work from a foreign cwd\n${result.stderr || result.stdout}`);
+  }
+
   assert.throws(() => parseCleanupArgs(["--apply", "--apply"]), { code: "cli_argument_duplicate" });
   assert.throws(() => parseCleanupArgs(["--min-age-minutes", "-1"]), { code: "cli_argument_value_invalid" });
   const cleanupFixture = path.join(tempRoot, "run-all-cleanup");

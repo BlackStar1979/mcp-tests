@@ -6,9 +6,9 @@ Updated: 2026-08-17
 - `README.md`
   Scope, boundaries, and interpretation rules for workflow helper and control-plane scripts.
 - `build_*.js`, `load_server_specs.js`, `validate_*.js`, `evaluate_*.js`
-  Spec-loading, validation, and workflow-guard helpers used by smokes and bounded checks.
+  Repository-root-anchored spec-loading, validation, and workflow-guard helpers used by smokes and bounded checks from any caller cwd.
 - `matrix_check.js`, `index_authority_report.js`, `io_*.js`
-  Policy, matrix, and repository support scripts.
+  Policy, matrix, and repository support scripts; index-authority reporting derives repository scope from its script location.
 - `process_runner_observability.js`
   Bounded process-audit analyzer with strict singleton/repeatable CLI validation and no raw argument or output disclosure.
 - `workflow_snapshot.js`, `patch_section_by_markers.js`

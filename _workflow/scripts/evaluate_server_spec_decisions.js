@@ -5,8 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const { loadCombinedServerSpec } = require('./load_server_specs');
 
-const root = process.cwd();
-const specPath = process.argv[2] || path.join(root, 'SERVER_SPEC.json');
+const root = path.resolve(__dirname, '..', '..');
+const specPath = process.argv[2] ? path.resolve(root, process.argv[2]) : path.join(root, 'SERVER_SPEC.json');
 const spec = process.argv[2] ? JSON.parse(fs.readFileSync(specPath, 'utf8')) : loadCombinedServerSpec();
 const failures = [];
 const traces = [];
