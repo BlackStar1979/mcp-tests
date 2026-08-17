@@ -184,7 +184,7 @@ function dispatcherArgs(context, prelude) {
       clientCapabilities: { extensions: { [TASKS_EXTENSION_ID]: {} } },
     },
     traceContext: requestTrace,
-    authResult: { clientId: "client-a" },
+    authResult: { clientId: "client-a", scopes: ["mcp:tools"] },
     processJobManager: manager,
   };
   const taskStart = await handleToolsCall({

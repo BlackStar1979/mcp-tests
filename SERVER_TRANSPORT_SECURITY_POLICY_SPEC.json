@@ -2,7 +2,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "active_authority_specified_runtime_enforcement_partial",
+  "status": "implemented_transport_boundary",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-transport-security-policy-v1",
   "scope": "HTTP/Streamable HTTP/OAuth transport boundary, Host/CORS/CSRF/redirect/stdin-stdio proxy and private-network protections.",
   "policy": {
@@ -21,8 +22,14 @@
     "SERVER_NETWORK_POLICY_SPEC.json",
     "SERVER_AUTH_SPEC.json"
   ],
-  "runtime_gaps": [
-    "transport controls are split across code/specs; this spec is now the unifying authority"
+  "runtime_gaps": [],
+  "implementation_evidence": [
+    "src/runtime/server_factory.js rejects invalid Host and present invalid Origin before route dispatch",
+    "src/runtime/cors_policy.js applies an explicit authenticated-origin allowlist and fail-closed Origin validation; requests without Origin remain valid for non-browser MCP clients",
+    "src/auth/oauth21_authorization_server.js enforces PKCE/state, exact registered redirect binding, HTTPS-or-loopback redirect policy, and supported OAuth scope validation",
+    "src/auth/oauth_cimd_resolver.js rejects special-use/private address resolution before outbound Client ID Metadata fetch",
+    "SERVER_AUTH_SPEC.json fixes public OAuth21 endpoints to HTTPS while hermetic development remains loopback-only",
+    "_tests/smoke_server_factory_extraction.js, _tests/smoke_oauth21_host_header.js, _tests/smoke_http_boundary_guards.js, _tests/smoke_oauth21_state_required.js, and CIMD/OAuth guards cover the active transport boundary"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

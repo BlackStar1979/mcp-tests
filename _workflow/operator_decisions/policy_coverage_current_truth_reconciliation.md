@@ -67,27 +67,45 @@ A new POL-1 policy-coverage component is required. It is actionable now and has 
 
 Recommended sequence:
 
-1. POL-1A: reconcile the six critical_specified policies against current runtime and guards, promoting only proven coverage and opening bounded implementation packages for real gaps.
-2. POL-1B: reconcile the four partial policies.
-3. POL-1C: reconcile the four specified_only non-critical policies.
-4. CI-1 assessment may follow once canonical product/readiness truth no longer hides required target work.
-5. COMP-1A remains event-gated and should run only on real Codex client-entry traffic newer than 0.148.0-alpha.9.
+1. POL-1A-DLP: enforce one centralized fail-closed model-output validation/DLP boundary.
+2. POL-1A-CONSENT: bind high-risk operations to a server-verifiable consent artifact.
+3. POL-1A-PROMPT: classify content-bearing results as untrusted data and add an explicit instruction-promotion boundary.
+4. POL-1B: reconcile the four partial policies.
+5. POL-1C: reconcile the four specified_only non-critical policies.
+6. COMP-1A remains event-gated and should run only on real Codex client-entry traffic newer than 0.148.0-alpha.9.
+
+## POL-1A critical reconciliation
+
+All six `critical_specified` rows were reconciled independently against current source and guards.
+
+Implemented outcomes:
+
+- `transport_security_policy`: a new regression first proved that a present foreign `Origin` reached route dispatch. `src/runtime/cors_policy.js` and `src/runtime/server_factory.js` now reject malformed, null, or non-allowlisted present origins with HTTP 403 before dispatch while requests without `Origin` remain valid for non-browser MCP clients.
+- `scope_minimization_policy`: OAuth21 already issued only `mcp:tools`, but tool dispatch did not bind the granted scope set to runtime authorization. A RED test proved an empty scope set still executed `search`; `src/runtime/decision_runtime_policy.js` now requires `mcp:tools` for the active `oauth21/internal` profile before every tool execution and returns `insufficient_scope` otherwise.
+- `session_security_policy`: current runtime evidence proves the policy's old session model is obsolete for the accepted target. The active `/mcp` route issues and consumes no transport-session state, passes `sessionId = undefined` / `session = null`, and advertises `protocol_sessions = false`; transport-session replay/TTL requirements are therefore inactive rather than missing controls.
+
+Retained critical gaps:
+
+- `consent_policy`: OAuth operator authorization and CBM deletion confirmation exist, but high-risk tool execution has no generalized server-verifiable consent receipt. In particular, destructive process tools are still admitted as `guarded_process_execution` without such an artifact.
+- `prompt_content_policy`: content-bearing tool results lack centralized untrusted-content classification, hidden-instruction detection, and an explicit instruction-promotion boundary.
+- `output_dlp_policy`: optional tool payloads still reach `toolResult()` without one centralized output-schema/secret/resource-link validation gate.
+
+Coverage is therefore `13/24` implemented. Eleven required rows remain outside implemented: four partial, four specified-only, and three critical-specified.
 
 ## Runtime/load boundary
 
-The source fix changes runtime-imported src/util/workspace_roots.js. Repository tests can validate it immediately, but the currently running OAuth21 3008 process does not gain the fix until an approved controlled restart through the existing supervisor authority. No connector refresh is required because the MCP-visible tool surface and schemas do not change.
+The earlier configured-root symlink/junction fix is already live-loaded from commit `555fad0`. The POL-1A source changes touch runtime-imported `src/runtime/cors_policy.js`, `src/runtime/server_factory.js`, and `src/runtime/decision_runtime_policy.js`; repository validation can prove them immediately, but OAuth21 `3008` does not gain them until a controlled supervisor restart after a source commit. No connector refresh is expected because no MCP tool name, descriptor, input schema, output schema, or annotation is intentionally changed.
 
-## Live-load acceptance
+## Existing root-boundary live acceptance
 
 Controlled supervisor request `manual-1786988583476` with exit code `42` live-loaded source commit `555fad0` on OAuth21 `3008`.
 
-Accepted live evidence:
+Accepted evidence for that earlier load remains:
 
 - audit `server_start` reports `server_start_id = 2026-08-17T17:43:05.322Z`;
 - `GET http://127.0.0.1:3008/healthz` returned `200`, OAuth21/internal, and `tools_count = 98`;
-- tool-surface state loaded the prior fingerprint and saved current fingerprint `ec7d3af5b4ea17f5`, with no `tool_surface_changed` event for the new server start;
-- connector-visible TEST MCP calls remained callable after restart;
-- durable full-suite job `32fc6867-a5fc-4000-9a3f-2c58f22b680c`, created before restart, was still readable afterward with `recovered_after_restart = true`;
+- tool-surface state retained fingerprint `ec7d3af5b4ea17f5` with no surface-change event;
+- connector-visible TEST MCP calls and durable process recovery survived;
 - no connector refresh or OAuth reauthorization was required.
 
-The configured-root symlink/junction fix is therefore repo-applied and live-loaded. `POL-1` remains `2/4` because fourteen required policy rows still need evidence-based reconciliation; the next package remains `POL-1A`.
+`POL-1` remains `2/4` because eleven required policy rows remain unresolved. The current next package is `POL-1A-DLP`; the new transport/scope runtime changes remain repo-applied but not yet live-loaded at this point in the record.

@@ -94,6 +94,7 @@ for (const name of ["content_stage", "file_transform", "file_split", "file_merge
     args: {},
     authMode: "oauth21",
     profile: "internal",
+    authResult: { subject: "operator", clientId: "client-a", scopes: ["mcp:tools"] },
     getOptionalTool: (toolName) => internalByName.get(toolName),
     requestMeta: { requestId: `structured-${name}` },
   });

@@ -49,14 +49,14 @@ Summarize the current validated product state in one operator-facing place witho
 - CIMD P3 is live and accepted: the runtime SSRF boundary rejected `client_id = https://127.0.0.1/oauth/client.json` with controlled `400 invalid_client`; audit recorded `oauth21_cimd_rejected` / `cimd_special_use_ip`. Repository validation remains `7 + 304`.
 - MRTR P4 remains fixture-only protocol conformance evidence and has no production runtime surface to load. The official v2 client regression passed clean-history `7 + 305`; the controlled runtime restart neither adds nor requires an MRTR tool or store.
 - `DEBT-1` cleanup is complete and live-loaded: `McpSession`, `sampling_context`, SSE outbound queuing, pending request correlation, and classic Sampling policy execution are removed. The active HTTP dispatchers reject unsolicited JSON-RPC responses with `server_initiated_requests_not_active`; restart `manual-1786939596474` loaded the change without altering the `98`-tool connector surface or requiring OAuth reauthorization.
-- `POL-1` is active at `2/4`: canonical policy coverage is now `10/24` implemented after evidence-based reconciliation of Sampling, roots boundary, elicitation, and capability attestation. Fourteen required policies remain non-implemented in the matrix. A TDD probe reproduced and fixed configured-root symlink/junction escape in `safeWorkspacePath()`; controlled restart `manual-1786988583476` live-loaded commit `555fad0` on OAuth21 3008 at `server_start_id = 2026-08-17T17:43:05.322Z` without changing the `98`-tool surface or fingerprint.
+- `POL-1` remains active at `2/4`: critical-policy reconciliation now proves `13/24` required policies implemented. Transport security rejects invalid present `Origin` before route dispatch, OAuth21/internal tool dispatch requires granted `mcp:tools`, and session security is reconciled to the stateless MCP `2026-07-28` target. Eleven required policies remain non-implemented: four partial, four specified-only, and three critical (`consent`, `prompt/content`, `output DLP`). The earlier configured-root fix remains live from commit `555fad0`; the new transport/scope runtime changes are repository-applied and pending controlled OAuth21 `3008` live load.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = policy-coverage-current-truth-reconciliation`
-- `next_primary = pol-1a-critical-policy-reconciliation`
-- `next_secondary = pol-1b-partial-policy-reconciliation`
+- `current_working_course = policy-coverage-critical-gap-closure`
+- `next_primary = pol-1a-output-dlp-boundary`
+- `next_secondary = pol-1a-consent-boundary`
 
 ## Verified documentation authorities
 

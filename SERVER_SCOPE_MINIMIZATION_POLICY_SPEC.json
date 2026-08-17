@@ -2,7 +2,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "active_authority_specified_runtime_enforcement_partial",
+  "status": "implemented_minimal_oauth21_scope_boundary",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-scope-minimization-policy-v1",
   "scope": "Minimum privilege and progressive scope governance for auth, tools, resources, connectors and runtime operations.",
   "policy": {
@@ -18,8 +19,14 @@
     "SERVER_RESOURCE_POLICY_SPEC.json",
     "SERVER_POLICY_RUNTIME_SPEC.json"
   ],
-  "runtime_gaps": [
-    "scope taxonomy exists only indirectly through auth/resource/runtime policy"
+  "runtime_gaps": [],
+  "implementation_evidence": [
+    "src/auth/oauth21_authorization_server.js accepts only mcp:tools for the active OAuth21 internal profile and rejects unsupported or inflated scope sets at authorization and access-token validation",
+    "src/runtime/decision_runtime_context_builder.js carries the authenticated scope set into the tool decision context",
+    "src/runtime/decision_runtime_policy.js requires mcp:tools for every tools/call executed under the active oauth21/internal profile and fails closed with insufficient_scope before tool execution",
+    "SERVER_AUTH_SPEC.json provides the scope-to-profile boundary and src/tool_policy.js provides the profile-to-tool boundary; the runtime decision now binds them through the granted scope set",
+    "_tests/smoke_oauth21_scope_validation.js and _tests/smoke_decision_runtime_p1_coverage.js guard issuance-time and tool-dispatch scope enforcement",
+    "mcp:operator remains unissued by the active OAuth21 server, so scope elevation is inactive and cannot bypass explicit future consent design"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

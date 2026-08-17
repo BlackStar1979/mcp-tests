@@ -2,25 +2,31 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "active_authority_specified_runtime_enforcement_partial",
+  "status": "implemented_no_transport_session_boundary",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-session-security-policy-v1",
-  "scope": "Security policy for current stable-compatible MCP sessions while sessionless migration remains target direction.",
+  "scope": "Security boundary for the stateless single-route MCP target while legacy initialize remains request-contract compatibility only.",
   "policy": {
-    "session_id_entropy": "cryptographically_strong_required",
+    "transport_sessions": "not_supported_for_current_target",
+    "mcp_session_id": "not_issued_not_consumed",
+    "legacy_initialize_creates_transport_session": false,
     "session_not_authentication": true,
-    "bind_session_to_authorized_context": true,
-    "replay_guard": "required",
-    "sse_resume": "legacy_compat_only",
-    "cross_runtime_session_injection": "forbidden",
-    "expiration_or_ttl": "required_before_expansion"
+    "cross_runtime_session_injection": "not_applicable_without_transport_session_state",
+    "session_replay_or_resume": "not_applicable_without_transport_session_state",
+    "expiration_or_ttl": "not_applicable_without_transport_session_state"
   },
   "current_repo_bindings": [
     "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
     "_workflow/sessionless_inventory.json"
   ],
-  "runtime_gaps": [
-    "session model remains stable-compatible legacy",
-    "sessionless target selection still pending"
+  "runtime_gaps": [],
+  "implementation_evidence": [
+    "src/runtime/mcp_entry_dispatcher.js passes sessionId undefined and session null through active request dispatch",
+    "active initialize no longer emits MCP-Session-Id and incoming session headers are not protocol state",
+    "server/discover reports protocol_sessions false for the surviving /mcp route",
+    "src/runtime/session_store.js and the later residual session/SSE helpers are retired from active repository runtime",
+    "_workflow/operator_decisions/mcp_session_id_header_closeout.md, session_store_closeout.md, and deprecated_sampling_helper_retirement_closeout.md record the guarded retirement chain",
+    "_tests/smoke_mcp_dispatch_contract.js and retained retirement guards prevent transport-session behavior from reappearing"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

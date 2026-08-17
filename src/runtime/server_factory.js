@@ -2,7 +2,7 @@
 
 const http = require("node:http");
 const { URL } = require("node:url");
-const { corsHeadersForRequest } = require("./cors_policy");
+const { corsHeadersForRequest, isAllowedOrigin, rejectInvalidOrigin } = require("./cors_policy");
 const { isAllowedHost, rejectInvalidHost } = require("./host_header_guard");
 
 function createServer({
@@ -38,6 +38,9 @@ function createServer({
     try {
       if (!isAllowedHost(req, { publicBaseUrl })) {
       return rejectInvalidHost(res);
+      }
+      if (!isAllowedOrigin(req, { publicBaseUrl })) {
+        return rejectInvalidOrigin(res);
       }
       const url = new URL(req.url, `http://${req.headers.host || `${host}:${port}`}`);
 

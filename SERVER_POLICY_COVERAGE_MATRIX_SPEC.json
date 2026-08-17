@@ -105,21 +105,21 @@
     },
     {
       "id": "scope_minimization_policy",
-      "status": "critical_specified",
+      "status": "implemented",
       "spec_ref": "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json",
       "critical": true,
       "required": true
     },
     {
       "id": "transport_security_policy",
-      "status": "critical_specified",
+      "status": "implemented",
       "spec_ref": "SERVER_TRANSPORT_SECURITY_POLICY_SPEC.json",
       "critical": true,
       "required": true
     },
     {
       "id": "session_security_policy",
-      "status": "critical_specified",
+      "status": "implemented",
       "spec_ref": "SERVER_SESSION_SECURITY_POLICY_SPEC.json",
       "critical": true,
       "required": true

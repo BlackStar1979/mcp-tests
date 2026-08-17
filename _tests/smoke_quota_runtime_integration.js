@@ -12,7 +12,7 @@ const { createRestartController } = require("../src/runtime/restart_controller")
   const response = await handleToolsCall({
     id: 7,
     params: { name: "search", arguments: { query: "x" } },
-    context: { requestId: "quota-smoke" },
+    context: { requestId: "quota-smoke", authResult: { clientId: "client-a", scopes: ["mcp:tools"] } },
     outputMode: "structured",
     documentRuntimeContext: {},
     auditLog: (event, data) => audits.push({ event, data }),

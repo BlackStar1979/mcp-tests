@@ -78,6 +78,24 @@ function evaluateDecisionRuntimePolicy({
     return denyDecision({ code: "auth_required", httpStatus: 401, message: `Tool ${toolName} requires authentication` });
   }
 
+  if (authMode === "oauth21") {
+    const requiredScope = profile === "internal"
+      ? "mcp:tools"
+      : profile === "operator"
+        ? "mcp:operator"
+        : null;
+    const grantedScopes = Array.isArray(context.auth_context?.scopes)
+      ? context.auth_context.scopes.map(String)
+      : [];
+    if (requiredScope && !grantedScopes.includes(requiredScope)) {
+      return denyDecision({
+        code: "insufficient_scope",
+        message: `Tool ${toolName} requires scope ${requiredScope}`,
+        responseData: { required_scopes: [requiredScope] },
+      });
+    }
+  }
+
   if (profile === "public") {
     if (!PUBLIC_TOOL_NAMES.includes(toolName)) {
       return denyDecision({ code: "not_public_tool", message: `Tool ${toolName} is not public` });

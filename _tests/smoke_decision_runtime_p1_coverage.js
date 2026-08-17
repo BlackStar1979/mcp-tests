@@ -43,16 +43,16 @@ function findEvent(entries, event) {
   return entries.find((entry) => entry.event === event);
 }
 
-async function callTool(params, requestId) {
+async function callTool(params, requestId, authResult = { subject: "operator", clientId: "scope-test-client", scopes: ["mcp:tools"] }) {
   const sink = makeAuditSink();
   const response = await handleToolsCall({
     id: requestId,
     params,
-    context: { requestId },
+    context: { requestId, authResult },
     outputMode: "structured",
     documentRuntimeContext,
     auditLog: sink.auditLog,
-    authMode: "bearer",
+    authMode: "oauth21",
     profile: "internal",
     getOptionalTool,
   });
@@ -78,6 +78,24 @@ async function callTool(params, requestId) {
   assert.ok(findEvent(allow.audits, "tool_call_start"), "allow path must emit tool_call_start after decision");
   assert.ok(findEvent(allow.audits, "tool_call_end"), "allow path must emit tool_call_end");
   assertNoRawSecret(allow, "allow path response and audit");
+
+  const insufficientScope = await callTool(
+    {
+      name: "search",
+      arguments: { query: "decision" },
+    },
+    "req-step39-insufficient-scope",
+    { subject: "operator", clientId: "scope-test-client", scopes: [] }
+  );
+
+  assert.ok(insufficientScope.response.error, "missing required scope must deny the tool call");
+  assert.equal(insufficientScope.response.error.code, -32602);
+  assert.equal(insufficientScope.response.error.data.decision_code, "insufficient_scope");
+  assert.deepEqual(insufficientScope.response.error.data.required_scopes, ["mcp:tools"]);
+  const scopeDecision = findEvent(insufficientScope.audits, "tool_call_decision");
+  assert.ok(scopeDecision, "insufficient scope path must emit decision audit");
+  assert.equal(scopeDecision.payload.decision_receipt.decision_code, "insufficient_scope");
+  assert.equal(findEvent(insufficientScope.audits, "tool_call_start"), undefined, "insufficient scope must deny before tool execution");
 
   const unknown = await callTool(
     {

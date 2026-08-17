@@ -44,26 +44,31 @@ Current derivation:
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
 | P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR supplies conformance evidence without a second runtime architecture. | Preserve fixture-only multi-round-trip behavior. |
-| P5 | `POL-1A` critical policy reconciliation — active | canonical policy matrix, current runtime/tests | The matrix now has `10/24` required policies implemented but still carries six `critical_specified` policies; READINESS cannot claim convergence while required policy truth is unresolved. | Reconcile consent, scope minimization, transport security, session security, prompt/content, and output DLP against current implementation; promote only proven coverage and open bounded fixes for real gaps. |
+| P5 | `POL-1A` critical policy gap closure — active | canonical policy matrix, current runtime/tests | Critical reconciliation now proves `13/24` required policies implemented; transport, session, and scope-minimization are evidence-backed, while consent, prompt/content, and output DLP remain genuine critical runtime gaps. | Execute `POL-1A-DLP` first because it is a centralized server-side boundary with no external UI dependency; then close consent and prompt/content as separately testable packages before `POL-1B`. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `POL-1A` — critical policy reconciliation
-   Reconcile all six `critical_specified` policies against current runtime code and guards; promote only proven coverage and create bounded fixes for genuine gaps.
+0. `POL-1A-DLP` — centralized model-output validation/DLP boundary
+   Enforce one fail-closed output boundary before optional tool payloads become MCP `content` or `structuredContent`; preserve bounded resource links and existing tool-specific schemas.
 
-1. `POL-1B` — partial policy reconciliation
-   Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after `POL-1A` establishes the evidence pattern.
+1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+   Replace the current `guarded_process_execution` assumption with an auditable consent artifact/receipt for high-risk runtime operations without inventing client-side approval evidence.
 
-2. `POL-1C` — specified-only non-critical reconciliation
+2. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
+   Classify content-bearing tool results as untrusted data by default and require an explicit promotion boundary before any returned text can be treated as model instruction.
+
+3. `POL-1B` — partial policy reconciliation
+   Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after the remaining critical gaps are closed.
+
+4. `POL-1C` — specified-only non-critical reconciliation
    Reconcile `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy` without assuming that a stale status implies missing implementation.
 
-3. `COMP-1A` — event-gated protocol evidence
+5. `COMP-1A` — event-gated protocol evidence
    Refresh only for real Codex client-entry traffic newer than `0.148.0-alpha.9`; preserve both compatibility paths until that evidence changes the verdict.
 
-4. `COMP-1B`
+6. `COMP-1B`
    Run only if fresh `COMP-1A` evidence materially changes initialize-retirement.
-
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed protocol-debt cleanup: `DEBT-1-RETIREMENT` removes the inactive classic Sampling/session helper stack, aligns Sampling/Auth/Event specs, and preserves the authenticated smoke count by converting historical roundtrip fixtures into retirement guards.
 Completed observability and CLI-integrity acceptance: `OBS-1-LIVE-TRAIL` proves that bounded current-window and retained-window evidence answers live client-entry questions without broader logging. All named-option local JavaScript CLI entrypoints now converge on shared fail-closed parsing, with explicit repeatable options where required; malformed arguments cannot silently widen scope, select implicit defaults, or reach high-impact mutation behavior.

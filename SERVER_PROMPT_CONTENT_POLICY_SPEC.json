@@ -18,8 +18,14 @@
     "SERVER_EVENT_CATALOG_SPEC.json"
   ],
   "runtime_gaps": [
-    "no unified prompt/content scanner yet",
-    "no capability attestation signing yet"
+    "ingested document/tool content has no centralized trust label or hidden-instruction detection before it is returned to the model",
+    "src/runtime/search_fetch_docs.js returns bounded document text but does not classify embedded instructions as untrusted content",
+    "there is no runtime promotion boundary that distinguishes ordinary tool data from content explicitly authorized to act as model instruction"
+  ],
+  "reconciliation_evidence": [
+    "tool descriptor mutation detection is already covered by the implemented capability-attestation fingerprint and tool-surface drift controls",
+    "prompts/list is an empty compatibility surface, so prompt-template source trust is currently inactive rather than an implementation blocker",
+    "the remaining current-target gap is untrusted content handling on content-bearing tool results, not descriptor fingerprinting or prompt-template execution"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

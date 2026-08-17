@@ -145,7 +145,7 @@ function dispatchArgs(context, prelude) {
     requestId: "req-task",
     protocolVersion: "2026-07-28",
     requestMetadata: { protocolVersion: "2026-07-28", clientCapabilities: taskCaps },
-    authResult: { clientId: "client-a" },
+    authResult: { clientId: "client-a", scopes: ["mcp:tools"] },
     processJobManager: manager,
   };
 

@@ -33,8 +33,15 @@
     "SERVER_SAMPLING_POLICY_SPEC.json"
   ],
   "runtime_gaps": [
-    "no generalized consent engine yet",
-    "sampling consent only partially specified"
+    "tools/call has no generalized consent receipt or approval proof bound to the runtime decision",
+    "run_process, process_start, and process_cancel are destructive tool policies but decision_runtime_policy currently admits them as guarded_process_execution without a server-verifiable consent artifact",
+    "scope elevation, new-origin egress, and secret/token access are not normalized into consent deltas carried by the decision receipt"
+  ],
+  "reconciliation_evidence": [
+    "OAuth21 operator authorization visibly binds client_id, redirect_uri, and requested scope before token issuance",
+    "CBM deletion has a bounded two-phase confirmation handle, proving explicit confirmation exists for one destructive class",
+    "classic Sampling and active elicitation are absent from the current runtime, so their consent requirements are conditional rather than present blockers",
+    "the remaining gap is cross-tool consent enforcement, not absence of all approval mechanisms"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

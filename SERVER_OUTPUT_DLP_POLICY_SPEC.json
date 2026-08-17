@@ -55,8 +55,15 @@
     "SERVER_RESOURCE_POLICY_SPEC.json"
   ],
   "runtime_gaps": [
-    "DLP is not yet a centralized runtime filter",
-    "current coverage is by scattered redaction/schema tests"
+    "optional tool outputs are converted to MCP results without a centralized outputSchema validation gate",
+    "toolResult serializes the returned payload but does not apply a cross-tool secret/resource-link DLP filter before model-visible content is created",
+    "existing redaction and schema assertions are tool-specific or audit-specific, so they do not prove the full output boundary"
+  ],
+  "reconciliation_evidence": [
+    "src/runtime/optional_tool_call_handler.js executes a tool and passes its payload directly to toolResult after cancellation handling",
+    "src/runtime/tool_result.js mirrors the payload into content JSON and structuredContent without centralized schema or secret inspection",
+    "audit redaction, process-artifact owner binding, CBM bounded-output contracts, and per-tool output-schema guards provide substantial partial coverage",
+    "the remaining gap is a single enforced model-output boundary, not absence of all DLP controls"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

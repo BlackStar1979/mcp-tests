@@ -178,9 +178,9 @@ assert.ok(cbmSkillDirectory.includes("Status: active using-codebase-memory skill
 assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
-assert.equal(workflowState.workflow_progress_markers.current_working_course, "policy-coverage-current-truth-reconciliation");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "pol-1a-critical-policy-reconciliation");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1b-partial-policy-reconciliation");
+assert.equal(workflowState.workflow_progress_markers.current_working_course, "policy-coverage-critical-gap-closure");
+assert.equal(workflowState.workflow_progress_markers.next_primary, "pol-1a-output-dlp-boundary");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1a-consent-boundary");
 assert.ok(readiness.includes("| POL-1 | Policy coverage convergence | 2/4 |"));
 assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
@@ -203,9 +203,9 @@ assert.ok(workflowIndex.includes("`DOC-2` is accepted at `4/4`"));
 assert.ok(workflowIndex.includes("all `68/68` directories containing tracked files"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
-assert.ok(workflowIndex.includes("`current_working_course = policy-coverage-current-truth-reconciliation`"));
-assert.ok(workflowIndex.includes("`next_primary = pol-1a-critical-policy-reconciliation`"));
-assert.ok(workflowIndex.includes("`next_secondary = pol-1b-partial-policy-reconciliation`"));
+assert.ok(workflowIndex.includes("`current_working_course = policy-coverage-critical-gap-closure`"));
+assert.ok(workflowIndex.includes("`next_primary = pol-1a-output-dlp-boundary`"));
+assert.ok(workflowIndex.includes("`next_secondary = pol-1a-consent-boundary`"));
 assert.ok(readiness.includes("| OPS-1 | Operational E2E and soak coverage | 4/4 |"));
 assert.ok(roadmap.includes("`OPS-1B` live SFTP boundary — accepted"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));

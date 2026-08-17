@@ -64,9 +64,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "policy-coverage-current-truth-reconciliation",
-    "next_primary": "pol-1a-critical-policy-reconciliation",
-    "next_secondary": "pol-1b-partial-policy-reconciliation",    "stage_labels": [
+    "current_working_course": "policy-coverage-critical-gap-closure",
+    "next_primary": "pol-1a-output-dlp-boundary",
+    "next_secondary": "pol-1a-consent-boundary",    "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
       "Stage 8 / Step 53d - live restart and connector surface reconciliation"
@@ -188,8 +188,8 @@
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
-    "implemented_required": "10/24",
-    "remaining_non_implemented": 14,
+    "implemented_required": "13/24",
+    "remaining_non_implemented": 11,
     "critical_policy_count": 6
   },
   "restart_supervisor": {
@@ -284,7 +284,7 @@
       "server_start_id": "2026-08-17T17:43:05.322Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "p0_p3_live": true,      "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,

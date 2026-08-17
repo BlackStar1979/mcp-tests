@@ -35,8 +35,22 @@ assert.ok(factorySource.includes("const { URL } = require(\"node:url\")"));
 assert.ok(factorySource.includes("function createServer({"));
 assert.ok(factorySource.includes("dispatchCreateServerRoute({"));
 const { createServer } = require("../src/runtime/server_factory");
-let invoked = false;
-const httpServer = createServer({ host: "127.0.0.1", port: 3009, dispatchCreateServerRoute(args) { invoked = true; assert.equal(typeof args.url.href, "string"); assert.equal(args.serverName, "test-server"); args.res.end("ok"); }, handleMcp() {}, handleHealthRoute() {}, handleDocsRoute() {}, handleNotFoundRoute() {}, jsonResponse() {}, textResponse() {}, fetchDoc() {}, documentRuntimeContext: {}, serverName: "test-server", serverVersion: "0.0.0", connectorShapeVersion: "shape", outputMode: "structured", maxFetchTextChars: 2500, auditVersion: "audit", authPolicy: { mode: "none" }, runtimeProfile: "public", stageStatus: {}, securityBoundary: {}, publicBaseUrl: "http://example.invalid", toolsList: () => [] });
+let dispatchCount = 0;
+const httpServer = createServer({ host: "127.0.0.1", port: 3009, dispatchCreateServerRoute(args) { dispatchCount += 1; assert.equal(typeof args.url.href, "string"); assert.equal(args.serverName, "test-server"); args.res.end("ok"); }, handleMcp() {}, handleHealthRoute() {}, handleDocsRoute() {}, handleNotFoundRoute() {}, jsonResponse() {}, textResponse() {}, fetchDoc() {}, documentRuntimeContext: {}, serverName: "test-server", serverVersion: "0.0.0", connectorShapeVersion: "shape", outputMode: "structured", maxFetchTextChars: 2500, auditVersion: "audit", authPolicy: { mode: "none" }, runtimeProfile: "public", stageStatus: {}, securityBoundary: {}, publicBaseUrl: "http://example.invalid", toolsList: () => [] });
 assert.equal(typeof httpServer.listen, "function");
 httpServer.emit("request", { url: "/healthz", headers: { host: "example.invalid" } }, { setHeader() {}, end() {} });
-setImmediate(() => { assert.equal(invoked, true); console.log("smoke_server_factory_extraction ok"); });
+const blockedOriginRes = {
+  headersSent: false,
+  statusCode: undefined,
+  body: "",
+  setHeader() {},
+  writeHead(code) { this.statusCode = code; this.headersSent = true; },
+  end(chunk = "") { this.body += String(chunk); },
+  destroy(error) { throw error; },
+};
+httpServer.emit("request", { url: "/mcp", headers: { host: "example.invalid", origin: "https://evil.example" } }, blockedOriginRes);
+setImmediate(() => {
+  assert.equal(dispatchCount, 1, "invalid Origin must be rejected before route dispatch");
+  assert.equal(blockedOriginRes.statusCode, 403, "invalid Origin must return HTTP 403");
+  console.log("smoke_server_factory_extraction ok");
+});
