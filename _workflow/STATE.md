@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-08-14
+Updated: 2026-08-17
 
 ## Purpose
 
@@ -48,6 +48,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Process Artifacts P2 is live and accepted: terminal stdout/stderr is materialized immutably in `tests_process_jobs_3008.sqlite` with opaque IDs, SHA-256, independent retention, and W3C ancestry. Authenticated live `resources/read` returned the expected Task stdout through an explicit `mcp-artifact://process/<opaque-id>` URI. Repository validation remains `7 + 301`.
 - CIMD P3 is live and accepted: the runtime SSRF boundary rejected `client_id = https://127.0.0.1/oauth/client.json` with controlled `400 invalid_client`; audit recorded `oauth21_cimd_rejected` / `cimd_special_use_ip`. Repository validation remains `7 + 304`.
 - MRTR P4 remains fixture-only protocol conformance evidence and has no production runtime surface to load. The official v2 client regression passed clean-history `7 + 305`; the controlled runtime restart neither adds nor requires an MRTR tool or store.
+- `DEBT-1` cleanup is complete in repository truth: `McpSession`, `sampling_context`, SSE outbound queuing, pending request correlation, and classic Sampling policy execution are removed. The active HTTP dispatchers reject unsolicited JSON-RPC responses with `server_initiated_requests_not_active`; a controlled runtime restart is required before this repo truth becomes live `3008` truth.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track

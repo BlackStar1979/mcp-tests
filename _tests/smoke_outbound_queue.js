@@ -1,25 +1,28 @@
 "use strict";
-const assert=require("node:assert/strict");
-const {McpSession}=require("../src/runtime/session");
-const {encodeSseEvent}=require("../src/runtime/sse_response");
-function res(){return{chunks:[],write(x){this.chunks.push(String(x));},body(){return this.chunks.join("");}}}
-const s=new McpSession({id:"mcp_test",protocolVersion:"2025-06-18"});
-const e1=encodeSseEvent({event:"message",data:{jsonrpc:"2.0",method:"notifications/a"}});
-const e2=encodeSseEvent({event:"message",data:{jsonrpc:"2.0",method:"notifications/b"}});
-s.enqueueOutbound(e1);
-s.enqueueOutbound(e2);
-assert.equal(s.outboundQueue.length,2);
-const r=res();
-s.attachStream(r);
-assert.equal(s.sseRes,r);
-assert.equal(s.outboundQueue.length,0);
-assert.ok(r.body().includes("notifications/a"));
-assert.ok(r.body().includes("notifications/b"));
-s.enqueueOutbound(encodeSseEvent({event:"message",data:{jsonrpc:"2.0",method:"notifications/c"}}));
-assert.equal(s.outboundQueue.length,0);
-assert.ok(r.body().includes("notifications/c"));
-s.detachStream(r);
-assert.equal(s.sseRes,null);
-s.enqueueOutbound(encodeSseEvent({event:"message",data:{jsonrpc:"2.0",method:"notifications/d"}}));
-assert.equal(s.outboundQueue.length,1);
+
+const assert = require("node:assert/strict");
+const fs = require("node:fs");
+const path = require("node:path");
+
+const ROOT = path.resolve(__dirname, "..");
+const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
+
+assert.equal(fs.existsSync(path.join(ROOT, "src/runtime/session.js")), false);
+assert.equal(fs.existsSync(path.join(ROOT, "src/runtime/sampling_context.js")), false);
+
+const manager = require("../src/runtime/outbound_request_manager");
+assert.deepEqual(Object.keys(manager).sort(), ["isJsonRpcResponse", "rejectClientResponseEnvelope"]);
+
+const managerSource = read("src/runtime/outbound_request_manager.js");
+for (const retiredToken of ["encodeSseEvent", "enqueueOutbound", "nextOutboundId", ".pending", "setTimeout("]) {
+  assert.equal(managerSource.includes(retiredToken), false, retiredToken);
+}
+
+for (const rel of ["src/runtime/single_payload_dispatcher.js", "src/runtime/batch_payload_dispatcher.js"]) {
+  const source = read(rel);
+  assert.ok(source.includes("rejectClientResponseEnvelope"), rel);
+  assert.equal(source.includes("resolvePendingResponse"), false, rel);
+  assert.equal(source.includes("pending_response_resolved"), false, rel);
+}
+
 console.log("smoke_outbound_queue ok");

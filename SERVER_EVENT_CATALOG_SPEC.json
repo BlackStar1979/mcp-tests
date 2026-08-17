@@ -4,11 +4,7 @@
   "scope": "Runtime event names emitted by active runtime/tool code. Derived from code and validated by matrix_check.",
   "events": [
     {
-      "name": "pending_response_rejected",
-      "status": "active_code_event"
-    },
-    {
-      "name": "pending_response_resolved",
+      "name": "client_response_envelope_rejected",
       "status": "active_code_event"
     },
     {
@@ -41,14 +37,6 @@
     },
     {
       "name": "rpc_response_sent",
-      "status": "active_code_event"
-    },
-    {
-      "name": "sampling_request_denied",
-      "status": "active_code_event"
-    },
-    {
-      "name": "sampling_request_sent",
       "status": "active_code_event"
     },
     {

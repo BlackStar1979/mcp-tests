@@ -76,11 +76,9 @@
   "source_review": [
     "src/runtime/mcp_entry_dispatcher.js",
     "src/runtime/session_tracker.js",
-    "src/runtime/session.js",
     "src/runtime/outbound_request_manager.js",
     "src/runtime/sessionless_prototype_route_handler.js",
     "src/list_changed_notification_bus.js",
-    "src/runtime/sampling_context.js",
     "src/runtime/initialize_message_handler.js",
     "src/runtime/initialize_response.js",
     "src/runtime/rpc_message_dispatcher.js",
@@ -88,6 +86,8 @@
     "_tests/smoke_get_sse_stream.js",
     "_tests/smoke_pending_request_correlation.js",
     "_tests/smoke_sampling_roundtrip.js",
+    "SERVER_SAMPLING_POLICY_SPEC.json",
+    "_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md",
     "SERVER_RUNTIME_TOPOLOGY_SPEC.json"
   ],
   "deprecation_ledger": [
@@ -202,10 +202,10 @@
         "SEP-2567",
         "SEP-2575"
       ],
-      "target_lifecycle": "legacy_compat",
-      "repo_current_model": "stable /mcp no longer creates or requires transport sessions; SessionStore is removed from the active repo, while remaining McpSession/outbound helpers are currently classified as local compatibility helpers rather than active request wiring",
+      "target_lifecycle": "removed",
+      "repo_current_model": "stable /mcp creates no transport sessions; SessionStore and the residual McpSession/outbound queue helpers are removed from the active repo",
       "implementation_status": "done",
-      "migration_path": "parallel sessionless target with request-scoped or explicit state handles",
+      "migration_path": "request-scoped processing plus explicit state handles as an ordinary tool design pattern",
       "checklist": [
         {
           "item": "map SessionStore responsibilities",
@@ -248,6 +248,11 @@
           "item": "record bounded SessionStore closeout",
           "status": "done",
           "evidence": "_workflow/operator_decisions/session_store_closeout.md"
+        },
+        {
+          "item": "retire residual McpSession and outbound pending-request helpers",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md"
         }
       ]
     },
@@ -388,7 +393,7 @@
         {
           "item": "preserve timeout fallback while adding active cancellation",
           "status": "done",
-          "evidence": "_tests/smoke_pending_request_correlation.js and _workflow/operator_decisions/request_cancellation_closeout.md"
+          "evidence": "_tests/smoke_request_cancellation_context.js, _tests/smoke_client_disconnect_write_guard.js, and _workflow/operator_decisions/request_cancellation_closeout.md"
         }
       ]
     },
@@ -486,7 +491,7 @@
         "SEP-2596"
       ],
       "target_lifecycle": "deprecated",
-      "repo_current_model": "sampling helper module still exists for bounded local compatibility/test coverage, but active /mcp runtime no longer injects requestSampling into request context; no active surviving-route roots surface or dedicated protocol-logging feature track was confirmed in current runtime truth",
+      "repo_current_model": "classic Sampling runtime helpers are removed; active /mcp initiates no Sampling requests and rejects unsolicited response envelopes fail-closed; no active surviving-route roots surface or dedicated protocol-logging feature track is present",
       "implementation_status": "done",
       "migration_path": "do not expand deprecated core features as strategic dependencies",
       "checklist": [
@@ -494,9 +499,9 @@
           "item": "inventory sampling usage",
           "status": "done",
           "evidence": [
-            "src/runtime/sampling_context.js",
             "_workflow/operator_decisions/keep_mcp_sampling_runtime_detachment_package.md",
-            "_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md"
+            "_workflow/operator_decisions/roots_sampling_logging_deprecation_inventory.md",
+            "_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md"
           ]
         },
         {
@@ -512,6 +517,11 @@
           "item": "record bounded roots/sampling/logging closeout",
           "status": "done",
           "evidence": "_workflow/operator_decisions/roots_sampling_logging_deprecation_closeout.md"
+        },
+        {
+          "item": "retire deprecated classic Sampling helper implementation",
+          "status": "done",
+          "evidence": "_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md"
         }
       ]
     },
@@ -653,18 +663,18 @@
     "Request cancellation is complete for the stable-compatible runtime: per-request abort propagation, no-write-after-disconnect guards, cooperative optional-tool cancellation, and timeout fallback preservation are all in place.",
     "MCP-Session-Id header retirement is complete for the active stable /mcp contract: initialize no longer emits the header, POST ignores supplied session headers, and server/discover reports protocol_sessions=false.",
     "Stable /mcp transport-session retirement is complete: initialize no longer creates transport state, session headers are ignored on stable POST, and server/discover now reports protocol_sessions=false.",
-    "SessionStore migration debt is complete for the surviving /mcp contract: SessionStore is removed from the active repo and remaining session/outbound helpers are bounded local compatibility fixtures rather than active runtime wiring.",
-    "Deprecated roots/sampling/logging cleanup is complete for current workflow scope: active /mcp no longer injects sampling, no active roots surface is confirmed, and remaining sampling/audit code is bounded compatibility or generic server logging.",
+    "Session-bound outbound/sampling helper debt is retired: SessionStore, McpSession, the SSE outbound queue, pending request registry, and classic Sampling helpers are absent from active runtime source.",
+    "Deprecated roots/sampling/logging cleanup is complete for current workflow scope: active /mcp initiates no Sampling requests, unsolicited response envelopes fail closed, no active roots surface is confirmed, and remaining audit code is generic server logging.",
     "Restart resilience is complete for the current topology boundary: OAuth21 3008 restart authority is supervisor-managed, machine-readable, and no longer an open blocker in workflow truth.",
     "Initialize retirement remains blocked only by stable client/connector compatibility evidence: repo-side no-handshake flow is already proven on surviving /mcp via server/discover plus direct tools/list/tools/call behavior, but a tested Codex desktop Streamable HTTP connector still calls initialize after successful OAuth.",
     "Bounded initialize/server-discover dual recognition on surviving /mcp is authorized only as a temporary client-compatibility shim on one route; it is not authorization for permanent dual-standard destination architecture.",
     "Runtime policy scope matrix is complete for the current bounded gate: the policy/resource enforcement path is repo-applied, wired in tools/call, and live-loaded on OAuth21 3008.",
     "Feature lifecycle governance is complete at the inventory layer: lifecycle/status/migration/checklist structure and smoke coverage are already in place for tracked SEP items.",
     "Residual GET-SSE/SessionStore/list-changed repo cleanup is complete: unreachable helper files were removed without changing the surviving /mcp contract.",
-    "Inactive sampling-context runtime injection is detached from active /mcp: remaining sampling/session outbound code is now local helper debt rather than active request wiring.",
-    "Local helper classification is complete: session.js, sampling_context.js, and helper-only sendSessionRequest usage are retained as bounded compatibility fixtures until a dedicated redesign or retirement package exists.",
-    "Session-bound outbound/sampling scoping is complete: helper-only session.js, sampling_context.js, and sendSessionRequest usage are bounded compatibility fixtures, while only fail-closed response-envelope handling remains active contract-relevant behavior.",
-    "Deprecated roots/sampling/logging inventory is complete enough to remove unknown status: no active surviving-route roots surface or dedicated protocol-logging track was confirmed, and sampling remains helper-only compatibility coverage.",
+    "Inactive sampling-context runtime injection and its helper implementation are retired from active /mcp; only explicit fail-closed response-envelope classification remains.",
+    "Earlier local-helper retention records are historical: session.js, sampling_context.js, sendSessionRequest, and resolvePendingResponse are removed by the dedicated retirement closeout.",
+    "Session-bound outbound/sampling scoping is complete and executed: only fail-closed response-envelope handling remains active contract-relevant behavior.",
+    "Deprecated roots/sampling/logging inventory is complete enough to remove unknown status: no active surviving-route roots surface, Sampling runtime, or dedicated protocol-logging track remains.",
     "Prototype-route retirement scoping is complete and now remains historical evidence only because hidden /mcp/sessionless is already retired from active repo/runtime truth.",
     "Initialize-retirement boundary is complete: legacy initialize on surviving /mcp is compatibility-only and must not grow as target-facing protocol surface.",
     "Replacement-coverage scoping is complete and now remains historical evidence; the remaining bounded cleanup is residual unreachable session/SSE debt on surviving /mcp rather than hidden-route retirement authorization.",
@@ -716,6 +726,7 @@
     "sampling_runtime_detachment_package_record": "_workflow/operator_decisions/keep_mcp_sampling_runtime_detachment_package.md",
     "local_session_helper_classification_record": "_workflow/operator_decisions/keep_mcp_local_session_helper_classification.md",
     "session_bound_outbound_sampling_scope_record": "_workflow/operator_decisions/keep_mcp_session_bound_outbound_sampling_scope.md",
+    "deprecated_sampling_helper_retirement_closeout_record": "_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md",
     "status": "active_workflow_target",
     "single_route_only": true,
     "selected_surviving_route": "/mcp",
@@ -741,6 +752,7 @@
     "dual_route_coexistence_is_target": false,
     "final_route_name_selected_now": true,
     "current_repo_may_still_contain_transitional_debt": true,
+    "deprecated_sampling_runtime_active": false,
     "hidden_sessionless_route_live_verification_record": "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md"
   },
   "adjacent_runtime_contract_triage": {

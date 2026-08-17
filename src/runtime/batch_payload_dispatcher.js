@@ -4,7 +4,7 @@ const { emptyResponse, jsonResponse } = require("./http_responses");
 const { rpcError } = require("./rpc_responses");
 const { rpcMethodSummary } = require("./rpc_audit_summary");
 const { auditJsonRpcResponseSent, auditEmptyRpcResponseSent } = require("./rpc_response_audit");
-const { isJsonRpcResponse, resolvePendingResponse } = require("./outbound_request_manager");
+const { isJsonRpcResponse, rejectClientResponseEnvelope } = require("./outbound_request_manager");
 const { byteLength } = require("./runtime_helpers");
 const { skipResponseWriteIfNeeded } = require("./response_write_guard");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
@@ -101,22 +101,13 @@ async function handleBatchPayloadIfNeeded({
       }
       return true;
     }
-    for (const item of responseItems) {
-      const resolved = resolvePendingResponse(session, item);
-      if (!resolved.ok) {
-        auditLog("pending_response_rejected", { request_id: requestId, reason: resolved.reason, rpc_id: resolved.id });
-        if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "batch_pending_rejected" })) {
-          const response = rpcError(item.id, -32000, "Pending response rejected", { reason: resolved.reason });
-          auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, batch: true, phase: "batch_pending_rejected" });
-          jsonResponse(res, 400, response);
-        }
-        return true;
-      }
-      auditLog("pending_response_resolved", { request_id: requestId, rpc_id: resolved.id, method: resolved.method, has_error: resolved.hasError });
-    }
-    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "batch_pending_resolved" })) {
-      auditEmptyRpcResponseSent(auditLog, { requestId, statusCode: 202, phase: "batch_pending_resolved", batch: true });
-      emptyResponse(res, 202);
+    const item = responseItems[0];
+    const rejected = rejectClientResponseEnvelope(item);
+    auditLog("client_response_envelope_rejected", { request_id: requestId, reason: rejected.reason, rpc_id: rejected.id });
+    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "batch_client_response_rejected" })) {
+      const response = rpcError(item.id, -32000, "Client response envelope rejected", { reason: rejected.reason });
+      auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, batch: true, phase: "batch_client_response_rejected" });
+      jsonResponse(res, 400, response);
     }
     return true;
   }

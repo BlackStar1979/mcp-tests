@@ -152,8 +152,9 @@ const CONFIG = {
   },
   "_workflow/operator_decisions": {
     title: "workflow operator decisions directory map",
-    updated: "2026-08-16",
+    updated: "2026-08-17",
     entries: {
+      "deprecated_sampling_helper_retirement_closeout.md": "Acceptance evidence for retiring the inactive classic Sampling/session helper path while preserving fail-closed client-response rejection.",
       "initialize_client_compatibility_evidence.md": "Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.",
       "initialize_retirement_decision_prep.md": "Bounded decision-preparation record for any future legacy `initialize` retirement package.",
       "connector_*.md": "Connector refresh, migration, callable-surface, route-coexistence, and reconnect evidence records.",

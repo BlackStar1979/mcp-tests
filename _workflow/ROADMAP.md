@@ -33,6 +33,7 @@ Current derivation:
 - `MRTR` is repo-complete as fixture-only conformance evidence: clean-history `7 + 305`; it deliberately has no production runtime tool/store, so live loading is non-applicable.
 - The earlier persisted autonomous quality task produced completed `OPS-1A`; task-memory state is not queue authority. Current queue authority is `_workflow/WORKFLOW_CANON.md` plus `_workflow/ACTIVE_WORKFLOW_INDEX.md`.
 - `OPS-1` remains `3/4`: the classified matrix retains `56/56` green invocations and the August 16 operator-driven OAuth reconnect/recovery is now accepted. Live SFTP is the only unresolved external boundary.
+- `DEBT-1` is 4/4 in repo truth: the unreachable `McpSession`, classic Sampling context, SSE outbound queue, and pending-response resolver are removed; active `/mcp` keeps only a deterministic fail-closed response-envelope boundary.
 ## Priority matrix
 
 | Priority | Item | Depends on | Why it matters now | Current action |
@@ -58,6 +59,7 @@ Current derivation:
    Run only if fresh `COMP-1A` evidence materially changes the initialize-retirement decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
+Completed protocol-debt cleanup: `DEBT-1-RETIREMENT` removes the inactive classic Sampling/session helper stack, aligns Sampling/Auth/Event specs, and preserves the authenticated smoke count by converting historical roundtrip fixtures into retirement guards.
 Completed official client interoperability: `MCP-OFFICIAL-SDK-V2-INTEROP` pins `@modelcontextprotocol/client@2.0.0` for tests and guards default legacy, automatic modern, pinned modern, full OAuth21 DCR/PKCE/callback/refresh behavior, process-restart recovery from SQLite, authorized list/call, and server-side evidence without touching production runtime.
 Completed MRTR conformance: `MRTR` keeps multi-round-trip `2026-07-28` behavior fixture-scoped and passed clean-history `7 + 305` in run `31963602072` without production `src/` changes or a second execution/session architecture; runtime loading is deliberately non-applicable.
 Completed protocol live acceptance: controlled restart `manual-1786907075795` loaded final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id 2026-08-16T19:04:37.288Z`, preserving `98` tools and fingerprint `ec7d3af5b4ea17f5`; live probes accepted Tasks, W3C correlation, process artifacts/resources, CIMD SSRF rejection, and OAuth reconnect/recovery.

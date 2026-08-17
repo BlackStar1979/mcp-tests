@@ -12,6 +12,7 @@ const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const index = read("_workflow", "ACTIVE_WORKFLOW_INDEX.md");
 const canon = read("_workflow", "WORKFLOW_CANON.md");
 const state = JSON.parse(read("_workflow", "state.json"));
+const eventCatalog = JSON.parse(read("SERVER_EVENT_CATALOG_SPEC.json"));
 const smokeScripts = JSON.parse(read("_tests", "run_all_smoke_scripts.json"));
 
 assert.ok(index.includes("Status: active navigation index"));
@@ -103,7 +104,8 @@ assert.ok(index.includes("`next_primary = comp-1a-on-fresh-external-client-traff
 assert.ok(index.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));
 assert.ok(canon.includes("`current_working_course = event-gated-compatibility-and-operational-quality`"));
 assert.ok(canon.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
-assert.ok(canon.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));assert.equal(state.audit_events_spec.event_count, 103);
+assert.ok(canon.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));
+assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
 assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);

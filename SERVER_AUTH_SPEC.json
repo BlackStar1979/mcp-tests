@@ -278,19 +278,13 @@
     "cache_control_guard": "_tests/jwks_ttl_guard.js"
   },
   "sampling_user_approval_policy": {
-    "status": "implemented_h7",
+    "status": "deprecated_not_active",
     "sampling_policy_spec_ref": "SERVER_SAMPLING_POLICY_SPEC.json",
-    "approval_required_by_default": true,
-    "low_risk_auto_approve_allowed": true,
-    "approval_receipt_required_for_non_low_risk": true,
-    "per_session_sampling_budget_required": true,
-    "default_per_session_request_limit": 3,
-    "deny_when_approval_required_but_unavailable": true,
-    "tool_hidden_instructions_must_not_bypass_approval": true,
-    "audit_events": [
-      "sampling_request_sent",
-      "sampling_request_denied"
-    ],
+    "deprecated_by_mcp_spec_version": "2026-07-28",
+    "runtime_implementation_present": false,
+    "server_initiated_requests_active": false,
+    "provider_integration_present": false,
+    "unexpected_client_response_policy": "fail_closed_server_initiated_requests_not_active",
     "guard": "_tests/smoke_sampling_user_approval_policy.js"
   },
   "oauth21_local_authorization_server": {

@@ -1,58 +1,46 @@
 {
-  "schema_version": "mcp-tests-sampling-policy-v1",
-  "status": "implemented_h7_policy",
-  "sampling_role": "server_may_request_client_sampling_only_when_client_declares_sampling_capability",
-  "approval_policy": {
-    "approval_required_by_default": true,
-    "low_risk_auto_approve_allowed": true,
-    "approval_receipt_required_for_non_low_risk": true,
-    "approval_receipt_param": "approvalReceipt",
-    "approval_receipt_status_required": "approved",
-    "deny_when_approval_required_but_unavailable": true
+  "schema_version": "mcp-tests-sampling-policy-v2",
+  "status": "deprecated_not_active",
+  "sampling_role": "unsupported_deprecated_protocol_feature",
+  "deprecation": {
+    "protocol_version": "2026-07-28",
+    "source": "https://modelcontextprotocol.io/specification/2026-07-28/client/sampling",
+    "classic_sampling_deprecated": true,
+    "new_implementations_should_not_adopt": true,
+    "recommended_replacement": "direct_llm_provider_api",
+    "input_required_result_flow_implemented": false
   },
-  "risk_classification": {
-    "low_risk": {
-      "max_messages": 1,
-      "max_tokens": 128,
-      "allowed_content_types": [
-        "text"
-      ],
-      "disallow_system_role": true
-    },
-    "requires_approval_when": [
-      "system role is present",
-      "message count exceeds low risk maximum",
-      "maxTokens exceeds low risk maximum",
-      "non-text content is present",
-      "tool-provided hidden instructions are present"
-    ]
+  "runtime_policy": {
+    "active_surviving_route_binding": false,
+    "server_initiated_sampling_requests": false,
+    "session_sse_sampling_roundtrip": false,
+    "pending_response_registry": false,
+    "unexpected_client_response_envelopes": "fail_closed_server_initiated_requests_not_active"
   },
-  "budget_policy": {
-    "per_session_sampling_budget_required": true,
-    "default_per_session_request_limit": 3,
-    "deny_when_budget_exhausted": true
+  "security_boundary": {
+    "prompt_or_tool_data_forwarded_to_sampling_provider": false,
+    "approval_receipts_parsed_by_runtime": false,
+    "sampling_budget_state_persisted": false,
+    "provider_credentials_accepted": false
   },
-  "prompt_injection_policy": {
-    "tool_hidden_instructions_must_not_bypass_approval": true,
-    "params_hidden_instruction_keys": [
-      "hiddenInstructions",
-      "systemOverride",
-      "developerOverride"
-    ]
-  },
-  "audit_policy": {
-    "audit_receipt_required": true,
-    "audit_events": [
-      "sampling_request_sent",
-      "sampling_request_denied"
-    ]
+  "retired_implementation": {
+    "source_files": [
+      "src/runtime/session.js",
+      "src/runtime/sampling_context.js"
+    ],
+    "outbound_request_functions": [
+      "sendSessionRequest",
+      "resolvePendingResponse"
+    ],
+    "replacement_boundary": "src/runtime/outbound_request_manager.js#rejectClientResponseEnvelope",
+    "closeout_record": "_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md"
   },
   "guard": "_tests/smoke_sampling_user_approval_policy.js",
   "spec_mode": "canonical_structured_spec_not_progress_log",
-  "scope": "Client sampling policy: capability requirement, approval policy, low-risk classification, budget policy, prompt-injection guard and audit events.",
-  "runtime_enforced": "implemented_guarded_policy",
+  "scope": "Deprecated Sampling boundary, retired session-bound helper implementation, and fail-closed handling of unsolicited JSON-RPC response envelopes.",
+  "runtime_enforced": "fail_closed_inactive_boundary",
   "active_surviving_route_binding": false,
-  "runtime_scope_note": "The policy remains implemented in src/runtime/sampling_context.js for bounded helper/test coverage, but active surviving-route /mcp request handling no longer injects requestSampling into runtime context.",
+  "runtime_scope_note": "Legacy session-bound Sampling helpers are retired from the active repository. The surviving /mcp runtime initiates no JSON-RPC requests and rejects client response envelopes with server_initiated_requests_not_active.",
   "connector_visible": false,
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",
@@ -71,7 +59,7 @@
     "connector_refresh_required_now": false,
     "runtime_restart_required_now": false,
     "public_3009_start_required_now": false,
-    "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart.",
+    "notes": "The historical transition route remains retired. This cleanup removes only unreachable session-bound Sampling helpers and makes the active response-envelope rejection boundary explicit.",
     "sessionless_transition_route_retired_from_active_runtime": true,
     "sessionless_transition_env_retired_from_active_runtime": true
   }

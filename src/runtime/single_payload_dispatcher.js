@@ -2,7 +2,7 @@
 
 const { emptyResponse, jsonResponse } = require("./http_responses");
 const { sseResponse } = require("./sse_response");
-const { isJsonRpcResponse, resolvePendingResponse } = require("./outbound_request_manager");
+const { isJsonRpcResponse, rejectClientResponseEnvelope } = require("./outbound_request_manager");
 const { rpcMethodSummary } = require("./rpc_audit_summary");
 const { auditJsonRpcResponseSent, auditEmptyRpcResponseSent } = require("./rpc_response_audit");
 const { byteLength } = require("./runtime_helpers");
@@ -37,20 +37,12 @@ async function handleSinglePayload({
   });
 
   if (isJsonRpcResponse(payload)) {
-    const resolved = resolvePendingResponse(session, payload);
-    if (!resolved.ok) {
-      auditLog("pending_response_rejected", { request_id: requestId, reason: resolved.reason, rpc_id: resolved.id });
-      if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_pending_rejected" })) {
-        const response = { jsonrpc: "2.0", id: payload.id, error: { code: -32000, message: "Pending response rejected", data: { reason: resolved.reason } } };
-        auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, phase: "single_pending_rejected" });
-        jsonResponse(res, 400, response);
-      }
-      return;
-    }
-    auditLog("pending_response_resolved", { request_id: requestId, rpc_id: resolved.id, method: resolved.method, has_error: resolved.hasError });
-    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_pending_resolved" })) {
-      auditEmptyRpcResponseSent(auditLog, { requestId, statusCode: 202, phase: "single_pending_resolved" });
-      emptyResponse(res, 202);
+    const rejected = rejectClientResponseEnvelope(payload);
+    auditLog("client_response_envelope_rejected", { request_id: requestId, reason: rejected.reason, rpc_id: rejected.id });
+    if (!skipResponseWriteIfNeeded({ res, abortSignal, auditLog, requestId, phase: "single_client_response_rejected" })) {
+      const response = { jsonrpc: "2.0", id: payload.id, error: { code: -32000, message: "Client response envelope rejected", data: { reason: rejected.reason } } };
+      auditJsonRpcResponseSent(auditLog, { requestId, statusCode: 400, response, phase: "single_client_response_rejected" });
+      jsonResponse(res, 400, response);
     }
     return;
   }

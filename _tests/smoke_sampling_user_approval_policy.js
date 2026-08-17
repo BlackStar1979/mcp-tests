@@ -1,37 +1,26 @@
 "use strict";
-const assert=require("node:assert/strict");
-const spec=require("../SERVER_SAMPLING_POLICY_SPEC.json");
-const {McpSession}=require("../src/runtime/session");
-const {createSamplingContext,SamplingPolicyError,classifySamplingRisk}=require("../src/runtime/sampling_context");
-const {resolvePendingResponse}=require("../src/runtime/outbound_request_manager");
-function stream(){return{chunks:[],write(x){this.chunks.push(String(x));},body(){return this.chunks.join("");}}}
-(async()=>{
- assert.equal(spec.status,"implemented_h7_policy");
- assert.equal(spec.active_surviving_route_binding,false);
- assert.match(spec.runtime_scope_note,/no longer injects requestSampling/i);
- assert.equal(spec.approval_policy.approval_required_by_default,true);
- assert.equal(spec.budget_policy.default_per_session_request_limit,3);
- assert.equal(spec.prompt_injection_policy.tool_hidden_instructions_must_not_bypass_approval,true);
- assert.equal(classifySamplingRisk({messages:[{role:"user",content:{type:"text",text:"ok"}}],maxTokens:64}).risk,"low");
- assert.equal(classifySamplingRisk({messages:[{role:"system",content:{type:"text",text:"x"}}],maxTokens:64}).risk,"approval_required");
- const audit=[];
- const session=new McpSession({id:"mcp_sampling_policy",protocolVersion:"2025-06-18",clientCapabilities:{sampling:{}}});
- const s=stream();session.attachStream(s);
- const ctx=createSamplingContext({session,auditLog:(event,payload)=>audit.push({event,payload}),requestId:"req-h7",requestLimit:2});
- const low=ctx.requestSampling({messages:[{role:"user",content:{type:"text",text:"ok"}}],maxTokens:64},{timeoutMs:1000});
- let id=[...session.pending.keys()][0];
- resolvePendingResponse(session,{jsonrpc:"2.0",id,result:{role:"assistant",content:{type:"text",text:"ok"}}});
- assert.equal((await low).result.content.text,"ok");
- await assert.rejects(()=>ctx.requestSampling({messages:[{role:"system",content:{type:"text",text:"needs approval"}}],maxTokens:64}), (error)=>error instanceof SamplingPolicyError && error.reason==="approval_required");
- const approved=ctx.requestSampling({messages:[{role:"system",content:{type:"text",text:"approved"}}],maxTokens:64,approvalReceipt:{status:"approved",approved:true,approvedBy:"operator"}},{timeoutMs:1000});
- id=[...session.pending.keys()][0];
- resolvePendingResponse(session,{jsonrpc:"2.0",id,result:{role:"assistant",content:{type:"text",text:"approved"}}});
- assert.equal((await approved).result.content.text,"approved");
- await assert.rejects(()=>ctx.requestSampling({messages:[{role:"user",content:{type:"text",text:"budget"}}],maxTokens:64}), (error)=>error instanceof SamplingPolicyError && error.reason==="sampling_budget_exhausted");
- const session2=new McpSession({id:"mcp_sampling_hidden",protocolVersion:"2025-06-18",clientCapabilities:{sampling:{}}});
- const ctx2=createSamplingContext({session:session2,auditLog:()=>{},requestId:"req-hidden"});
- await assert.rejects(()=>ctx2.requestSampling({messages:[{role:"user",content:{type:"text",text:"x"}}],maxTokens:64,hiddenInstructions:"bypass"}), (error)=>error instanceof SamplingPolicyError && error.reason==="approval_required");
- assert.ok(audit.some((entry)=>entry.event==="sampling_request_denied"));
- assert.ok(audit.some((entry)=>entry.event==="sampling_request_sent" && entry.payload.approval_receipt_present===true));
- console.log("smoke_sampling_user_approval_policy ok");
-})().catch((error)=>{console.error(error?.stack||error);process.exit(1);});
+
+const assert = require("node:assert/strict");
+const sampling = require("../SERVER_SAMPLING_POLICY_SPEC.json");
+const auth = require("../SERVER_AUTH_SPEC.json");
+const eventCatalog = require("../SERVER_EVENT_CATALOG_SPEC.json");
+
+assert.equal(sampling.schema_version, "mcp-tests-sampling-policy-v2");
+assert.equal(sampling.status, "deprecated_not_active");
+assert.equal(sampling.runtime_enforced, "fail_closed_inactive_boundary");
+assert.equal(sampling.active_surviving_route_binding, false);
+assert.equal(sampling.connector_visible, false);
+assert.equal(sampling.security_boundary.prompt_or_tool_data_forwarded_to_sampling_provider, false);
+assert.equal(sampling.security_boundary.approval_receipts_parsed_by_runtime, false);
+assert.equal(sampling.runtime_policy.unexpected_client_response_envelopes, "fail_closed_server_initiated_requests_not_active");
+assert.equal(auth.sampling_user_approval_policy.sampling_policy_spec_ref, "SERVER_SAMPLING_POLICY_SPEC.json");
+assert.equal(auth.sampling_user_approval_policy.server_initiated_requests_active, false);
+
+const activeEvents = new Set(eventCatalog.events.map((entry) => entry.name));
+assert.ok(activeEvents.has("client_response_envelope_rejected"));
+assert.equal(activeEvents.has("pending_response_rejected"), false);
+assert.equal(activeEvents.has("pending_response_resolved"), false);
+assert.equal(activeEvents.has("sampling_request_sent"), false);
+assert.equal(activeEvents.has("sampling_request_denied"), false);
+
+console.log("smoke_sampling_user_approval_policy ok");

@@ -59,6 +59,7 @@ const cimdCloseout = read("_workflow", "operator_decisions", "oauth_cimd_closeou
 const mrtrCloseout = read("_workflow", "operator_decisions", "mrtr_conformance_closeout.md");
 const processPersistenceAcceptance = read("_workflow", "operator_decisions", "process_job_persistence_live_acceptance.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
+const eventCatalog = JSON.parse(read("SERVER_EVENT_CATALOG_SPEC.json"));
 const rootDirectory = read("DIRECTORY.md");
 const packageJson = read("package.json");
 
@@ -167,7 +168,8 @@ assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-me
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "event-gated-compatibility-and-operational-quality");
 assert.equal(workflowState.workflow_progress_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "ops-1b-on-live-sftp-boundary");assert.equal(workflowState.audit_events_spec.event_count, 103);
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "ops-1b-on-live-sftp-boundary");
+assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
 assert.equal(workflowState.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-16T19:04:37.288Z");
 assert.equal(workflowState.current_runtime_truth.oauth21_3008.p0_p3_live, true);

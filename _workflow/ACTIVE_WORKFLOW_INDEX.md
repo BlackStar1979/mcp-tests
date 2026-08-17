@@ -6,6 +6,8 @@ Purpose: provide the current workflow entrypoint and separate active work from h
 
 Current repo/runtime note: profile `tests`; live OAuth21 `3008` is aligned with final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id = 2026-08-16T19:04:37.288Z`, `98` connector-visible tools, and fingerprint `ec7d3af5b4ea17f5`. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), and `CIMD` (`7 + 304`) are now live-loaded and live-accepted. `MRTR` remains fixture-only conformance evidence at `7 + 305`; runtime loading is not applicable because it has no production runtime surface.
 
+Repository-only delta awaiting controlled load: `DEBT-1-RETIREMENT` removes unreachable classic Sampling/session-bound outbound helpers and retains only fail-closed response-envelope handling. It changes runtime code but not the `98`-tool connector surface, so restart is required and connector refresh is not.
+
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
@@ -235,10 +237,13 @@ Current records:
   - Adds bounded server-side `rpc_response_sent` audit coverage for active `/mcp` request/response paths so runtime evidence can compare request interpretation with emitted responses by `request_id`.
 
 - `keep_mcp_local_session_helper_classification.md`
-  - Classifies the remaining `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` path as bounded local compatibility fixtures rather than active surviving-route runtime wiring.
+  - Historical classification that bounded `session.js`, `sampling_context.js`, and helper-only `sendSessionRequest` before the dedicated retirement closeout.
 
 - `keep_mcp_session_bound_outbound_sampling_scope.md`
-  - Closes the workflow scoping step for the remaining session-bound outbound/sampling internals and records that only fail-closed response-envelope handling remains contract-relevant on the active route.
+  - Historical scoping record that bounded the remaining session-bound outbound/sampling internals before their dedicated retirement.
+
+- `deprecated_sampling_helper_retirement_closeout.md`
+  - Retires the unreachable `McpSession`, classic Sampling context, SSE outbound queue, and pending request registry while preserving explicit fail-closed response-envelope handling.
 
 - `roots_sampling_logging_deprecation_inventory.md`
   - Finishes the missing roots/sampling/protocol-logging inventory so this deprecated bucket no longer stays in `unknown_needs_inventory` after sampling was detached from active `/mcp`.

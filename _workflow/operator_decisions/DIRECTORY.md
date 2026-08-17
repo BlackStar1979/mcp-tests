@@ -1,8 +1,10 @@
 # DIRECTORY
 
 Status: active workflow operator decisions directory map
-Updated: 2026-08-16
+Updated: 2026-08-17
 
+- `deprecated_sampling_helper_retirement_closeout.md`
+  Acceptance evidence for retiring the inactive classic Sampling/session helper path while preserving fail-closed client-response rejection.
 - `initialize_client_compatibility_evidence.md`
   Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.
 - `initialize_retirement_decision_prep.md`
