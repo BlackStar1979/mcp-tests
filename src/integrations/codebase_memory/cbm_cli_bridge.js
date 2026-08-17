@@ -307,6 +307,7 @@ function probeCbmAvailability(options = {}) {
   const status = baseAvailability(options);
   const executablePath = status.executable_path;
   const spawnSyncImpl = options.spawnSyncImpl || childProcess.spawnSync;
+  const allowedRoot = defaultAllowedRoot(options);
 
   try {
     if (!fs.existsSync(executablePath)) {
@@ -333,10 +334,10 @@ function probeCbmAvailability(options = {}) {
 
     const args = [...commandPrefixArgs(options), "--version"];
     const result = spawnSyncImpl(executablePath, args, {
-      cwd: process.cwd(),
+      cwd: allowedRoot,
       shell: false,
       windowsHide: true,
-      env: buildChildEnv(options.env, { ...options, allowedRoot: defaultAllowedRoot(options) }),
+      env: buildChildEnv(options.env, { ...options, allowedRoot }),
       encoding: "utf8",
       timeout: buildTimeoutPolicy(options).probe,
       maxBuffer: Math.max(resolveMaxOutputChars(options) * 2, 64 * 1024),
@@ -374,10 +375,10 @@ function probeCbmAvailability(options = {}) {
 
     const helpArgs = [...commandPrefixArgs(options), "--help"];
     const helpResult = spawnSyncImpl(executablePath, helpArgs, {
-      cwd: process.cwd(),
+      cwd: allowedRoot,
       shell: false,
       windowsHide: true,
-      env: buildChildEnv(options.env, { ...options, allowedRoot: defaultAllowedRoot(options) }),
+      env: buildChildEnv(options.env, { ...options, allowedRoot }),
       encoding: "utf8",
       timeout: buildTimeoutPolicy(options).probe,
       maxBuffer: Math.max(resolveMaxOutputChars(options) * 2, 64 * 1024),
@@ -473,6 +474,7 @@ function killChild(child) {
 
 async function runCbmProcess(toolName, argsObject, options = {}) {
   const executablePath = resolveExecutablePath(options);
+  const allowedRoot = defaultAllowedRoot(options);
   const definition = TOOL_DEFINITIONS[toolName];
   const timeouts = buildTimeoutPolicy(options);
   const timeoutMs = clampInteger(options.timeoutMs, timeouts[definition.timeoutClass], 1, timeouts.hardIndex);
@@ -517,10 +519,10 @@ async function runCbmProcess(toolName, argsObject, options = {}) {
 
     try {
       child = spawnImpl(executablePath, args, {
-        cwd: process.cwd(),
+        cwd: allowedRoot,
         shell: false,
         windowsHide: true,
-        env: buildChildEnv(options.env, { ...options, allowedRoot: defaultAllowedRoot(options) }),
+        env: buildChildEnv(options.env, { ...options, allowedRoot }),
         stdio: ["pipe", "pipe", "pipe"],
       });
     } catch (error) {

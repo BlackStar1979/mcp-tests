@@ -174,6 +174,7 @@ setTimeout(() => {
         argv: args,
         ok: true,
         allowed_root: process.env.CBM_ALLOWED_ROOT || "",
+        cwd: process.cwd(),
         input_keys: Object.keys(parsedInput).sort(),
         input_content_length: String(parsedInput.content || "").length,
         stdin_chars: stdinText.length,
@@ -263,8 +264,10 @@ function fixtureOptions(overrides = {}) {
   resetCbmBridgeForTests();
   let identityGeneration = 1;
   let probeCalls = 0;
+  const probeCwds = [];
   const identityOptions = {
     executablePath: fixturePath,
+    allowedRoot: tempRoot,
     identityReader() {
       return {
         path: fixturePath,
@@ -273,8 +276,9 @@ function fixtureOptions(overrides = {}) {
         sha256: "9a205fa5ae759fbc866bfe1554f0c05a303be9ae6e0a00f94d875dc0c25e0680",
       };
     },
-    spawnSyncImpl(_executable, args) {
+    spawnSyncImpl(_executable, args, spawnOptions) {
       probeCalls += 1;
+      probeCwds.push(spawnOptions.cwd);
       if (args.at(-1) === "--version") {
         return { status: 0, stdout: "codebase-memory-mcp 0.9.0\n", stderr: "" };
       }
@@ -294,11 +298,13 @@ function fixtureOptions(overrides = {}) {
   assert.equal(identityFirst, identityCached);
   assert.equal(identityFirst.compatibility_status, "compatible");
   assert.equal(probeCalls, 2);
+  assert.deepEqual(probeCwds, [tempRoot, tempRoot]);
   identityGeneration = 2;
   const identityChanged = getCbmAvailability(identityOptions);
   assert.notEqual(identityChanged, identityFirst);
   assert.equal(identityChanged.binary_changed_since_probe, true);
   assert.equal(probeCalls, 4);
+  assert.deepEqual(probeCwds, [tempRoot, tempRoot, tempRoot, tempRoot]);
 
   assert.deepEqual(Object.keys(TOOL_DEFINITIONS), [
     "list_projects",
@@ -335,6 +341,7 @@ function fixtureOptions(overrides = {}) {
   assert.equal(echo.stdout_truncated, false);
   assert.equal(echo.stderr_truncated, false);
   assert.equal(echo.result.allowed_root, path.resolve("C:\\Work"));
+  assert.equal(echo.result.cwd, path.resolve("C:\\Work"));
   assert.equal(echo.queue_wait_ms, 0);
   assert.ok(echo.execution_ms >= 0);
   assert.equal(echo.binary_version, "0.9.0");
