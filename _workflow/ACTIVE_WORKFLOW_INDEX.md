@@ -407,7 +407,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as active interpretation.
 
-Next recommended action: execute `POL-1A-DLP`. The completed critical-policy reconciliation now proves `13/24` required policies implemented. `transport_security` gained a fail-closed Origin boundary under RED→GREEN evidence, `scope_minimization` gained OAuth21/internal `mcp:tools` enforcement at tool dispatch, and `session_security` was reconciled to the stateless 2026-07-28 target. Three critical policies remain genuine runtime gaps: consent, prompt/content, and output DLP. These repository runtime changes still require a controlled OAuth21 3008 live load; no connector-visible descriptor or schema change is intended.
+Next recommended action: execute `POL-1A-DLP`. The completed critical-policy reconciliation now proves `13/24` required policies implemented. `transport_security` gained a fail-closed Origin boundary under RED→GREEN evidence, `scope_minimization` gained OAuth21/internal `mcp:tools` enforcement at tool dispatch, and `session_security` was reconciled to the stateless 2026-07-28 target. Three critical policies remain genuine runtime gaps: consent, prompt/content, and output DLP. Source commit `cbbb284` is live on OAuth21 3008 at `server_start_id = 2026-08-17T19:00:17.718Z`; health is `200`, the `98`-tool fingerprint remains `ec7d3af5b4ea17f5`, OAuth and durable process state survived, and no connector refresh was required.
 Readiness-derived default next package queue:
 
 1. `POL-1A-DLP` — centralized model-output validation/DLP boundary

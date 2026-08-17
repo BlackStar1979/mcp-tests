@@ -111,7 +111,7 @@ assert.ok(canon.includes("`next_secondary = pol-1a-consent-boundary`"));
 assert.ok(canon.includes("Execute `POL-1A-DLP`"));
 assert.equal(index.includes("`OPS-1B` — event-gated live SFTP completion"), false);
 assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, SURFACE.combined_fingerprint);
@@ -119,9 +119,9 @@ assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_stat
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
-assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-17T17:43:05.322Z");
+assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-17T19:00:17.718Z");
 assert.equal(state.current_runtime_truth.oauth21_3008.p0_p3_live, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.server_start_id, "2026-08-17T17:43:05.322Z");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.server_start_id, "2026-08-17T19:00:17.718Z");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);

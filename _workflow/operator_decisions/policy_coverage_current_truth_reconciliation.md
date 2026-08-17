@@ -94,7 +94,7 @@ Coverage is therefore `13/24` implemented. Eleven required rows remain outside i
 
 ## Runtime/load boundary
 
-The earlier configured-root symlink/junction fix is already live-loaded from commit `555fad0`. The POL-1A source changes touch runtime-imported `src/runtime/cors_policy.js`, `src/runtime/server_factory.js`, and `src/runtime/decision_runtime_policy.js`; repository validation can prove them immediately, but OAuth21 `3008` does not gain them until a controlled supervisor restart after a source commit. No connector refresh is expected because no MCP tool name, descriptor, input schema, output schema, or annotation is intentionally changed.
+The earlier configured-root symlink/junction fix is already live-loaded from commit `555fad0`. The POL-1A runtime package was committed and pushed as `cbbb284`, then live-loaded through controlled supervisor request `manual-1786993215906` (exit code `42`, reason `pol_1a_transport_scope_live_load`). Audit reports `server_start_id = 2026-08-17T19:00:17.718Z`; `/healthz` returned `200`, OAuth21/internal, `tools_count = 98`; tool-surface state retained combined fingerprint `ec7d3af5b4ea17f5`; connector calls continued with the existing OAuth state; and pre-restart durable job `63fd7f1c-aa84-4b10-9c75-793c0c66231e` is readable with `recovered_after_restart = true`. No connector refresh was required because no MCP tool name, descriptor, input schema, output schema, or annotation changed.
 
 ## Existing root-boundary live acceptance
 
@@ -108,4 +108,4 @@ Accepted evidence for that earlier load remains:
 - connector-visible TEST MCP calls and durable process recovery survived;
 - no connector refresh or OAuth reauthorization was required.
 
-`POL-1` remains `2/4` because eleven required policy rows remain unresolved. The current next package is `POL-1A-DLP`; the new transport/scope runtime changes remain repo-applied but not yet live-loaded at this point in the record.
+`POL-1` remains `2/4` because eleven required policy rows remain unresolved. The current next package is `POL-1A-DLP`; transport and scope enforcement from source commit `cbbb284` are live-loaded and accepted on OAuth21 `3008`.

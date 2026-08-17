@@ -29,7 +29,7 @@ assert.equal(c.repo_current_expected_tool_count, 98);
 assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(c.model_runtime_callable_verified_now, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
