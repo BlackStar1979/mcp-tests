@@ -42,7 +42,7 @@ assert.equal(operatorState.includes("The current live server process predates th
 assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
 assert.ok(operatorState.includes("Live OAuth21 runtime exposes `98` tools"));
 assert.ok(operatorState.includes(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint));
-assert.ok(operatorState.includes("`DOC-2A` remains a reusable bounded fallback"));
+assert.ok(operatorState.includes("The former bounded `DOC-2A` fallback is superseded by accepted repo-wide `DOC-2` coverage"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 2, 2026"));
 assert.ok(index.includes("`codex-mcp-client 0.146.0-alpha.9.2` remains `initialize_only` with `2` matching legacy entries and `0` `server/discover` entries"));
 const restart = inventory.deprecation_ledger.find((item) => item.feature_id === "restart_resilience");

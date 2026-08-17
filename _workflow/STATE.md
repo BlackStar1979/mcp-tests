@@ -85,6 +85,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Generator-owned source orientation now includes `src/integrations/DIRECTORY.md` and `src/integrations/codebase_memory/DIRECTORY.md`; the CBM map identifies transport, contract-registry, orchestration, and versioned-contract responsibilities while preserving repository, runtime, and index truth boundaries.
 - Generator-owned workflow orientation now includes `_workflow/operator_decisions/DIRECTORY.md`; the refreshed map separates current initialize/connector/OAuth decision evidence from historical package ledgers and points back to active workflow truth for priority.
 - Generator-owned project-local skill orientation now includes `.agents/skills/using-codebase-memory/DIRECTORY.md` and `.agents/skills/using-codebase-memory/references/DIRECTORY.md`; `scripts/audit_directory_docs.js` ranks high-churn directories so future `DOC-2A` choices are evidence-driven.
+- `DOC-2` is accepted at `4/4`: all `68/68` directories containing tracked files have functional maps. The generator provides non-mutating `--help`/`--check`, rejects unknown arguments before writes, and the repo-wide smoke guard prevents new tracked directories from silently bypassing the operator documentation contract.
 - Workflow truth and runtime truth must stay separated.
 - Connector/UI truth may drift from repo/runtime truth and requires live verification.
 - Model-runtime callability is a separate layer from external UI visible-tool enumeration.
@@ -101,10 +102,10 @@ Summarize the current validated product state in one operator-facing place witho
 - Fresh August 17 `COMP-1A` evidence supersedes the August 16 sample: the current Codex entry window selects `server_start_id 2026-08-16T19:04:37.288Z` and shows `initialize_only` for `codex-mcp-client 0.148.0-alpha.9` on protocol `2025-06-18`, with `3` successful legacy `initialize` entries and `0` `server/discover` entries. Independent operational `openai-mcp 1.0.0` traffic uses `server/discover` with protocol `2026-07-28`; modern entry therefore works operationally, but retirement remains blocked by the Codex client family.
 
 - Fresh August 16 reconnect evidence now closes the OAuth/reconnect half of `OPS-1B`: the operator reauthorized OAuth and refreshed the connector, `openai-mcp 1.0.0` entered through `server/discover` on `2026-07-28`, `tools/list` returned `98`, the subsequent controlled restart preserved OAuth state, and post-restart connector calls succeeded. Live SFTP remains the only unresolved OPS-1 external boundary.
-- The July 28 `_workflow/operator_decisions` directory-map instance of `DOC-2A` is complete. `DOC-2A` remains a reusable bounded fallback, not a permanently open task, and may run again only for a demonstrable current high-churn orientation gap.
+- The former bounded `DOC-2A` fallback is superseded by accepted repo-wide `DOC-2` coverage. Reopen it only when generator `--check` or the tracked-directory audit reports a real regression.
 - Live `observability_status` now exposes the same retained blocker-matrix view as the workflow helper, so current-window entry evidence and `1d`/`2d`/`7d`/`30d`/`all` blocker framing no longer depend on a script-only code path.
 - `state.json` is an orientation map, not a progress log.
-- Operator-facing documentation is now explicit, but directory coverage is not yet complete for every repo directory.
+- Operator-facing documentation is explicit, and every directory containing tracked project files has a guarded functional map.
 - OAuth21 durable-state hygiene now has an explicit control-plane path with bounded records/backups and approval-gated apply; it is not a connector-visible runtime tool.
 - Public unauthenticated OAuth21 routes now have bounded per-IP throttling, and oversized OAuth21 request bodies are force-aborted before they can continue streaming in-process.
 - OAuth21 DCR registration now enforces a bounded client-registry cap and opportunistically prunes retention-expired `dead_clients` before admitting new public registrations.

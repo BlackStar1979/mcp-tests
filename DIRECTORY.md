@@ -114,4 +114,4 @@ Updated: 2026-07-17
 - `server.js`
   Thin runtime entrypoint that delegates to the current bootstrap runtime.
 
-This top-level map is intentional but not yet exhaustive for every nested directory in the repository. The remaining rollout is tracked in `_workflow/ROADMAP.md`, and bounded regeneration support is available through `npm run docs:directory`.
+Every directory containing tracked project files has a `DIRECTORY.md` map guarded by the repo-wide audit. Regenerate deterministically with `npm run docs:directory` and verify without mutation through `node scripts/generate_directory_docs.js --check`.

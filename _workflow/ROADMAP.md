@@ -19,7 +19,7 @@ Current derivation:
 - Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Earlier post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. The snippet-integrity package is live and required no connector refresh.
 - `COMP-1` is 3/4: official `@modelcontextprotocol/client@2.0.0` regression and independent operational `openai-mcp 1.0.0` traffic prove modern `2026-07-28` `server/discover`, but the August 17 operational `codex-mcp-client 0.148.0-alpha.9` sample still contains `3` successful legacy `initialize` entries and `0` `server/discover` entries.
-- `DOC-2A` remains a bounded fallback class, but no current gap is open: the August 16 `top25/churn>=5` audit reports `missing: 0`; generator-owned maps already cover the active high-churn documentation boundaries.
+- `DOC-2` is `4/4`: all `68/68` directories containing tracked files have generator-owned or guarded maps, non-mutating generator `--check` is green, and the repo-wide audit prevents silent coverage regression.
 - `RETR-1` retrieval now exposes workflow facts directly, rejects silent staleness, parses complete canonical workflow documents through a bounded transient sample, and ranks authoritative current evidence ahead of historical records. The refreshed live v3 knowledge index contains `287` documents, visited `1237` files and `48` directories, reports freshness `fresh`, extracts all `14` readiness components, and links all `36` source-of-truth documents through `757` internal links.
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
@@ -52,10 +52,7 @@ Current derivation:
 
 1. `OPS-1B` — event-gated live SFTP boundary
    OAuth reconnect/recovery is accepted. Resume only for recovered live SFTP infrastructure or a reproduced operational defect.
-2. `DOC-2A` — bounded fallback
-   Reopen only when a fresh top25/churn>=5 audit exposes one real orientation gap; the August 16 audit is clean.
-
-3. `COMP-1B`
+2. `COMP-1B`
    Run only if fresh `COMP-1A` evidence materially changes the initialize-retirement decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
@@ -72,7 +69,7 @@ Completed MRTR conformance: `MRTR` keeps multi-round-trip `2026-07-28` behavior 
 Completed protocol live acceptance: controlled restart `manual-1786907075795` loaded final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id 2026-08-16T19:04:37.288Z`, preserving `98` tools and fingerprint `ec7d3af5b4ea17f5`; live probes accepted Tasks, W3C correlation, process artifacts/resources, CIMD SSRF rejection, and OAuth reconnect/recovery.
 Completed memory activation: `MEM-1-LIVE` activated OVH `bge-m3`, fixed live ranking noise, proved PL/EN and fallback behavior, verified a non-plaintext cache, and backfilled all active unique memories.
 Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metadata is now guarded in `_tests/smoke_cbm_live_bridge_stress.js` and agent-facing CBM interpretation guidance is guarded by `_tests/smoke_cbm_agent_skill.js`.
-Completed documentation fallback: `DOC-2A` refreshed the high-churn `_workflow/operator_decisions` map and project-local `using-codebase-memory` skill maps on July 28, 2026, then added generator-owned `docs/superpowers` plan/spec maps and raised the audit guard to top25/churn>=5 on July 29, 2026 without widening into repo-wide documentation churn.
+Completed directory orientation: `DOC-2` now covers all `68/68` directories containing tracked files. Generator `--help` and `--check` are non-mutating, unknown arguments fail before writes, dynamic control-plane targets have one generation authority, and repo-wide coverage is smoke-guarded.
 Completed upstream review extension: `CBM-UPSTREAM-201-277` records the remaining July 29, 2026 open-issue batch and updates the project-local skill boundary so documentation/workflow retrieval uses `workbench` `profile=knowledge` while CBM remains the indexed code graph.
 Completed retrieval quality pass: `RETR-1-ACTIVE-WORKFLOW-RANKING` guards that active workflow documents outrank historical decision records for natural planning questions in `search_index`, `search_index_context`, and `collect_context`; live `workbench` validation after restart `manual-1785343566402` confirms the same behavior on the running connector.
 Completed process execution: `PROC-1A` introduced the shared hardened sync/async core; `PROC-1B` adds durable recovery, rediscovery/history, controlled errors, and resolver fixes. Restarts `manual-1786291985998` and `manual-1786292134573` loaded the `91`-tool runtime and proved same-job terminal status/output recovery without OAuth relogin.

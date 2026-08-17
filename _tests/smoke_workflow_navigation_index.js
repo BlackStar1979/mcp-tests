@@ -23,7 +23,8 @@ assert.ok(index.includes("Historical records remain traceability evidence, not t
 assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evidence only"));
 assert.ok(index.includes("Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample exists."));
 assert.ok(index.includes("`COMP-1A` — event-gated protocol evidence"));
-assert.ok(index.includes("`OPS-1B` — event-gated live SFTP completion"));assert.ok(index.includes("`DOC-2A` — bounded fallback"));
+assert.ok(index.includes("`OPS-1B` — event-gated live SFTP completion"));
+assert.ok(index.includes("Preserve completed `DOC-2`; reopen only when generator `--check` or the repo-wide tracked-directory audit reports drift."));
 assert.ok(index.includes("Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`."));
 assert.ok(index.includes("Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026"));
 assert.ok(index.includes("Completed upstream issue review through ordinals 201-277 on July 29, 2026"));
@@ -35,6 +36,7 @@ assert.ok(index.includes("repo_hygiene_commit_scope_triage.md"));
 assert.ok(index.includes("Verified cleanup/normalization closeout on `main`: cleanup anchor `aecec58` remains in `main` history"));
 assert.ok(index.includes("Confirmed the previous dirty-worktree push blocker is closed on `main`"));
 assert.ok(index.includes("Recently completed:"));
+assert.ok(index.includes("`DOC-2` is accepted at `4/4`"));
 assert.ok(index.includes("Completed `MCP-OFFICIAL-SDK-V2-INTEROP` on August 2, 2026"));
 assert.ok(index.includes("Validated cleanup-closeout anchor on `main`: `aecec58`."));
 assert.ok(index.includes("Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt."));

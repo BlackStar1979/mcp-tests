@@ -103,7 +103,7 @@ Checkpoint topology:
 - Repository, live runtime, and this model map are aligned at `98`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, structured file subsystem, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
-- Operator-facing documentation contract is now explicit, and the latest bounded `DOC-2A` passes refreshed the high-churn `_workflow/operator_decisions` ledger map, the project-local `using-codebase-memory` skill boundary, and the `docs/superpowers` plan/spec support boundary without starting repo-wide documentation churn. `scripts/audit_directory_docs.js` now reports no missing `DIRECTORY.md` files among the top 25 tracked dirs with churn >= 5 in the last 30 days.
+- Operator-facing documentation contract is explicit, and `DOC-2` is accepted at `4/4`: all `68/68` directories containing tracked files have functional maps. Generator `--help`/`--check` are non-mutating, invalid arguments fail before writes, dynamic control-plane maps have one generation authority, and repo-wide coverage is guarded.
 
 Recent committed checkpoints:
 
@@ -400,12 +400,12 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 1. Preserve the live-accepted Tasks/Trace/Artifacts/CIMD foundation and fixture-only MRTR regression evidence; no protocol live-load work is pending.
 2. Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample exists.
 3. Preserve completed `OPS-1A` and the now-accepted OAuth reconnect half of `OPS-1B`; reopen OPS-1 only for live SFTP infrastructure or a reproduced operational defect.
-4. Use `DOC-2A` only when a fresh top25/churn>=5 audit exposes one real high-churn orientation gap; the August 16 audit reports `missing: 0`.
+4. Preserve completed `DOC-2`; reopen only when generator `--check` or the repo-wide tracked-directory audit reports drift.
 5. Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`.
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the live-accepted OAuth21 runtime and completed `7 + 305` protocol regression line stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 17 `codex-mcp-client 0.148.0-alpha.9` sample; `OPS-1B` now waits only for live SFTP, while `DOC-2A` remains closed.
+Next recommended action: keep the live-accepted OAuth21 runtime, protocol regression line, and completed DOC-2 coverage stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 17 `codex-mcp-client 0.148.0-alpha.9` sample; `OPS-1B` waits only for live SFTP.
 Readiness-derived default next package queue:
 
 1. `COMP-1A` — event-gated protocol evidence
@@ -413,10 +413,7 @@ Readiness-derived default next package queue:
 
 2. `OPS-1B` — event-gated live SFTP completion
    OAuth reconnect/recovery evidence is accepted. Resume only for recovered live SFTP infrastructure or a reproduced operational defect.
-3. `DOC-2A` — bounded fallback
-   Current top25/churn>=5 audit is clean. Reopen only when a fresh audit exposes one real high-churn orientation gap, then stop.
-
-4. `COMP-1B`
+3. `COMP-1B`
    Execute only when fresh evidence materially changes the protocol retirement decision surface.
 
 Recently completed:
