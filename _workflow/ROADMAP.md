@@ -40,19 +40,29 @@ Current derivation:
 | Priority | Item | Depends on | Why it matters now | Current action |
 | --- | --- | --- | --- | --- |
 | P0 | MCP Tasks process adapter — live accepted | accepted `PROC-1B-R2`, negotiated task capability | Standard Tasks reuse one execution truth rather than another scheduler/store. | Preserve the verified live Tasks/fallback contract and owner-bound durable registry. |
-| P1 | Bounded W3C Trace Context correlation — live accepted | durable task/execution identity | Request, execution, Task, and artifact share one safe correlation spine without changing authorization. | Preserve the verified W3C ancestry/privacy contract and reopen only on measured regression. |
-| P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts without expanding `resources/list`. | Preserve opaque resource handles, hashes, owner binding, independent retention, bounded `resources/read`, and Task links. |
-| P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the `-02` SSRF/cache/exact-match contract; live special-use-IP rejection is accepted. |
-| P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR provides conformance evidence without complicating the execution foundation. | Preserve the fixture-only `input_required` / `inputResponses` / opaque `requestState` retry contract; no runtime object is required. |
-| P5 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern server entry is operationally proven, but the latest measured Codex client still uses legacy `initialize`. | Preserve both version-gated paths until Codex client-entry traffic newer than `0.148.0-alpha.9` changes the verdict. |
-| P6 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A`, accepted reconnect recovery | Connector-visible TEST MCP proved the real external SFTP boundary on 2026-08-17. | Preserve the closeout, external config-reference boundary, and read-only acceptance evidence; reopen only on reproduced regression. |
+| P1 | Bounded W3C Trace Context correlation — live accepted | durable task/execution identity | Request, execution, Task, and artifact share one safe correlation spine. | Preserve the verified W3C ancestry/privacy contract. |
+| P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
+| P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
+| P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR supplies conformance evidence without a second runtime architecture. | Preserve fixture-only multi-round-trip behavior. |
+| P5 | `POL-1A` critical policy reconciliation — active | canonical policy matrix, current runtime/tests | The matrix now has `10/24` required policies implemented but still carries six `critical_specified` policies; READINESS cannot claim convergence while required policy truth is unresolved. | Reconcile consent, scope minimization, transport security, session security, prompt/content, and output DLP against current implementation; promote only proven coverage and open bounded fixes for real gaps. |
+| P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
+| P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `COMP-1A` — event-gated protocol evidence
-   Refresh only for Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample; preserve the version-gated compatibility paths until that evidence changes the verdict.
+0. `POL-1A` — critical policy reconciliation
+   Reconcile all six `critical_specified` policies against current runtime code and guards; promote only proven coverage and create bounded fixes for genuine gaps.
 
-1. `COMP-1B`
-   Run only if fresh `COMP-1A` evidence materially changes the initialize-retirement decision surface.
+1. `POL-1B` — partial policy reconciliation
+   Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after `POL-1A` establishes the evidence pattern.
+
+2. `POL-1C` — specified-only non-critical reconciliation
+   Reconcile `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy` without assuming that a stale status implies missing implementation.
+
+3. `COMP-1A` — event-gated protocol evidence
+   Refresh only for real Codex client-entry traffic newer than `0.148.0-alpha.9`; preserve both compatibility paths until that evidence changes the verdict.
+
+4. `COMP-1B`
+   Run only if fresh `COMP-1A` evidence materially changes initialize-retirement.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed protocol-debt cleanup: `DEBT-1-RETIREMENT` removes the inactive classic Sampling/session helper stack, aligns Sampling/Auth/Event specs, and preserves the authenticated smoke count by converting historical roundtrip fixtures into retirement guards.

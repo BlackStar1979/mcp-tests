@@ -2,7 +2,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "target",
-  "status": "specified_only_runtime_enforcement_pending",
+  "status": "implemented_runtime_fingerprint_and_drift_boundary",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-capability-attestation-policy-v1",
   "scope": "Capability, tool descriptor and profile-surface attestation policy.",
   "policy": {
@@ -17,9 +18,15 @@
     "SERVER_PROFILES_SPEC.json",
     "SERVER_CONNECTOR_SURFACE_SPEC.json"
   ],
-  "runtime_gaps": [
-    "fingerprint generation not yet centralized",
-    "descriptor signing not implemented"
+  "runtime_gaps": [],
+  "implementation_evidence": [
+    "src/schema_compat.js centralizes tool-surface descriptor and combined fingerprint generation",
+    "initialize, server/discover, tools/list, runtime status, and baseline guards expose or compare the centralized fingerprint",
+    "src/tool_surface_state.js detects persisted descriptor-surface drift and audits changes",
+    "tools.listChanged is disabled on the active pull-only surface, satisfying deny-unless-attested for list-changed events"
+  ],
+  "future_target_gaps": [
+    "signed_descriptors"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

@@ -15,6 +15,16 @@ for (const p of urgent) { assert.notEqual(p.status, "target_missing"); assert.ok
 assert.equal(matrix.policies.some((p) => p.status === "target" + "_missing"), false);
 assert.equal(matrix.rules.no_complete_claim_if_any_required_policy_not_implemented, true);
 assert.equal(matrix.rules.specified_only_is_not_runtime_enforced, true);
+const statusById = Object.fromEntries(matrix.policies.map((item) => [item.id, item.status]));
+for (const id of ["sampling_policy", "roots_boundary_policy", "elicitation_policy", "capability_attestation_policy"]) {
+  assert.equal(statusById[id], "implemented", `${id} must reflect current enforced or fail-closed target behavior`);
+}
+for (const rel of ["SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json", "SERVER_ELICITATION_POLICY_SPEC.json", "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json"]) {
+  const spec = read(rel);
+  assert.match(spec.status, /^implemented_/);
+  assert.equal(spec.runtime_enforced, true);
+  assert.deepEqual(spec.runtime_gaps, []);
+}
 console.log("smoke_policy_coverage_matrix ok");
 
 const nonCriticalTargetSpecs = ["SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json","SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json","SERVER_ELICITATION_POLICY_SPEC.json","SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json","SERVER_SUPPLY_CHAIN_POLICY_SPEC.json","SERVER_INCIDENT_RESPONSE_POLICY_SPEC.json"];

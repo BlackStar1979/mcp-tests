@@ -33,9 +33,9 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=306`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=308`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `306`
+- Latest validated authenticated smoke count: `308`
 
 ## Surface model
 
@@ -49,13 +49,14 @@ Summarize the current validated product state in one operator-facing place witho
 - CIMD P3 is live and accepted: the runtime SSRF boundary rejected `client_id = https://127.0.0.1/oauth/client.json` with controlled `400 invalid_client`; audit recorded `oauth21_cimd_rejected` / `cimd_special_use_ip`. Repository validation remains `7 + 304`.
 - MRTR P4 remains fixture-only protocol conformance evidence and has no production runtime surface to load. The official v2 client regression passed clean-history `7 + 305`; the controlled runtime restart neither adds nor requires an MRTR tool or store.
 - `DEBT-1` cleanup is complete and live-loaded: `McpSession`, `sampling_context`, SSE outbound queuing, pending request correlation, and classic Sampling policy execution are removed. The active HTTP dispatchers reject unsolicited JSON-RPC responses with `server_initiated_requests_not_active`; restart `manual-1786939596474` loaded the change without altering the `98`-tool connector surface or requiring OAuth reauthorization.
+- `POL-1` is active at `2/4`: canonical policy coverage is now `10/24` implemented after evidence-based reconciliation of Sampling, roots boundary, elicitation, and capability attestation. Fourteen required policies remain non-implemented in the matrix. A TDD probe reproduced and repo-fixed configured-root symlink/junction escape in `safeWorkspacePath()`; that runtime-imported fix is not live on OAuth21 3008 until a controlled supervisor restart.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list
 
 ## Current workflow track
 
-- `current_working_course = event-gated-compatibility-and-operational-quality`
-- `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = comp-1b-after-material-comp-1a-change`
+- `current_working_course = policy-coverage-current-truth-reconciliation`
+- `next_primary = pol-1a-critical-policy-reconciliation`
+- `next_secondary = pol-1b-partial-policy-reconciliation`
 
 ## Verified documentation authorities
 

@@ -2,7 +2,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "target",
-  "status": "specified_only_runtime_enforcement_pending",
+  "status": "implemented_fail_closed_inactive_boundary",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-elicitation-policy-v1",
   "scope": "MCP elicitation feature boundary and prohibition on sensitive-information collection through server-initiated prompts.",
   "policy": {
@@ -16,9 +17,11 @@
     "SERVER_CONSENT_POLICY_SPEC.json",
     "SERVER_SCOPE_MINIMIZATION_POLICY_SPEC.json"
   ],
-  "runtime_gaps": [
-    "elicitation protocol feature is not implemented",
-    "if enabled later it needs explicit consent UI boundary"
+  "runtime_gaps": [],
+  "implementation_evidence": [
+    "active initialize/server-discover capabilities do not advertise elicitation",
+    "active surviving runtime has no server-initiated elicitation request path",
+    "future enablement remains conditional on explicit consent, decline/cancel handling, bounded schema shape, and deny-by-default PII retention"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

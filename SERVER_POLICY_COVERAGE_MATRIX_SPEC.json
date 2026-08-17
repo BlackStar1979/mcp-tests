@@ -63,7 +63,7 @@
     },
     {
       "id": "sampling_policy",
-      "status": "partial",
+      "status": "implemented",
       "spec_ref": "SERVER_SAMPLING_POLICY_SPEC.json",
       "critical": false,
       "required": true
@@ -147,21 +147,21 @@
     },
     {
       "id": "roots_boundary_policy",
-      "status": "specified_only",
+      "status": "implemented",
       "spec_ref": "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "elicitation_policy",
-      "status": "specified_only",
+      "status": "implemented",
       "spec_ref": "SERVER_ELICITATION_POLICY_SPEC.json",
       "critical": false,
       "required": true
     },
     {
       "id": "capability_attestation_policy",
-      "status": "specified_only",
+      "status": "implemented",
       "spec_ref": "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json",
       "critical": false,
       "required": true

@@ -1,4 +1,5 @@
 const path = require("node:path");
+const fs = require("node:fs");
 
 const PRIMARY_WORK_ROOT_ALIAS = "work";
 const WORK_ROOTS_ENV_VAR = "MCP_TEST_EXTRA_ROOTS";
@@ -236,6 +237,25 @@ function findBlockedPrefix(fullPath, prefixes, rootPath) {
   return null;
 }
 
+function assertExistingPathWithinRoot(rootPath, absolutePath) {
+  const realpath = typeof fs.realpathSync.native === "function" ? fs.realpathSync.native : fs.realpathSync;
+  const realRoot = realpath(rootPath);
+  let existingPath = absolutePath;
+
+  while (!fs.existsSync(existingPath)) {
+    const parent = path.dirname(existingPath);
+    if (parent === existingPath) break;
+    existingPath = parent;
+  }
+
+  const realExistingPath = realpath(existingPath);
+  const relative = path.relative(realRoot, realExistingPath);
+  const outside = relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative);
+  if (outside) {
+    throw new Error("Access denied: resolved path escapes configured workspace root.");
+  }
+}
+
 function safeWorkspacePath(relativePath = ".", options = {}) {
   const roots = options.roots || buildWorkRoots();
   const primaryAlias = options.primaryAlias || PRIMARY_WORK_ROOT_ALIAS;
@@ -250,6 +270,8 @@ function safeWorkspacePath(relativePath = ".", options = {}) {
   if (absolutePath !== target.rootPath && !absolutePath.startsWith(rootWithSep)) {
     throw new Error("Access denied");
   }
+
+  assertExistingPathWithinRoot(target.rootPath, absolutePath);
 
   const blockedPrefix = findBlockedPrefix(absolutePath, READ_BLOCKED_PATH_PREFIXES, target.rootPath);
   if (blockedPrefix) {

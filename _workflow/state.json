@@ -64,9 +64,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "event-gated-compatibility-and-operational-quality",
-    "next_primary": "comp-1a-on-fresh-external-client-traffic",
-    "next_secondary": "comp-1b-after-material-comp-1a-change",    "stage_labels": [
+    "current_working_course": "policy-coverage-current-truth-reconciliation",
+    "next_primary": "pol-1a-critical-policy-reconciliation",
+    "next_secondary": "pol-1b-partial-policy-reconciliation",    "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
       "Stage 8 / Step 53d - live restart and connector surface reconciliation"

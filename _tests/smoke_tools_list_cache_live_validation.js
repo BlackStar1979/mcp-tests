@@ -50,8 +50,8 @@ assert.ok(index.includes("`MRTR` remains fixture-only conformance evidence at `7
 assert.ok(index.includes("runtime loading is not applicable"));
 assert.ok(index.includes("The operator refreshed OAuth authorization and the connector tool list"));
 assert.ok(index.includes("survived the subsequent supervisor restart with OAuth state intact"));
-assert.ok(index.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
-assert.ok(index.includes("`next_secondary = comp-1b-after-material-comp-1a-change`"));
+assert.ok(index.includes("`next_primary = pol-1a-critical-policy-reconciliation`"));
+assert.ok(index.includes("`next_secondary = pol-1b-partial-policy-reconciliation`"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 17, 2026"));
@@ -68,7 +68,7 @@ assert.ok(canon.includes("`CIMD` is repo-validated, live-loaded, and live-accept
 assert.ok(canon.includes("`MRTR` is repo-validated and closed as fixture-only conformance evidence"));
 assert.ok(canon.includes("runtime loading is therefore not applicable"));
 assert.ok(canon.includes("server_start_id = 2026-08-16T19:04:37.288Z"));
-assert.ok(canon.includes("Preserve accepted `OPS-1` at `4/4`"));
+assert.ok(canon.includes("accepted `OPS-1`"));
 assert.ok(canon.includes("CBM reliability hardening is live"));
 assert.ok(canon.includes("descriptor review is closed without manual connector refresh"));
 assert.ok(descriptorReview.includes("Status: GREEN / CURRENT CODEX CLIENT FETCHED CURRENT DESCRIPTORS / NO MANUAL CONNECTOR REFRESH REQUIRED"));

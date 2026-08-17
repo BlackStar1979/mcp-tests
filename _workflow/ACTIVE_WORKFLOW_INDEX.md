@@ -21,9 +21,9 @@ Snapshot and full-harness root fidelity are closed: snapshot creation is caller-
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = event-gated-compatibility-and-operational-quality`
-- `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = comp-1b-after-material-comp-1a-change`
+- `current_working_course = policy-coverage-current-truth-reconciliation`
+- `next_primary = pol-1a-critical-policy-reconciliation`
+- `next_secondary = pol-1b-partial-policy-reconciliation`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -85,9 +85,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=306`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=308`.
 - Public section count: `7`.
-- Authenticated smoke count: `306`.
+- Authenticated smoke count: `308`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -398,22 +398,22 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Preserve the live-accepted Tasks/Trace/Artifacts/CIMD foundation and fixture-only MRTR regression evidence; no protocol live-load work is pending.
-2. Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample exists.
-3. Preserve completed `OPS-1` at `4/4`; `OPS-1B` live SFTP was accepted on 2026-08-17 from connector-visible TEST MCP read-only evidence. Reopen only for a reproduced operational regression or deliberate boundary change.
-4. Preserve completed `DOC-2`; reopen only when generator `--check` or the repo-wide tracked-directory audit reports drift.
-5. Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`.
+1. Execute `POL-1A`: reconcile the six `critical_specified` policies against current runtime code and guards; promote only proven coverage and create bounded fixes for genuine gaps.
+2. Follow with `POL-1B` for the four `partial` policies and `POL-1C` for the four non-critical `specified_only` policies.
+3. Preserve the live-accepted Tasks/Trace/Artifacts/CIMD foundation, fixture-only MRTR evidence, completed `OPS-1`, and completed `DOC-2`.
+4. Re-run `COMP-1A` only when real Codex client-entry traffic newer than `0.148.0-alpha.9` exists.
+5. Run `COMP-1B` only when fresh `COMP-1A` evidence materially changes initialize-retirement.
 Historical records remain traceability evidence, not the active queue.
-`_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
+`_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as active interpretation.
 
-Next recommended action: keep the live-accepted OAuth21 runtime, protocol regression line, completed DOC-2 coverage, and accepted OPS-1 boundary stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 17 `codex-mcp-client 0.148.0-alpha.9` sample; `COMP-1B` remains conditional on a material change in that evidence.
+Next recommended action: execute `POL-1A`. The first policy reconciliation moved the canonical matrix from `6/24` to `10/24` implemented and reproduced/fixed a configured-root symlink/junction escape in repo truth. The source fix is not live on OAuth21 3008 until a controlled supervisor restart; no connector refresh is required.
 Readiness-derived default next package queue:
 
-1. `COMP-1A` — event-gated protocol evidence
-   Resume only for Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample.
-
-2. `COMP-1B`
-   Execute only when fresh `COMP-1A` evidence materially changes the protocol retirement decision surface.
+1. `POL-1A` — critical policy reconciliation
+2. `POL-1B` — partial policy reconciliation
+3. `POL-1C` — specified-only non-critical reconciliation
+4. `COMP-1A` — event-gated protocol evidence; refresh only for real Codex traffic newer than `0.148.0-alpha.9`
+5. `COMP-1B` — conditional on material `COMP-1A` change
 
 Recently completed:
 
