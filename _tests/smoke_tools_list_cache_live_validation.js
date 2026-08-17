@@ -38,7 +38,7 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("live OAuth21 `3008` is aligned with final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6`"));
+assert.ok(index.includes(`live OAuth21 \`3008\` is aligned with repository head \`${state.current_runtime_truth.oauth21_3008.loaded_repo_head}\``));
 assert.ok(index.includes(`fingerprint \`${expectedCurrentFingerprint}\``));
 assert.ok(index.includes("`MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`)"));
 assert.ok(index.includes("`TRACE-CONTEXT` (`7 + 298`)"));

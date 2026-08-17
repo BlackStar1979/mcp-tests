@@ -4,9 +4,9 @@ Status: active navigation index
 Date: 2026-08-17
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; live OAuth21 `3008` is aligned with final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id = 2026-08-16T19:04:37.288Z`, `98` connector-visible tools, and fingerprint `ec7d3af5b4ea17f5`. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), and `CIMD` (`7 + 304`) are now live-loaded and live-accepted. `MRTR` remains fixture-only conformance evidence at `7 + 305`; runtime loading is not applicable because it has no production runtime surface.
+Current repo/runtime note: profile `tests`; live OAuth21 `3008` is aligned with repository head `e32fefdb4d0f369a9ff30e1ecba7f94600807130` at `server_start_id = 2026-08-17T04:06:37.912Z`, `98` connector-visible tools, and fingerprint `ec7d3af5b4ea17f5`. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), and `DEBT-1-RETIREMENT` (`7 + 305`) are live-loaded and live-accepted. `MRTR` remains fixture-only conformance evidence at `7 + 305`; runtime loading is not applicable because it has no production runtime surface.
 
-Repository-only delta awaiting controlled load: `DEBT-1-RETIREMENT` removes unreachable classic Sampling/session-bound outbound helpers and retains only fail-closed response-envelope handling. It changes runtime code but not the `98`-tool connector surface, so restart is required and connector refresh is not.
+`DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:

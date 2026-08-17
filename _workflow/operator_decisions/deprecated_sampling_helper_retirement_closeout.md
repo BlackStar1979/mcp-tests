@@ -52,4 +52,14 @@ Repository validation:
 - OAuth reauthorization not required: auth/token persistence contracts are unchanged
 - independent runtime on port `3008` forbidden: use `node .\scripts\request-restart.js --code=42 --reason=manual`
 
-Live-load evidence is appended to current workflow truth after the controlled supervisor restart; repository completion does not pretend that the pre-restart process already serves this source.
+## Live-load evidence
+
+- repository implementation commit: `7e198b2d9ebfc0247cfebb6003b69dc62c1f5e05`
+- loaded repository head: `e32fefdb4d0f369a9ff30e1ecba7f94600807130`
+- controlled restart request: `manual-1786939596474`
+- live `server_start_id`: `2026-08-17T04:06:37.912Z`
+- live tool count: `98`
+- live combined fingerprint: `ec7d3af5b4ea17f5`
+- direct post-restart `workbench.get_info`: GREEN
+- connector refresh: not required
+- OAuth reauthorization: not required

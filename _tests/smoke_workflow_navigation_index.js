@@ -114,8 +114,8 @@ assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_stat
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
-assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-16T19:04:37.288Z");
-assert.equal(state.current_runtime_truth.oauth21_3008.p0_p3_live, true);assert.equal(state.current_connector_truth.oauth21_3008_tools.server_start_id, "2026-08-16T19:04:37.288Z");
+assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-17T04:06:37.912Z");
+assert.equal(state.current_runtime_truth.oauth21_3008.p0_p3_live, true);assert.equal(state.current_connector_truth.oauth21_3008_tools.server_start_id, "2026-08-17T04:06:37.912Z");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);
