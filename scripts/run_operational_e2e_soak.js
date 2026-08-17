@@ -3,26 +3,41 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { CliArgumentError, parseCliArgs } = require("../src/util/cli_args");
 
 const root = path.resolve(__dirname, "..");
 const matrixPath = path.join(root, "_workflow", "inventories", "ops_1a_operational_e2e_matrix.json");
 const matrix = JSON.parse(fs.readFileSync(matrixPath, "utf8"));
 
-function readNumberArg(name, fallback) {
-  const prefix = `${name}=`;
-  const raw = process.argv.find((arg) => arg.startsWith(prefix));
-  const value = raw ? Number(raw.slice(prefix.length)) : fallback;
+function parseArgsOrExit() {
+  try {
+    return parseCliArgs(process.argv.slice(2), {
+      valueOptions: ["repetitions", "live-repetitions"],
+      flagOptions: ["include-live-cloudflare", "include-live-network", "list"],
+    });
+  } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({ ok: false, error_code: error.code, argument: error.argument }, null, 2));
+      process.exit(2);
+    }
+    throw error;
+  }
+}
+
+function readNumberArg(args, name, fallback) {
+  const value = Number(args.value(name, String(fallback)));
   if (!Number.isInteger(value) || value < 1 || value > 20) {
-    throw new Error(`${name} must be an integer between 1 and 20`);
+    throw new Error(`--${name} must be an integer between 1 and 20`);
   }
   return value;
 }
 
-const repetitions = readNumberArg("--repetitions", 3);
-const liveRepetitions = readNumberArg("--live-repetitions", 1);
-const includeLiveCloudflare = process.argv.includes("--include-live-cloudflare");
-const includeLiveNetwork = process.argv.includes("--include-live-network");
-const listOnly = process.argv.includes("--list");
+const args = parseArgsOrExit();
+const repetitions = readNumberArg(args, "repetitions", 3);
+const liveRepetitions = readNumberArg(args, "live-repetitions", 1);
+const includeLiveCloudflare = args.flag("include-live-cloudflare");
+const includeLiveNetwork = args.flag("include-live-network");
+const listOnly = args.flag("list");
 
 function isSelected(testCase) {
   if (testCase.default) return true;

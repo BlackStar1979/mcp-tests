@@ -155,7 +155,7 @@ const CONFIG = {
     updated: "2026-08-17",
     entries: {
       "deprecated_sampling_helper_retirement_closeout.md": "Acceptance evidence for retiring the inactive classic Sampling/session helper path while preserving fail-closed client-response rejection.",
-      "observability_live_trail_acceptance.md": "Live acceptance evidence for bounded client-entry diagnostics and fail-closed workflow CLI filtering.",
+      "observability_live_trail_acceptance.md": "Live acceptance evidence for bounded client-entry diagnostics and the follow-up fail-closed workflow/operator CLI integrity sweep.",
       "initialize_client_compatibility_evidence.md": "Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.",
       "initialize_retirement_decision_prep.md": "Bounded decision-preparation record for any future legacy `initialize` retirement package.",
       "connector_*.md": "Connector refresh, migration, callable-surface, route-coexistence, and reconnect evidence records.",
@@ -209,11 +209,11 @@ const CONFIG = {
       "audit_directory_docs.js": "Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.",
       "backfill-memory-embeddings.js": "Performs bounded, idempotent hydration of missing active-memory vectors and emits aggregate-only results.",
       "provision-memory-embedding-token.ps1": "Provisions or rotates the MEM-1 token file through a secure prompt or stdin with a restricted Windows ACL and secret-free output.",
-      "request-restart.js": "Writes a bounded restart request for the supervisor-managed runtime path.",
+      "request-restart.js": "Writes a bounded restart request for the supervisor-managed runtime path after fail-closed CLI validation.",
       "server.ps1": "PowerShell helper for controlled local server startup/orchestration.",
       "server.sh": "Shell helper for controlled local server startup/orchestration.",
       "generate_directory_docs.js": "Regenerates selected `DIRECTORY.md` files from a bounded description map.",
-      "run_operational_e2e_soak.js": "Runs the bounded OPS-1A hermetic/live operational matrix with independent repetition limits and structured output.",
+      "run_operational_e2e_soak.js": "Runs the bounded OPS-1A hermetic/live operational matrix with independent repetition limits, fail-closed CLI validation, and structured output.",
     },
   },
   "profiles": {

@@ -5,6 +5,7 @@ const assert = require("node:assert/strict");
 const crypto = require("node:crypto");
 const fs = require("node:fs");
 const path = require("node:path");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const MARKER = "connector_migration_dry_run_harness";
 const ROOT = path.resolve(__dirname, "..", "..");
@@ -15,10 +16,6 @@ function read(rel) {
 
 function readJson(rel) {
   return JSON.parse(read(rel));
-}
-
-function hasFlag(name) {
-  return process.argv.includes(`--${name}`);
 }
 
 function hashToolNames(toolNames) {
@@ -47,7 +44,7 @@ function isSanitized(payload) {
   return !forbidden.some((re) => re.test(text));
 }
 
-function buildHarnessResult() {
+function buildHarnessResult({ selfTest = false } = {}) {
   const state = readJson("_workflow/state.json");
   const inventory = readJson("_workflow/sessionless_inventory.json");
   const connectorSpec = readJson("SERVER_CONNECTOR_SURFACE_SPEC.json");
@@ -106,7 +103,7 @@ function buildHarnessResult() {
     ok: true,
     marker: MARKER,
     mode: "dry_run_only",
-    self_test: hasFlag("self-test"),
+    self_test: selfTest,
     network: false,
     reads_durable_oauth_state: false,
     uses_live_credential_flow: false,
@@ -157,8 +154,23 @@ function buildHarnessResult() {
 }
 
 function main() {
-  const result = buildHarnessResult();
+  const args = parseCliArgs(process.argv.slice(2), { flagOptions: ["self-test"] });
+  const result = buildHarnessResult({ selfTest: args.flag("self-test") });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
 }
 
-main();
+try {
+  main();
+} catch (error) {
+  if (error instanceof CliArgumentError) {
+    process.stderr.write(`${JSON.stringify({
+      ok: false,
+      marker: MARKER,
+      error: error.code,
+      error_code: error.code,
+      argument: error.argument,
+    }, null, 2)}\n`);
+    process.exit(2);
+  }
+  throw error;
+}

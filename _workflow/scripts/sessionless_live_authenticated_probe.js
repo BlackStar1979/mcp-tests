@@ -8,6 +8,7 @@ const os = require("node:os");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
 const { loadOAuth21SecretConfig } = require("../../src/runtime/oauth21_secret_config");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const MARKER = "sessionless_live_authenticated_probe";
 const ROOT = path.resolve(__dirname, "..", "..");
@@ -19,16 +20,6 @@ const PROTOCOL_VERSION_META_KEY = "io.modelcontextprotocol/protocolVersion";
 const CLIENT_INFO_META_KEY = "io.modelcontextprotocol/clientInfo";
 const CLIENT_CAPABILITIES_META_KEY = "io.modelcontextprotocol/clientCapabilities";
 const REDIRECT_URI = "http://localhost/cb";
-
-function argValue(name, fallback = "") {
-  const prefix = `--${name}=`;
-  const hit = process.argv.slice(2).find((item) => item.startsWith(prefix));
-  return hit ? hit.slice(prefix.length) : fallback;
-}
-
-function hasFlag(name) {
-  return process.argv.includes(`--${name}`);
-}
 
 function fail(code, error, extra = {}) {
   console.error(JSON.stringify({ ok: false, marker: MARKER, error, ...extra }, null, 2));
@@ -118,8 +109,7 @@ function discoverOAuth21SecretFile() {
   throw new Error("oauth21_live_process_not_found");
 }
 
-function resolveOAuth21SecretFile() {
-  const override = argValue("oauth-secret-file", "");
+function resolveOAuth21SecretFile(override = "") {
   if (override) return { processId: 0, commandLine: "", secretFile: override, source: "cli_override" };
   try {
     const discovered = discoverOAuth21SecretFile();
@@ -232,7 +222,12 @@ async function listTools(baseUrl, authorization) {
 }
 
 async function main() {
-  if (hasFlag("self-test")) {
+  const args = parseCliArgs(process.argv.slice(2), {
+    valueOptions: ["oauth-secret-file", "base-url", "audit-log"],
+    flagOptions: ["self-test"],
+  });
+
+  if (args.flag("self-test")) {
     console.log(JSON.stringify({
       ok: true,
       marker: MARKER,
@@ -244,9 +239,9 @@ async function main() {
     return;
   }
 
-  const baseUrl = argValue("base-url", DEFAULT_BASE_URL).replace(/\/+$/, "");
-  const auditLog = argValue("audit-log", DEFAULT_AUDIT_LOG);
-  const discovered = resolveOAuth21SecretFile();
+  const baseUrl = args.value("base-url", DEFAULT_BASE_URL).replace(/\/+$/, "");
+  const auditLog = args.value("audit-log", DEFAULT_AUDIT_LOG);
+  const discovered = resolveOAuth21SecretFile(args.value("oauth-secret-file", ""));
   const secretConfig = loadOAuth21SecretConfig({ secretFile: discovered.secretFile });
 
   const auditStartSize = fs.existsSync(auditLog) ? fs.statSync(auditLog).size : 0;
@@ -386,5 +381,8 @@ async function main() {
 }
 
 main().catch((error) => {
+  if (error instanceof CliArgumentError) {
+    fail(2, error.code, { error_code: error.code, argument: error.argument });
+  }
   fail(1, error && error.message ? error.message : "sessionless_live_probe_failed");
 });

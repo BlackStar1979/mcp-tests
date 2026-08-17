@@ -28,8 +28,18 @@ assert.ok(script.includes("sessionless_live_authenticated_probe"));
 assert.ok(script.includes("reads_durable_oauth_state: false"));
 assert.ok(script.includes("discoverOAuth21SecretFile"));
 assert.ok(script.includes("issueBearer"));
+assert.ok(script.includes('require("./cli_args")'));
+assert.equal(script.includes("function argValue("), false);
+assert.equal(script.includes("function hasFlag("), false);
 
-const self = spawnSync(process.execPath, [scriptPath, "--self-test"], { cwd: ROOT, encoding: "utf8" });
+const self = spawnSync(process.execPath, [
+  scriptPath,
+  "--self-test",
+  "--base-url",
+  "http://127.0.0.1:65535",
+  "--audit-log",
+  path.join(ROOT, "_logs", "unused-sessionless-self-test.jsonl"),
+], { cwd: ROOT, encoding: "utf8" });
 assert.equal(self.status, 0, self.stderr || self.stdout);
 const selfJson = JSON.parse(self.stdout);
 assert.equal(selfJson.ok, true);
@@ -37,7 +47,24 @@ assert.equal(selfJson.network, false);
 assert.equal(selfJson.reads_durable_oauth_state, false);
 assert.equal(selfJson.uses_fresh_oauth_flow, true);
 
+const missingValue = spawnSync(process.execPath, [scriptPath, "--self-test", "--base-url"], {
+  cwd: ROOT,
+  encoding: "utf8",
+});
+assert.equal(missingValue.status, 2, missingValue.stderr || missingValue.stdout);
+const missingValueJson = JSON.parse(missingValue.stderr);
+assert.equal(missingValueJson.error_code, "cli_argument_value_missing");
+assert.equal(missingValueJson.argument, "base-url");
+
+const unknownOption = spawnSync(process.execPath, [scriptPath, "--self-test", "--surprise"], {
+  cwd: ROOT,
+  encoding: "utf8",
+});
+assert.equal(unknownOption.status, 2, unknownOption.stderr || unknownOption.stdout);
+const unknownOptionJson = JSON.parse(unknownOption.stderr);
+assert.equal(unknownOptionJson.error_code, "cli_argument_unknown");
+assert.equal(unknownOptionJson.argument, "surprise");
+
 const manifest = JSON.parse(read("_tests/run_all_smoke_scripts.json"));
 assert.ok(manifest.includes("_tests/smoke_sessionless_live_authenticated_probe.js"));
 console.log("smoke_sessionless_live_authenticated_probe ok");
-

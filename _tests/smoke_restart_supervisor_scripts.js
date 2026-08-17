@@ -50,9 +50,24 @@ assert.ok(ps.includes("/healthz"));
 assert.ok(ps.includes("Wykonuję takeover zamiast uruchamiać duplikat"));
 const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-trigger-"));
 const file = path.join(tmp, "request.json");
-const req = cp.spawnSync(process.execPath, [path.join(__dirname, "..", "scripts/request-restart.js"), "--code=44", "--reason=smoke", "--file=" + file], { encoding: "utf8" });
+const requestRestartPath = path.join(__dirname, "..", "scripts/request-restart.js");
+const req = cp.spawnSync(process.execPath, [requestRestartPath, "--code", "44", "--reason", "smoke", "--file", file], {
+  encoding: "utf8",
+  env: { ...process.env, MCP_TEST_RESTART_TRIGGER_FILE: file },
+});
 assert.equal(req.status, 0, req.stderr);
 const payload = JSON.parse(fs.readFileSync(file, "utf8"));
 assert.equal(payload.code, 44);
 assert.equal(payload.reason, "smoke");
+
+const rejectedFile = path.join(tmp, "must-not-exist.json");
+const rejected = cp.spawnSync(process.execPath, [requestRestartPath, "--file", rejectedFile, "--surprise"], {
+  encoding: "utf8",
+  env: { ...process.env, MCP_TEST_RESTART_TRIGGER_FILE: rejectedFile },
+});
+assert.equal(rejected.status, 2, rejected.stderr || rejected.stdout);
+assert.equal(fs.existsSync(rejectedFile), false);
+const rejectedJson = JSON.parse(rejected.stderr);
+assert.equal(rejectedJson.error_code, "cli_argument_unknown");
+assert.equal(rejectedJson.argument, "surprise");
 console.log("smoke_restart_supervisor_scripts ok");

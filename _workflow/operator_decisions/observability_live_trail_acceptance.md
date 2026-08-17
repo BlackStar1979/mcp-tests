@@ -40,6 +40,17 @@ The three client-entry workflow tools now share `_workflow/scripts/cli_args.js`:
 
 Regression coverage uses spaced arguments across the report, blocker matrix, and waiter, and verifies controlled missing/unknown-option failures.
 
+## Follow-up CLI integrity sweep
+
+The same defect class was subsequently removed from the remaining workflow and operator-facing helpers that used ad hoc argument lookup:
+
+- `sessionless_live_authenticated_probe.js` and `connector_migration_dry_run_harness.js` now parse every option before executing their bounded behavior;
+- `run_operational_e2e_soak.js` accepts both value forms and rejects unknown options instead of silently changing the selected workload;
+- `request-restart.js` parses and validates the complete command line before creating a directory or writing a trigger file, so a misspelled option cannot fall through to the default restart request;
+- the authoritative parser now lives in `src/util/cli_args.js`; `_workflow/scripts/cli_args.js` remains a compatibility facade for workflow helpers.
+
+Regression coverage verifies spaced values, controlled unknown/missing-option errors, and the no-write invariant for rejected restart requests. No live probe, OAuth flow, restart trigger, connector refresh, or runtime mutation is part of this sweep.
+
 ## Validation
 
 - targeted report, matrix, waiter, workflow, directory, and syntax guards: GREEN
@@ -48,6 +59,7 @@ Regression coverage uses spaced arguments across the report, blocker matrix, and
 - second full-suite job `d7edc202-fe7b-482b-b721-e743092e92ea`: functionally GREEN, but the post-run clean-tree check exposed that `smoke_directory_docs_generator.js` left a generated tracked backup map describing fixtures it had already deleted
 - hermetic correction: the generator smoke snapshots every tracked `DIRECTORY.md`, restores exact bytes on normal or error exit, and verifies restoration before success
 - final full-suite job `e6ffe9e4-1afb-4809-81d0-9695199006ae`: `ok=true`, `public=7`, `tests_authenticated=305`, stderr empty, no output truncation, and no generated backup-map drift
+- follow-up CLI-integrity full-suite job `353b4f15-e86a-4ac2-bd57-ffe40ccff010`: `ok=true`, `public=7`, `tests_authenticated=305`, exit `0`, stderr empty, and no output truncation
 - `project_truth_audit`: `0` findings
 - deploy decision: `repo_or_internal_source`, no runtime restart, no connector refresh, no operator approval
 

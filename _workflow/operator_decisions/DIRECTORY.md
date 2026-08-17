@@ -6,7 +6,7 @@ Updated: 2026-08-17
 - `deprecated_sampling_helper_retirement_closeout.md`
   Acceptance evidence for retiring the inactive classic Sampling/session helper path while preserving fail-closed client-response rejection.
 - `observability_live_trail_acceptance.md`
-  Live acceptance evidence for bounded client-entry diagnostics and fail-closed workflow CLI filtering.
+  Live acceptance evidence for bounded client-entry diagnostics and the follow-up fail-closed workflow/operator CLI integrity sweep.
 - `initialize_client_compatibility_evidence.md`
   Current operational evidence for legacy `initialize` versus `server/discover` client-entry behavior.
 - `initialize_retirement_decision_prep.md`

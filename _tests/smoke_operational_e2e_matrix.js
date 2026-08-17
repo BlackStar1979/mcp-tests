@@ -45,8 +45,10 @@ for (const testCase of matrix.soak_cases) {
 const listResult = spawnSync(process.execPath, [
   "scripts/run_operational_e2e_soak.js",
   "--list",
-  "--repetitions=2",
-  "--live-repetitions=3",
+  "--repetitions",
+  "2",
+  "--live-repetitions",
+  "3",
 ], {
   cwd: root,
   encoding: "utf8",
@@ -57,5 +59,18 @@ assert.equal(listed.repetitions, 2);
 assert.equal(listed.live_repetitions, 3);
 assert.equal(listed.selected.every((item) => item.mode === "hermetic"), true);
 assert.equal(listed.selected.length, matrix.soak_cases.filter((item) => item.default).length);
+
+const rejected = spawnSync(process.execPath, [
+  "scripts/run_operational_e2e_soak.js",
+  "--list",
+  "--surprise",
+], {
+  cwd: root,
+  encoding: "utf8",
+});
+assert.equal(rejected.status, 2, rejected.stderr || rejected.stdout);
+const rejectedJson = JSON.parse(rejected.stderr);
+assert.equal(rejectedJson.error_code, "cli_argument_unknown");
+assert.equal(rejectedJson.argument, "surprise");
 
 console.log("smoke_operational_e2e_matrix ok");

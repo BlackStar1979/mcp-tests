@@ -44,6 +44,8 @@ const script = read("_workflow/scripts/connector_migration_dry_run_harness.js");
 assert.ok(script.includes("connector_migration_dry_run_harness"));
 assert.equal(script.includes("fetch("), false);
 assert.equal(script.includes("issueBearer"), false);
+assert.ok(script.includes('require("./cli_args")'));
+assert.equal(script.includes("function hasFlag("), false);
 
 const run = spawnSync(process.execPath, [scriptPath], { cwd: ROOT, encoding: "utf8" });
 assert.equal(run.status, 0, run.stderr || run.stdout);
@@ -63,6 +65,16 @@ assert.equal(output.future_operator_decision_required, true);
 assert.equal(output.future_connector_refresh_action_required, true);
 assert.equal(output.rollback_preserves_mcp, true);
 assert.equal(output.sanitized, true);
+
+const selfTestRun = spawnSync(process.execPath, [scriptPath, "--self-test"], { cwd: ROOT, encoding: "utf8" });
+assert.equal(selfTestRun.status, 0, selfTestRun.stderr || selfTestRun.stdout);
+assert.equal(JSON.parse(selfTestRun.stdout).self_test, true);
+
+const unknownOption = spawnSync(process.execPath, [scriptPath, "--surprise"], { cwd: ROOT, encoding: "utf8" });
+assert.equal(unknownOption.status, 2, unknownOption.stderr || unknownOption.stdout);
+const unknownOptionJson = JSON.parse(unknownOption.stderr);
+assert.equal(unknownOptionJson.error_code, "cli_argument_unknown");
+assert.equal(unknownOptionJson.argument, "surprise");
 
 assert.equal(inventory.target_selection_readiness.s13_connector_migration_dry_run_execution_harness.status, "executed_no_refresh");
 assert.equal(inventory.target_selection_readiness.s13_connector_migration_dry_run_execution_harness.connector_refresh_required_now, false);
