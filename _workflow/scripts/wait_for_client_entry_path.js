@@ -3,16 +3,11 @@
 
 const path = require("node:path");
 const cp = require("node:child_process");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const MARKER = "wait_for_client_entry_path";
 const Repo = path.resolve(__dirname, "..", "..");
 const ReportScript = path.join(__dirname, "client_entry_path_report.js");
-
-function argValue(name, fallback = "") {
-  const prefix = `--${name}=`;
-  const hit = process.argv.slice(2).find((item) => item.startsWith(prefix));
-  return hit ? hit.slice(prefix.length) : fallback;
-}
 
 function clampInteger(value, fallback, min, max) {
   const parsed = Number(value);
@@ -86,15 +81,18 @@ function wait(ms) {
 }
 
 async function main() {
-  const auditLogPath = argValue("audit-log", process.env.MCP_TEST_AUDIT_LOG || "");
-  const clientName = argValue("client-name", "");
-  const clientVersion = argValue("client-version", "");
-  const evidenceScope = argValue("evidence-scope", "operational");
-  const maxAgeDaysRaw = argValue("max-age-days", "");
+  const args = parseCliArgs(process.argv.slice(2), {
+    valueOptions: ["audit-log", "client-name", "client-version", "evidence-scope", "max-age-days", "timeout-ms", "poll-ms", "limit"],
+  });
+  const auditLogPath = args.value("audit-log", process.env.MCP_TEST_AUDIT_LOG || "");
+  const clientName = args.value("client-name", "");
+  const clientVersion = args.value("client-version", "");
+  const evidenceScope = args.value("evidence-scope", "operational");
+  const maxAgeDaysRaw = args.value("max-age-days", "");
   const maxAgeDays = maxAgeDaysRaw === "" ? "" : clampInteger(maxAgeDaysRaw, "", 0, 3650);
-  const timeoutMs = clampInteger(argValue("timeout-ms", "30000"), 30000, 100, 900000);
-  const pollMs = clampInteger(argValue("poll-ms", "1000"), 1000, 50, 60000);
-  const limit = clampInteger(argValue("limit", "10"), 10, 1, 50);
+  const timeoutMs = clampInteger(args.value("timeout-ms", "30000"), 30000, 100, 900000);
+  const pollMs = clampInteger(args.value("poll-ms", "1000"), 1000, 50, 60000);
+  const limit = clampInteger(args.value("limit", "10"), 10, 1, 50);
   const startedAt = new Date().toISOString();
 
   if (!clientName) {
@@ -150,5 +148,8 @@ async function main() {
 }
 
 main().catch((error) => {
-  fail(1, error && error.message ? error.message : String(error));
+  fail(error instanceof CliArgumentError ? 2 : 1, error && error.message ? error.message : String(error), {
+    error_code: error instanceof CliArgumentError ? error.code : "unexpected_error",
+    argument: error instanceof CliArgumentError ? error.argument : null,
+  });
 });

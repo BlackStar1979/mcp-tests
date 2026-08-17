@@ -65,7 +65,7 @@ assert.equal(report.matching_clients[1].client_class, "operational_known");
 assert.equal(report.retirement_evidence_summary.operational_initialize_only_clients[0], "codex-mcp-client 0.144.2");
 assert.equal(report.retirement_evidence_summary.synthetic_server_discover_only_clients[0], "claude 1.0.0");
 
-const filtered = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--client-name=codex-mcp-client"], {
+const filtered = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, "--audit-log", auditLog, "--client-name", "codex-mcp-client"], {
   cwd: ROOT,
   env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
   encoding: "utf8",
@@ -76,6 +76,14 @@ assert.equal(filtered.matching_clients[0].client_name, "codex-mcp-client");
 assert.equal(filtered.matching_clients[0].client_version, "0.144.2");
 assert.equal(filtered.diagnostics.initialize_retirement_readiness.status, "mixed_current_window_hold");
 assert.equal(filtered.retirement_evidence_summary.status, "blocked_by_operational_initialize_clients");
+
+const missingValue = cp.spawnSync(process.execPath, [SCRIPT, "--client-name"], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+});
+assert.equal(missingValue.status, 2);
+assert.equal(JSON.parse(missingValue.stderr).error_code, "cli_argument_value_missing");
 
 const operationalOnly = JSON.parse(cp.execFileSync(process.execPath, [SCRIPT, `--audit-log=${auditLog}`, "--evidence-scope=operational"], {
   cwd: ROOT,

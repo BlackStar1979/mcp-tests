@@ -11,20 +11,11 @@ const {
   normalizeMaxAgeDays,
   isoThresholdFromMaxAgeDays,
 } = require("../../src/client_entry_evidence_summary");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const MARKER = "client_entry_path_report";
 const Repo = path.resolve(__dirname, "..", "..");
 const AuditLog = process.env.MCP_TEST_AUDIT_LOG || path.join(Repo, "_logs", ".mcp-tests-audit.jsonl");
-
-function argValue(name, fallback = "") {
-  const prefix = `--${name}=`;
-  const hit = process.argv.slice(2).find((item) => item.startsWith(prefix));
-  return hit ? hit.slice(prefix.length) : fallback;
-}
-
-function argFlag(name) {
-  return process.argv.slice(2).includes(`--${name}`);
-}
 
 function normalizeEvidenceScope(value) {
   const normalized = String(value || "all").trim().toLowerCase();
@@ -187,13 +178,17 @@ function filterClientFamiliesByScope(items, evidenceScope) {
 }
 
 function main() {
-  const auditLogPath = argValue("audit-log", AuditLog);
-  const clientName = argValue("client-name", "");
-  const requestedServerStartId = argValue("server-start-id", "").trim();
-  const useLatestEntryWindow = argFlag("latest-entry-window");
-  const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "all"));
-  const maxAgeDays = normalizeMaxAgeDays(argValue("max-age-days", ""));
-  const limit = Math.max(1, Number(argValue("limit", "10")) || 10);
+  const args = parseCliArgs(process.argv.slice(2), {
+    valueOptions: ["audit-log", "client-name", "server-start-id", "evidence-scope", "max-age-days", "limit"],
+    flagOptions: ["latest-entry-window"],
+  });
+  const auditLogPath = args.value("audit-log", AuditLog);
+  const clientName = args.value("client-name", "");
+  const requestedServerStartId = args.value("server-start-id", "").trim();
+  const useLatestEntryWindow = args.flag("latest-entry-window");
+  const evidenceScope = normalizeEvidenceScope(args.value("evidence-scope", "all"));
+  const maxAgeDays = normalizeMaxAgeDays(args.value("max-age-days", ""));
+  const limit = Math.max(1, Number(args.value("limit", "10")) || 10);
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
   const latestAuditTs = latestAuditTimestamp(entries);
   const retainedEvidenceSinceTs = isoThresholdFromMaxAgeDays(maxAgeDays, latestAuditTs);
@@ -267,5 +262,8 @@ function main() {
 try {
   main();
 } catch (error) {
-  fail(1, error && error.message ? error.message : String(error));
+  fail(error instanceof CliArgumentError ? 2 : 1, error && error.message ? error.message : String(error), {
+    error_code: error instanceof CliArgumentError ? error.code : "unexpected_error",
+    argument: error instanceof CliArgumentError ? error.argument : null,
+  });
 }

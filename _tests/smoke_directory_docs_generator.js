@@ -3,7 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { spawnSync } = require("node:child_process");
+const { execFileSync, spawnSync } = require("node:child_process");
 
 const ROOT = path.resolve(__dirname, "..");
 const SCRIPT = path.join(ROOT, "scripts", "generate_directory_docs.js");
@@ -17,18 +17,32 @@ const TRACKED_PRUNE_FIXTURES = [
   "oauth21-prune-14996-1784134322605.oauth_storage.backup.sqlite",
   "oauth21-prune-14996-1784134322605.rollback-receipt.json",
 ];
+const trackedDirectorySnapshots = new Map(
+  execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" })
+    .split(/\r?\n/)
+    .filter((relPath) => relPath && path.basename(relPath) === "DIRECTORY.md")
+    .map((relPath) => [relPath, fs.readFileSync(path.join(ROOT, relPath))])
+);
+let cleanupComplete = false;
+
+function cleanup() {
+  if (cleanupComplete) return;
+  cleanupComplete = true;
+  fs.rmSync(SMOKE_SNAPSHOT_ROOT, { recursive: true, force: true });
+  for (const fixture of TRACKED_PRUNE_FIXTURES) {
+    fs.rmSync(path.join(TRACKED_PRUNE_BUNDLE_ROOT, fixture), { force: true });
+  }
+  for (const [relPath, content] of trackedDirectorySnapshots) {
+    fs.writeFileSync(path.join(ROOT, relPath), content);
+  }
+}
 
 fs.mkdirSync(SMOKE_SNAPSHOT_ROOT, { recursive: true });
 fs.writeFileSync(path.join(SMOKE_SNAPSHOT_ROOT, "fixture.txt"), "fixture\n", "utf8");
 for (const fixture of TRACKED_PRUNE_FIXTURES) {
   fs.writeFileSync(path.join(TRACKED_PRUNE_BUNDLE_ROOT, fixture), "", "utf8");
 }
-process.on("exit", () => {
-  fs.rmSync(SMOKE_SNAPSHOT_ROOT, { recursive: true, force: true });
-  for (const fixture of TRACKED_PRUNE_FIXTURES) {
-    fs.rmSync(path.join(TRACKED_PRUNE_BUNDLE_ROOT, fixture), { force: true });
-  }
-});
+process.on("exit", cleanup);
 
 function read(relPath) {
   return fs.readFileSync(path.join(ROOT, relPath), "utf8");
@@ -180,6 +194,11 @@ for (const runtimeRoot of runtimeOwnedRoots) {
       assert.ok(content.includes("JSON control-plane receipt"), `${childName} must describe json receipt artifacts`);
     }
   }
+}
+
+cleanup();
+for (const [relPath, content] of trackedDirectorySnapshots) {
+  assert.deepEqual(fs.readFileSync(path.join(ROOT, relPath)), content, `${relPath} must be restored after generator validation`);
 }
 
 console.log("smoke_directory_docs_generator ok");

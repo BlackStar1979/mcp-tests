@@ -282,7 +282,6 @@
       "profile": "internal",
       "expected_tool_count": 98,
       "server_start_id": "2026-08-17T04:06:37.912Z",
-      "loaded_repo_head": "e32fefdb4d0f369a9ff30e1ecba7f94600807130",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,

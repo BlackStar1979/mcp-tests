@@ -29,9 +29,9 @@ fs.writeFileSync(auditLog, fixture.map((entry) => JSON.stringify(entry)).join("\
 
 const matrix = JSON.parse(cp.execFileSync(process.execPath, [
   SCRIPT,
-  `--audit-log=${auditLog}`,
-  "--evidence-scope=operational",
-  "--windows=1,2,all",
+  "--audit-log", auditLog,
+  "--evidence-scope", "operational",
+  "--windows", "1,2,all",
 ], {
   cwd: ROOT,
   env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
@@ -70,6 +70,14 @@ assert.deepEqual(allWindow.retirement_evidence_summary.operational_initialize_on
   "codex-mcp-client 0.144.2",
   "openai-mcp 1.0.0",
 ]);
+
+const unknownOption = cp.spawnSync(process.execPath, [SCRIPT, "--unknown-option=value"], {
+  cwd: ROOT,
+  env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
+  encoding: "utf8",
+});
+assert.equal(unknownOption.status, 2);
+assert.equal(JSON.parse(unknownOption.stderr).error_code, "cli_argument_unknown");
 
 const syntheticScoped = JSON.parse(cp.execFileSync(process.execPath, [
   SCRIPT,

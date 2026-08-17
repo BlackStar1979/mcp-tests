@@ -11,16 +11,11 @@ const {
   parseBlockerWindows,
   buildClientEntryBlockerMatrix,
 } = require("../../src/client_entry_blocker_matrix");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const MARKER = "client_entry_blocker_matrix";
 const Repo = path.resolve(__dirname, "..", "..");
 const AuditLog = process.env.MCP_TEST_AUDIT_LOG || path.join(Repo, "_logs", ".mcp-tests-audit.jsonl");
-
-function argValue(name, fallback = "") {
-  const prefix = `--${name}=`;
-  const hit = process.argv.slice(2).find((item) => item.startsWith(prefix));
-  return hit ? hit.slice(prefix.length) : fallback;
-}
 
 function fail(code, error, extra = {}) {
   console.error(JSON.stringify({ success: false, marker: MARKER, error, ...extra }, null, 2));
@@ -57,10 +52,13 @@ function latestServerStart(entries) {
 }
 
 function main() {
-  const auditLogPath = argValue("audit-log", AuditLog);
-  const clientName = argValue("client-name", "");
-  const evidenceScope = normalizeEvidenceScope(argValue("evidence-scope", "operational"));
-  const windows = parseBlockerWindows(argValue("windows", "1,2,7,30,all"));
+  const args = parseCliArgs(process.argv.slice(2), {
+    valueOptions: ["audit-log", "client-name", "evidence-scope", "windows"],
+  });
+  const auditLogPath = args.value("audit-log", AuditLog);
+  const clientName = args.value("client-name", "");
+  const evidenceScope = normalizeEvidenceScope(args.value("evidence-scope", "operational"));
+  const windows = parseBlockerWindows(args.value("windows", "1,2,7,30,all"));
   const { exists, entries, parse_errors } = readAuditEntries(auditLogPath);
   const latestAuditTs = latestAuditTimestamp(entries);
   const currentServerStart = latestServerStart(entries);
@@ -91,5 +89,8 @@ function main() {
 try {
   main();
 } catch (error) {
-  fail(1, error && error.message ? error.message : String(error));
+  fail(error instanceof CliArgumentError ? 2 : 1, error && error.message ? error.message : String(error), {
+    error_code: error instanceof CliArgumentError ? error.code : "unexpected_error",
+    argument: error instanceof CliArgumentError ? error.argument : null,
+  });
 }

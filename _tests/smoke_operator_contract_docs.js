@@ -36,6 +36,7 @@ for (const rel of [
   ["_workflow", "operator_decisions", "process_artifacts_closeout.md"],
   ["_workflow", "operator_decisions", "oauth_cimd_closeout.md"],
   ["_workflow", "operator_decisions", "mrtr_conformance_closeout.md"],
+  ["_workflow", "operator_decisions", "observability_live_trail_acceptance.md"],
 ]) {
   assert.equal(exists(...rel), true, `missing required documentation file: ${rel.join("/")}`);
 }
@@ -57,6 +58,7 @@ const traceCloseout = read("_workflow", "operator_decisions", "w3c_trace_context
 const artifactsCloseout = read("_workflow", "operator_decisions", "process_artifacts_closeout.md");
 const cimdCloseout = read("_workflow", "operator_decisions", "oauth_cimd_closeout.md");
 const mrtrCloseout = read("_workflow", "operator_decisions", "mrtr_conformance_closeout.md");
+const observabilityCloseout = read("_workflow", "operator_decisions", "observability_live_trail_acceptance.md");
 const processPersistenceAcceptance = read("_workflow", "operator_decisions", "process_job_persistence_live_acceptance.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
 const eventCatalog = JSON.parse(read("SERVER_EVENT_CATALOG_SPEC.json"));
@@ -161,6 +163,10 @@ assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_e
 assert.ok(operatorDecisionsDirectory.includes("run_process_sync_ceiling.md"));
 assert.ok(operatorDecisionsDirectory.includes("oauth_cimd_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("mrtr_conformance_closeout.md"));
+assert.ok(operatorDecisionsDirectory.includes("observability_live_trail_acceptance.md"));
+assert.ok(observabilityCloseout.includes("Status: GREEN / LIVE ACCEPTED"));
+assert.ok(observabilityCloseout.includes("followup_traffic_without_fresh_entry = true"));
+assert.ok(readiness.includes("| OBS-1 | Server-side request/response observability | 4/4 |"));
 assert.ok(operatorDecisionsDirectory.includes("This directory is a decision ledger, not the active queue."));
 assert.ok(cbmSkillDirectory.includes("Status: active using-codebase-memory skill directory map"));
 assert.ok(cbmSkillDirectory.includes("truth boundaries"));

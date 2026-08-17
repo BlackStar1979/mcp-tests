@@ -15,6 +15,8 @@ Updated: 2026-07-17
   Historical or bounded probe helpers retained for evidence; not active target architecture by themselves.
 - `client_entry_path_report.js`
   Audit-reading helper that summarizes current client entry-path evidence on the live authenticated route, including `client_name`, `evidence_scope`, and optional `max_age_days` filters for separating operational/synthetic evidence and trimming stale retained client families.
+- `cli_args.js`
+  Shared fail-closed parser for workflow observability CLI options; accepts both `--name=value` and `--name value` while rejecting missing, duplicate, unknown, or positional arguments.
 - `client_entry_blocker_matrix.js`
   Audit-reading helper that compares initialize-retirement blocker sets across multiple retained-evidence freshness windows so current operational blockers can be separated from long-tail history.
 - `wait_for_client_entry_path.js`

@@ -18,12 +18,12 @@ fs.writeFileSync(auditLog, [
 
 const child = cp.spawn(process.execPath, [
   SCRIPT,
-  `--audit-log=${auditLog}`,
-  "--client-name=codex-mcp-client",
-  "--evidence-scope=operational",
-  "--max-age-days=1",
-  "--timeout-ms=5000",
-  "--poll-ms=50",
+  "--audit-log", auditLog,
+  "--client-name", "codex-mcp-client",
+  "--evidence-scope", "operational",
+  "--max-age-days", "1",
+  "--timeout-ms", "5000",
+  "--poll-ms", "50",
 ], {
   cwd: ROOT,
   env: { ...process.env, MCP_TEST_AUDIT_LOG: auditLog },
