@@ -1,8 +1,9 @@
 "use strict";
 
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const path = require("node:path");
-const { spawnSync } = require("node:child_process");
+const { execFileSync, spawnSync } = require("node:child_process");
 const { parseArgs } = require("../scripts/audit_directory_docs");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -48,5 +49,20 @@ assert.equal(textResult.status, 0, `text audit must succeed\nSTDOUT:\n${textResu
 assert.match(textResult.stdout, /Directory documentation audit/);
 assert.match(textResult.stdout, /missing: 0/);
 assert.match(textResult.stdout, /_tests/);
+
+const trackedDirectories = new Set();
+for (const relPath of execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" }).split(/\r?\n/).filter(Boolean)) {
+  let directory = path.dirname(relPath);
+  while (directory && directory !== ".") {
+    trackedDirectories.add(directory);
+    const parent = path.dirname(directory);
+    if (parent === directory) break;
+    directory = parent;
+  }
+}
+const missingTrackedDirectoryMaps = [...trackedDirectories]
+  .filter((directory) => !fs.existsSync(path.join(ROOT, directory, "DIRECTORY.md")))
+  .sort();
+assert.deepEqual(missingTrackedDirectoryMaps, [], `tracked directories missing DIRECTORY.md:\n${missingTrackedDirectoryMaps.join("\n")}`);
 
 console.log("smoke_directory_docs_audit ok");

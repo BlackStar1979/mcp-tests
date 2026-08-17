@@ -48,12 +48,27 @@ function read(relPath) {
   return fs.readFileSync(path.join(ROOT, relPath), "utf8");
 }
 
-function runGenerator() {
-  return spawnSync(process.execPath, [SCRIPT], {
+function runGenerator(args = []) {
+  return spawnSync(process.execPath, [SCRIPT, ...args], {
     cwd: ROOT,
     encoding: "utf8",
     maxBuffer: 16 * 1024 * 1024,
   });
+}
+
+const beforeCliProbes = new Map(
+  [...trackedDirectorySnapshots.keys()].map((relPath) => [relPath, fs.readFileSync(path.join(ROOT, relPath))])
+);
+const helpResult = runGenerator(["--help"]);
+assert.equal(helpResult.status, 0, `--help must succeed\nSTDERR:\n${helpResult.stderr}`);
+assert.match(helpResult.stdout, /Usage:/);
+assert.doesNotMatch(helpResult.stdout, /wrote /);
+
+const invalidResult = runGenerator(["--unknown"]);
+assert.notEqual(invalidResult.status, 0, "unknown arguments must fail closed");
+assert.match(invalidResult.stderr, /cli_argument_unknown/);
+for (const [relPath, content] of beforeCliProbes) {
+  assert.deepEqual(fs.readFileSync(path.join(ROOT, relPath)), content, `${relPath} must not change during CLI probes`);
 }
 
 const result = runGenerator();
@@ -68,6 +83,8 @@ assert.match(normalizedStdout, /wrote _workflow\/control_plane\/oauth21_prune_ba
 assert.match(normalizedStdout, /wrote _workflow\/operator_decisions\/DIRECTORY\.md/);
 assert.match(normalizedStdout, /wrote src\/integrations\/DIRECTORY\.md/);
 assert.match(normalizedStdout, /wrote src\/integrations\/codebase_memory\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote src\/integrations\/codebase_memory\/contracts\/DIRECTORY\.md/);
+assert.match(normalizedStdout, /wrote _workflow\/historical\/progress_state_dependent_validators\/DIRECTORY\.md/);
 assert.match(normalizedStdout, /wrote docs\/superpowers\/DIRECTORY\.md/);
 assert.match(normalizedStdout, /wrote docs\/superpowers\/plans\/DIRECTORY\.md/);
 assert.match(normalizedStdout, /wrote docs\/superpowers\/specs\/DIRECTORY\.md/);
@@ -86,6 +103,8 @@ const testsDirectory = read("_tests/DIRECTORY.md");
 const srcDirectory = read("src/DIRECTORY.md");
 const integrationsDirectory = read("src/integrations/DIRECTORY.md");
 const codebaseMemoryDirectory = read("src/integrations/codebase_memory/DIRECTORY.md");
+const codebaseMemoryContractsDirectory = read("src/integrations/codebase_memory/contracts/DIRECTORY.md");
+const historicalValidatorsDirectory = read("_workflow/historical/progress_state_dependent_validators/DIRECTORY.md");
 const docsDirectory = read("docs/DIRECTORY.md");
 const superpowersDirectory = read("docs/superpowers/DIRECTORY.md");
 const superpowersPlansDirectory = read("docs/superpowers/plans/DIRECTORY.md");
@@ -137,7 +156,7 @@ assert.ok(superpowersSpecsDirectory.includes("2026-08-09-process-runner-async-de
 assert.ok(superpowersSpecsDirectory.includes("2026-08-13-structured-file-mutation-design.md"));
 assert.ok(srcDirectory.includes("`integrations/`"));
 assert.ok(integrationsDirectory.includes("Updated: 2026-07-27"));
-assert.ok(codebaseMemoryDirectory.includes("Updated: 2026-07-27"));
+assert.ok(codebaseMemoryDirectory.includes("Updated: 2026-08-17"));
 assert.ok(integrationsDirectory.includes("`codebase_memory/`"));
 assert.ok(integrationsDirectory.includes("External integration boundaries"));
 assert.ok(codebaseMemoryDirectory.includes("`cbm_cli_bridge.js`"));
@@ -145,6 +164,15 @@ assert.ok(codebaseMemoryDirectory.includes("`cbm_tools.js`"));
 assert.ok(codebaseMemoryDirectory.includes("`cbm_contract_registry.js`"));
 assert.ok(codebaseMemoryDirectory.includes("`contracts/`"));
 assert.ok(codebaseMemoryDirectory.includes("index truth"));
+assert.ok(codebaseMemoryContractsDirectory.includes("`v0.9.0.json`"));
+assert.ok(codebaseMemoryContractsDirectory.includes("corresponding capture evidence"));
+assert.ok(historicalValidatorsDirectory.includes("archival evidence only"));
+assert.ok(historicalValidatorsDirectory.includes("not active workflow truth"));
+
+const checkResult = runGenerator(["--check"]);
+assert.equal(checkResult.status, 0, `--check must accept generated truth\nSTDOUT:\n${checkResult.stdout}\nSTDERR:\n${checkResult.stderr}`);
+assert.match(checkResult.stdout, /directory docs are current/);
+assert.doesNotMatch(checkResult.stdout, /wrote /);
 
 const snapshotDirs = fs
   .readdirSync(SNAPSHOT_ROOT, { withFileTypes: true })

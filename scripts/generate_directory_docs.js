@@ -5,6 +5,43 @@ const path = require("node:path");
 
 const ROOT = path.resolve(__dirname, "..");
 const TODAY = "2026-07-17";
+const USAGE = "Usage: node scripts/generate_directory_docs.js [--check] [--help]";
+
+function cliError(code, message) {
+  const error = new Error(message);
+  error.code = code;
+  return error;
+}
+
+function parseArgs(argv) {
+  let mode = "write";
+  let help = false;
+  const seen = new Set();
+  for (const arg of argv) {
+    if (!new Set(["--check", "--help"]).has(arg)) throw cliError("cli_argument_unknown", `Unknown argument: ${arg}`);
+    if (seen.has(arg)) throw cliError("cli_argument_duplicate", `Duplicate argument: ${arg}`);
+    seen.add(arg);
+    if (arg === "--check") mode = "check";
+    if (arg === "--help") help = true;
+  }
+  if (help && mode === "check") throw cliError("cli_argument_conflict", "--help and --check cannot be combined");
+  return { help, mode };
+}
+
+let cliOptions;
+try {
+  cliOptions = parseArgs(process.argv.slice(2));
+} catch (error) {
+  console.error(`${error.code || "cli_argument_invalid"}: ${error.message}`);
+  console.error(USAGE);
+  process.exit(1);
+}
+if (cliOptions.help) {
+  console.log(USAGE);
+  process.exit(0);
+}
+
+const driftedFiles = [];
 
 const CONFIG = {
   ".": {
@@ -150,6 +187,63 @@ const CONFIG = {
     },
     tail: "Use this directory for bounded workflow-facing diagnostic outputs and derived evidence summaries. Treat it as support material for active decisions, not as canonical workflow truth.",
   },
+  "_workflow/historical/progress_state_dependent_validators": {
+    title: "retired progress-state validator directory map",
+    updated: "2026-08-17",
+    entries: {
+      "_tests/": "Retired smoke and stress validators that depend on removed workflow progress fields.",
+      "_workflow/": "Retired workflow helper subtree preserved with the validator snapshot.",
+      "README.md": "Authority boundary explaining why this subtree is historical evidence only.",
+    },
+    tail: "This subtree is archival evidence only, not active workflow truth. It must not be executed as current workflow authority or added to the active smoke manifest.",
+  },
+  "_workflow/historical/progress_state_dependent_validators/_tests": {
+    title: "retired progress-state validator tests directory map",
+    updated: "2026-08-17",
+    entries: {
+      "smoke_stage12_step36_policy_runtime_closeout.js": "Historical Stage 12 policy-runtime closeout validator.",
+      "smoke_stage12_step36b_post_refresh_runtime_semantics.js": "Historical post-refresh runtime-semantics validator.",
+      "smoke_stage12_step37b_decision_runtime_shim_debt.js": "Historical decision-runtime shim debt validator.",
+      "smoke_stage12_step37c_decision_runtime_shim_package_plan.js": "Historical decision-runtime shim package-plan validator.",
+      "smoke_stage12_step37d_decision_runtime_shim_contract_negative_controls.js": "Historical shim contract negative-control validator.",
+      "smoke_stage12_step37e_decision_runtime_shim_skeleton_package.js": "Historical shim skeleton-package validator.",
+      "smoke_stage12_step37f_decision_runtime_shim_skeleton_negative_controls.js": "Historical shim skeleton negative controls.",
+      "smoke_stage12_step37g_decision_runtime_shim_operator_gate.js": "Historical shim operator-gate validator.",
+      "smoke_stage12_step37h_decision_runtime_shim_apply_package_dry_run.js": "Historical shim apply-package dry run.",
+      "smoke_stage12_step37i_decision_runtime_shim_dry_run_negative_controls.js": "Historical shim dry-run negative controls.",
+      "smoke_stage12_step37j_decision_runtime_shim_implementation_proposal.js": "Historical shim implementation-proposal validator.",
+      "smoke_stage12_step37k_decision_runtime_shim_implementation_proposal_negative_controls.js": "Historical implementation-proposal negative controls.",
+      "smoke_stage12_step37l_decision_runtime_shim_approval_request.js": "Historical shim approval-request validator.",
+      "smoke_stage12_step37m_decision_runtime_shim_approval_request_negative_controls.js": "Historical approval-request negative controls.",
+      "smoke_stage12_step38ah_post_impl_hygiene.js": "Historical post-implementation hygiene validator.",
+      "smoke_workflow_state.js": "Historical workflow-state validator for removed fields.",
+      "stress_workflow.js": "Historical workflow stress harness for removed progress state.",
+    },
+    tail: "These files are retained for provenance and are excluded from current run-all authority.",
+  },
+  "_workflow/historical/progress_state_dependent_validators/_workflow": {
+    title: "retired progress-state workflow helper directory map",
+    updated: "2026-08-17",
+    entries: {
+      "scripts/": "Historical workflow scripts coupled to removed progress-state fields.",
+    },
+    tail: "This directory belongs to the retired validator snapshot and is not active workflow truth.",
+  },
+  "_workflow/historical/progress_state_dependent_validators/_workflow/scripts": {
+    title: "retired progress-state workflow scripts directory map",
+    updated: "2026-08-17",
+    entries: {
+      "closeout_freeze.js": "Historical closeout-freeze helper.",
+      "s34_check.js": "Historical Stage 34 check helper.",
+      "validate_decision_runtime_integration_plan.js": "Historical decision-runtime integration-plan validator.",
+      "validate_decision_runtime_interface_contract_readiness_gate.js": "Historical interface-contract readiness gate.",
+      "validate_decision_runtime_operator_gate.js": "Historical decision-runtime operator gate.",
+      "validate_runtime_scope_approval_package.js": "Historical runtime-scope approval-package validator.",
+      "validate_runtime_scope_operator_decision.js": "Historical runtime-scope operator-decision validator.",
+      "workflow_validate.js": "Historical workflow validator coupled to removed progress state.",
+    },
+    tail: "These scripts are provenance only and must not be used as active control-plane entrypoints.",
+  },
   "_workflow/operator_decisions": {
     title: "workflow operator decisions directory map",
     updated: "2026-08-17",
@@ -187,20 +281,6 @@ const CONFIG = {
     },
     tail: "Inventories classify current evidence and migration state. They do not replace repository, runtime, connector, or active workflow truth.",
   },
-  "_workflow/control_plane/file_backups": {
-    title: "control-plane file backups directory map",
-    entries: {
-      "DIRECTORY.md": "Functional map for the control-plane file-backup area itself.",
-    },
-    tail: "This directory stores runtime-owned backup bundles produced by bounded operational procedures. Treat the contents as support artifacts, not active workflow authority.",
-  },
-  "_workflow/control_plane/oauth21_prune_backups": {
-    title: "oauth21 prune backups directory map",
-    entries: {
-      "DIRECTORY.md": "Functional map for the OAuth21 prune backup area itself.",
-    },
-    tail: "This directory stores backup bundles emitted by explicit OAuth21 prune execute runs. Treat the contents as control-plane support artifacts, not canonical workflow truth.",
-  },
   "scripts": {
     title: "scripts directory map",
     updated: "2026-08-17",
@@ -209,6 +289,7 @@ const CONFIG = {
       "audit_directory_docs.js": "Audits high-churn tracked directories for `DIRECTORY.md` coverage through fail-closed bounded CLI options without modifying files.",
       "backfill-memory-embeddings.js": "Performs bounded, idempotent hydration of missing active-memory vectors with fail-closed CLI validation and aggregate-only results.",
       "capture_cbm_contract.js": "Captures bounded CBM tool-contract evidence for regression comparison with fail-closed mode and executable selection.",
+      "cleanup-run-all-temp.js": "Plans or explicitly applies bounded cleanup of stale run_all_smokes temp stores while always preserving active process directories.",
       "extract_upstream_repo_patterns.js": "Extracts bounded implementation signals and transplant candidates from the local upstream-repository corpus with fail-closed CLI validation.",
       "provision-memory-embedding-token.ps1": "Provisions or rotates the MEM-1 token file through a secure prompt or stdin with a restricted Windows ACL and secret-free output.",
       "repair_cbm_v090_edges_schema.js": "Repairs the legacy CBM v0.9.0 edge schema under explicit backup-manifest and fail-closed apply controls.",
@@ -324,14 +405,22 @@ const CONFIG = {
   },
   "src/integrations/codebase_memory": {
     title: "codebase-memory integration directory map",
-    updated: "2026-07-27",
+    updated: "2026-08-17",
     entries: {
-      "cbm_cli_bridge.js": "Native process bridge for executable discovery, stdin JSON transport, timeouts, output parsing, normalization, and queue-aware execution.",
+      "cbm_cli_bridge.js": "Native process bridge for executable discovery, stdin JSON transport, timeouts, output parsing, normalization, and queue-aware execution; probes and tool calls execute from the same authorized workspace root exported through CBM_ALLOWED_ROOT.",
       "cbm_contract_registry.js": "Loads and validates versioned native CBM contract manifests used by bridge compatibility checks.",
       "cbm_tools.js": "Runtime-facing CBM orchestration, containment, mutation locking, ADR preservation, error mapping, and result shaping.",
       "contracts/": "Versioned native codebase-memory contract manifests; currently anchored to v0.9.0.",
     },
     tail: "This directory describes bridge and runtime behavior. Repository files remain repository truth, while persisted CBM graphs and ADR data remain index truth.",
+  },
+  "src/integrations/codebase_memory/contracts": {
+    title: "codebase-memory native contract directory map",
+    updated: "2026-08-17",
+    entries: {
+      "v0.9.0.json": "Pinned native codebase-memory v0.9.0 command, schema, capability, and compatibility contract consumed by the bridge registry.",
+    },
+    tail: "Contract manifests describe verified native behavior. Update them only with corresponding capture evidence and bridge regression coverage.",
   },
   "tools": {
     title: "tools directory map",
@@ -388,6 +477,11 @@ function render(cfg) {
 }
 
 function writeFile(target, body) {
+  if (cliOptions.mode === "check") {
+    const current = fs.existsSync(target) ? fs.readFileSync(target, "utf8") : null;
+    if (current !== body) driftedFiles.push(path.relative(ROOT, target).replaceAll("\\", "/"));
+    return;
+  }
   fs.mkdirSync(path.dirname(target), { recursive: true });
   fs.writeFileSync(target, body, "utf8");
   console.log(`wrote ${path.relative(ROOT, target)}`);
@@ -506,5 +600,15 @@ for (const rootConfig of runtimeOwnedRoots) {
         entries: childEntries,
       })
     );
+  }
+}
+
+if (cliOptions.mode === "check") {
+  if (driftedFiles.length > 0) {
+    console.error(`directory_docs_drift: ${driftedFiles.length} generated file(s) are missing or stale`);
+    for (const relPath of driftedFiles) console.error(relPath);
+    process.exitCode = 1;
+  } else {
+    console.log("directory docs are current");
   }
 }

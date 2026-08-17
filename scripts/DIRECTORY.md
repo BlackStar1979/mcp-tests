@@ -12,7 +12,7 @@ Updated: 2026-08-17
 - `capture_cbm_contract.js`
   Captures bounded CBM tool-contract evidence for regression comparison with fail-closed mode and executable selection.
 - `cleanup-run-all-temp.js`
-  Plans or explicitly applies bounded cleanup of stale `run_all_smokes` temp stores while always preserving active process directories.
+  Plans or explicitly applies bounded cleanup of stale run_all_smokes temp stores while always preserving active process directories.
 - `extract_upstream_repo_patterns.js`
   Extracts bounded implementation signals and transplant candidates from the local upstream-repository corpus with fail-closed CLI validation.
 - `provision-memory-embedding-token.ps1`

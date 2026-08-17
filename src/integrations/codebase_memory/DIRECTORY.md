@@ -4,7 +4,7 @@ Status: active codebase-memory integration directory map
 Updated: 2026-08-17
 
 - `cbm_cli_bridge.js`
-  Native process bridge for executable discovery, stdin JSON transport, timeouts, output parsing, normalization, and queue-aware execution; probes and tool calls execute from the same authorized workspace root exported through `CBM_ALLOWED_ROOT`.
+  Native process bridge for executable discovery, stdin JSON transport, timeouts, output parsing, normalization, and queue-aware execution; probes and tool calls execute from the same authorized workspace root exported through CBM_ALLOWED_ROOT.
 - `cbm_contract_registry.js`
   Loads and validates versioned native CBM contract manifests used by bridge compatibility checks.
 - `cbm_tools.js`
