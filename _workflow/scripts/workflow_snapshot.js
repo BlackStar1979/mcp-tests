@@ -59,6 +59,9 @@ const FORBIDDEN_PATH_SEGMENTS = new Set([
   "node_modules",
 ]);
 
+const TRANSIENT_RENAME_CODES = new Set(["EACCES", "EBUSY", "EPERM"]);
+const SNAPSHOT_RENAME_RETRY_DELAYS_MS = [25, 50, 100, 200, 400, 500, 500];
+
 function safeLabel(label) {
   return String(label || "workflow-snapshot")
     .toLowerCase()
@@ -69,6 +72,24 @@ function safeLabel(label) {
 
 function sha256(buffer) {
   return crypto.createHash("sha256").update(buffer).digest("hex");
+}
+
+function sleepSync(milliseconds) {
+  Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, milliseconds);
+}
+
+function publishSnapshotDirectory(stagingDir, snapshotDir) {
+  for (let attempt = 0; ; attempt += 1) {
+    try {
+      fs.renameSync(stagingDir, snapshotDir);
+      return;
+    } catch (error) {
+      if (!TRANSIENT_RENAME_CODES.has(error?.code) || attempt >= SNAPSHOT_RENAME_RETRY_DELAYS_MS.length) {
+        throw error;
+      }
+      sleepSync(SNAPSHOT_RENAME_RETRY_DELAYS_MS[attempt]);
+    }
+  }
 }
 
 function parseArgs(argv) {
@@ -161,7 +182,7 @@ function createSnapshot({ label = "workflow-snapshot", files = DEFAULT_FILES } =
       entries,
     };
     fs.writeFileSync(path.join(stagingDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
-    fs.renameSync(stagingDir, snapshotDir);
+    publishSnapshotDirectory(stagingDir, snapshotDir);
     return manifest;
   } catch (error) {
     fs.rmSync(stagingDir, { recursive: true, force: true });

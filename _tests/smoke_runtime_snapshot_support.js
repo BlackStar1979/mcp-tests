@@ -5,10 +5,12 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { createSnapshot } = require("../_workflow/scripts/workflow_snapshot");
 
 const ROOT = path.join(__dirname, "..");
 const SCRIPT = path.join(ROOT, "_workflow", "scripts", "workflow_snapshot.js");
 const SNAPSHOT_ROOT = path.join(ROOT, "_workflow", "control_plane", "snapshots");
+const SNAPSHOT_RUNTIME_ENTRY = "server.js";
 const REQUIRED_RUNTIME_FILES = [
   "server.js",
   "src/stage_metadata.js",
@@ -95,6 +97,28 @@ try {
   }
 
   assert.ok(fs.existsSync(path.join(ROOT, manifest.path, "manifest.json")), "manifest.json must exist");
+
+  const renameRetryLabel = `${label}-rename-retry`;
+  const originalRenameSync = fs.renameSync;
+  let renameAttempts = 0;
+  let renameRetryManifest = null;
+  try {
+    fs.renameSync = (...args) => {
+      renameAttempts += 1;
+      if (renameAttempts === 1) {
+        const error = new Error("injected transient rename lock");
+        error.code = "EPERM";
+        throw error;
+      }
+      return originalRenameSync(...args);
+    };
+    renameRetryManifest = createSnapshot({ label: renameRetryLabel, files: [SNAPSHOT_RUNTIME_ENTRY] });
+  } finally {
+    fs.renameSync = originalRenameSync;
+  }
+  assert.equal(renameAttempts, 2, "one transient rename failure must be retried once");
+  assert.ok(fs.existsSync(path.join(ROOT, renameRetryManifest.path, "server.js")));
+  removeTestSnapshot(renameRetryLabel, renameRetryManifest.path);
 
   const snapshotsBeforeDuplicate = fs.readdirSync(SNAPSHOT_ROOT).sort();
   const duplicateLabel = runSnapshot([

@@ -12,7 +12,7 @@ Updated: 2026-08-17
 - `process_runner_observability.js`
   Bounded process-audit analyzer with strict singleton/repeatable CLI validation and no raw argument or output disclosure.
 - `workflow_snapshot.js`, `patch_section_by_markers.js`
-  Workflow snapshotting and bounded text patch helpers with fail-closed singleton/repeatable option validation before mutation; relative paths are repository-root anchored rather than caller-cwd dependent.
+  Repository-root-anchored snapshot and bounded text patch helpers with fail-closed singleton/repeatable option validation; snapshot publication uses bounded retry for transient Windows same-volume rename locks and rollback on terminal failure.
 - `compact_runtime_logs.js`
   Runtime-audit compaction and explicit raw-log replacement helper with strict path/tail validation before output or replacement and repository-root-relative path semantics.
 - `sessionless_*`, `connector_migration_dry_run_harness.js`

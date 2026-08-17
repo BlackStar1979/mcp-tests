@@ -5,8 +5,8 @@
 // Proves that a full isolated run of run_all_smokes (--skip-network with
 // MCP_TEST_AUDIT_LOG set) leaves the production audit log
 // _logs/.mcp-tests-audit.jsonl byte/hash/line-identical and does not retain
-// runtime snapshot test artifacts. It spawns run_all_smokes
-// as a child with a recursion-guard env flag so the inner run skips THIS guard
+// runtime snapshot test artifacts. It spawns run_all_smokes from a foreign cwd
+// with a recursion-guard env flag so the inner run skips THIS guard
 // (preventing infinite recursion). The inner run's shared server uses a
 // dynamically-acquired free port so it cannot collide with an outer run that
 // already holds the default port 3095. No runtime/MCP/audit-semantics change; no
@@ -63,6 +63,8 @@ function snapshot(file) {
 }
 
 (async () => {
+  const foreignCwd = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-run-all-cwd-"));
+  try {
   // Distinct shared-server port for the inner run (free port, or an explicit
   // override for deterministic local runs).
   const innerPort = process.env.MCP_TEST_NO_POLLUTION_INNER_PORT
@@ -78,9 +80,9 @@ function snapshot(file) {
 
   const child = spawnSync(
     process.execPath,
-    ["_tests/run_all_smokes.js", "--skip-network"],
+    [path.join(REPO_ROOT, "_tests", "run_all_smokes.js"), "--skip-network"],
     {
-      cwd: REPO_ROOT,
+      cwd: foreignCwd,
       env: {
         ...process.env,
         // Recursion guard: tell run_all_smokes to skip ONLY this no-pollution guard.
@@ -97,7 +99,6 @@ function snapshot(file) {
     }
   );
 
-  try {
     assert.equal(
       child.status,
       0,
@@ -124,6 +125,7 @@ function snapshot(file) {
 
     console.log("smoke_harness_no_pollution_guard ok");
   } finally {
+    fs.rmSync(foreignCwd, { recursive: true, force: true });
   }
 })().catch((error) => {
   console.error(error?.stack || error?.message || String(error));
