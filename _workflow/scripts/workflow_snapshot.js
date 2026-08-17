@@ -123,7 +123,7 @@ function createSnapshot({ label = "workflow-snapshot", files = DEFAULT_FILES } =
     const source = path.resolve(ROOT, normalizedPath);
     const relativeSource = path.relative(ROOT, source).replace(/\\/g, "/");
     if (relativeSource.startsWith("../") || relativeSource === ".." || path.isAbsolute(relativeSource)) {
-      throw new Error(`resolved path escapes repository root: ${filePath}`);
+      throw new Error(`resolved path escapes repository root: ${normalizedPath}`);
     }
     if (!fs.existsSync(source)) {
       entries.push({ path: normalizedPath, copied: false, reason: "missing" });

@@ -10,6 +10,8 @@ Current repo/runtime note: profile `tests`; live OAuth21 `3008` is aligned with 
 
 `OBS-1-LIVE-TRAIL` is accepted at `4/4`: current and retained audit windows answer the active client-entry question without broader logging. All named-option local JavaScript CLI entrypoints now converge on the shared fail-closed parser, including explicit repeatable options for snapshot files, CBM projects, and ignored trace IDs; malformed arguments cannot silently alter scope, select implicit defaults, or reach mutation behavior.
 
+Snapshot-harness hygiene is closed: runtime snapshot smoke execution removes only its own uniquely labelled direct-child fixture in `finally`, the full-suite no-pollution guard verifies an unchanged snapshot directory set, and one-time cleanup removed `684` smoke artifacts while preserving `17` named operational snapshots. No runtime restart or connector refresh is required.
+
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
@@ -76,9 +78,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=305`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=306`.
 - Public section count: `7`.
-- Authenticated smoke count: `305`.
+- Authenticated smoke count: `306`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.

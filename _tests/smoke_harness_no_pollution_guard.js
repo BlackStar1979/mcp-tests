@@ -4,7 +4,8 @@
 //
 // Proves that a full isolated run of run_all_smokes (--skip-network with
 // MCP_TEST_AUDIT_LOG set) leaves the production audit log
-// _logs/.mcp-tests-audit.jsonl byte/hash/line-identical. It spawns run_all_smokes
+// _logs/.mcp-tests-audit.jsonl byte/hash/line-identical and does not retain
+// runtime snapshot test artifacts. It spawns run_all_smokes
 // as a child with a recursion-guard env flag so the inner run skips THIS guard
 // (preventing infinite recursion). The inner run's shared server uses a
 // dynamically-acquired free port so it cannot collide with an outer run that
@@ -21,6 +22,7 @@ const { spawnSync } = require("node:child_process");
 
 const REPO_ROOT = path.join(__dirname, "..");
 const PROD_AUDIT_LOG = path.join(REPO_ROOT, "_logs", ".mcp-tests-audit.jsonl");
+const SNAPSHOT_ROOT = path.join(REPO_ROOT, "_workflow", "control_plane", "snapshots");
 function expectedInnerResultCount() {
   const scriptsPath = path.join(__dirname, "run_all_smoke_scripts.json");
   const scripts = JSON.parse(fs.readFileSync(scriptsPath, "utf8"));
@@ -72,6 +74,7 @@ function snapshot(file) {
 
   // Snapshot production audit log immediately before the isolated child run.
   const before = snapshot(PROD_AUDIT_LOG);
+  const snapshotsBefore = fs.readdirSync(SNAPSHOT_ROOT).sort();
 
   const child = spawnSync(
     process.execPath,
@@ -117,6 +120,7 @@ function snapshot(file) {
     assert.equal(after.size, before.size, "prod audit log size unchanged");
     assert.equal(after.sha256, before.sha256, "prod audit log sha256 unchanged");
     assert.equal(after.lines, before.lines, "prod audit log line count unchanged");
+    assert.deepEqual(fs.readdirSync(SNAPSHOT_ROOT).sort(), snapshotsBefore, "snapshot directories unchanged");
 
     console.log("smoke_harness_no_pollution_guard ok");
   } finally {

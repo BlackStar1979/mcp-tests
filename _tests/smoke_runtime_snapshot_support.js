@@ -7,6 +7,7 @@ const { spawnSync } = require("node:child_process");
 
 const ROOT = path.join(__dirname, "..");
 const SCRIPT = path.join(ROOT, "_workflow", "scripts", "workflow_snapshot.js");
+const SNAPSHOT_ROOT = path.join(ROOT, "_workflow", "control_plane", "snapshots");
 const REQUIRED_RUNTIME_FILES = [
   "server.js",
   "src/stage_metadata.js",
@@ -50,52 +51,74 @@ function assertRejected(args, pattern) {
   assert.match(`${result.stdout}\n${result.stderr}`, pattern);
 }
 
-const label = `stage12-runtime-snapshot-support-${process.pid}-${Date.now()}`;
-const result = runSnapshot([
-  "--label",
-  label,
-  ...REQUIRED_RUNTIME_FILES.flatMap((filePath) => ["--file", filePath]),
-]);
+function removeTestSnapshot(label, manifestPath = "") {
+  const candidates = manifestPath
+    ? [path.resolve(ROOT, manifestPath)]
+    : fs.readdirSync(SNAPSHOT_ROOT)
+        .filter((entry) => entry.endsWith(`_${label}`))
+        .map((entry) => path.join(SNAPSHOT_ROOT, entry));
 
-assert.equal(result.status, 0, `runtime snapshot must succeed\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
-
-const manifest = parseManifestFromStdout(result.stdout);
-assert.equal(manifest.snapshot_version, "workflow-snapshot-v1");
-assert.equal(manifest.label, label);
-assert.ok(manifest.path.startsWith("_workflow/control_plane/snapshots/"));
-assert.equal(manifest.entries.length, REQUIRED_RUNTIME_FILES.length);
-
-for (const filePath of REQUIRED_RUNTIME_FILES) {
-  const entry = manifest.entries.find((item) => item.path === filePath);
-  assert.ok(entry, `manifest must include ${filePath}`);
-  assert.equal(entry.copied, true, `${filePath} must be copied`);
-  assert.match(entry.sha256, /^[a-f0-9]{64}$/);
-  assert.ok(entry.bytes > 0, `${filePath} must be non-empty`);
-  assert.ok(fs.existsSync(path.join(ROOT, manifest.path, filePath)), `${filePath} copy must exist`);
+  assert.ok(candidates.length <= 1, `test snapshot label must resolve to at most one directory: ${label}`);
+  for (const candidate of candidates) {
+    assert.equal(path.dirname(candidate), SNAPSHOT_ROOT, `test cleanup path must be a direct snapshot child: ${candidate}`);
+    assert.equal(path.basename(candidate).endsWith(`_${label}`), true, `test cleanup path must match label: ${candidate}`);
+    fs.rmSync(candidate, { recursive: true, force: true });
+  }
 }
 
-assert.ok(fs.existsSync(path.join(ROOT, manifest.path, "manifest.json")), "manifest.json must exist");
+const snapshotsAtStart = fs.readdirSync(SNAPSHOT_ROOT).sort();
+const label = `stage12-runtime-snapshot-support-${process.pid}-${Date.now()}`;
+let manifest = null;
+try {
+  const result = runSnapshot([
+    "--label",
+    label,
+    ...REQUIRED_RUNTIME_FILES.flatMap((filePath) => ["--file", filePath]),
+  ]);
 
-const snapshotRoot = path.join(ROOT, "_workflow", "control_plane", "snapshots");
-const snapshotsBeforeDuplicate = fs.readdirSync(snapshotRoot).sort();
-const duplicateLabel = runSnapshot([
-  "--label", `${label}-first`,
-  "--label", `${label}-second`,
-  "--file", "server.js",
-]);
-assert.equal(duplicateLabel.status, 2, duplicateLabel.stderr || duplicateLabel.stdout);
-assert.equal(JSON.parse(duplicateLabel.stderr).error_code, "cli_argument_duplicate");
-assert.deepEqual(fs.readdirSync(snapshotRoot).sort(), snapshotsBeforeDuplicate);
+  assert.equal(result.status, 0, `runtime snapshot must succeed\nSTDOUT:\n${result.stdout}\nSTDERR:\n${result.stderr}`);
 
-assertRejected(["--label", `${label}-absolute`, "--file", path.join(ROOT, "server.js")], /absolute path rejected/);
-assertRejected(["--label", `${label}-traversal`, "--file", "../mcp/server_tools.js"], /traversal rejected/);
-assertRejected(["--label", `${label}-secrets`, "--file", ".secrets/token.txt"], /forbidden snapshot path segment/);
-assertRejected(["--label", `${label}-logs`, "--file", "_logs/.mcp-tests-audit.jsonl"], /forbidden snapshot path segment/);
-assertRejected(["--label", `${label}-node-modules`, "--file", "node_modules/example.js"], /forbidden snapshot path segment/);
-assertRejected(["--label", `${label}-nested-snapshots`, "--file", "_workflow/control_plane/snapshots"], /nested control-plane snapshots rejected/);
-assertRejected(
-  ["--label", `${label}-outside-allowlist`, "--file", "src/runtime/not_allowlisted.js"],
-  /explicitly allowlisted runtime files/
-);
+  manifest = parseManifestFromStdout(result.stdout);
+  assert.equal(manifest.snapshot_version, "workflow-snapshot-v1");
+  assert.equal(manifest.label, label);
+  assert.ok(manifest.path.startsWith("_workflow/control_plane/snapshots/"));
+  assert.equal(manifest.entries.length, REQUIRED_RUNTIME_FILES.length);
+
+  for (const filePath of REQUIRED_RUNTIME_FILES) {
+    const entry = manifest.entries.find((item) => item.path === filePath);
+    assert.ok(entry, `manifest must include ${filePath}`);
+    assert.equal(entry.copied, true, `${filePath} must be copied`);
+    assert.match(entry.sha256, /^[a-f0-9]{64}$/);
+    assert.ok(entry.bytes > 0, `${filePath} must be non-empty`);
+    assert.ok(fs.existsSync(path.join(ROOT, manifest.path, filePath)), `${filePath} copy must exist`);
+  }
+
+  assert.ok(fs.existsSync(path.join(ROOT, manifest.path, "manifest.json")), "manifest.json must exist");
+
+  const snapshotsBeforeDuplicate = fs.readdirSync(SNAPSHOT_ROOT).sort();
+  const duplicateLabel = runSnapshot([
+    "--label", `${label}-first`,
+    "--label", `${label}-second`,
+    "--file", "server.js",
+  ]);
+  assert.equal(duplicateLabel.status, 2, duplicateLabel.stderr || duplicateLabel.stdout);
+  assert.equal(JSON.parse(duplicateLabel.stderr).error_code, "cli_argument_duplicate");
+  assert.deepEqual(fs.readdirSync(SNAPSHOT_ROOT).sort(), snapshotsBeforeDuplicate);
+
+  assertRejected(["--label", `${label}-absolute`, "--file", path.join(ROOT, "server.js")], /absolute path rejected/);
+  assertRejected(["--label", `${label}-traversal`, "--file", "../mcp/server_tools.js"], /traversal rejected/);
+  assertRejected(["--label", `${label}-secrets`, "--file", ".secrets/token.txt"], /forbidden snapshot path segment/);
+  assertRejected(["--label", `${label}-logs`, "--file", "_logs/.mcp-tests-audit.jsonl"], /forbidden snapshot path segment/);
+  assertRejected(["--label", `${label}-node-modules`, "--file", "node_modules/example.js"], /forbidden snapshot path segment/);
+  assertRejected(["--label", `${label}-nested-snapshots`, "--file", "_workflow/control_plane/snapshots"], /nested control-plane snapshots rejected/);
+  assertRejected(
+    ["--label", `${label}-outside-allowlist`, "--file", "src/runtime/not_allowlisted.js"],
+    /explicitly allowlisted runtime files/
+  );
+} finally {
+  removeTestSnapshot(label, manifest?.path);
+}
+
+assert.deepEqual(fs.readdirSync(SNAPSHOT_ROOT).sort(), snapshotsAtStart, "snapshot smoke must not retain test artifacts");
 
 console.log("smoke_runtime_snapshot_support ok");

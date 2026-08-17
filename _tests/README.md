@@ -18,7 +18,7 @@ Audit snapshot from `2026-08-16`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `a62060b6-1e39-4a1b-826d-8b87720c0cde`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
+- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `19d40e88-544a-447d-b091-81a00d1c5a69`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
 - current manifest contains `314` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `313` sectioned scripts: `7` public and `306` authenticated
 ## Orientation
 
@@ -51,7 +51,7 @@ Latest full active validation:
 - Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks
 - Structured file operations: durable content staging, bounded streaming transforms, journaled split/merge recovery, Markdown AST selectors, and agent-routing guidance
 - Control-plane CLI integrity: shared fail-closed parsing and no-mutation rejection coverage for OAuth pruning, marker-based patching, and runtime-log replacement
-- Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, and snapshot/state consistency
+- Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, snapshot/state consistency, and a no-retained-fixture snapshot smoke contract guarded again by the full-suite pollution harness
 
 ## Naming Notes
 
