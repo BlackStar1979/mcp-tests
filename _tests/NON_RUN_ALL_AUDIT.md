@@ -192,7 +192,7 @@ These current targeted/debt guards are additionally grouped in `run_all_targeted
   Recommendation: keep archived unless rewritten against current public-sandbox evidence.
 - `smoke_public_sandbox_sync.js`
   Reason: historical wrapper pointing to a missing Step 38E sandbox-sync patch manifest.
-  Recommendation: keep archived unless rewritten against current public-sandbox evidence.
+  Recommendation: keep archived. The corresponding unguarded active copy mutator is retired, and current source-authority tests reject public-sandbox copies as current truth.
 - `smoke_raw_rpc_harness_manifest.js`
   Reason: historical wrapper pointing to a missing Step 38G raw-RPC harness manifest.
   Recommendation: keep archived unless the harness is rebuilt as a current artifact.

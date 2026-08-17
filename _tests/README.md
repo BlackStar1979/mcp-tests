@@ -50,7 +50,7 @@ Latest full active validation:
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
 - Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks
 - Structured file operations: durable content staging, bounded streaming transforms, journaled split/merge recovery, Markdown AST selectors, and agent-routing guidance
-- Control-plane CLI integrity: shared fail-closed parsing, no-mutation rejection coverage, and foreign-cwd root-fidelity checks for OAuth pruning, marker-based patching, runtime-log replacement, root-spec loading, validators, evaluators, and index-authority reporting
+- Control-plane CLI integrity: shared fail-closed parsing, no-mutation rejection coverage, foreign-cwd root-fidelity checks for OAuth pruning, marker-based patching, runtime-log replacement, root-spec loading, validators, evaluators, and index-authority reporting, plus a retirement guard for the obsolete public-sandbox copy mutator
 - Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, snapshot/state consistency, transient Windows rename retry, and a no-retained-fixture foreign-cwd full-suite pollution harness
 
 ## Naming Notes

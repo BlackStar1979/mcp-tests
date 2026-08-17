@@ -11,6 +11,7 @@ const ROOT = path.resolve(__dirname, "..");
 const PATCH_SCRIPT = path.join(ROOT, "_workflow", "scripts", "patch_section_by_markers.js");
 const COMPACT_SCRIPT = path.join(ROOT, "_workflow", "scripts", "compact_runtime_logs.js");
 const PRUNE_SCRIPT = path.join(ROOT, "_workflow", "scripts", "test_mcp_oauth21_prune.js");
+const RETIRED_PUBLIC_SANDBOX_SYNC = path.join(ROOT, "_workflow", "scripts", "public_sandbox_sync.js");
 const REPO_ROOT_READERS = [
   "_workflow/scripts/evaluate_server_spec_decisions.js",
   "_workflow/scripts/evaluate_server_spec_decision_negative_controls.js",
@@ -64,6 +65,23 @@ for (const relativePath of NAMED_OPTION_SCRIPTS) {
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "control-plane-cli-integrity-"));
 const repoTempRoot = fs.mkdtempSync(path.join(ROOT, "_control", "control-plane-cli-root-"));
 try {
+  assert.equal(
+    fs.existsSync(RETIRED_PUBLIC_SANDBOX_SYNC),
+    false,
+    "the obsolete public-sandbox copy mutator must remain retired",
+  );
+  const workflowScriptsReadme = fs.readFileSync(path.join(ROOT, "_workflow", "scripts", "README.md"), "utf8");
+  assert.doesNotMatch(
+    workflowScriptsReadme.split("## Current interpretation")[0],
+    /public_sandbox_sync\.js/,
+    "workflow script groups must not advertise the retired mutator",
+  );
+  assert.match(
+    workflowScriptsReadme,
+    /`public_sandbox_sync\.js` is retired/,
+    "workflow guidance must preserve the explicit retirement boundary",
+  );
+
   for (const relativePath of REPO_ROOT_READERS) {
     const result = run(path.join(ROOT, relativePath), [], {}, tempRoot);
     assert.equal(result.status, 0, `${relativePath} must work from a foreign cwd\n${result.stderr || result.stdout}`);
