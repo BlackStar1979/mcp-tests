@@ -4,7 +4,7 @@ Status: active navigation index
 Date: 2026-08-17
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; live OAuth21 `3008` has source commit `f2a574b28bed53b32093d23d0bd06321e58c4b8c` loaded at `server_start_id = 2026-08-17T15:20:52.127Z`, while subsequent repository commits add workflow-only acceptance evidence. The runtime exposes `98` connector-visible tools with fingerprint `ec7d3af5b4ea17f5`. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), and `DEBT-1-RETIREMENT` (`7 + 305`) are live-loaded and live-accepted. `MRTR` remains fixture-only conformance evidence at `7 + 305`; runtime loading is not applicable because it has no production runtime surface.
+Current repo/runtime note: profile `tests`; live OAuth21 `3008` has source commit `555fad0` loaded by controlled restart `manual-1786988583476` at `server_start_id = 2026-08-17T17:43:05.322Z`. The runtime exposes `98` connector-visible tools with fingerprint `ec7d3af5b4ea17f5`; `/healthz`, post-restart connector calls, and durable process recovery are green. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), and `DEBT-1-RETIREMENT` (`7 + 305`) are live-loaded and live-accepted. `MRTR` remains fixture-only conformance evidence at `7 + 305`; runtime loading is not applicable because it has no production runtime surface.
 
 `DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
@@ -406,7 +406,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as active interpretation.
 
-Next recommended action: execute `POL-1A`. The first policy reconciliation moved the canonical matrix from `6/24` to `10/24` implemented and reproduced/fixed a configured-root symlink/junction escape in repo truth. The source fix is not live on OAuth21 3008 until a controlled supervisor restart; no connector refresh is required.
+Next recommended action: execute `POL-1A`. The first policy reconciliation moved the canonical matrix from `6/24` to `10/24` implemented and reproduced/fixed a configured-root symlink/junction escape. Controlled restart `manual-1786988583476` live-loaded commit `555fad0` on OAuth21 3008 at `server_start_id = 2026-08-17T17:43:05.322Z`; the `98`-tool surface and fingerprint `ec7d3af5b4ea17f5` remained unchanged, so no connector refresh is required.
 Readiness-derived default next package queue:
 
 1. `POL-1A` — critical policy reconciliation

@@ -76,3 +76,18 @@ Recommended sequence:
 ## Runtime/load boundary
 
 The source fix changes runtime-imported src/util/workspace_roots.js. Repository tests can validate it immediately, but the currently running OAuth21 3008 process does not gain the fix until an approved controlled restart through the existing supervisor authority. No connector refresh is required because the MCP-visible tool surface and schemas do not change.
+
+## Live-load acceptance
+
+Controlled supervisor request `manual-1786988583476` with exit code `42` live-loaded source commit `555fad0` on OAuth21 `3008`.
+
+Accepted live evidence:
+
+- audit `server_start` reports `server_start_id = 2026-08-17T17:43:05.322Z`;
+- `GET http://127.0.0.1:3008/healthz` returned `200`, OAuth21/internal, and `tools_count = 98`;
+- tool-surface state loaded the prior fingerprint and saved current fingerprint `ec7d3af5b4ea17f5`, with no `tool_surface_changed` event for the new server start;
+- connector-visible TEST MCP calls remained callable after restart;
+- durable full-suite job `32fc6867-a5fc-4000-9a3f-2c58f22b680c`, created before restart, was still readable afterward with `recovered_after_restart = true`;
+- no connector refresh or OAuth reauthorization was required.
+
+The configured-root symlink/junction fix is therefore repo-applied and live-loaded. `POL-1` remains `2/4` because fourteen required policy rows still need evidence-based reconciliation; the next package remains `POL-1A`.

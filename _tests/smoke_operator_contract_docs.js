@@ -184,7 +184,7 @@ assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1b-par
 assert.ok(readiness.includes("| POL-1 | Policy coverage convergence | 2/4 |"));
 assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
-assert.equal(workflowState.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-17T04:06:37.912Z");
+assert.equal(workflowState.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-17T17:43:05.322Z");
 assert.equal(workflowState.current_runtime_truth.oauth21_3008.p0_p3_live, true);
 assert.ok(tasksCloseout.includes("737cdc8b97ec1e966823dc2566eb7d5cd221e9b6"));
 assert.ok(mrtrCloseout.includes("runtime acceptance is non-applicable rather than pending"));
