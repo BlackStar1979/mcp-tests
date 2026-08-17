@@ -51,6 +51,16 @@ The same defect class was subsequently removed from the remaining workflow and o
 
 Regression coverage verifies spaced values, controlled unknown/missing-option errors, and the no-write invariant for rejected restart requests. No live probe, OAuth flow, restart trigger, connector refresh, or runtime mutation is part of this sweep.
 
+## Control-plane mutation boundary hardening
+
+The same fail-closed parser now protects the three remaining high-impact workflow mutation entrypoints:
+
+- `test_mcp_oauth21_prune.js` rejects positional, unknown, duplicate, conflicting-storage, invalid-mode, and invalid numeric arguments before record/backup execution;
+- `patch_section_by_markers.js` rejects unknown, missing, duplicate, and conflicting replacement sources before reading or writing the target, while preserving explicit empty-section replacement and replacement-file compatibility;
+- `compact_runtime_logs.js` rejects malformed paths, duplicates, unknown options, and invalid tail bounds before creating output or entering destructive `--replace` behavior.
+
+`smoke_control_plane_cli_integrity.js` runs only against temporary files and verifies the no-mutation invariant for rejected commands. Both `--name value` and `--name=value` remain accepted, and controlled parser failures use exit code `2` with bounded structured error metadata.
+
 ## Validation
 
 - targeted report, matrix, waiter, workflow, directory, and syntax guards: GREEN
@@ -60,6 +70,7 @@ Regression coverage verifies spaced values, controlled unknown/missing-option er
 - hermetic correction: the generator smoke snapshots every tracked `DIRECTORY.md`, restores exact bytes on normal or error exit, and verifies restoration before success
 - final full-suite job `e6ffe9e4-1afb-4809-81d0-9695199006ae`: `ok=true`, `public=7`, `tests_authenticated=305`, stderr empty, no output truncation, and no generated backup-map drift
 - follow-up CLI-integrity full-suite job `353b4f15-e86a-4ac2-bd57-ffe40ccff010`: `ok=true`, `public=7`, `tests_authenticated=305`, exit `0`, stderr empty, and no output truncation
+- control-plane mutation-boundary full-suite job `68d7322a-cd87-4e9e-947f-f5b8089731f2`: `ok=true`, `public=7`, `tests_authenticated=306`, exit `0`, job stderr empty, and no output truncation
 - `project_truth_audit`: `0` findings
 - deploy decision: `repo_or_internal_source`, no runtime restart, no connector refresh, no operator approval
 

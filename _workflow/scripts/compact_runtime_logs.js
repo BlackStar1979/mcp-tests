@@ -2,22 +2,27 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const ROOT = process.cwd();
 const DEFAULT_LOG = path.join(ROOT, "_logs", ".mcp-tests-audit.jsonl");
 const DEFAULT_OUT_DIR = path.join(ROOT, "_logs", "compact");
 
 function parseArgs(argv) {
-  const args = { log: DEFAULT_LOG, outDir: DEFAULT_OUT_DIR, tail: 200, replace: false };
-  for (let i = 2; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === "--log") args.log = path.resolve(ROOT, argv[++i]);
-    else if (arg === "--out-dir") args.outDir = path.resolve(ROOT, argv[++i]);
-    else if (arg === "--tail") args.tail = Number(argv[++i]);
-    else if (arg === "--replace") args.replace = true;
-    else throw new Error(`unknown argument: ${arg}`);
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["log", "out-dir", "tail"],
+    flagOptions: ["replace"],
+  });
+  const tail = Number(parsed.value("tail", "200"));
+  if (!Number.isSafeInteger(tail) || tail < 0) {
+    throw new CliArgumentError("cli_argument_value_invalid", "tail");
   }
-  return args;
+  return {
+    log: path.resolve(ROOT, parsed.value("log", DEFAULT_LOG)),
+    outDir: path.resolve(ROOT, parsed.value("out-dir", DEFAULT_OUT_DIR)),
+    tail,
+    replace: parsed.flag("replace"),
+  };
 }
 
 function compactRuntimeLog({ log, outDir, tail, replace }) {
@@ -70,11 +75,20 @@ function compactRuntimeLog({ log, outDir, tail, replace }) {
 
 if (require.main === module) {
   try {
-    console.log(JSON.stringify(compactRuntimeLog(parseArgs(process.argv)), null, 2));
+    console.log(JSON.stringify(compactRuntimeLog(parseArgs(process.argv.slice(2))), null, 2));
   } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({
+        success: false,
+        error_code: error.code,
+        argument: error.argument,
+        message: error.message,
+      }));
+      process.exit(2);
+    }
     console.error(error?.stack || error?.message || String(error));
     process.exit(1);
   }
 }
 
-module.exports = { compactRuntimeLog };
+module.exports = { compactRuntimeLog, parseArgs };

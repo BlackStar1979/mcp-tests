@@ -8,7 +8,7 @@ Current repo/runtime note: profile `tests`; live OAuth21 `3008` is aligned with 
 
 `DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
-`OBS-1-LIVE-TRAIL` is accepted at `4/4`: current and retained audit windows answer the active client-entry question without broader logging. Shared fail-closed parsing now also covers historical probes, the operational soak runner, and the restart-request helper, preventing malformed arguments from silently altering scope or writing a default trigger.
+`OBS-1-LIVE-TRAIL` is accepted at `4/4`: current and retained audit windows answer the active client-entry question without broader logging. Shared fail-closed parsing now also covers historical probes, the operational soak runner, restart requests, OAuth pruning, marker-based patching, and runtime-log replacement, preventing malformed arguments from silently altering scope or reaching mutation behavior.
 
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:

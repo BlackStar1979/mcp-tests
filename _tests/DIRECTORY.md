@@ -17,6 +17,8 @@ Updated: 2026-08-09
   Active smoke harness entrypoint.
 - `run_all_smoke_scripts.json`
   Default active smoke manifest.
+- `smoke_control_plane_cli_integrity.js`
+  Hermetic fail-closed CLI and no-mutation regression coverage for OAuth pruning, marker-based patching, and runtime-log replacement.
 - `smoke_directory_docs_audit.js`
   Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.
 - `smoke_build_index_tool.js`

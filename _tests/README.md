@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-08-16`:
 
-- `398` JavaScript files total in `_tests`
-- `313` active scripts currently listed in `run_all_smoke_scripts.json`
+- `399` JavaScript files total in `_tests`
+- `314` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs
@@ -18,8 +18,8 @@ Audit snapshot from `2026-08-16`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- last confirmed result from `2026-08-16`: `ok=true, version=0.40.0, public=7, tests_authenticated=305`; clean-history validation run `31963602072` also passed post-suite clean-tree verification
-- current manifest contains `313` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `312` sectioned scripts: `7` public and `305` authenticated
+- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `68d7322a-cd87-4e9e-947f-f5b8089731f2`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
+- current manifest contains `314` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `313` sectioned scripts: `7` public and `306` authenticated
 ## Orientation
 
 - Active smoke entrypoint: `run_all_smokes.js`
@@ -31,7 +31,7 @@ Latest full active validation:
 - Mixed-review split: `RUN_ALL_MIXED_REVIEW_CLASSIFICATION.md`
 - Rename-normalization migration audit: `RENAME_NORMALIZATION_MIGRATION_AUDIT.md`
 - Helper manifests: `run_all_workflow_control_plane_smoke_scripts.json`, `run_all_readiness_smoke_scripts.json`, `run_all_targeted_debt_smoke_scripts.json`
-- Current workflow/control-plane helper manifest size: `25` scripts
+- Current workflow/control-plane helper manifest size: `26` scripts
 - Current readiness helper manifest size: `45` scripts
 - Current targeted/debt helper manifest size: `6` scripts
 - Legacy retired auth archive: `archive/legacy_retired_auth/`
@@ -50,6 +50,7 @@ Latest full active validation:
 - Sessionless transition track: SEP inventory, hidden route, isolated/live activation, and migration-debt mapping toward a final single-route no-SSE target
 - Tools-list and hotplug track: tools cache, list-changed, state store preview/receipt/pipeline, and event-driven lifecycle checks
 - Structured file operations: durable content staging, bounded streaming transforms, journaled split/merge recovery, Markdown AST selectors, and agent-routing guidance
+- Control-plane CLI integrity: shared fail-closed parsing and no-mutation rejection coverage for OAuth pruning, marker-based patching, and runtime-log replacement
 - Workflow and state hygiene: closeout, navigation, topology cleanup, truth repair, LF policy, and snapshot/state consistency
 
 ## Naming Notes

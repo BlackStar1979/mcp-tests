@@ -3,26 +3,24 @@
 const fs = require("node:fs");
 const crypto = require("node:crypto");
 const path = require("node:path");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 function sha256(text) {
   return crypto.createHash("sha256").update(text, "utf8").digest("hex");
 }
 
 function parseArgs(argv) {
-  const args = {};
-  for (let i = 2; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (!arg.startsWith("--")) {
-      throw new Error(`unexpected positional argument: ${arg}`);
-    }
-    const key = arg.slice(2);
-    const next = argv[i + 1];
-    if (next === undefined || next.startsWith("--")) {
-      args[key] = true;
-    } else {
-      args[key] = next;
-      i += 1;
-    }
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["path", "start", "end", "replacement", "replacementFile", "expectedHash"],
+    flagOptions: ["dryRun"],
+    allowEmptyValueOptions: ["replacement"],
+  });
+  const args = { dryRun: parsed.flag("dryRun") };
+  for (const name of ["path", "start", "end", "replacement", "replacementFile", "expectedHash"]) {
+    if (parsed.hasValue(name)) args[name] = parsed.value(name);
+  }
+  if (parsed.hasValue("replacement") && parsed.hasValue("replacementFile")) {
+    throw new CliArgumentError("cli_argument_conflict", "replacement");
   }
   return args;
 }
@@ -92,7 +90,7 @@ function patchSection({ filePath, startMarker, endMarker, replacement, expectedH
 
 if (require.main === module) {
   try {
-    const args = parseArgs(process.argv);
+    const args = parseArgs(process.argv.slice(2));
     const filePath = requireString(args, "path");
     const startMarker = requireString(args, "start");
     const endMarker = requireString(args, "end");
@@ -115,6 +113,15 @@ if (require.main === module) {
     });
     console.log(JSON.stringify(result, null, 2));
   } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({
+        success: false,
+        error_code: error.code,
+        argument: error.argument,
+        message: error.message,
+      }));
+      process.exit(2);
+    }
     console.error(error?.stack || error?.message || String(error));
     process.exit(1);
   }

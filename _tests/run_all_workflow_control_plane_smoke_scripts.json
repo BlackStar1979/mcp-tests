@@ -2,6 +2,7 @@
   "_tests/smoke_connector_reconnect_execution_evidence.js",
   "_tests/smoke_connector_route_coexistence_boundary.js",
   "_tests/smoke_control_plane_audit_env_awareness.js",
+  "_tests/smoke_control_plane_cli_integrity.js",
   "_tests/smoke_control_plane_deploy_rollback.js",
   "_tests/smoke_crlf_batch_normalization_lf_policy.js",
   "_tests/smoke_explicit_state_handle_design_rules.js",

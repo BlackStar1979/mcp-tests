@@ -9,9 +9,10 @@ class CliArgumentError extends Error {
   }
 }
 
-function parseCliArgs(argv, { valueOptions = [], flagOptions = [] } = {}) {
+function parseCliArgs(argv, { valueOptions = [], flagOptions = [], allowEmptyValueOptions = [] } = {}) {
   const allowedValues = new Set(valueOptions);
   const allowedFlags = new Set(flagOptions);
+  const allowedEmptyValues = new Set(allowEmptyValueOptions);
   const values = new Map();
   const flags = new Set();
 
@@ -27,8 +28,12 @@ function parseCliArgs(argv, { valueOptions = [], flagOptions = [] } = {}) {
 
     if (allowedValues.has(name)) {
       if (values.has(name)) throw new CliArgumentError("cli_argument_duplicate", name);
-      const value = equalsIndex >= 0 ? body.slice(equalsIndex + 1) : String(argv[index + 1] || "");
-      if (!value || (equalsIndex < 0 && value.startsWith("--"))) {
+      const hasNext = index + 1 < argv.length;
+      const value = equalsIndex >= 0 ? body.slice(equalsIndex + 1) : (hasNext ? String(argv[index + 1]) : "");
+      if (
+        (equalsIndex < 0 && (!hasNext || value.startsWith("--")))
+        || (!value && !allowedEmptyValues.has(name))
+      ) {
         throw new CliArgumentError("cli_argument_value_missing", name);
       }
       if (equalsIndex < 0) index += 1;
@@ -47,6 +52,9 @@ function parseCliArgs(argv, { valueOptions = [], flagOptions = [] } = {}) {
   }
 
   return {
+    hasValue(name) {
+      return values.has(name);
+    },
     value(name, fallback = "") {
       return values.has(name) ? values.get(name) : fallback;
     },

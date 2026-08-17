@@ -3,6 +3,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { DatabaseSync } = require("node:sqlite");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 const {
   buildOAuth21PrunePreview,
 } = require("../../src/auth/oauth21_prune_preview");
@@ -28,18 +29,68 @@ const BackupRoot = path.join(ControlPlaneRoot, "oauth21_prune_backups");
 const AuditLog = process.env.MCP_TEST_AUDIT_LOG || path.join(Repo, "_logs", ".mcp-tests-audit.jsonl");
 
 function parseArgs(argv) {
+  const parsed = parseCliArgs(argv, {
+    valueOptions: [
+      "mode",
+      "oauth-storage-file",
+      "oauth-state-file",
+      "oauth-clients-file",
+      "approval-marker-file",
+      "backup-dir",
+      "operator",
+      "reason",
+      "now-ms",
+      "dead-client-min-age-days",
+      "record-file",
+    ],
+    flagOptions: ["what-if-only"],
+  });
   const args = {};
-  for (let i = 0; i < argv.length; i += 1) {
-    const current = argv[i];
-    if (!current.startsWith("--")) continue;
-    const key = current.slice(2);
-    const next = argv[i + 1];
-    if (!next || next.startsWith("--")) {
-      args[key] = true;
-      continue;
+  for (const name of [
+    "mode",
+    "oauth-storage-file",
+    "oauth-state-file",
+    "oauth-clients-file",
+    "approval-marker-file",
+    "backup-dir",
+    "operator",
+    "reason",
+    "now-ms",
+    "dead-client-min-age-days",
+    "record-file",
+  ]) {
+    const value = parsed.value(name);
+    if (value) args[name] = value;
+  }
+  if (parsed.flag("what-if-only")) args["what-if-only"] = true;
+
+  const mode = String(args.mode || "Status").trim();
+  if (!new Set(["Status", "Plan", "Execute", "Rollback"]).has(mode)) {
+    throw new CliArgumentError("cli_argument_value_invalid", "mode");
+  }
+  args.mode = mode;
+
+  if (args["now-ms"] !== undefined) {
+    const nowMs = Number(args["now-ms"]);
+    if (!Number.isSafeInteger(nowMs) || nowMs < 0 || !Number.isFinite(new Date(nowMs).getTime())) {
+      throw new CliArgumentError("cli_argument_value_invalid", "now-ms");
     }
-    args[key] = next;
-    i += 1;
+  }
+  if (args["dead-client-min-age-days"] !== undefined) {
+    const ageDays = Number(args["dead-client-min-age-days"]);
+    if (!Number.isFinite(ageDays) || ageDays < 0) {
+      throw new CliArgumentError("cli_argument_value_invalid", "dead-client-min-age-days");
+    }
+  }
+
+  const hasStorage = args["oauth-storage-file"] !== undefined;
+  const hasState = args["oauth-state-file"] !== undefined;
+  const hasClients = args["oauth-clients-file"] !== undefined;
+  if (hasStorage && (hasState || hasClients)) {
+    throw new CliArgumentError("cli_argument_conflict", "oauth-storage-file");
+  }
+  if (!hasStorage && hasState !== hasClients) {
+    throw new CliArgumentError("cli_argument_value_missing", hasState ? "oauth-clients-file" : "oauth-state-file");
   }
   return args;
 }
@@ -463,6 +514,15 @@ try {
   writeAudit("oauth21_prune_control_plane_finish", "info", { status: "ok" });
 } catch (error) {
   writeAudit("oauth21_prune_control_plane_error", "error", { error: error?.message || String(error) });
+  if (error instanceof CliArgumentError) {
+    console.error(JSON.stringify({
+      success: false,
+      error_code: error.code,
+      argument: error.argument,
+      message: error.message,
+    }));
+    process.exit(2);
+  }
   console.error(error?.stack || error?.message || String(error));
   process.exit(1);
 }

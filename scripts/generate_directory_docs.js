@@ -350,6 +350,7 @@ const CONFIG = {
       "README.md": "Orientation, inventory, and maintenance rules for the `_tests` tree.",
       "run_all_smokes.js": "Active smoke harness entrypoint.",
       "run_all_smoke_scripts.json": "Default active smoke manifest.",
+      "smoke_control_plane_cli_integrity.js": "Hermetic fail-closed CLI and no-mutation regression coverage for OAuth pruning, marker-based patching, and runtime-log replacement.",
       "smoke_directory_docs_audit.js": "Guard for churn-ranked `DIRECTORY.md` coverage on currently high-change directories.",
       "smoke_build_index_tool.js": "Regression coverage for workspace-index profiles, freshness, structured workflow extraction, and retrieval ranking.",
       "smoke_operator_contract_docs.js": "Guard for operator-facing documentation contract and initial DIRECTORY rollout.",
