@@ -1,7 +1,7 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-16
+Date: 2026-08-17
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
 Current repo/runtime note: profile `tests`; live OAuth21 `3008` is aligned with final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id = 2026-08-16T19:04:37.288Z`, `98` connector-visible tools, and fingerprint `ec7d3af5b4ea17f5`. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), and `CIMD` (`7 + 304`) are now live-loaded and live-accepted. `MRTR` remains fixture-only conformance evidence at `7 + 305`; runtime loading is not applicable because it has no production runtime surface.
@@ -383,18 +383,18 @@ Current records:
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
 1. Preserve the live-accepted Tasks/Trace/Artifacts/CIMD foundation and fixture-only MRTR regression evidence; no protocol live-load work is pending.
-2. Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 14 `0.147.0-alpha.6.6` sample exists.
+2. Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample exists.
 3. Preserve completed `OPS-1A` and the now-accepted OAuth reconnect half of `OPS-1B`; reopen OPS-1 only for live SFTP infrastructure or a reproduced operational defect.
 4. Use `DOC-2A` only when a fresh top25/churn>=5 audit exposes one real high-churn orientation gap; the August 16 audit reports `missing: 0`.
 5. Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`.
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the live-accepted OAuth21 runtime and completed `7 + 305` protocol regression line stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 14 `codex-mcp-client 0.147.0-alpha.6.6` sample; `OPS-1B` now waits only for live SFTP, while `DOC-2A` remains closed.
+Next recommended action: keep the live-accepted OAuth21 runtime and completed `7 + 305` protocol regression line stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 17 `codex-mcp-client 0.148.0-alpha.9` sample; `OPS-1B` now waits only for live SFTP, while `DOC-2A` remains closed.
 Readiness-derived default next package queue:
 
 1. `COMP-1A` — event-gated protocol evidence
-   Resume only for Codex client-entry traffic newer than the August 14 `0.147.0-alpha.6.6` sample.
+   Resume only for Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample.
 
 2. `OPS-1B` — event-gated live SFTP completion
    OAuth reconnect/recovery evidence is accepted. Resume only for recovered live SFTP infrastructure or a reproduced operational defect.
@@ -405,6 +405,8 @@ Readiness-derived default next package queue:
    Execute only when fresh evidence materially changes the protocol retirement decision surface.
 
 Recently completed:
+
+- Refreshed `COMP-1A` on August 17, 2026: the current operational window `server_start_id 2026-08-16T19:04:37.288Z` shows `codex-mcp-client 0.148.0-alpha.9` remains `initialize_only` with `3` successful legacy `initialize` entries and `0` `server/discover` entries on protocol `2025-06-18`; initialize retirement remains blocked only by the Codex family.
 
 - Completed `MRTR` on August 16, 2026: fixture-only official-client conformance proves `input_required` elicitation, exactly one retry with a fresh JSON-RPC id, preserved arguments, byte-exact opaque `requestState`, keyed `inputResponses`, and final `complete` semantics without production `src/` changes or a second task/session store. Clean-history run `31963602072` passed `7 + 305` plus post-suite clean-tree verification. Its runtime surface is deliberately non-applicable; the later controlled load preserved the `98`-tool runtime without introducing an MRTR tool or store.
 

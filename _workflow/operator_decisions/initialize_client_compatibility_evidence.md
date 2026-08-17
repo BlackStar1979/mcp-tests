@@ -281,6 +281,21 @@ Independent operational evidence now also proves the modern path outside the Cod
 
 This narrows the blocker again: modern `server/discover` is operational, but the latest Codex client family still requires legacy `initialize`. Do not reopen initialize retirement until Codex client-entry traffic newer than the August 14 sample changes that verdict.
 
+## Live evidence refresh on 2026-08-17
+
+Traffic newer than the August 14 sample creates another operational Codex evidence point on the unchanged live runtime:
+
+- command: `node _workflow/scripts/client_entry_path_report.js --latest-entry-window --client-name=codex-mcp-client --evidence-scope=operational --max-age-days=7 --limit=10`
+- selected and current server start: `2026-08-16T19:04:37.288Z`
+- latest matching Codex initialize: `2026-08-17T03:29:12.566Z`
+- client: `codex-mcp-client 0.148.0-alpha.9`
+- protocol: `2025-06-18`
+- selected-window result: `3` successful legacy `initialize` entries and `0` `server/discover` entries
+- audit parse errors: `0`
+- retirement verdict: `blocked_by_operational_initialize_clients`
+
+The newer client line does not change the retirement decision. The server's modern `server/discover` path remains independently proven, but operational Codex still requires the legacy compatibility shim. Refresh this evidence again only after Codex client-entry traffic newer than the August 17 sample appears.
+
 ## Compatibility interpretation
 
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:

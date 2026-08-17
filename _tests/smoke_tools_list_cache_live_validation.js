@@ -53,8 +53,8 @@ assert.ok(index.includes("`next_primary = comp-1a-on-fresh-external-client-traff
 assert.ok(index.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
-assert.ok(index.includes("Refreshed `COMP-1A` on August 16, 2026"));
-assert.ok(index.includes("`codex-mcp-client 0.147.0-alpha.6.6` remains `initialize_only` with `4` matching legacy entries and `0` `server/discover` entries"));
+assert.ok(index.includes("Refreshed `COMP-1A` on August 17, 2026"));
+assert.ok(index.includes("`codex-mcp-client 0.148.0-alpha.9` remains `initialize_only` with `3` successful legacy `initialize` entries and `0` `server/discover` entries"));
 assert.ok(index.includes("canonical PKCE"));
 assert.ok(index.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(index.includes("knowledge index"));

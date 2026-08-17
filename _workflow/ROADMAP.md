@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-14
+Updated: 2026-08-17
 
 ## Purpose
 
@@ -18,7 +18,7 @@ Current derivation:
 - Stdin native transport, normalized `detect_changes`, explicit `detect_changes` partial-result metadata, explicit `ingest_traces` runtime-edge status, semantic-only `search_graph` structural-result suppression, source-bearing excluded-route warnings, Windows non-ASCII and whitespace path/project caveats, unsupported Cypher shape caveats, resident-set discovery guidance, fail-fast startup configuration, portable executable resolution, ADR snapshot gating, native-cache schema repair, shared OAuth/HTTP helpers, and CBM-vs-knowledge-index skill routing are live and verified in repo tests and connector probes.
 - Manual CBM bridge stress now covers both default and large `_repos_with_code_samples` sets. The latest strict default run recorded `663` exact calls across all fifteen `cbm_*` tools, including lifecycle index/delete coverage, with `instability=[]`; earlier large-repo stress also stayed stable. Volatile native `search took <ms>` warnings are filtered from stable `cbm_search_code` result signatures.
 - Earlier post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. The snippet-integrity package is live and required no connector refresh.
-- `COMP-1` is 3/4: official `@modelcontextprotocol/client@2.0.0` regression and independent operational `openai-mcp 1.0.0` traffic prove modern `2026-07-28` `server/discover`, but the August 14 operational `codex-mcp-client 0.147.0-alpha.6.6` sample still contains `4` matching legacy `initialize` entries and `0` `server/discover` entries.
+- `COMP-1` is 3/4: official `@modelcontextprotocol/client@2.0.0` regression and independent operational `openai-mcp 1.0.0` traffic prove modern `2026-07-28` `server/discover`, but the August 17 operational `codex-mcp-client 0.148.0-alpha.9` sample still contains `3` successful legacy `initialize` entries and `0` `server/discover` entries.
 - `DOC-2A` remains a bounded fallback class, but no current gap is open: the August 16 `top25/churn>=5` audit reports `missing: 0`; generator-owned maps already cover the active high-churn documentation boundaries.
 - `RETR-1` retrieval now exposes workflow facts directly, rejects silent staleness, parses complete canonical workflow documents through a bounded transient sample, and ranks authoritative current evidence ahead of historical records. The refreshed live v3 knowledge index contains `279` documents, visited `1207` files and `51` directories, reports freshness `fresh`, extracts all `14` readiness components, and links all `36` source-of-truth documents.
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
@@ -42,12 +42,12 @@ Current derivation:
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts without expanding `resources/list`. | Preserve opaque resource handles, hashes, owner binding, independent retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the `-02` SSRF/cache/exact-match contract; live special-use-IP rejection is accepted. |
 | P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR provides conformance evidence without complicating the execution foundation. | Preserve the fixture-only `input_required` / `inputResponses` / opaque `requestState` retry contract; no runtime object is required. |
-| P5 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-14 sample | Modern server entry is operationally proven, but the latest measured Codex client still uses legacy `initialize`. | Preserve both version-gated paths until Codex client-entry traffic newer than `0.147.0-alpha.6.6` changes the verdict. |
+| P5 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern server entry is operationally proven, but the latest measured Codex client still uses legacy `initialize`. | Preserve both version-gated paths until Codex client-entry traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P6 | Execute `OPS-1B` only on live SFTP or reproduced defect | completed `OPS-1A`, accepted reconnect recovery | OAuth reconnect/recovery is closed; live SFTP is the only missing external evidence. | Run the existing bounded matrix against recovered live SFTP and repair only reproduced defects. |
 ## Bounded package queue
 
 0. `COMP-1A` — event-gated protocol evidence
-   Refresh only for Codex client-entry traffic newer than the August 14 `0.147.0-alpha.6.6` sample; preserve the version-gated compatibility paths until that evidence changes the verdict.
+   Refresh only for Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample; preserve the version-gated compatibility paths until that evidence changes the verdict.
 
 1. `OPS-1B` — event-gated live SFTP boundary
    OAuth reconnect/recovery is accepted. Resume only for recovered live SFTP infrastructure or a reproduced operational defect.
