@@ -39,6 +39,7 @@ const workflowMarkers = state.workflow_progress_markers;
   assert.equal(simulation.current_working_course, workflowMarkers.current_working_course);
   assert.equal(simulation.next_primary, workflowMarkers.next_primary);
   assert.equal(simulation.next_secondary, workflowMarkers.next_secondary);
+  assert.equal(simulation.version, "test-mcp-internal-change-workflow-simulator-v2");
   assert.equal(simulation.classification, "repo_only");
   assert.ok(simulation.workflow.includes("run full smoke"));
 
@@ -53,6 +54,49 @@ const workflowMarkers = state.workflow_progress_markers;
   assert.equal(decision.requires_restart_mcp, true);
   assert.equal(decision.requires_connector_refresh, true);
   assert.equal(decision.requires_operator_approval, true);
+
+  for (const runtimePath of [
+    "src/integrations/codebase_memory/cbm_cli_bridge.js",
+    "src\\integrations\\codebase_memory\\cbm_cli_bridge.js",
+    path.join(ROOT, "src", "integrations", "codebase_memory", "cbm_cli_bridge.js"),
+    "tools/project_truth_audit.js",
+    "profiles/tests.json",
+    "plugins/sample_echo_readonly/plugin.json",
+    "SERVER_TOOLS_SPEC.json",
+    "package.json",
+  ]) {
+    const runtimeDecision = await deployDecisionGuardTool.execute({ changed_paths: [runtimePath] });
+    assert.equal(runtimeDecision.guard_version, "test-mcp-deploy-decision-guard-v2", runtimePath);
+    assert.equal(runtimeDecision.classification, "runtime_restart_required", runtimePath);
+    assert.equal(runtimeDecision.requires_restart_mcp, true, runtimePath);
+    assert.equal(runtimeDecision.requires_connector_refresh, false, runtimePath);
+    assert.equal(runtimeDecision.requires_operator_approval, false, runtimePath);
+    assert.ok(runtimeDecision.reasons.includes("runtime-imported code changed"), runtimePath);
+  }
+
+  const compatibilityDecision = await deployDecisionGuardTool.execute({
+    changed_paths: ["src/stage_metadata.js"],
+  });
+  assert.equal(compatibilityDecision.classification, "runtime_status_restart_required");
+  assert.equal(compatibilityDecision.requires_restart_mcp, true);
+
+  const mixedRuntimeDecision = await deployDecisionGuardTool.execute({
+    changed_paths: ["src/truth/project_truth_audit.js", "_tests/smoke_truth_tools.js"],
+  });
+  assert.equal(mixedRuntimeDecision.classification, "runtime_restart_required");
+  assert.equal(mixedRuntimeDecision.requires_restart_mcp, true);
+
+  const testsDecision = await deployDecisionGuardTool.execute({
+    changed_paths: ["_tests/smoke_truth_tools.js"],
+  });
+  assert.equal(testsDecision.classification, "repo_only");
+  assert.equal(testsDecision.requires_restart_mcp, false);
+
+  const sourceDocumentationDecision = await deployDecisionGuardTool.execute({
+    changed_paths: ["src/DIRECTORY.md", "tools/DIRECTORY.md"],
+  });
+  assert.equal(sourceDocumentationDecision.classification, "repo_only");
+  assert.equal(sourceDocumentationDecision.requires_restart_mcp, false);
 
   const missing = buildToolUsageSnapshot({ auditLogPath: path.join(os.tmpdir(), "missing-test-mcp-audit.jsonl") });
   assert.equal(missing.log_available, false);
