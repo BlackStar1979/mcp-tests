@@ -76,6 +76,7 @@ Read these first, in this order:
    - `DIRECTORY.md`
    - `READINESS.md` is the component-readiness bridge used to infer the next autonomous package when `ROADMAP.md` alone is too coarse.
    - `ROADMAP.md` must read as a downstream execution order derived from `READINESS.md`, not as an independent wish list.
+   - A fresh `index_status` is the single-call planning view: it exposes next-package markers, maturity/blocker/default-package rows, ordered roadmap actions, runtime identity, canonical health, and documentation gaps without manual cross-reading.
 
 Do not infer active work from historical plan files unless `_workflow/state.json` or this index names it as active.
 
@@ -103,7 +104,7 @@ Checkpoint topology:
 - Repository, live runtime, and this model map are aligned at `98`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, structured file subsystem, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
-- Operator-facing documentation contract is explicit, and `DOC-2` is accepted at `4/4`: all `68/68` directories containing tracked files have functional maps. Generator `--help`/`--check` are non-mutating, invalid arguments fail before writes, dynamic control-plane maps have one generation authority, and repo-wide coverage is guarded.
+- Operator-facing documentation contract (`DOC-1`) is accepted at `4/4` through a freshness-gated one-call planning view and live query-quality evidence. `DOC-2` is accepted at `4/4`: all `68/68` directories containing tracked files have functional maps. Generator `--help`/`--check` are non-mutating, invalid arguments fail before writes, dynamic control-plane maps have one generation authority, and repo-wide coverage is guarded.
 
 Recent committed checkpoints:
 

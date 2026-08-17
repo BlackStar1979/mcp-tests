@@ -195,13 +195,17 @@ assert.ok(read("docs", "DIRECTORY.md").includes("PROCESS_RUNNER_CONSUMER_INSTRUC
 assert.ok(workflowReadme.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowReadme.includes("`_workflow/ROADMAP.md`"));
 assert.ok(workflowIndex.includes("Operator-facing documentation contract"));
+assert.ok(workflowIndex.includes("A fresh `index_status` is the single-call planning view"));
+assert.ok(readiness.includes("| DOC-1 | Operator-facing documentation contract | 4/4 |"));
+assert.ok(readiness.includes("No active planning-orientation blocker remains"));
 assert.ok(workflowIndex.includes("`DOC-2` is accepted at `4/4`"));
 assert.ok(workflowIndex.includes("all `68/68` directories containing tracked files"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = event-gated-compatibility-and-operational-quality`"));
 assert.ok(workflowIndex.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
-assert.ok(workflowIndex.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
+assert.ok(workflowIndex.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));
+assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));
 
