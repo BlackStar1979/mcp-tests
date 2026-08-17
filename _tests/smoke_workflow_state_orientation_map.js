@@ -79,6 +79,41 @@ assert.equal(state.current_work_constraints.test_processes_use_hermetic_control_
 assert.equal(state.runtime_topology_spec.restart_authority_state, "repo_supervisor_authority_live_loaded_on_3008");
 assert.equal(state.runtime_config_spec.path, "SERVER_RUNTIME_CONFIG_SPEC.json");
 
+const separatorGuardFiles = [
+  "_workflow/ACTIVE_WORKFLOW_INDEX.md",
+  "_workflow/WORKFLOW_CANON.md",
+  "_workflow/READINESS.md",
+  "_workflow/ROADMAP.md",
+  "_workflow/STATE.md",
+  "_workflow/operator_decisions/mcp_tasks_process_adapter_closeout.md",
+  "_workflow/operator_decisions/w3c_trace_context_closeout.md",
+  "_workflow/operator_decisions/process_artifacts_closeout.md",
+  "_workflow/operator_decisions/oauth_cimd_closeout.md",
+  "_workflow/operator_decisions/mrtr_conformance_closeout.md",
+];
+
+const separatorDefectPatterns = [
+  ["status/date concatenation", /live-acceptedDate:/g],
+  ["prose followed by heading without newline", /\.##\s/g],
+  ["adjacent Markdown table rows", /\|\|\s*(?:`?[A-Z][A-Z0-9-]*`?)\s*\|/g],
+  ["numbered-list item joined to prior sentence", /[A-Za-z)]\.\d+\.\s+/g],
+  ["bullet joined to prior sentence", /\.-\s+(?:`|[A-Z])/g],
+  ["bullet joined to prior code span", /`-\s+`/g],
+  ["statement joined to Completed record", /\.Completed\s+[A-Z]/g],
+];
+
+for (const relativePath of separatorGuardFiles) {
+  const text = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+  for (const [label, pattern] of separatorDefectPatterns) {
+    pattern.lastIndex = 0;
+    const match = pattern.exec(text);
+    assert.ok(
+      !match,
+      `${relativePath} contains ${label}: ${match ? JSON.stringify(match[0]) : ""}`,
+    );
+  }
+}
+
 console.log("smoke_workflow_state_orientation_map ok");
 
 assert.ok(!Object.hasOwn(state.root_spec_map, retiredStage12Root));

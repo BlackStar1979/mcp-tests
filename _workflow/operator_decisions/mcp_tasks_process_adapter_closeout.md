@@ -1,6 +1,7 @@
 # MCP Tasks Process Adapter Closeout
 
-Status: repo-validated, live-loaded and live-acceptedDate: 2026-08-14
+Status: repo-validated, live-loaded and live-accepted
+Date: 2026-08-14
 Package: `MCP-TASKS-PROCESS-ADAPTER`
 
 ## Decision
@@ -62,7 +63,9 @@ Controlled live load completed on 2026-08-16. The supervisor restart request `ma
 
 A secret-free localhost client authenticated with an existing live token, declared `io.modelcontextprotocol/tasks`, and used MCP `2026-07-28`. `server/discover` advertised the Tasks extension; `run_process` returned `resultType = task`; `tasks/get` reached `status = completed` and `resultType = complete`; the terminal result contained the expected stdout and exposed both `mcp-tests/processArgsRedacted = true` and `mcp-tests/taskBackedProcess = true`. Audit recorded `task_extension = io.modelcontextprotocol/tasks` on task `b29ed763-93db-4427-9675-f7476656ce05`.
 
-The refreshed OpenAI connector does not itself advertise Tasks and therefore continues to receive the synchronous `run_process` fallback. That is the accepted compatibility behavior, not a failed Tasks negotiation.## Next package
+The refreshed OpenAI connector does not itself advertise Tasks and therefore continues to receive the synchronous `run_process` fallback. That is the accepted compatibility behavior, not a failed Tasks negotiation.
+
+## Next package
 
 `TRACE-CONTEXT` is now the highest-leverage internally actionable package. It must establish one safe W3C correlation spine across request, execution, task, later artifact, and receipt while keeping trace metadata out of authorization decisions and avoiding raw `baggage` persistence.
 

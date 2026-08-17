@@ -11,7 +11,8 @@ Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
 - `current_working_course = event-gated-compatibility-and-operational-quality`
 - `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = ops-1b-on-live-sftp-boundary`- `Stage 8 / Step 53b` = modular safe tool surface consolidation
+- `next_secondary = ops-1b-on-live-sftp-boundary`
+- `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
 

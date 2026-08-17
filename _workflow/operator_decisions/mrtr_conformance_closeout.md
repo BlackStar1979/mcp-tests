@@ -33,7 +33,9 @@ The same run passed exact ancestry/source checks, targeted MRTR and official-SDK
 
 ## Runtime boundary
 
-MRTR has no production runtime dispatch, tool, resource, durable store, or server capability to load, so runtime acceptance is non-applicable rather than pending. The later controlled restart `manual-1786907075795` loaded surrounding final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id = 2026-08-16T19:04:37.288Z`; the connector remained at `98` tools and fingerprint `ec7d3af5b4ea17f5`, confirming that MRTR did not introduce a runtime surface.## Compatibility follow-up
+MRTR has no production runtime dispatch, tool, resource, durable store, or server capability to load, so runtime acceptance is non-applicable rather than pending. The later controlled restart `manual-1786907075795` loaded surrounding final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id = 2026-08-16T19:04:37.288Z`; the connector remained at `98` tools and fingerprint `ec7d3af5b4ea17f5`, confirming that MRTR did not introduce a runtime surface.
+
+## Compatibility follow-up
 
 A fresh `COMP-1A` evidence probe was run after MRTR validation. Operational `codex-mcp-client 0.147.0-alpha.6.6` remains `initialize_only` in the selected current entry window (`4` matching `initialize`, `0` `server/discover`), while independent `openai-mcp 1.0.0` traffic successfully uses `server/discover` with protocol `2026-07-28`.
 
