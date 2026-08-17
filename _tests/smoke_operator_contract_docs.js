@@ -180,7 +180,7 @@ assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-me
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "event-gated-compatibility-and-operational-quality");
 assert.equal(workflowState.workflow_progress_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "ops-1b-on-live-sftp-boundary");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "comp-1b-after-material-comp-1a-change");
 assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
 assert.equal(workflowState.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-17T04:06:37.912Z");
@@ -204,7 +204,9 @@ assert.ok(workflowIndex.includes("routes documentation/workflow questions to the
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = event-gated-compatibility-and-operational-quality`"));
 assert.ok(workflowIndex.includes("`next_primary = comp-1a-on-fresh-external-client-traffic`"));
-assert.ok(workflowIndex.includes("`next_secondary = ops-1b-on-live-sftp-boundary`"));
+assert.ok(workflowIndex.includes("`next_secondary = comp-1b-after-material-comp-1a-change`"));
+assert.ok(readiness.includes("| OPS-1 | Operational E2E and soak coverage | 4/4 |"));
+assert.ok(roadmap.includes("`OPS-1B` live SFTP boundary — accepted"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
 assert.ok(packageJson.includes("\"docs:directory\": \"node scripts/generate_directory_docs.js\""));
 assert.ok(packageJson.includes("\"docs:directory:audit\": \"node scripts/audit_directory_docs.js\""));

@@ -72,15 +72,15 @@
     {
       "id": "sftp_remote_site",
       "risk": "medium",
-      "status": "blocked_external",
-      "positive_negative": "hermetic_both_live_missing",
-      "evidence_modes": ["hermetic"],
-      "observability": "fake-client call trace and cleanup error propagation",
-      "rollback_proof": "hermetic_cleanup_only",
+      "status": "covered",
+      "positive_negative": "hermetic_both_live_read_only",
+      "evidence_modes": ["hermetic", "live_read_only"],
+      "observability": "fake-client lifecycle trace plus connector-visible TEST MCP live list/read and opsRoot runtime status",
+      "rollback_proof": "not_applicable_read_only_live_acceptance",
       "evidence": [
-        "_tests/smoke_remote_site_lifecycle.js"
-      ],
-      "gap": "No local SFTP config containing host, username, privateKeyPath, siteRoot, and opsRoot is present after the workstation reinstall, so a live read-only SFTP probe cannot be executed."
+        "_tests/smoke_remote_site_lifecycle.js",
+        "_workflow/operator_decisions/ops_1b_live_sftp_closeout.md"
+      ]
     },
     {
       "id": "network_tools",

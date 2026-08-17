@@ -33,7 +33,7 @@ Current derivation:
 - `CIMD` is repo-complete and live-accepted: clean-history `7 + 304`; live `/authorize` rejected a loopback HTTPS client-id at the `cimd_special_use_ip` SSRF boundary before metadata fetch.
 - `MRTR` is repo-complete as fixture-only conformance evidence: clean-history `7 + 305`; it deliberately has no production runtime tool/store, so live loading is non-applicable.
 - The earlier persisted autonomous quality task produced completed `OPS-1A`; task-memory state is not queue authority. Current queue authority is `_workflow/WORKFLOW_CANON.md` plus `_workflow/ACTIVE_WORKFLOW_INDEX.md`.
-- `OPS-1` remains `3/4`: the classified matrix retains `56/56` green invocations and the August 16 operator-driven OAuth reconnect/recovery is now accepted. Live SFTP is the only unresolved external boundary.
+- `OPS-1` is `4/4`: the classified matrix retains `56/56` green invocations, the August 16 OAuth reconnect/recovery remains accepted, and the August 17 connector-visible TEST MCP live SFTP list/read/`opsRoot` status closed the final external boundary without remote mutation or credential migration.
 - `DEBT-1` is 4/4 in repo truth: the unreachable `McpSession`, classic Sampling context, SSE outbound queue, and pending-response resolver are removed; active `/mcp` keeps only a deterministic fail-closed response-envelope boundary.
 ## Priority matrix
 
@@ -45,15 +45,13 @@ Current derivation:
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the `-02` SSRF/cache/exact-match contract; live special-use-IP rejection is accepted. |
 | P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR provides conformance evidence without complicating the execution foundation. | Preserve the fixture-only `input_required` / `inputResponses` / opaque `requestState` retry contract; no runtime object is required. |
 | P5 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern server entry is operationally proven, but the latest measured Codex client still uses legacy `initialize`. | Preserve both version-gated paths until Codex client-entry traffic newer than `0.148.0-alpha.9` changes the verdict. |
-| P6 | Execute `OPS-1B` only on live SFTP or reproduced defect | completed `OPS-1A`, accepted reconnect recovery | OAuth reconnect/recovery is closed; live SFTP is the only missing external evidence. | Run the existing bounded matrix against recovered live SFTP and repair only reproduced defects. |
+| P6 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A`, accepted reconnect recovery | Connector-visible TEST MCP proved the real external SFTP boundary on 2026-08-17. | Preserve the closeout, external config-reference boundary, and read-only acceptance evidence; reopen only on reproduced regression. |
 ## Bounded package queue
 
 0. `COMP-1A` — event-gated protocol evidence
    Refresh only for Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample; preserve the version-gated compatibility paths until that evidence changes the verdict.
 
-1. `OPS-1B` — event-gated live SFTP boundary
-   OAuth reconnect/recovery is accepted. Resume only for recovered live SFTP infrastructure or a reproduced operational defect.
-2. `COMP-1B`
+1. `COMP-1B`
    Run only if fresh `COMP-1A` evidence materially changes the initialize-retirement decision surface.
 
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.

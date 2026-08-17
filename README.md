@@ -77,6 +77,10 @@ Authorized workspace-readonly filesystem tools resolve bare paths under `C:\Work
 
 The authorized/tests surface also exposes bounded read-only truth tools for repo/workflow drift inspection and change-flow planning. They do not mutate runtime, connector config, auth state, or files.
 
+### Remote site operations
+
+The live remote-site tools take an explicit `vps_config_ref`. On the maintained Windows workstation the operational reference is `C:\Work\www\remote-site-tools-config.json`, owned by the separate `www` repository. `mcp-tests` does not copy or own that configuration. Credential material remains outside `mcp-tests`; private keys must never be committed to this repository.
+
 ## Structured File Operations
 
 The authorized surface includes tools for exact large-file work without transferring the whole file through model context:

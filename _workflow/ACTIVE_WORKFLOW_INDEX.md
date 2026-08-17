@@ -23,7 +23,7 @@ Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
 - `current_working_course = event-gated-compatibility-and-operational-quality`
 - `next_primary = comp-1a-on-fresh-external-client-traffic`
-- `next_secondary = ops-1b-on-live-sftp-boundary`
+- `next_secondary = comp-1b-after-material-comp-1a-change`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -400,30 +400,30 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 
 1. Preserve the live-accepted Tasks/Trace/Artifacts/CIMD foundation and fixture-only MRTR regression evidence; no protocol live-load work is pending.
 2. Re-run `COMP-1A` only when Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample exists.
-3. Preserve completed `OPS-1A` and the now-accepted OAuth reconnect half of `OPS-1B`; reopen OPS-1 only for live SFTP infrastructure or a reproduced operational defect.
+3. Preserve completed `OPS-1` at `4/4`; `OPS-1B` live SFTP was accepted on 2026-08-17 from connector-visible TEST MCP read-only evidence. Reopen only for a reproduced operational regression or deliberate boundary change.
 4. Preserve completed `DOC-2`; reopen only when generator `--check` or the repo-wide tracked-directory audit reports drift.
 5. Run `COMP-1B` only when fresh client evidence materially changes the retirement decision surface; `SURF-1` remains accepted at `4/4`.
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as the active interpretation layer for route/transport truth.
 
-Next recommended action: keep the live-accepted OAuth21 runtime, protocol regression line, and completed DOC-2 coverage stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 17 `codex-mcp-client 0.148.0-alpha.9` sample; `OPS-1B` waits only for live SFTP.
+Next recommended action: keep the live-accepted OAuth21 runtime, protocol regression line, completed DOC-2 coverage, and accepted OPS-1 boundary stable. Reopen `COMP-1A` only for Codex client-entry traffic newer than the August 17 `codex-mcp-client 0.148.0-alpha.9` sample; `COMP-1B` remains conditional on a material change in that evidence.
 Readiness-derived default next package queue:
 
 1. `COMP-1A` — event-gated protocol evidence
    Resume only for Codex client-entry traffic newer than the August 17 `0.148.0-alpha.9` sample.
 
-2. `OPS-1B` — event-gated live SFTP completion
-   OAuth reconnect/recovery evidence is accepted. Resume only for recovered live SFTP infrastructure or a reproduced operational defect.
-3. `COMP-1B`
-   Execute only when fresh evidence materially changes the protocol retirement decision surface.
+2. `COMP-1B`
+   Execute only when fresh `COMP-1A` evidence materially changes the protocol retirement decision surface.
 
 Recently completed:
+
+- Accepted `OPS-1B` on August 17, 2026: connector-visible TEST MCP used external config ref `C:\Work\www\remote-site-tools-config.json`; live `list_remote_site_files` returned the real two-file site root, `read_remote_site_file` returned the retained `41`-byte smoke file, and `remote_site_runtime_status` reported `healthy` with no warnings. No remote mutation occurred. `OPS-1` is now `4/4`; no runtime restart, connector refresh, credential migration, or `www` repository change was required.
 
 - Refreshed `COMP-1A` on August 17, 2026: the current operational window `server_start_id 2026-08-16T19:04:37.288Z` shows `codex-mcp-client 0.148.0-alpha.9` remains `initialize_only` with `3` successful legacy `initialize` entries and `0` `server/discover` entries on protocol `2025-06-18`; initialize retirement remains blocked only by the Codex family.
 
 - Completed `MRTR` on August 16, 2026: fixture-only official-client conformance proves `input_required` elicitation, exactly one retry with a fresh JSON-RPC id, preserved arguments, byte-exact opaque `requestState`, keyed `inputResponses`, and final `complete` semantics without production `src/` changes or a second task/session store. Clean-history run `31963602072` passed `7 + 305` plus post-suite clean-tree verification. Its runtime surface is deliberately non-applicable; the later controlled load preserved the `98`-tool runtime without introducing an MRTR tool or store.
 
-- Live-loaded the P0-P3 protocol foundation on August 16, 2026: supervisor restart `manual-1786907075795` loaded final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id 2026-08-16T19:04:37.288Z`. Live acceptance proved Tasks negotiation/completion, W3C request-to-execution ancestry, immutable Task artifacts plus authenticated `resources/read`, and CIMD special-use-IP SSRF rejection. OAuth reconnect/recovery is also accepted; live SFTP is the only remaining OPS-1 external boundary.
+- Live-loaded the P0-P3 protocol foundation on August 16, 2026: supervisor restart `manual-1786907075795` loaded final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id 2026-08-16T19:04:37.288Z`. Live acceptance proved Tasks negotiation/completion, W3C request-to-execution ancestry, immutable Task artifacts plus authenticated `resources/read`, and CIMD special-use-IP SSRF rejection. At that checkpoint OAuth reconnect/recovery was accepted while SFTP was still unverified; the August 17 `OPS-1B` closeout above supersedes that remaining-boundary status.
 - Refreshed `COMP-1A` on August 16, 2026: selected operational Codex entry window `server_start_id 2026-08-13T19:41:25.994Z` shows `codex-mcp-client 0.147.0-alpha.6.6` remains `initialize_only` with `4` matching legacy entries and `0` `server/discover` entries. Independent operational `openai-mcp 1.0.0` traffic uses `server/discover` with protocol `2026-07-28`; initialize retirement remains blocked only by the Codex family.
 
 - Completed `OPS-1A` on August 9, 2026: the evidence-classified operational matrix and bounded runner passed `56/56` invocations, including three live Cloudflare and three live MCP network probes. Full operator-driven reconnect and live SFTP remain explicit external boundaries, not automated green claims.

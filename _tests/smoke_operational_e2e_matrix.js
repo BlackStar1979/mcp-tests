@@ -37,6 +37,17 @@ for (const family of matrix.families) {
   if (family.status !== "covered") assert.ok(family.gap, `${family.id} unresolved gap`);
 }
 
+const sftp = matrix.families.find((family) => family.id === "sftp_remote_site");
+assert.equal(sftp.status, "covered");
+assert.equal(sftp.positive_negative, "hermetic_both_live_read_only");
+assert.deepEqual(sftp.evidence_modes, ["hermetic", "live_read_only"]);
+assert.equal(Object.hasOwn(sftp, "gap"), false);
+assert.ok(sftp.evidence.includes("_workflow/operator_decisions/ops_1b_live_sftp_closeout.md"));
+
+const readme = fs.readFileSync(path.join(root, "README.md"), "utf8");
+assert.ok(readme.includes("C:\\Work\\www\\remote-site-tools-config.json"));
+assert.ok(readme.includes("Credential material remains outside `mcp-tests`"));
+
 assert.ok(matrix.soak_cases.length >= 10);
 for (const testCase of matrix.soak_cases) {
   assert.ok(fs.existsSync(path.join(root, testCase.script)), `missing soak script: ${testCase.script}`);
