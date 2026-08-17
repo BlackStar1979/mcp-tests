@@ -115,42 +115,58 @@ function assertSafeRelativePath(filePath) {
 function createSnapshot({ label = "workflow-snapshot", files = DEFAULT_FILES } = {}) {
   const normalizedFiles = files.map((filePath) => assertSafeRelativePath(filePath));
   const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  const snapshotDir = path.join(ROOT, "_workflow", "control_plane", "snapshots", `${timestamp}_${safeLabel(label)}`);
-  fs.mkdirSync(snapshotDir, { recursive: true });
-
-  const entries = [];
-  for (const normalizedPath of normalizedFiles) {
-    const source = path.resolve(ROOT, normalizedPath);
-    const relativeSource = path.relative(ROOT, source).replace(/\\/g, "/");
-    if (relativeSource.startsWith("../") || relativeSource === ".." || path.isAbsolute(relativeSource)) {
-      throw new Error(`resolved path escapes repository root: ${normalizedPath}`);
-    }
-    if (!fs.existsSync(source)) {
-      entries.push({ path: normalizedPath, copied: false, reason: "missing" });
-      continue;
-    }
-    const content = fs.readFileSync(source);
-    const target = path.join(snapshotDir, normalizedPath);
-    fs.mkdirSync(path.dirname(target), { recursive: true });
-    fs.writeFileSync(target, content);
-    entries.push({
-      path: normalizedPath,
-      copied: true,
-      bytes: content.length,
-      sha256: sha256(content),
-    });
+  const snapshotRoot = path.join(ROOT, "_workflow", "control_plane", "snapshots");
+  const snapshotName = `${timestamp}_${safeLabel(label)}`;
+  const snapshotDir = path.join(snapshotRoot, snapshotName);
+  const stagingDir = path.join(
+    snapshotRoot,
+    `.pending-${snapshotName}-${process.pid}-${crypto.randomBytes(6).toString("hex")}`
+  );
+  fs.mkdirSync(snapshotRoot, { recursive: true });
+  if (fs.existsSync(snapshotDir)) {
+    throw new Error(`snapshot destination already exists: ${path.relative(ROOT, snapshotDir).replace(/\\/g, "/")}`);
   }
+  fs.mkdirSync(stagingDir);
 
-  const manifest = {
-    snapshot_version: "workflow-snapshot-v1",
-    created_at: new Date().toISOString(),
-    label: safeLabel(label),
-    root: "mcp-tests",
-    path: path.relative(ROOT, snapshotDir).replace(/\\/g, "/"),
-    entries,
-  };
-  fs.writeFileSync(path.join(snapshotDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
-  return manifest;
+  try {
+    const entries = [];
+    for (const normalizedPath of normalizedFiles) {
+      const source = path.resolve(ROOT, normalizedPath);
+      const relativeSource = path.relative(ROOT, source).replace(/\\/g, "/");
+      if (relativeSource.startsWith("../") || relativeSource === ".." || path.isAbsolute(relativeSource)) {
+        throw new Error(`resolved path escapes repository root: ${normalizedPath}`);
+      }
+      if (!fs.existsSync(source)) {
+        entries.push({ path: normalizedPath, copied: false, reason: "missing" });
+        continue;
+      }
+      const content = fs.readFileSync(source);
+      const target = path.join(stagingDir, normalizedPath);
+      fs.mkdirSync(path.dirname(target), { recursive: true });
+      fs.writeFileSync(target, content);
+      entries.push({
+        path: normalizedPath,
+        copied: true,
+        bytes: content.length,
+        sha256: sha256(content),
+      });
+    }
+
+    const manifest = {
+      snapshot_version: "workflow-snapshot-v1",
+      created_at: new Date().toISOString(),
+      label: safeLabel(label),
+      root: "mcp-tests",
+      path: path.relative(ROOT, snapshotDir).replace(/\\/g, "/"),
+      entries,
+    };
+    fs.writeFileSync(path.join(stagingDir, "manifest.json"), `${JSON.stringify(manifest, null, 2)}\n`);
+    fs.renameSync(stagingDir, snapshotDir);
+    return manifest;
+  } catch (error) {
+    fs.rmSync(stagingDir, { recursive: true, force: true });
+    throw error;
+  }
 }
 
 if (require.main === module) {

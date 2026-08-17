@@ -115,8 +115,23 @@ try {
     ["--label", `${label}-outside-allowlist`, "--file", "src/runtime/not_allowlisted.js"],
     /explicitly allowlisted runtime files/
   );
+
+  const snapshotsBeforeIoFailure = fs.readdirSync(SNAPSHOT_ROOT).sort();
+  const ioFailure = runSnapshot([
+    "--label", `${label}-io-failure`,
+    "--file", "_workflow/README.md",
+    "--file", "_workflow/scripts",
+  ]);
+  assert.notEqual(ioFailure.status, 0, "directory source must fail during snapshot copy");
+  assert.match(`${ioFailure.stdout}\n${ioFailure.stderr}`, /EISDIR|illegal operation on a directory/i);
+  assert.deepEqual(
+    fs.readdirSync(SNAPSHOT_ROOT).sort(),
+    snapshotsBeforeIoFailure,
+    "failed snapshot creation must not retain a partial directory"
+  );
 } finally {
   removeTestSnapshot(label, manifest?.path);
+  removeTestSnapshot(`${label}-io-failure`);
 }
 
 assert.deepEqual(fs.readdirSync(SNAPSHOT_ROOT).sort(), snapshotsAtStart, "snapshot smoke must not retain test artifacts");
