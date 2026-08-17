@@ -76,6 +76,17 @@ for (const filePath of REQUIRED_RUNTIME_FILES) {
 
 assert.ok(fs.existsSync(path.join(ROOT, manifest.path, "manifest.json")), "manifest.json must exist");
 
+const snapshotRoot = path.join(ROOT, "_workflow", "control_plane", "snapshots");
+const snapshotsBeforeDuplicate = fs.readdirSync(snapshotRoot).sort();
+const duplicateLabel = runSnapshot([
+  "--label", `${label}-first`,
+  "--label", `${label}-second`,
+  "--file", "server.js",
+]);
+assert.equal(duplicateLabel.status, 2, duplicateLabel.stderr || duplicateLabel.stdout);
+assert.equal(JSON.parse(duplicateLabel.stderr).error_code, "cli_argument_duplicate");
+assert.deepEqual(fs.readdirSync(snapshotRoot).sort(), snapshotsBeforeDuplicate);
+
 assertRejected(["--label", `${label}-absolute`, "--file", path.join(ROOT, "server.js")], /absolute path rejected/);
 assertRejected(["--label", `${label}-traversal`, "--file", "../mcp/server_tools.js"], /traversal rejected/);
 assertRejected(["--label", `${label}-secrets`, "--file", ".secrets/token.txt"], /forbidden snapshot path segment/);

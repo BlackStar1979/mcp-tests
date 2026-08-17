@@ -3,17 +3,22 @@
 
 const path = require("node:path");
 const { backfillMemoryEmbeddings } = require("../src/memory/embedding_backfill");
+const { CliArgumentError, parseCliArgs } = require("../src/util/cli_args");
 
 function parseArgs(argv) {
-  const options = { dryRun: false, limit: 100, logDir: path.join(__dirname, "../_logs") };
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = argv[index];
-    if (arg === "--dry-run") options.dryRun = true;
-    else if (arg === "--limit") options.limit = argv[++index];
-    else if (arg === "--log-dir") options.logDir = argv[++index];
-    else throw new Error(`unsupported_argument:${arg}`);
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["limit", "log-dir"],
+    flagOptions: ["dry-run"],
+  });
+  const limit = Number(parsed.value("limit", "100"));
+  if (!Number.isSafeInteger(limit) || limit < 1 || limit > 1000) {
+    throw new CliArgumentError("cli_argument_value_invalid", "limit");
   }
-  return options;
+  return {
+    dryRun: parsed.flag("dry-run"),
+    limit,
+    logDir: parsed.value("log-dir", path.join(__dirname, "../_logs")),
+  };
 }
 
 async function main() {
@@ -24,6 +29,11 @@ async function main() {
 
 if (require.main === module) {
   main().catch((error) => {
+    if (error instanceof CliArgumentError) {
+      process.stderr.write(`${JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message })}\n`);
+      process.exitCode = 2;
+      return;
+    }
     process.stderr.write(JSON.stringify({ ok: false, error: error.message }) + "\n");
     process.exitCode = 1;
   });

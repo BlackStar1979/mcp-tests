@@ -1,16 +1,22 @@
 # DIRECTORY
 
 Status: active scripts directory map
-Updated: 2026-08-09
+Updated: 2026-08-17
 
 - `audit-memory-embedding-runtime.ps1`
   Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.
 - `audit_directory_docs.js`
-  Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.
+  Audits high-churn tracked directories for `DIRECTORY.md` coverage through fail-closed bounded CLI options without modifying files.
 - `backfill-memory-embeddings.js`
-  Performs bounded, idempotent hydration of missing active-memory vectors and emits aggregate-only results.
+  Performs bounded, idempotent hydration of missing active-memory vectors with fail-closed CLI validation and aggregate-only results.
+- `capture_cbm_contract.js`
+  Captures bounded CBM tool-contract evidence for regression comparison with fail-closed mode and executable selection.
+- `extract_upstream_repo_patterns.js`
+  Extracts bounded implementation signals and transplant candidates from the local upstream-repository corpus with fail-closed CLI validation.
 - `provision-memory-embedding-token.ps1`
   Provisions or rotates the MEM-1 token file through a secure prompt or stdin with a restricted Windows ACL and secret-free output.
+- `repair_cbm_v090_edges_schema.js`
+  Repairs the legacy CBM v0.9.0 edge schema under explicit backup-manifest and fail-closed apply controls.
 - `request-restart.js`
   Writes a bounded restart request for the supervisor-managed runtime path after fail-closed CLI validation.
 - `server.ps1`

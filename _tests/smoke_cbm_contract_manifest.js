@@ -7,6 +7,7 @@ const {
   evaluateCbmCompatibility,
   loadCbmContract,
 } = require("../src/integrations/codebase_memory/cbm_contract_registry");
+const { parseArgs: parseCaptureArgs } = require("../scripts/capture_cbm_contract");
 
 const EXPECTED = [
   "index_repository",
@@ -24,6 +25,15 @@ const EXPECTED = [
   "manage_adr",
   "ingest_traces",
 ];
+
+assert.deepEqual(parseCaptureArgs(["--check", "--executable=C:/tools/cbm.exe"], {}), {
+  check: true,
+  write: false,
+  executable: require("node:path").normalize("C:/tools/cbm.exe"),
+});
+assert.throws(() => parseCaptureArgs(["--unknown"]), { code: "cli_argument_unknown" });
+assert.throws(() => parseCaptureArgs(["--executable", "a", "--executable", "b"]), { code: "cli_argument_duplicate" });
+assert.throws(() => parseCaptureArgs(["--check", "--write"]), { code: "cli_argument_conflict" });
 
 const contract = loadCbmContract("0.9.0");
 assert.equal(contract.contract_version, "cbm-cli-contract-v1");

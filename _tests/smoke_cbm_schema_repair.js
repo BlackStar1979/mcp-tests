@@ -129,6 +129,14 @@ try {
     }],
   }, null, 2));
 
+  const duplicateCacheDir = run([
+    "--cache-dir", cacheDir,
+    "--cache-dir", cacheDir,
+    "--project", PROJECT,
+  ]);
+  assert.equal(duplicateCacheDir.status, 2, duplicateCacheDir.stderr || duplicateCacheDir.stdout);
+  assert.equal(JSON.parse(duplicateCacheDir.stderr).error_code, "cli_argument_duplicate");
+
   const dryRun = run(["--cache-dir", cacheDir, "--project", PROJECT]);
   assert.equal(dryRun.status, 0, `${dryRun.stdout}\n${dryRun.stderr}`);
   const dryPayload = JSON.parse(dryRun.stdout);

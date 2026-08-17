@@ -1,11 +1,32 @@
 const assert = require("node:assert/strict");
+const fs = require("node:fs");
 const path = require("node:path");
-const { analyzeProcessRunnerLog, detectMarkers } = require("../_workflow/scripts/process_runner_observability.js");
+const { spawnSync } = require("node:child_process");
+const { analyzeProcessRunnerLog, detectMarkers, parseArgs } = require("../_workflow/scripts/process_runner_observability.js");
 
 require("./smoke_process_security_regressions");
 require("./smoke_process_idempotency_key_migration");
 
 const fixture = path.join(__dirname, "fixtures", "process_runner_audit_fixture.jsonl");
+const scriptPath = path.join(__dirname, "..", "_workflow", "scripts", "process_runner_observability.js");
+const scriptSource = fs.readFileSync(scriptPath, "utf8");
+const readRecentLinesSource = scriptSource.match(/function readRecentLines[\s\S]*?\n}\n\nfunction compactEvent/)[0];
+assert.equal(readRecentLinesSource.includes("process.exit"), false, "library read path must not terminate the process");
+
+assert.deepEqual(parseArgs(["--window=50", "--slow-ms", "120", "--ignore-trace-id", "one", "--ignore-trace-id=two", "--json"]), {
+  log: path.join("mcp", ".mcp_audit.log"),
+  window: 50,
+  slowMs: 120,
+  json: true,
+  ignoreTraceIds: ["one", "two"],
+  help: false,
+});
+assert.throws(() => parseArgs(["--window"]), { code: "cli_argument_value_missing" });
+assert.throws(() => parseArgs(["--slow-ms", "invalid"]), { code: "cli_argument_value_invalid" });
+assert.throws(() => parseArgs(["--log", "a", "--log", "b"]), { code: "cli_argument_duplicate" });
+const rejectedCli = spawnSync(process.execPath, [scriptPath, "--window"], { encoding: "utf8" });
+assert.equal(rejectedCli.status, 2, rejectedCli.stderr || rejectedCli.stdout);
+assert.equal(JSON.parse(rejectedCli.stderr).error_code, "cli_argument_value_missing");
 
 const summary = analyzeProcessRunnerLog({
   log: fixture,

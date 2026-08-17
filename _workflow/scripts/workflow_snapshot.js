@@ -3,6 +3,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const crypto = require("node:crypto");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const ROOT = process.cwd();
 const DEFAULT_FILES = [
@@ -71,22 +72,14 @@ function sha256(buffer) {
 }
 
 function parseArgs(argv) {
-  const args = { files: [] };
-  for (let i = 2; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === "--file") {
-      if (!argv[i + 1]) throw new Error("--file requires a value");
-      args.files.push(argv[i + 1]);
-      i += 1;
-    } else if (arg === "--label") {
-      if (!argv[i + 1]) throw new Error("--label requires a value");
-      args.label = argv[i + 1];
-      i += 1;
-    } else {
-      throw new Error(`unknown argument: ${arg}`);
-    }
-  }
-  return args;
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["label"],
+    repeatableValueOptions: ["file"],
+  });
+  return {
+    files: parsed.values("file"),
+    label: parsed.value("label"),
+  };
 }
 
 function assertSafeRelativePath(filePath) {
@@ -162,13 +155,17 @@ function createSnapshot({ label = "workflow-snapshot", files = DEFAULT_FILES } =
 
 if (require.main === module) {
   try {
-    const args = parseArgs(process.argv);
+    const args = parseArgs(process.argv.slice(2));
     const manifest = createSnapshot({
       label: args.label || "workflow-snapshot",
       files: args.files.length ? args.files : DEFAULT_FILES,
     });
     console.log(JSON.stringify(manifest, null, 2));
   } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message }));
+      process.exit(2);
+    }
     console.error(error?.stack || error?.message || String(error));
     process.exit(1);
   }
@@ -176,5 +173,5 @@ if (require.main === module) {
 
 module.exports = {
   createSnapshot,
+  parseArgs,
 };
-

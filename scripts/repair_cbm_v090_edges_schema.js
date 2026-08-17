@@ -5,6 +5,7 @@ const fs = require("node:fs");
 const os = require("node:os");
 const path = require("node:path");
 const { DatabaseSync } = require("node:sqlite");
+const { CliArgumentError, parseCliArgs } = require("../src/util/cli_args");
 
 const EXPECTED_OLD_COLUMNS = Object.freeze([
   "id",
@@ -28,35 +29,22 @@ function fail(message) {
 }
 
 function parseArgs(argv) {
+  const cli = parseCliArgs(argv, {
+    valueOptions: ["cache-dir", "backup-manifest"],
+    repeatableValueOptions: ["project"],
+    flagOptions: ["apply"],
+  });
   const parsed = {
-    apply: false,
-    cacheDir: process.env.CBM_CACHE_DIR
-      ? path.resolve(process.env.CBM_CACHE_DIR)
-      : path.join(os.homedir(), ".cache", "codebase-memory-mcp"),
-    backupManifest: "",
-    projects: [],
+    apply: cli.flag("apply"),
+    cacheDir: path.resolve(cli.value(
+      "cache-dir",
+      process.env.CBM_CACHE_DIR || path.join(os.homedir(), ".cache", "codebase-memory-mcp"),
+    )),
+    backupManifest: cli.hasValue("backup-manifest") ? path.resolve(cli.value("backup-manifest")) : "",
+    projects: cli.values("project"),
   };
-
-  for (let index = 0; index < argv.length; index += 1) {
-    const arg = String(argv[index]);
-    if (arg === "--apply") {
-      parsed.apply = true;
-      continue;
-    }
-    if (["--cache-dir", "--backup-manifest", "--project"].includes(arg)) {
-      const value = argv[index + 1];
-      if (!value || String(value).startsWith("--")) fail(`Missing value for ${arg}`);
-      index += 1;
-      if (arg === "--cache-dir") parsed.cacheDir = path.resolve(String(value));
-      if (arg === "--backup-manifest") parsed.backupManifest = path.resolve(String(value));
-      if (arg === "--project") parsed.projects.push(String(value));
-      continue;
-    }
-    fail(`Unknown argument: ${arg}`);
-  }
-
   if (parsed.apply && !parsed.backupManifest) {
-    fail("--apply requires --backup-manifest");
+    throw new CliArgumentError("cli_argument_value_missing", "backup-manifest");
   }
   return parsed;
 }
@@ -333,6 +321,11 @@ function main() {
 try {
   main();
 } catch (error) {
+  if (error instanceof CliArgumentError) {
+    process.stderr.write(`${JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message })}\n`);
+    process.exitCode = 2;
+    return;
+  }
   process.stderr.write(`${error?.message || String(error)}\n`);
   process.exitCode = 1;
 }

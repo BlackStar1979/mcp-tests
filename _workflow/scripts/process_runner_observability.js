@@ -3,6 +3,7 @@
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { CliArgumentError, parseCliArgs } = require("./cli_args");
 
 const DEFAULT_LOG = path.join("mcp", ".mcp_audit.log");
 const DEFAULT_WINDOW = 1000;
@@ -10,35 +11,27 @@ const MAX_WINDOW = 20000;
 const DEFAULT_SLOW_MS = 1000;
 
 function parseArgs(argv) {
-  const out = {
-    log: DEFAULT_LOG,
-    window: DEFAULT_WINDOW,
-    slowMs: DEFAULT_SLOW_MS,
-    json: false,
-    ignoreTraceIds: [],
-  };
-
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === "--log") {
-      out.log = argv[++i];
-    } else if (arg === "--window") {
-      out.window = clampInt(argv[++i], DEFAULT_WINDOW, 1, MAX_WINDOW);
-    } else if (arg === "--slow-ms") {
-      out.slowMs = clampInt(argv[++i], DEFAULT_SLOW_MS, 1, 600000);
-    } else if (arg === "--json") {
-      out.json = true;
-    } else if (arg === "--ignore-trace-id") {
-      const value = argv[++i];
-      if (value) out.ignoreTraceIds.push(String(value));
-    } else if (arg === "--help" || arg === "-h") {
-      out.help = true;
-    } else {
-      throw new Error(`Unknown argument: ${arg}`);
-    }
+  const parsed = parseCliArgs(argv.map((arg) => arg === "-h" ? "--help" : arg), {
+    valueOptions: ["log", "window", "slow-ms"],
+    repeatableValueOptions: ["ignore-trace-id"],
+    flagOptions: ["json", "help"],
+  });
+  const window = Number(parsed.value("window", String(DEFAULT_WINDOW)));
+  const slowMs = Number(parsed.value("slow-ms", String(DEFAULT_SLOW_MS)));
+  if (!Number.isSafeInteger(window) || window < 1 || window > MAX_WINDOW) {
+    throw new CliArgumentError("cli_argument_value_invalid", "window");
   }
-
-  return out;
+  if (!Number.isSafeInteger(slowMs) || slowMs < 1 || slowMs > 600000) {
+    throw new CliArgumentError("cli_argument_value_invalid", "slow-ms");
+  }
+  return {
+    log: parsed.value("log", DEFAULT_LOG),
+    window,
+    slowMs,
+    json: parsed.flag("json"),
+    ignoreTraceIds: parsed.values("ignore-trace-id"),
+    help: parsed.flag("help"),
+  };
 }
 
 function clampInt(value, fallback, min, max) {
@@ -302,6 +295,10 @@ if (require.main === module) {
     }
     process.exit(result.success ? 0 : 1);
   } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message }));
+      process.exit(2);
+    }
     console.error(error?.stack || error?.message || String(error));
     process.exit(1);
   }

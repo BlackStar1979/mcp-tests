@@ -3,6 +3,7 @@
 const childProcess = require("node:child_process");
 const fs = require("node:fs");
 const path = require("node:path");
+const { CliArgumentError, parseCliArgs } = require("../src/util/cli_args");
 
 const ROOT = path.resolve(__dirname, "..");
 const DEFAULT_CORPUS_ROOT = path.join(ROOT, "_repos_with_code_samples");
@@ -238,29 +239,15 @@ const TRANSPLANTS = [
 ];
 
 function parseArgs(argv) {
-  const opts = {
-    corpusRoot: DEFAULT_CORPUS_ROOT,
-    out: "",
-    json: false,
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["corpus-root", "out"],
+    flagOptions: ["json"],
+  });
+  return {
+    corpusRoot: path.resolve(parsed.value("corpus-root", DEFAULT_CORPUS_ROOT)),
+    out: parsed.hasValue("out") ? path.resolve(parsed.value("out")) : "",
+    json: parsed.flag("json"),
   };
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === "--json") {
-      opts.json = true;
-    } else if (arg === "--corpus-root") {
-      opts.corpusRoot = path.resolve(argv[++i] || "");
-    } else if (arg.startsWith("--corpus-root=")) {
-      opts.corpusRoot = path.resolve(arg.slice("--corpus-root=".length));
-    } else if (arg === "--out") {
-      opts.out = path.resolve(argv[++i] || "");
-    } else if (arg.startsWith("--out=")) {
-      opts.out = path.resolve(arg.slice("--out=".length));
-    } else {
-      throw new Error(`Unknown argument: ${arg}`);
-    }
-  }
-  if (!opts.corpusRoot) throw new Error("--corpus-root must not be empty");
-  return opts;
 }
 
 function normalizeRel(value) {
@@ -783,6 +770,7 @@ module.exports = {
   DEFAULT_REPOSITORIES,
   analyzeRepository,
   buildReport,
+  parseArgs,
   renderMarkdown,
 };
 
@@ -790,6 +778,11 @@ if (require.main === module) {
   try {
     main();
   } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message }));
+      process.exitCode = 2;
+      return;
+    }
     console.error(error && error.stack ? error.stack : String(error));
     process.exitCode = 1;
   }

@@ -61,6 +61,17 @@ The same fail-closed parser now protects the three remaining high-impact workflo
 
 `smoke_control_plane_cli_integrity.js` runs only against temporary files and verifies the no-mutation invariant for rejected commands. Both `--name value` and `--name=value` remain accepted, and controlled parser failures use exit code `2` with bounded structured error metadata.
 
+## Complete named-option parser convergence
+
+The remaining named-option local JavaScript CLI entrypoints now use the same parser contract:
+
+- `workflow_snapshot.js` and `repair_cbm_v090_edges_schema.js` use explicitly declared repeatable `--file` and `--project` values while singleton duplicates fail closed;
+- `backfill-memory-embeddings.js`, `extract_upstream_repo_patterns.js`, and `audit_directory_docs.js` reject missing, duplicate, unknown, and invalid bounded values instead of falling back to a working directory or implicit default;
+- `process_runner_observability.js` preserves repeatable ignored trace IDs and `-h`, but rejects missing or out-of-range numeric values rather than silently clamping malformed CLI input.
+- `capture_cbm_contract.js` rejects unknown or duplicate executable selection and the ambiguous `--check` plus `--write` combination before invoking the external binary.
+
+Existing functional smokes now cover these CLI boundaries in addition to their original domain behavior. `smoke_control_plane_cli_integrity.js` also inventories all `18` current named-option script entrypoints and requires each to import the shared parser. `src/util/cli_args.js` is the single implementation for named-option JavaScript CLIs; script-local `parseArgs` functions are bounded adapters only. Purpose-built positional fixture validators remain a separate explicit interface class.
+
 ## Validation
 
 - targeted report, matrix, waiter, workflow, directory, and syntax guards: GREEN
@@ -71,6 +82,7 @@ The same fail-closed parser now protects the three remaining high-impact workflo
 - final full-suite job `e6ffe9e4-1afb-4809-81d0-9695199006ae`: `ok=true`, `public=7`, `tests_authenticated=305`, stderr empty, no output truncation, and no generated backup-map drift
 - follow-up CLI-integrity full-suite job `353b4f15-e86a-4ac2-bd57-ffe40ccff010`: `ok=true`, `public=7`, `tests_authenticated=305`, exit `0`, stderr empty, and no output truncation
 - control-plane mutation-boundary full-suite job `68d7322a-cd87-4e9e-947f-f5b8089731f2`: `ok=true`, `public=7`, `tests_authenticated=306`, exit `0`, job stderr empty, and no output truncation
+- complete named-option parser convergence job `a62060b6-1e39-4a1b-826d-8b87720c0cde`: `ok=true`, `public=7`, `tests_authenticated=306`, exit `0`, job stderr empty, and no output truncation
 - `project_truth_audit`: `0` findings
 - deploy decision: `repo_or_internal_source`, no runtime restart, no connector refresh, no operator approval
 

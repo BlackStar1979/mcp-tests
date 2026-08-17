@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { parseArgs } = require("../scripts/audit_directory_docs");
 
 const ROOT = path.resolve(__dirname, "..");
 const SCRIPT = path.join(ROOT, "scripts", "audit_directory_docs.js");
@@ -14,6 +15,17 @@ function run(args) {
     maxBuffer: 16 * 1024 * 1024,
   });
 }
+
+assert.deepEqual(parseArgs(["--json", "--since=30 days ago", "--limit", "25", "--min-churn=5"]), {
+  since: "30 days ago",
+  limit: 25,
+  minChurn: 5,
+  json: true,
+  failOnMissing: false,
+});
+assert.throws(() => parseArgs(["--since"]), { code: "cli_argument_value_missing" });
+assert.throws(() => parseArgs(["--limit", "0"]), { code: "cli_argument_value_invalid" });
+assert.throws(() => parseArgs(["--json", "--json"]), { code: "cli_argument_duplicate" });
 
 const jsonResult = run(["--json", "--since=30 days ago", "--limit=25", "--min-churn=5", "--fail-on-missing"]);
 assert.equal(jsonResult.status, 0, `directory docs audit must pass\nSTDOUT:\n${jsonResult.stdout}\nSTDERR:\n${jsonResult.stderr}`);

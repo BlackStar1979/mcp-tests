@@ -9,8 +9,14 @@ class CliArgumentError extends Error {
   }
 }
 
-function parseCliArgs(argv, { valueOptions = [], flagOptions = [], allowEmptyValueOptions = [] } = {}) {
-  const allowedValues = new Set(valueOptions);
+function parseCliArgs(argv, {
+  valueOptions = [],
+  repeatableValueOptions = [],
+  flagOptions = [],
+  allowEmptyValueOptions = [],
+} = {}) {
+  const repeatableValues = new Set(repeatableValueOptions);
+  const allowedValues = new Set([...valueOptions, ...repeatableValueOptions]);
   const allowedFlags = new Set(flagOptions);
   const allowedEmptyValues = new Set(allowEmptyValueOptions);
   const values = new Map();
@@ -27,7 +33,9 @@ function parseCliArgs(argv, { valueOptions = [], flagOptions = [], allowEmptyVal
     const name = equalsIndex >= 0 ? body.slice(0, equalsIndex) : body;
 
     if (allowedValues.has(name)) {
-      if (values.has(name)) throw new CliArgumentError("cli_argument_duplicate", name);
+      if (values.has(name) && !repeatableValues.has(name)) {
+        throw new CliArgumentError("cli_argument_duplicate", name);
+      }
       const hasNext = index + 1 < argv.length;
       const value = equalsIndex >= 0 ? body.slice(equalsIndex + 1) : (hasNext ? String(argv[index + 1]) : "");
       if (
@@ -37,7 +45,11 @@ function parseCliArgs(argv, { valueOptions = [], flagOptions = [], allowEmptyVal
         throw new CliArgumentError("cli_argument_value_missing", name);
       }
       if (equalsIndex < 0) index += 1;
-      values.set(name, value);
+      if (repeatableValues.has(name)) {
+        values.set(name, [...(values.get(name) || []), value]);
+      } else {
+        values.set(name, value);
+      }
       continue;
     }
 
@@ -56,7 +68,14 @@ function parseCliArgs(argv, { valueOptions = [], flagOptions = [], allowEmptyVal
       return values.has(name);
     },
     value(name, fallback = "") {
-      return values.has(name) ? values.get(name) : fallback;
+      if (!values.has(name)) return fallback;
+      const stored = values.get(name);
+      return Array.isArray(stored) ? stored.at(-1) : stored;
+    },
+    values(name) {
+      if (!values.has(name)) return [];
+      const stored = values.get(name);
+      return Array.isArray(stored) ? [...stored] : [stored];
     },
     flag(name) {
       return flags.has(name);

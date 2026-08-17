@@ -8,12 +8,20 @@ const path = require("node:path");
 const {
   analyzeRepository,
   buildReport,
+  parseArgs,
   renderMarkdown,
 } = require("../scripts/extract_upstream_repo_patterns");
 
 const fixtureRoot = fs.mkdtempSync(path.join(os.tmpdir(), "mcp-tests-upstream-patterns-"));
 
 try {
+  const parsed = parseArgs(["--json", `--corpus-root=${fixtureRoot}`, "--out", path.join(fixtureRoot, "report.md")]);
+  assert.equal(parsed.json, true);
+  assert.equal(parsed.corpusRoot, fixtureRoot);
+  assert.equal(parsed.out, path.join(fixtureRoot, "report.md"));
+  assert.throws(() => parseArgs(["--out"]), { code: "cli_argument_value_missing" });
+  assert.throws(() => parseArgs(["--corpus-root", "a", "--corpus-root", "b"]), { code: "cli_argument_duplicate" });
+
   const repoDir = path.join(fixtureRoot, "fixture-doc-graph");
   fs.mkdirSync(path.join(repoDir, "src"), { recursive: true });
   fs.writeFileSync(path.join(repoDir, "README.md"), [

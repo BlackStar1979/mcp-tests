@@ -10,6 +10,26 @@ const ROOT = path.resolve(__dirname, "..");
 const PATCH_SCRIPT = path.join(ROOT, "_workflow", "scripts", "patch_section_by_markers.js");
 const COMPACT_SCRIPT = path.join(ROOT, "_workflow", "scripts", "compact_runtime_logs.js");
 const PRUNE_SCRIPT = path.join(ROOT, "_workflow", "scripts", "test_mcp_oauth21_prune.js");
+const NAMED_OPTION_SCRIPTS = [
+  "scripts/audit_directory_docs.js",
+  "scripts/backfill-memory-embeddings.js",
+  "scripts/capture_cbm_contract.js",
+  "scripts/extract_upstream_repo_patterns.js",
+  "scripts/repair_cbm_v090_edges_schema.js",
+  "scripts/request-restart.js",
+  "scripts/run_operational_e2e_soak.js",
+  "_workflow/scripts/client_entry_blocker_matrix.js",
+  "_workflow/scripts/client_entry_path_report.js",
+  "_workflow/scripts/compact_runtime_logs.js",
+  "_workflow/scripts/connector_migration_dry_run_harness.js",
+  "_workflow/scripts/patch_section_by_markers.js",
+  "_workflow/scripts/process_runner_observability.js",
+  "_workflow/scripts/sessionless_live_authenticated_probe.js",
+  "_workflow/scripts/sessionless_manual_probe_stub.js",
+  "_workflow/scripts/test_mcp_oauth21_prune.js",
+  "_workflow/scripts/wait_for_client_entry_path.js",
+  "_workflow/scripts/workflow_snapshot.js",
+];
 
 function run(script, args, env = {}) {
   return spawnSync(process.execPath, [script, ...args], {
@@ -22,6 +42,11 @@ function run(script, args, env = {}) {
 function parseCliError(result) {
   assert.equal(result.status, 2, result.stderr || result.stdout);
   return JSON.parse(result.stderr);
+}
+
+for (const relativePath of NAMED_OPTION_SCRIPTS) {
+  const source = fs.readFileSync(path.join(ROOT, relativePath), "utf8");
+  assert.match(source, /parseCliArgs/, `${relativePath} must use the shared named-option parser`);
 }
 
 const tempRoot = fs.mkdtempSync(path.join(os.tmpdir(), "control-plane-cli-integrity-"));

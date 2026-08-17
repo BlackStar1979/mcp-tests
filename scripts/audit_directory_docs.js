@@ -3,6 +3,7 @@
 const fs = require("node:fs");
 const path = require("node:path");
 const { spawnSync } = require("node:child_process");
+const { CliArgumentError, parseCliArgs } = require("../src/util/cli_args");
 
 const ROOT = path.resolve(__dirname, "..");
 
@@ -22,39 +23,21 @@ const EXCLUDED_PREFIXES = [
 ];
 
 function parseArgs(argv) {
-  const opts = {
-    since: DEFAULT_SINCE,
-    limit: DEFAULT_LIMIT,
-    minChurn: DEFAULT_MIN_CHURN,
-    json: false,
-    failOnMissing: false,
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["since", "limit", "min-churn"],
+    flagOptions: ["json", "fail-on-missing"],
+  });
+  const limit = Number(parsed.value("limit", String(DEFAULT_LIMIT)));
+  const minChurn = Number(parsed.value("min-churn", String(DEFAULT_MIN_CHURN)));
+  if (!Number.isSafeInteger(limit) || limit <= 0) throw new CliArgumentError("cli_argument_value_invalid", "limit");
+  if (!Number.isSafeInteger(minChurn) || minChurn <= 0) throw new CliArgumentError("cli_argument_value_invalid", "min-churn");
+  return {
+    since: parsed.value("since", DEFAULT_SINCE),
+    limit,
+    minChurn,
+    json: parsed.flag("json"),
+    failOnMissing: parsed.flag("fail-on-missing"),
   };
-  for (let i = 0; i < argv.length; i += 1) {
-    const arg = argv[i];
-    if (arg === "--json") {
-      opts.json = true;
-    } else if (arg === "--fail-on-missing") {
-      opts.failOnMissing = true;
-    } else if (arg === "--since") {
-      opts.since = argv[++i] || "";
-    } else if (arg.startsWith("--since=")) {
-      opts.since = arg.slice("--since=".length);
-    } else if (arg === "--limit") {
-      opts.limit = Number(argv[++i]);
-    } else if (arg.startsWith("--limit=")) {
-      opts.limit = Number(arg.slice("--limit=".length));
-    } else if (arg === "--min-churn") {
-      opts.minChurn = Number(argv[++i]);
-    } else if (arg.startsWith("--min-churn=")) {
-      opts.minChurn = Number(arg.slice("--min-churn=".length));
-    } else {
-      throw new Error(`Unknown argument: ${arg}`);
-    }
-  }
-  if (!opts.since) throw new Error("--since must not be empty");
-  if (!Number.isInteger(opts.limit) || opts.limit <= 0) throw new Error("--limit must be a positive integer");
-  if (!Number.isInteger(opts.minChurn) || opts.minChurn <= 0) throw new Error("--min-churn must be a positive integer");
-  return opts;
 }
 
 function runGit(args) {
@@ -150,7 +133,14 @@ if (require.main === module) {
   try {
     main();
   } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message }));
+      process.exitCode = 2;
+      return;
+    }
     console.error(error && error.stack ? error.stack : String(error));
     process.exitCode = 1;
   }
 }
+
+module.exports = { parseArgs };

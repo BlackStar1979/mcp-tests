@@ -18,7 +18,7 @@ Audit snapshot from `2026-08-16`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `68d7322a-cd87-4e9e-947f-f5b8089731f2`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
+- latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=306` in durable job `a62060b6-1e39-4a1b-826d-8b87720c0cde`; clean-history validation run `31963602072` remains the latest post-suite clean-tree proof
 - current manifest contains `314` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `313` sectioned scripts: `7` public and `306` authenticated
 ## Orientation
 

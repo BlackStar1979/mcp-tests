@@ -6,6 +6,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const { EXPECTED_NATIVE_TOOLS } = require("../src/integrations/codebase_memory/cbm_contract_registry");
+const { CliArgumentError, parseCliArgs } = require("../src/util/cli_args");
 
 function defaultExecutablePath(env = process.env) {
   if (process.platform === "win32") {
@@ -102,15 +103,29 @@ function buildManifest(executable) {
   };
 }
 
+function parseArgs(argv, env = process.env) {
+  const parsed = parseCliArgs(argv, {
+    valueOptions: ["executable"],
+    flagOptions: ["check", "write"],
+  });
+  if (parsed.flag("check") && parsed.flag("write")) {
+    throw new CliArgumentError("cli_argument_conflict", "check");
+  }
+  return {
+    check: parsed.flag("check"),
+    write: parsed.flag("write"),
+    executable: path.normalize(parsed.value("executable", env.CBM_EXE_PATH || defaultExecutablePath(env))),
+  };
+}
+
 function main() {
-  const args = new Set(process.argv.slice(2));
-  const executableArg = process.argv.find((value) => value.startsWith("--executable="));
-  const executable = path.normalize(executableArg ? executableArg.slice("--executable=".length) : process.env.CBM_EXE_PATH || defaultExecutablePath());
+  const args = parseArgs(process.argv.slice(2));
+  const executable = args.executable;
   const manifest = buildManifest(executable);
   const text = `${JSON.stringify(manifest, null, 2)}\n`;
   const output = path.join(__dirname, "..", "src", "integrations", "codebase_memory", "contracts", `v${manifest.cbm_version}.json`);
 
-  if (args.has("--check")) {
+  if (args.check) {
     if (!fs.existsSync(output)) throw new Error(`Missing contract manifest: ${output}`);
     const existing = JSON.parse(fs.readFileSync(output, "utf8"));
     const comparable = { ...manifest, captured_at: existing.captured_at };
@@ -121,7 +136,7 @@ function main() {
     return;
   }
 
-  if (args.has("--write")) {
+  if (args.write) {
     fs.mkdirSync(path.dirname(output), { recursive: true });
     fs.writeFileSync(output, text, "utf8");
     console.log(JSON.stringify({ ok: true, mode: "write", output, version: manifest.cbm_version, tool_count: manifest.native_tools.length }));
@@ -131,11 +146,24 @@ function main() {
   process.stdout.write(text);
 }
 
-if (require.main === module) main();
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    if (error instanceof CliArgumentError) {
+      console.error(JSON.stringify({ success: false, error_code: error.code, argument: error.argument, message: error.message }));
+      process.exitCode = 2;
+    } else {
+      console.error(error?.stack || error?.message || String(error));
+      process.exitCode = 1;
+    }
+  }
+}
 
 module.exports = {
   buildManifest,
   defaultExecutablePath,
+  parseArgs,
   parseFlags,
   parseTopLevelTools,
   parseVersion,

@@ -12,6 +12,7 @@ const {
   cosineSimilarity,
 } = require("../src/memory/embedding_client");
 const { backfillMemoryEmbeddings } = require("../src/memory/embedding_backfill");
+const { parseArgs: parseBackfillArgs } = require("../scripts/backfill-memory-embeddings");
 
 function vectorAt(index, value = 1) {
   const vector = Array(BGE_M3_DIMENSIONS).fill(0);
@@ -35,6 +36,15 @@ function responseFor(vector) {
 }
 
 (async () => {
+  assert.deepEqual(parseBackfillArgs(["--dry-run", "--limit=25", "--log-dir", "logs"]), {
+    dryRun: true,
+    limit: 25,
+    logDir: "logs",
+  });
+  assert.throws(() => parseBackfillArgs(["--limit"]), { code: "cli_argument_value_missing" });
+  assert.throws(() => parseBackfillArgs(["--limit", "invalid"]), { code: "cli_argument_value_invalid" });
+  assert.throws(() => parseBackfillArgs(["--log-dir", "a", "--log-dir", "b"]), { code: "cli_argument_duplicate" });
+
   const runtimeAuditScript = path.join(__dirname, "..", "scripts", "audit-memory-embedding-runtime.ps1");
   const runtimeAuditSource = fs.readFileSync(runtimeAuditScript, "utf8");
   assert.ok(runtimeAuditSource.includes("ReadAllowlisted"));
