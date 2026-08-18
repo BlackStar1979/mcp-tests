@@ -195,7 +195,7 @@
       "descriptor_fingerprint": "19512cb09a5bc329",
       "combined_fingerprint": "ec7d3af5b4ea17f5"
     },
-    "current_schema_refresh_required": true,
+    "current_schema_refresh_required": false,
     "expected_count_source": "SERVER_SPEC.server.full_tests_authenticated_tool_count / SERVER_TOOLS_SPEC.total_mcp_callable_tool_count",
     "historical_expected_public_plus_authorized_count": 45,
     "hidden_internal_tools": [

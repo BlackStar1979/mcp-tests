@@ -1,6 +1,6 @@
 # Connector Refresh Readiness
 
-Status: H9 readiness contract plus Stage 6 historical live evidence. The Stage 6 OAuth21 connector refresh was performed externally by the operator; a new POL-1A-DLP connector refresh/review is currently required because accepted live runtime output/descriptor schemas moved to combined fingerprint `93721a82a339f9d6` while the connector/model cache still reflects `ec7d3af5b4ea17f5`. Public connector remains disconnected by operator decision.
+Status: H9 readiness contract plus current POL-1A-DLP refresh evidence. The operator's green authenticated refresh is corroborated by server audit: `openai-mcp 1.0.0` completed `server/discover` and `tools/list` with HTTP `200`, `98` tools, `ttl_ms = 0`, `cache_scope = private`, and combined fingerprint `93721a82a339f9d6`. The DLP connector schema refresh is therefore complete. Public connector remains disconnected by operator decision.
 
 ## Blocking rule
 

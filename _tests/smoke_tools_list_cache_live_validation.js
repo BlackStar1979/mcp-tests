@@ -13,8 +13,8 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo98_runtime98_model98_schema_refresh_pending";
-const expectedLiveFingerprint = "ec7d3af5b4ea17f5";
+const expectedCurrentStatus = "repo98_runtime98_model98_schema_current";
+const expectedLiveFingerprint = SURFACE.combined_fingerprint;
 const expectedRepoTargetFingerprint = SURFACE.combined_fingerprint;
 const expectedCurrentHash = SURFACE.tool_names_hash;
 
@@ -27,10 +27,10 @@ assert.equal(c.combined_fingerprint, expectedLiveFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 98);
 assert.equal(c.repo_current_expected_tool_count, 98);
-assert.equal(c.connector_refresh_required_now, true);
+assert.equal(c.connector_refresh_required_now, false);
 assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(c.model_runtime_callable_verified_now, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
@@ -39,16 +39,16 @@ assert.ok(plan.includes("Status: D1-A/D1-B/D1-C REPO APPLIED / LIVE VALIDATED ON
 assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
-assert.ok(index.includes("live OAuth21 `3008` has source commit `555fad0` loaded by controlled restart `manual-1786988583476` at `server_start_id = 2026-08-17T17:43:05.322Z`"));
+assert.ok(index.includes("live OAuth21 `3008` runs source commit `2ae1585` at `server_start_id = 2026-08-18T14:53:56.306Z`"));
 assert.ok(index.includes("durable process recovery are green"));
 assert.ok(index.includes(`fingerprint \`${expectedLiveFingerprint}\``));
-assert.ok(index.includes(`combined \`${expectedRepoTargetFingerprint}\``));
+assert.ok(index.includes(`combined fingerprint \`${expectedRepoTargetFingerprint}\``));
 assert.ok(index.includes("`MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`)"));
 assert.ok(index.includes("`TRACE-CONTEXT` (`7 + 298`)"));
 assert.ok(index.includes("`PROCESS-ARTIFACTS` (`7 + 301`)"));
 assert.ok(index.includes("`CIMD` (`7 + 304`)"));
-assert.ok(index.includes("live-loaded and live-accepted"));
-assert.ok(index.includes("`MRTR` remains fixture-only conformance evidence at `7 + 305`"));
+assert.ok(index.includes("are live-accepted"));
+assert.ok(index.includes("`MRTR` remains fixture-only conformance evidence"));
 assert.ok(index.includes("runtime loading is not applicable"));
 assert.ok(index.includes("The operator refreshed OAuth authorization and the connector tool list"));
 assert.ok(index.includes("survived the subsequent supervisor restart with OAuth state intact"));

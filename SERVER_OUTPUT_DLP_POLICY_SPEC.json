@@ -59,7 +59,7 @@
   "current_deploy_impact": {
     "runtime_restart_required_now": false,
     "connector_visible_surface_changed": true,
-    "connector_refresh_required_now": true,
+    "connector_refresh_required_now": false,
     "tool_count_changed": false,
     "tool_names_changed": false,
     "input_schema_changed": false,

@@ -83,9 +83,9 @@ assert.ok(stateDoc.includes("`3` successful legacy `initialize` entries"));
 assert.ok(stateDoc.includes("`0` `server/discover` entries"));
 assert.ok(readiness.includes("## Component maturity"));
 assert.ok(readiness.includes("Operator-facing documentation contract"));
-assert.ok(readiness.includes("Governance correctly detected the POL-1A-DLP schema delta"));
-assert.ok(readiness.includes("a fresh reconnect exposed an additional bounded runtime blocker"));
-assert.ok(readiness.includes("a controlled OAuth21 `3008` restart is now required before retrying authorization"));
+assert.ok(readiness.includes("Governance correctly detected and closed the POL-1A-DLP schema delta"));
+assert.ok(readiness.includes("No active connector-surface blocker remains"));
+assert.ok(readiness.includes("follow-up source commit `2ae1585` is live"));
 assert.ok(readiness.includes("| SURF-1 | Connector-visible surface governance | 4/4 |"));
 assert.ok(readiness.includes("| PROC-1 | Process execution reliability | 4/4 |"));
 assert.ok(readiness.includes("Codebase-Memory bridge and index integrity"));
@@ -187,7 +187,7 @@ assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1a-pro
 assert.ok(readiness.includes("| POL-1 | Policy coverage convergence | 2/4 |"));
 assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
-assert.equal(workflowState.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-18T04:39:45.722Z");
+assert.equal(workflowState.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-18T14:53:56.306Z");
 assert.equal(workflowState.current_runtime_truth.oauth21_3008.p0_p3_live, true);
 assert.ok(tasksCloseout.includes("737cdc8b97ec1e966823dc2566eb7d5cd221e9b6"));
 assert.ok(mrtrCloseout.includes("runtime acceptance is non-applicable rather than pending"));
