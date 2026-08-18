@@ -58,7 +58,7 @@ const nonRunAll = topLevelTests.filter((name) => !activeManifest.has(name));
 const undocumentedNonRunAll = nonRunAll.filter((name) => !nonRunAllAudit.includes(`\`${path.basename(name)}\``));
 const serverSpawningTests = topLevelTests.filter((name) => {
   const source = fs.readFileSync(path.join(ROOT, name), "utf8");
-  return /spawn(?:Sync)?\([^\n]*process\.execPath[^\n]*server\.js|\[\"server\.js\"/.test(source);
+  return /\bspawn(?:Sync)?\s*\(\s*process\.execPath\s*,\s*\[\s*[\"']server\.js[\"']/s.test(source);
 });
 const unisolatedServerSpawningTests = serverSpawningTests.filter((name) => {
   const source = fs.readFileSync(path.join(ROOT, name), "utf8");

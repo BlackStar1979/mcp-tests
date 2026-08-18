@@ -8,6 +8,7 @@ const path = require("node:path");
 const { EventEmitter } = require("node:events");
 const { spawn } = require("node:child_process");
 const { readJsonBody } = require("../src/auth/oauth21_utils");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -129,10 +130,10 @@ async function assertOversizedBodyDestroysRequest() {
     String(port),
   ], {
     cwd: ROOT,
-    env: cleanEnv({
+    env: withHermeticServerControlEnv(cleanEnv({
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
       MCP_TEST_PUBLIC_BASE_URL: issuer,
-    }),
+    }), tempDir),
     stdio: ["ignore", "pipe", "pipe"],
   });
   let output = "";

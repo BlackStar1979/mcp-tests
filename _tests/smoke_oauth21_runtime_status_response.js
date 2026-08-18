@@ -8,6 +8,7 @@ const os = require("node:os");
 const path = require("node:path");
 const { spawn } = require("node:child_process");
 const { sha256Base64Url } = require("../src/auth/oauth21_authorization_server");
+const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 const ROOT = path.join(__dirname, "..");
 
@@ -199,12 +200,12 @@ function assertOauth21ToolsListPermissions(response) {
     String(port),
   ], {
     cwd: ROOT,
-    env: cleanEnv({
+    env: withHermeticServerControlEnv(cleanEnv({
       MCP_TEST_FS_ROOT: path.join(ROOT, "_public_sandbox"),
       MCP_TEST_PUBLIC_BASE_URL: issuer,
       MCP_TEST_OAUTH_STORAGE_FILE: storageFile,
       MCP_TEST_HEALTH_FULL: "1",
-    }),
+    }), tempDir),
     stdio: ["ignore", "pipe", "pipe"],
   });
 
