@@ -24,8 +24,8 @@
   ],
   "runtime_gaps": [],
   "implementation_evidence": [
-    "src/runtime/server_factory.js rejects invalid Host and present invalid Origin before route dispatch",
-    "src/runtime/cors_policy.js applies an explicit authenticated-origin allowlist and fail-closed Origin validation; requests without Origin remain valid for non-browser MCP clients",
+    "src/runtime/server_factory.js rejects invalid Host globally and applies present-Origin rejection specifically to the Streamable HTTP /mcp transport endpoint before route dispatch, without intercepting OAuth authorization-server routes",
+    "src/runtime/cors_policy.js applies an explicit authenticated-origin allowlist and fail-closed Origin validation for MCP transport requests; requests without Origin remain valid for non-browser MCP clients",
     "src/auth/oauth21_authorization_server.js enforces PKCE/state, exact registered redirect binding, HTTPS-or-loopback redirect policy, and supported OAuth scope validation",
     "src/auth/oauth_cimd_resolver.js rejects special-use/private address resolution before outbound Client ID Metadata fetch",
     "SERVER_AUTH_SPEC.json fixes public OAuth21 endpoints to HTTPS while hermetic development remains loopback-only",

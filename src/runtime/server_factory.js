@@ -37,12 +37,12 @@ function createServer({
   return http.createServer(async (req, res) => {
     try {
       if (!isAllowedHost(req, { publicBaseUrl })) {
-      return rejectInvalidHost(res);
-      }
-      if (!isAllowedOrigin(req, { publicBaseUrl })) {
-        return rejectInvalidOrigin(res);
+        return rejectInvalidHost(res);
       }
       const url = new URL(req.url, `http://${req.headers.host || `${host}:${port}`}`);
+      if (url.pathname === "/mcp" && !isAllowedOrigin(req, { publicBaseUrl })) {
+        return rejectInvalidOrigin(res);
+      }
 
       for (const [key, value] of Object.entries(corsHeadersForRequest(req, { authPolicy, publicBaseUrl }))) {
       res.setHeader(key, value);

@@ -49,8 +49,19 @@ const blockedOriginRes = {
   destroy(error) { throw error; },
 };
 httpServer.emit("request", { url: "/mcp", headers: { host: "example.invalid", origin: "https://evil.example" } }, blockedOriginRes);
+const oauthOriginRes = {
+  headersSent: false,
+  statusCode: undefined,
+  body: "",
+  setHeader() {},
+  writeHead(code) { this.statusCode = code; this.headersSent = true; },
+  end(chunk = "") { this.body += String(chunk); },
+  destroy(error) { throw error; },
+};
+httpServer.emit("request", { url: "/oauth/operator-login", method: "POST", headers: { host: "example.invalid", origin: "null" } }, oauthOriginRes);
 setImmediate(() => {
-  assert.equal(dispatchCount, 1, "invalid Origin must be rejected before route dispatch");
-  assert.equal(blockedOriginRes.statusCode, 403, "invalid Origin must return HTTP 403");
+  assert.equal(blockedOriginRes.statusCode, 403, "invalid Origin on the MCP transport must return HTTP 403");
+  assert.equal(dispatchCount, 2, "OAuth authorization-server routes must not be rejected by the MCP transport Origin gate");
+  assert.notEqual(oauthOriginRes.statusCode, 403, "OAuth operator login must reach the authorization-server route even with an opaque browser Origin");
   console.log("smoke_server_factory_extraction ok");
 });

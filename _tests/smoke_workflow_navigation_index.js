@@ -111,7 +111,7 @@ assert.ok(canon.includes("`next_secondary = pol-1a-prompt-content-boundary`"));
 assert.ok(canon.includes("Refresh/review the authenticated ChatGPT connector"));
 assert.equal(index.includes("`OPS-1B` — event-gated live SFTP completion"), false);
 assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "ec7d3af5b4ea17f5");

@@ -285,7 +285,7 @@
       "server_start_id": "2026-08-18T04:39:45.722Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "p0_p3_live": true,      "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,
