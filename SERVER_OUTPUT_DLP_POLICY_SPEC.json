@@ -57,14 +57,17 @@
   ],
   "runtime_gaps": [],
   "current_deploy_impact": {
-    "runtime_restart_required_now": true,
+    "runtime_restart_required_now": false,
     "connector_visible_surface_changed": true,
     "connector_refresh_required_now": true,
     "tool_count_changed": false,
     "tool_names_changed": false,
     "input_schema_changed": false,
     "output_schema_changed": true,
-    "live_combined_fingerprint": "ec7d3af5b4ea17f5",
+    "accepted_live_server_start_id": "2026-08-18T04:39:45.722Z",
+    "accepted_live_source_commit": "b385c88",
+    "live_combined_fingerprint": "93721a82a339f9d6",
+    "connector_cached_combined_fingerprint_before_refresh": "ec7d3af5b4ea17f5",
     "repo_target_output_schema_fingerprint": "8292895f0216967c",
     "repo_target_descriptor_fingerprint": "82ffaaa3adb6e7db",
     "repo_target_combined_fingerprint": "93721a82a339f9d6"
@@ -77,7 +80,9 @@
     "src/runtime/mcp_tasks_extension.js validates completed process results against RUN_PROCESS_OUTPUT_SCHEMA and re-applies trust/resource-link filtering after process artifact links are attached",
     "_tests/smoke_output_schema_guard.js and _tests/smoke_process_artifact_task_links.js provide RED-to-GREEN coverage for schema mismatch, nontrivial JSON Schema pattern enforcement, secret redaction, bounded secret-free audit metadata, resource-link filtering, embedded-resource handling, core fetch, Tasks output validation, and output trust metadata",
     "all 98 active outputSchema descriptors compile under the same Ajv 2020-12 validator and no active output schema uses a credential-key property that would collide with the structural redaction key set",
-    "the first full DLP suite exposed ten impossible empty closed-object outputSchema placeholders on developer/code-mutation tools; those schemas were repaired to the actual bounded top-level result contracts, and smoke_output_schema_guard now rejects any recurrence across the active 98-tool surface"
+    "the first full DLP suite exposed ten impossible empty closed-object outputSchema placeholders on developer/code-mutation tools; those schemas were repaired to the actual bounded top-level result contracts, and smoke_output_schema_guard now rejects any recurrence across the active 98-tool surface",
+    "the first live DLP load exposed optional undefined object properties that JSON serialization historically omitted; the sanitizer now preserves JSON object semantics by omitting only undefined properties while still rejecting functions, symbols, BigInt, cycles, and other non-JSON values",
+    "the second live DLP load exposed an over-broad JWT heuristic that matched dotted code identifiers; JWT redaction is now restricted to eyJ-prefixed Base64URL token shapes, with RED-to-GREEN coverage proving dotted identifiers remain intact while JWTs remain redacted"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

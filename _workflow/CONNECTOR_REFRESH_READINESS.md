@@ -1,6 +1,6 @@
 # Connector Refresh Readiness
 
-Status: H9 readiness contract plus Stage 6 live evidence. OAuth21 connector refresh was performed externally by the operator and validated via TESTS_MCP.test_mcp_runtime_status; public connector remains disconnected, with public runtime validated locally.
+Status: H9 readiness contract plus Stage 6 historical live evidence. The Stage 6 OAuth21 connector refresh was performed externally by the operator; a new POL-1A-DLP connector refresh/review is currently required because accepted live runtime output/descriptor schemas moved to combined fingerprint `93721a82a339f9d6` while the connector/model cache still reflects `ec7d3af5b4ea17f5`. Public connector remains disconnected by operator decision.
 
 ## Blocking rule
 

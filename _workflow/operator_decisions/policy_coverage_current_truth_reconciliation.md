@@ -1,6 +1,6 @@
 # Policy Coverage Current-Truth Reconciliation
 
-Status: REPO-APPLIED / ROOT-BOUNDARY FIX GREEN / POLICY WORK REOPENED
+Status: POLICY WORK ACTIVE / POL-1A-DLP RUNTIME LIVE ACCEPTED / CONNECTOR REFRESH PENDING
 Date: 2026-08-17
 
 ## Declarations
@@ -108,4 +108,18 @@ Accepted evidence for that earlier load remains:
 - connector-visible TEST MCP calls and durable process recovery survived;
 - no connector refresh or OAuth reauthorization was required.
 
-`POL-1` remains `2/4` because eleven required policy rows remain unresolved. The current next package is `POL-1A-DLP`; transport and scope enforcement from source commit `cbbb284` are live-loaded and accepted on OAuth21 `3008`.
+`POL-1` remains `2/4`. The `13/24` count and DLP-next statement above describe the August 17 critical-reconciliation checkpoint; the continuation below records the subsequent DLP implementation and live acceptance.
+
+## POL-1A-DLP continuation and live acceptance — 2026-08-18
+
+`output_dlp_policy` is now implemented, raising current coverage to `14/24`; ten required rows remain outside implemented: four partial, four specified-only, and two critical (`consent`, `prompt/content`). The next product package is `POL-1A-CONSENT`, but authenticated-connector refresh/review remains an external checkpoint before normal autonomous progression.
+
+Implementation centralized JSON Schema 2020-12 validation, secret redaction, untrusted-output metadata, resource-link filtering, embedded-resource handling, and fail-closed process Task validation. Full DLP enforcement also exposed ten impossible empty closed-object output schemas on developer/code-mutation tools; those schemas were repaired to bounded real top-level result contracts. The governed runtime target remains `98` tools with unchanged names and input-schema fingerprint, and new output/descriptor/combined fingerprints `8292895f0216967c` / `82ffaaa3adb6e7db` / `93721a82a339f9d6`.
+
+Live loading required three evidence-bearing iterations rather than one acceptance-by-restart:
+
+1. Source commit `02a5e5e8e864f7e8a8851826f72766f04ad82393` was loaded by request `manual-1787027396070`; live `read_file` then exposed an overly strict sanitizer rejection of optional `undefined` object properties, so that load was rejected as final acceptance.
+2. Corrective commit `9ab8ec5` was loaded by request `manual-1787027659863`; live execution recovered, but post-live audit exposed an over-broad JWT heuristic that redacted dotted code identifiers such as `current_runtime_truth.oauth21_3008.restart_required_now`, so that load also remained non-final.
+3. Final corrective source commit `b385c88` narrowed JWT detection to `eyJ`-prefixed Base64URL token shapes. The complete offline gate after that correction was GREEN at `7 public + 308 authenticated`, exit `0`, empty stderr, no truncation. Request `manual-1787027984160` loaded it on OAuth21 `3008`; accepted `server_start_id = 2026-08-18T04:39:45.722Z`, `/healthz = 200`, `tools_count = 98`, tool-surface state equals combined fingerprint `93721a82a339f9d6`, and durable pre-restart job `a25dc670-dd33-4a7a-8131-decfacc321c7` is readable with `recovered_after_restart = true`.
+
+Runtime restart is therefore complete and `restart_required_now = false`. The ChatGPT connector/model cache still reflects the earlier combined fingerprint `ec7d3af5b4ea17f5`; because output schemas and descriptor fingerprints changed, `connector_refresh_required_now = true`. Current tooling does not expose an authenticated-connector refresh/reconnect action, so that remaining checkpoint is an explicit external operator/UI action rather than another server mutation.

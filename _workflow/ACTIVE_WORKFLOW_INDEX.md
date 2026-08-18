@@ -398,7 +398,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Live-load the repo-applied `POL-1A-DLP` source package on OAuth21 `3008`; this is a deployment checkpoint, not another implementation package.
+1. Refresh/review the authenticated ChatGPT connector so the model-visible output schemas match accepted live runtime fingerprint `93721a82a339f9d6`; this is an external operator/UI checkpoint, not another implementation package.
 2. Execute `POL-1A-CONSENT`: bind high-risk runtime operations to a server-verifiable consent artifact instead of relying on the current `guarded_process_execution` classification alone.
 3. Execute `POL-1A-PROMPT`: add explicit untrusted-content classification and an instruction-promotion boundary for content-bearing tool results.
 4. Follow with `POL-1B` for the four `partial` policies and `POL-1C` for the four non-critical `specified_only` policies.
@@ -407,7 +407,7 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as active interpretation.
 
-Next recommended action: execute `POL-1A-CONSENT` after the repo-applied DLP package is live-loaded. Current repository truth proves `14/24` required policies implemented. `output_dlp` now centralizes JSON Schema 2020-12 validation, secret redaction, explicit untrusted-output metadata, process-artifact resource-link filtering, and embedded-resource handling across optional tools, core search/fetch, and process Tasks. Two critical policies remain genuine runtime gaps: consent and prompt/content. Live OAuth21 3008 still runs source commit `cbbb284` at `server_start_id = 2026-08-17T19:00:17.718Z`; `restart_required_now = true` until the DLP source package is loaded. The live connector/runtime remains on fingerprint `ec7d3af5b4ea17f5`; DLP validation exposed and repaired ten impossible placeholder output schemas, producing repository target fingerprints output `8292895f0216967c`, descriptor `82ffaaa3adb6e7db`, combined `93721a82a339f9d6`. Tool count/names and input schemas are unchanged, but the connector-visible output-schema delta requires connector refresh after live-load.
+Next recommended product package is `POL-1A-CONSENT`, but one external connector checkpoint remains before normal autonomous progression: refresh/review the authenticated ChatGPT connector so its model-visible output schemas match the accepted DLP runtime. Current repository and live-runtime truth proves `14/24` required policies implemented. Final DLP source commit `b385c88` is live on OAuth21 3008 at `server_start_id = 2026-08-18T04:39:45.722Z`; health is `200`, durable process recovery is green, and the runtime surface is `98` tools with output `8292895f0216967c`, descriptor `82ffaaa3adb6e7db`, combined `93721a82a339f9d6`. The connector/model cache still carries the earlier combined fingerprint `ec7d3af5b4ea17f5`, therefore `restart_required_now = false` and `connector_refresh_required_now = true`. Two critical runtime gaps remain after DLP: consent and prompt/content.
 Readiness-derived default next package queue:
 
 1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
