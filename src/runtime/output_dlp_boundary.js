@@ -92,7 +92,8 @@ function sanitizeJsonPayload(payload) {
       try {
         const result = {};
         for (const [childKey, childValue] of Object.entries(value)) {
-          if (childValue === undefined || typeof childValue === "function" || typeof childValue === "symbol" || typeof childValue === "bigint") {
+          if (childValue === undefined) continue;
+          if (typeof childValue === "function" || typeof childValue === "symbol" || typeof childValue === "bigint") {
             throw new Error("output_not_json_compatible");
           }
           result[childKey] = visit(childValue, depth + 1, childKey);

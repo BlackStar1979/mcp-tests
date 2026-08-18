@@ -256,6 +256,36 @@ function baseRuntimeStatus() {
   });
   assert.equal(patternRejected.result?.isError, true, "full outputSchema semantics must be enforced, including pattern");
 
+  const optionalUndefinedTool = {
+    name: "dlp_optional_undefined_probe",
+    descriptor: {
+      outputSchema: {
+        type: "object",
+        additionalProperties: false,
+        required: ["ok"],
+        properties: {
+          ok: { type: "boolean" },
+          hint: { type: "string" },
+        },
+      },
+    },
+    async execute() {
+      return { ok: true, hint: undefined };
+    },
+  };
+  const optionalUndefinedResult = await tryHandleOptionalToolCall({
+    id: 1001,
+    name: optionalUndefinedTool.name,
+    args: {},
+    context: { requestId: "dlp-optional-undefined-red" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    getOptionalTool: (name) => (name === optionalUndefinedTool.name ? optionalUndefinedTool : null),
+    auditLog: () => {},
+  });
+  assert.equal(optionalUndefinedResult.result?.isError, undefined, "undefined optional object properties must follow JSON serialization semantics and be omitted");
+  assert.equal(Object.hasOwn(optionalUndefinedResult.result?.structuredContent || {}, "hint"), false);
+
   const secretTool = {
     name: "dlp_secret_probe",
     descriptor: {
