@@ -25,6 +25,18 @@ function assertWorkflowCurrentSmokeBaseline({ canon, index }) {
   assertIndexCurrentSmokeBaseline(index);
 }
 
+const serverStartIdPattern = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/;
+
+function assertCurrentRuntimeStartIdentity(state) {
+  const runtime = state.current_runtime_truth.oauth21_3008;
+  const connector = state.current_connector_truth.oauth21_3008_tools;
+  assert.match(runtime.server_start_id, serverStartIdPattern);
+  assert.match(connector.server_start_id, serverStartIdPattern);
+  if (connector.connector_refresh_required_now === false) {
+    assert.equal(connector.server_start_id, runtime.server_start_id);
+  }
+}
+
 module.exports = {
   latestFullSmokeToken,
   latestAuthenticatedSmokeCount,
@@ -34,5 +46,7 @@ module.exports = {
   latestIndexAuthenticatedCountLine,
   assertCanonCurrentSmokeBaseline,
   assertIndexCurrentSmokeBaseline,
+  serverStartIdPattern,
+  assertCurrentRuntimeStartIdentity,
   assertWorkflowCurrentSmokeBaseline,
 };

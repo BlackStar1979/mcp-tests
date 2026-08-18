@@ -3,7 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertCanonCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
+const { assertCanonCurrentSmokeBaseline, assertCurrentRuntimeStartIdentity } = require("./helpers/workflow_baseline");
 const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -120,9 +120,9 @@ assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_stat
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 
-assert.equal(state.current_runtime_truth.oauth21_3008.server_start_id, "2026-08-18T17:21:55.694Z");
+assertCurrentRuntimeStartIdentity(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.p0_p3_live, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.server_start_id, "2026-08-18T17:21:55.694Z");
+
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);

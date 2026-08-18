@@ -93,6 +93,22 @@ function walk(dir) {
 walk(snapshotRoot);
 assert.deepEqual(nested, []);
 
+const volatileStartLiteralPatterns = [
+  /current_runtime_truth\.oauth21_3008\.server_start_id\s*,\s*["']20\d{2}-/,
+  /current_connector_truth\.oauth21_3008_tools\.server_start_id\s*,\s*["']20\d{2}-/,
+];
+const volatileStartLiteralHits = [];
+for (const entry of fs.readdirSync(path.join(ROOT, "_tests"), { withFileTypes: true })) {
+  if (!entry.isFile() || !entry.name.endsWith(".js")) continue;
+  const text = read(`_tests/${entry.name}`);
+  if (volatileStartLiteralPatterns.some((pattern) => pattern.test(text))) volatileStartLiteralHits.push(entry.name);
+}
+assert.deepEqual(
+  volatileStartLiteralHits,
+  [],
+  "current server_start_id must be asserted structurally or relationally, never copied into active tests as a timestamp literal",
+);
+
 assert.ok(canon.includes("S16 state and snapshot hygiene repair green"));
 assertWorkflowCurrentSmokeBaseline({ canon, index });
 assert.ok(index.includes("state_and_snapshot_hygiene.md"));
