@@ -1,7 +1,9 @@
 # Adjacent SEP Watchlist Review
 
-Status: GREEN / WATCHLIST REVIEW COMPLETE / NO NEW LEDGER OPENED
+Status: HISTORICAL / SUPERSEDED FOR CURRENT PROTOCOL TRUTH
 Date: 2026-07-01
+
+Current authority: `SERVER_PROTOCOL_CAPABILITY_SPEC.json`. This historical review predates the live resource surface, Tasks, Trace Context, CIMD, and the production-MRTR requirement discovered by POL-1A-CONSENT.
 
 ## Purpose
 

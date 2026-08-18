@@ -1,19 +1,13 @@
 "use strict";
 
-const MODERN_PROTOCOL_VERSION = "2026-07-28";
-const CURRENT_PROTOCOL_VERSION = "2025-11-25";
-const LEGACY_PROTOCOL_VERSION = "2025-03-26";
-const SUPPORTED_LEGACY_PROTOCOL_VERSIONS = Object.freeze([
-  CURRENT_PROTOCOL_VERSION,
-  "2025-06-18",
+const {
+  CURRENT_LEGACY_PROTOCOL_VERSION: CURRENT_PROTOCOL_VERSION,
   LEGACY_PROTOCOL_VERSION,
-]);
-const SUPPORTED_PROTOCOL_VERSIONS = Object.freeze([
   MODERN_PROTOCOL_VERSION,
-  ...SUPPORTED_LEGACY_PROTOCOL_VERSIONS,
-]);
+  SUPPORTED_LEGACY_PROTOCOL_VERSIONS,
+  SUPPORTED_PROTOCOL_VERSIONS,
+} = require("./protocol_capability_registry");
 const PROTOCOL_VERSION_RE = /^\d{4}-\d{2}-\d{2}$/;
-
 function normalizeHeaderValue(value) {
   if (Array.isArray(value)) value = value[0];
   if (value === undefined || value === null || value === "") return undefined;

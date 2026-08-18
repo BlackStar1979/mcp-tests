@@ -2,6 +2,9 @@
   "schema_version": "stage14_6-sep-driven-sessionless-inventory-v1",
   "date": "2026-06-29",
   "status": "sep_driven_living_checklist_no_runtime_change",
+  "current_truth_status": "historical_transition_inventory_superseded_for_protocol_compliance",
+  "current_protocol_capability_authority": "SERVER_PROTOCOL_CAPABILITY_SPEC.json",
+  "current_truth_note": "Preserved as migration provenance and regression evidence. Its June/July SEP classifications must not generate current work; use the modular root protocol capability spec instead.",
   "purpose": "SEP-derived, operator-bound, machine-readable implementation checklist for MCP stateless/sessionless migration. Update this file when official SEP status or repo implementation status changes.",
   "authority_chain": [
     "_workflow/README.md",

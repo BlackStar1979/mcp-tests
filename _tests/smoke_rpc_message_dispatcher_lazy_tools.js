@@ -82,6 +82,14 @@ async function countToolsCalls(prelude, extra = {}) {
   );
   assert.equal(discover.calls, 1);
 
+  const invalidToolInput = await dispatchRpcMessage({
+    ...baseArgs(),
+    prelude: { id: 7, method: "tools/call", params: { name: "search", arguments: { query: 42 } } },
+  });
+  assert.equal(invalidToolInput.error, undefined);
+  assert.equal(invalidToolInput.result.isError, true);
+  assert.match(invalidToolInput.result.content[0].text, /Invalid tool arguments/);
+
   const legacyTools = await dispatchRpcMessage({
     ...baseArgs(),
     prelude: { id: 7, method: "tools/list", params: {} },

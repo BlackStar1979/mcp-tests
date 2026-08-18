@@ -5,12 +5,12 @@ const { applyOutputTrustMetadata, toolResult } = require("./tool_result");
 const { evaluateToolOutputPolicy } = require("./output_dlp_boundary");
 const { RUN_PROCESS_OUTPUT_SCHEMA } = require("../schemas/process_tools");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
+const { TASKS_EXTENSION_ID } = require("./protocol_capability_registry");
 const { resolveProcessJobManager } = require("../util/process_job_manager");
 const { resolveProcessJobOwner } = require("../util/process_job_owner");
 const { createChildTraceContext, traceAuditFields } = require("./trace_context");
 const { buildProcessArtifactResourceLink } = require("./process_artifact_resource");
 
-const TASKS_EXTENSION_ID = "io.modelcontextprotocol/tasks";
 const TASKABLE_PROCESS_TOOL = "run_process";
 const TASK_POLL_INTERVAL_MS = 1000;
 const TASK_TTL_MS = 0;

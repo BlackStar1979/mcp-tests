@@ -5,6 +5,13 @@ const { validateRpcMessage } = require("../src/runtime/rpc_protocol_validator");
 const { getMaxBatchItems } = require("../src/runtime/batch_payload_dispatcher");
 const { buildDecisionRuntimeContext } = require("../src/runtime/decision_runtime_context_builder");
 const { evaluateDecisionRuntimePolicy } = require("../src/runtime/decision_runtime_policy");
+const {
+  TASKS_EXTENSION_ID,
+  adapterForProtocolVersion,
+  extensionsForProtocolVersion,
+} = require("../src/runtime/protocol_capability_registry");
+const rootSpec = require("../SERVER_SPEC.json");
+const protocolSpec = require("../SERVER_PROTOCOL_CAPABILITY_SPEC.json");
 
 (function requestIdNullRejectedForMcp() {
   const rejected = validateRpcMessage({ jsonrpc: "2.0", id: null, method: "ping" });
@@ -59,6 +66,39 @@ const { evaluateDecisionRuntimePolicy } = require("../src/runtime/decision_runti
   const decision = evaluateDecisionRuntimePolicy({ decisionContext: ctx });
   assert.equal(decision.allow, true);
   assert.ok(decision.decision_meta.reason_codes.includes("explicit_policy_allow"));
+})();
+
+(function protocolCapabilitiesAreModuleDriven() {
+  const modern = adapterForProtocolVersion("2026-07-28");
+  assert.equal(modern.era, "modern_2026_07_28");
+  assert.equal(modern.modules.transport, "streamable_http_stateless");
+  assert.equal(modern.modules.discovery, "server_discover");
+  assert.equal(modern.modules.request_state, "explicit_state_handles");
+  assert.equal(modern.modules.mrtr, "fixture_only");
+  assert.deepEqual(extensionsForProtocolVersion("2026-07-28"), [TASKS_EXTENSION_ID]);
+
+  const legacy = adapterForProtocolVersion("2025-11-25");
+  assert.equal(legacy.era, "legacy_initialize_compat");
+  assert.deepEqual(extensionsForProtocolVersion("2025-11-25"), []);
+  assert.equal(adapterForProtocolVersion("2099-01-01"), null);
+})();
+
+(function protocolCapabilitySpecIsCanonicalAndModular() {
+  assert.equal(rootSpec.spec_refs.protocol_capabilities, "SERVER_PROTOCOL_CAPABILITY_SPEC.json");
+  assert.ok(rootSpec.repository_layout_contract.root_policy.active_root_files.includes("SERVER_PROTOCOL_CAPABILITY_SPEC.json"));
+  assert.equal(protocolSpec.architecture.runtime_registry, "src/runtime/protocol_capability_registry.js");
+  assert.equal(protocolSpec.release_2026_07_28.included_sep_count, 22);
+  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2663"].s, "live_optional_module");
+  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-1865"].s, "optional_module_not_loaded");
+  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2322"].s, "fixture_only_activation_gap");
+  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2164"].s, "repo_fixed_restart_pending");
+  assert.equal(protocolSpec.other_final_sep_dispositions.repo_fixed_restart_pending["SEP-1303"], "tool_input_validation_result");
+  assert.equal(protocolSpec.deployment_and_activation_queue[0].runtime_status, "restart_pending");
+  assert.equal(protocolSpec.deployment_and_activation_queue[1].runtime_status, "restart_pending");
+  assert.deepEqual(protocolSpec.next_queue.slice(0, 2), [
+    "protocol cleanup live-load and semantic acceptance",
+    "SEP-2322 production MRTR module",
+  ]);
 })();
 
 console.log("smoke_mcp_protocol_compliance_guards ok");

@@ -64,9 +64,9 @@
     "active_target_is_single_route_no_sse_streamable_http": true
   },
   "workflow_progress_markers": {
-    "current_working_course": "policy-coverage-critical-gap-closure",
-    "next_primary": "pol-1a-consent-boundary",
-    "next_secondary": "pol-1a-prompt-content-boundary",
+    "current_working_course": "protocol-capability-current-truth-cleanup",
+    "next_primary": "protocol-cleanup-live-validation",
+    "next_secondary": "pol-1a-mrtr-runtime",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -102,7 +102,8 @@
     "SERVER_SAMPLING_POLICY_SPEC.json": "deprecated Sampling fail-closed boundary",
     "SERVER_DECISION_RUNTIME_SPEC.json": "decision runtime contract from historical Stage12 work",
     "SERVER_RUNTIME_TOPOLOGY_SPEC.json": "runtime topology and restart control",
-    "SERVER_RUNTIME_CONFIG_SPEC.json": "runtime CLI/env/route config surface",
+    "SERVER_RUNTIME_CONFIG_SPEC.json": "runtime config",
+    "SERVER_PROTOCOL_CAPABILITY_SPEC.json": "protocol",
     "SERVER_EVENT_CATALOG_SPEC.json": "runtime audit event catalog",
     "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json": "critical policy authority",
     "SERVER_CONSENT_POLICY_SPEC.json": "critical policy authority",
@@ -285,7 +286,7 @@
       "server_start_id": "2026-08-18T14:53:56.306Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "p0_p3_live": true,      "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,

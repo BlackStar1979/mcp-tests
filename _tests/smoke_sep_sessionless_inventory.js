@@ -8,6 +8,9 @@ const inventory = JSON.parse(fs.readFileSync(inventoryPath, "utf8"));
 
 assert.equal(inventory.schema_version, "stage14_6-sep-driven-sessionless-inventory-v1");
 assert.equal(inventory.status, "sep_driven_living_checklist_no_runtime_change");
+assert.equal(inventory.current_truth_status, "historical_transition_inventory_superseded_for_protocol_compliance");
+assert.equal(inventory.current_protocol_capability_authority, "SERVER_PROTOCOL_CAPABILITY_SPEC.json");
+assert.match(inventory.current_truth_note, /must not generate current work/);
 assert.ok(Array.isArray(inventory.authority_chain));
 for (const required of [
   "_workflow/README.md",

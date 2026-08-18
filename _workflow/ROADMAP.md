@@ -44,21 +44,24 @@ Current derivation:
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
 | P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR supplies conformance evidence without a second runtime architecture. | Preserve fixture-only multi-round-trip behavior. |
-| P5 | `POL-1A` critical policy gap closure — active | canonical policy matrix, current runtime/tests | Current repository/live/connector truth proves `14/24` required policies implemented; transport, session, scope-minimization, and output DLP are evidence-backed, while consent and prompt/content remain genuine critical runtime gaps. Follow-up source commit `2ae1585` is live on OAuth21 `3008` at `2026-08-18T14:53:56.306Z`, fixes the OAuth Origin regression without weakening `/mcp`, and the authenticated connector refresh is audited at the current `93721a82a339f9d6` fingerprint. | Execute `POL-1A-CONSENT`; close prompt/content as a separately testable package before `POL-1B`. |
+| P5 | `POL-1A` critical policy gap closure — active, standards cleanup first | modular protocol capability authority, current runtime/tests | `SERVER_PROTOCOL_CAPABILITY_SPEC.json` now separates core protocol adapters from optional extensions, client/SDK duties, and governance. Audit found two real active Final-SEP defects: `SEP-2164` resource-not-found semantics and `SEP-1303` tool-input-validation semantics; both are RED-to-GREEN repo-fixed without a tool-surface/schema change, but live OAuth21 `3008` still runs source `2ae1585`. MRTR (`SEP-2322`) is still fixture-only and is a hard dependency for honest human-consent enforcement. | Live-load/accept the standards cleanup; implement production MRTR as a protocol module; then execute `POL-1A-CONSENT`, followed by prompt/content. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `POL-1A-DLP` — live accepted and connector-refresh closed
-   DLP remains live, and follow-up source commit `2ae1585` is accepted at `server_start_id = 2026-08-18T14:53:56.306Z`. Live validation proves the OAuth operator-login route is no longer blocked by the MCP Origin gate while `/mcp` still rejects invalid Origin. The operator's refresh is corroborated by audited `openai-mcp 1.0.0` `server/discover` and `tools/list` with `98` tools and fingerprint `93721a82a339f9d6`; no DLP deployment checkpoint remains.
+0. `PROTOCOL-CLEANUP-LIVE` — modular standards cleanup, repo-fixed/restart-pending
+   Load and live-validate the protocol capability registry plus the isolated `SEP-2164` and `SEP-1303` fixes. No connector refresh is expected because tool names and schemas are unchanged.
 
-1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
-   Replace the current `guarded_process_execution` assumption with an auditable consent artifact/receipt for high-risk runtime operations without inventing client-side approval evidence.
+1. `POL-1A-MRTR` — production multi-round-trip protocol module
+   Promote the official-SDK MRTR conformance fixture into a bounded production module using `input_required`, `requestState`, and `inputResponses`, without restoring transport sessions or classic Sampling machinery.
 
-2. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
-   Classify content-bearing tool results as untrusted data by default and require an explicit promotion boundary before any returned text can be treated as model instruction.
+2. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+   Build consent on the production MRTR module so a human response, not a model-supplied boolean, is the authorization evidence for high-risk operations.
 
-3. `POL-1B` — partial policy reconciliation
+3. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
+   Classify content-bearing tool results as untrusted data by default and require an explicit promotion boundary before returned text can be treated as model instruction.
+
+4. `POL-1B` — partial policy reconciliation
    Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after the remaining critical gaps are closed.
 
 4. `POL-1C` — specified-only non-critical reconciliation

@@ -1,7 +1,9 @@
 # Auth and Security Adjacent SEP Triage
 
-Status: GREEN / TRIAGE UPDATED / RUNTIME COVERAGE CONFIRMED
+Status: HISTORICAL / SUPERSEDED FOR CURRENT PROTOCOL TRUTH
 Date: 2026-07-11
+
+Current authority: `SERVER_PROTOCOL_CAPABILITY_SPEC.json`. This record preserves the July 2026 auth/security triage only; CIMD and later OAuth hardening changed current classifications.
 
 ## Purpose
 

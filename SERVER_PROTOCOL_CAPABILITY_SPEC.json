@@ -1,0 +1,317 @@
+{
+  "schema_version": "mcp-tests-protocol-capability-spec-v1",
+  "spec_mode": "canonical_structured_spec_not_progress_log",
+  "status": "active_current_truth",
+  "verified_at": "2026-08-18",
+  "architecture": {
+    "invariant": "Protocol revision selects bounded wire-era adapters/capability modules; domain tools, auth policy, execution, persistence and DLP remain independent unless the protocol contract requires an adapter.",
+    "runtime_registry": "src/runtime/protocol_capability_registry.js",
+    "rules": [
+      "Never branch core runtime behavior on SEP numbers.",
+      "Wire-era deltas belong in protocol adapters/modules.",
+      "Optional extensions are loaded and advertised explicitly; absent optional modules are not core conformance gaps.",
+      "Authorization extensions are additive modules, not wire-era forks.",
+      "Client/SDK and process/governance SEPs do not create server-runtime work by status alone.",
+      "Future protocol revisions add registry entries plus bounded adapter/module deltas; they do not duplicate the server."
+    ]
+  },
+  "protocol_eras": {
+    "2026-07-28": {
+      "era": "modern_2026_07_28",
+      "transport": "streamable_http_stateless",
+      "discovery": "server_discover",
+      "sessions": false,
+      "extensions": [
+        "io.modelcontextprotocol/tasks"
+      ]
+    },
+    "legacy": {
+      "versions": [
+        "2025-11-25",
+        "2025-06-18",
+        "2025-03-26"
+      ],
+      "era": "legacy_initialize_compat",
+      "transport": "streamable_http_stateless",
+      "sessions": false,
+      "extensions": []
+    }
+  },
+  "release_2026_07_28": {
+    "included_sep_count": 22,
+    "classification": {
+      "SEP-2596": {
+        "m": "workflow_lifecycle",
+        "s": "repo_aligned",
+        "server": false
+      },
+      "SEP-2484": {
+        "m": "upstream_sep_process",
+        "s": "not_applicable_server_runtime",
+        "server": false
+      },
+      "SEP-1730": {
+        "m": "sdk_tiering",
+        "s": "not_applicable_server_runtime",
+        "server": false
+      },
+      "SEP-2575": {
+        "m": "transport_discovery",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2567": {
+        "m": "sessionless_state_handles",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2577": {
+        "m": "deprecated_capability_boundary",
+        "s": "historical_deprecation_aligned",
+        "server": true
+      },
+      "SEP-2133": {
+        "m": "extension_registry",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2663": {
+        "m": "mcp_tasks_extension",
+        "s": "live_optional_module",
+        "server": false
+      },
+      "SEP-1865": {
+        "m": "mcp_apps_extension",
+        "s": "optional_module_not_loaded",
+        "server": false
+      },
+      "SEP-2322": {
+        "m": "mrtr_extension",
+        "s": "fixture_only_activation_gap",
+        "server": false
+      },
+      "SEP-2260": {
+        "m": "server_request_correlation",
+        "s": "repo_aligned",
+        "server": true
+      },
+      "SEP-2549": {
+        "m": "cache_hints",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2243": {
+        "m": "http_header_adapter",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2106": {
+        "m": "schema_2020_12",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2164": {
+        "m": "resource_protocol_boundary",
+        "s": "repo_fixed_restart_pending",
+        "server": true
+      },
+      "SEP-2207": {
+        "m": "oauth_resource_server",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2350": {
+        "m": "client_scope_accumulation",
+        "s": "not_applicable_server_runtime",
+        "server": false
+      },
+      "SEP-2351": {
+        "m": "oauth_discovery",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-2352": {
+        "m": "client_credential_binding",
+        "s": "not_applicable_server_runtime",
+        "server": false
+      },
+      "SEP-2468": {
+        "m": "oauth_authorization_response",
+        "s": "live_aligned",
+        "server": true
+      },
+      "SEP-837": {
+        "m": "oauth_client_registration",
+        "s": "server_compatible_client_requirement",
+        "server": false
+      },
+      "SEP-414": {
+        "m": "w3c_trace_context",
+        "s": "live_aligned",
+        "server": true
+      }
+    },
+    "evidence": {
+      "modern_adapter": [
+        "src/runtime/protocol_capability_registry.js",
+        "src/runtime/protocol_version_policy.js",
+        "src/runtime/modern_protocol_adapter.js",
+        "src/runtime/server_discover_message_handler.js"
+      ],
+      "tasks": [
+        "src/runtime/mcp_tasks_extension.js",
+        "_workflow/operator_decisions/mcp_tasks_process_adapter_closeout.md"
+      ],
+      "mrtr": [
+        "_tests/helpers/mrtr_conformance_fixture.js",
+        "_tests/smoke_mrtr_conformance_fixture.js",
+        "_workflow/operator_decisions/mrtr_conformance_closeout.md"
+      ],
+      "resources": [
+        "src/runtime/resources_read_message_handler.js",
+        "_tests/smoke_process_artifact_resources.js"
+      ],
+      "trace": [
+        "src/runtime/trace_context.js",
+        "_workflow/operator_decisions/w3c_trace_context_closeout.md"
+      ],
+      "auth": [
+        "SERVER_AUTH_SPEC.json",
+        "src/auth/oauth21_authorization_server.js",
+        "src/runtime/oauth_metadata.js"
+      ],
+      "schema": [
+        "src/runtime/output_dlp_boundary.js",
+        "src/schema_compat.js",
+        "_tests/smoke_output_schema_guard.js"
+      ]
+    }
+  },
+  "other_final_sep_dispositions": {
+    "aligned": {
+      "SEP-991": "oauth_cimd",
+      "SEP-985": "oauth_prm",
+      "SEP-986": "tool_names",
+      "SEP-1613": "schema_2020_12",
+      "SEP-1319": "rpc_dispatch"
+    },
+    "repo_fixed_restart_pending": {
+      "SEP-1303": "tool_input_validation_result"
+    },
+    "optional_inactive": {
+      "SEP-1046": "oauth_client_credentials",
+      "SEP-990": "enterprise_managed_auth",
+      "SEP-1330": "elicitation",
+      "SEP-1036": "elicitation_url_mode",
+      "SEP-1034": "elicitation_defaults",
+      "SEP-1699": "sse_polling"
+    },
+    "client_or_governance_no_server_action": [
+      "SEP-1024",
+      "SEP-2484",
+      "SEP-2149",
+      "SEP-2148",
+      "SEP-2085",
+      "SEP-1850",
+      "SEP-1730",
+      "SEP-1302",
+      "SEP-994",
+      "SEP-932"
+    ],
+    "selective": {
+      "SEP-973": "metadata_surfaces"
+    }
+  },
+  "deployment_and_activation_queue": [
+    {
+      "order": 1,
+      "sep": "SEP-2164",
+      "module": "resource_protocol_boundary",
+      "repo_status": "fixed",
+      "runtime_status": "restart_pending",
+      "target": "-32602 Invalid Params; Resource not found; include uri",
+      "surface_change": false
+    },
+    {
+      "order": 2,
+      "sep": "SEP-1303",
+      "module": "tool_input_validation_result",
+      "repo_status": "fixed",
+      "runtime_status": "restart_pending",
+      "target": "tool execution result with isError=true; malformed RPC params and unknown tools remain protocol errors",
+      "surface_change": false
+    },
+    {
+      "order": 3,
+      "sep": "SEP-2322",
+      "module": "mrtr_extension",
+      "repo_status": "fixture_only",
+      "runtime_status": "not_implemented",
+      "target": "production module before POL-1A-CONSENT claims human approval",
+      "surface_change": "capability-dependent"
+    }
+  ],
+  "module_notes": {
+    "SEP-2207": "Resource-server metadata/challenges do not advertise offline_access; authorization-server refresh policy stays separate.",
+    "SEP-837": "Server validates application_type and preserves bounded legacy inference; normative client behavior is client-side.",
+    "SEP-1865": "MCP Apps is optional and not loaded; this is not core protocol non-conformance.",
+    "SEP-2322": "MRTR becomes a project requirement only because consent needs server-verifiable human interaction.",
+    "SEP-2567": "Explicit state handles are a tool-design pattern; no custom protocol handle type is invented."
+  },
+  "non_final_watchlist": {
+    "policy": "Watch only; no runtime obligation until Final or explicit operator-approved experiment.",
+    "prs": {
+      "3149": "CIMD token endpoint auth methods",
+      "3140": "signed capability declarations/trust labels",
+      "3119": "structured/embedded resources",
+      "3118": "app-rendered elicitations",
+      "3094": "granular citations",
+      "3004": "tamper-evident audit records",
+      "2998": "partial tool results",
+      "2848": "asynchronous approval for tool calls",
+      "2817": "AI invocation audit context",
+      "2809": "attested tool-server admission",
+      "2793": "tool risk metadata",
+      "2792": "per-request language negotiation",
+      "2787": "tool-call attestation"
+    },
+    "intersects_current_work": [
+      2848,
+      2793
+    ]
+  },
+  "historical_sources": {
+    "superseded_for_current_protocol_truth": [
+      "_workflow/sessionless_inventory.json",
+      "_workflow/operator_decisions/adjacent_runtime_contract_sep_triage.md",
+      "_workflow/operator_decisions/auth_security_adjacent_sep_triage.md",
+      "_workflow/operator_decisions/adjacent_sep_watchlist_review.md"
+    ],
+    "rule": "Preserve for provenance/tests; never use old classifications to generate current work."
+  },
+  "sessionless_ready_review": {
+    "status": "sessionless_ready_reviewed",
+    "date": "2026-08-18",
+    "source_of_truth": "_workflow/sessionless_inventory.json#target_selection_readiness",
+    "workflow_record": "_workflow/operator_decisions/legacy_auth_cleanup_sessionless_ready_review.md",
+    "current_stable_route": "/mcp",
+    "current_stable_route_status": "legacy_compatible_do_not_remove",
+    "sessionless_transition_route": "/mcp/sessionless",
+    "sessionless_transition_route_historical_only": true,
+    "sessionless_transition_route_retired_from_active_runtime": true,
+    "single_route_no_sse_target_record": "_workflow/operator_decisions/single_route_no_sse_streamable_http_target_plan.md",
+    "sessionless_transition_env": "MCP_TEST_ENABLE_SESSIONLESS_PROTOTYPE",
+    "sessionless_transition_env_retired_from_active_runtime": true,
+    "root_spec_runtime_change": false,
+    "connector_visible_surface_changed": false,
+    "connector_refresh_required_now": false,
+    "runtime_restart_required_now": false,
+    "notes": "Protocol capability authority preserves the accepted single-route no-SSE target; historical sessionless prototype evidence cannot select current protocol work."
+  },
+  "next_queue": [
+    "protocol cleanup live-load and semantic acceptance",
+    "SEP-2322 production MRTR module",
+    "POL-1A-CONSENT on MRTR",
+    "POL-1A-PROMPT-CONTENT"
+  ]
+}

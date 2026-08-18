@@ -9,7 +9,7 @@ const {
 } = require("./process_artifact_resource");
 
 function resourceNotFound(id, uri) {
-  return rpcError(id, -32002, "Resource not found", { uri: String(uri || "") });
+  return rpcError(id, -32602, "Resource not found", { uri: String(uri || "") });
 }
 
 function handleResourcesReadMessage({ id, params = {}, context = {}, auditLog = () => {} } = {}) {

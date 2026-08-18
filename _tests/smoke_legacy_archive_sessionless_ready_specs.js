@@ -35,7 +35,7 @@ assert.ok(record.includes("the hidden route and env are retired from active runt
 assert.ok(record.includes("Historical next step at that time: proceed to CRLF Batch Normalization if still desired."));
 assert.ok(record.includes("This is no longer the active queue; current target authority is the single-route no-SSE plan on surviving `/mcp`."));
 const specNames = fs.readdirSync(ROOT).filter((name) => name.startsWith("SERVER_") && name.endsWith("_SPEC.json")).sort();
-assert.equal(specNames.length, 30);
+assert.equal(specNames.length, 31);
 for (const name of specNames) {
   const spec = readJson(name);
   assert.ok(spec.sessionless_ready_review, name);

@@ -2,7 +2,7 @@
 
 const { assertToolSchemas, buildToolSurfaceFingerprint } = require("../schema_compat");
 const { rpcResult } = require("./rpc_responses");
-const { TASKS_EXTENSION_ID } = require("./mcp_tasks_extension");
+const { extensionsForProtocolVersion } = require("./protocol_capability_registry");
 const { SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS } = require("./request_metadata_policy");
 const { MODERN_PROTOCOL_VERSION, isModernProtocolVersion } = require("./protocol_version_policy");
 
@@ -37,6 +37,9 @@ function handleServerDiscoverMessage({
   const resolvedProtocolVersion = typeof protocolVersion === "string" && protocolVersion
     ? protocolVersion
     : SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS[0];
+  const extensionCapabilities = Object.fromEntries(
+    extensionsForProtocolVersion(resolvedProtocolVersion).map((extensionId) => [extensionId, {}])
+  );
 
   const legacyInitializeSupported = disableLegacyInitialize !== true;
   if (typeof auditLog === "function") {
@@ -60,9 +63,7 @@ function handleServerDiscoverMessage({
         tools: {},
         resources: {},
         prompts: {},
-        extensions: {
-          [TASKS_EXTENSION_ID]: {},
-        },
+        extensions: extensionCapabilities,
       },
       instructions:
         "TEST MCP workbench server for connector compatibility, bounded code sampling, and controlled network tools.",

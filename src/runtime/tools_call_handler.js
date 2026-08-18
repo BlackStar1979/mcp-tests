@@ -15,6 +15,7 @@ const { evaluateDecisionRuntimePolicy } = require("./decision_runtime_policy");
 const { buildDecisionRuntimeReceipt } = require("./decision_runtime_receipt");
 const { buildCoreToolDescriptors } = require("./core_tool_descriptors");
 const { validateToolInput } = require("./tool_input_validator");
+const { buildToolInputValidationResult } = require("./tool_input_validation_result");
 const { decide: decideRuntimePolicyGate } = require("./policy_enforcement_gate");
 const toolsSpec = require("../../SERVER_TOOLS_SPEC.json");
 const resourceSpec = require("../../SERVER_RESOURCE_POLICY_SPEC.json");
@@ -132,10 +133,7 @@ async function handleToolsCall({
       error_kind: "invalid_tool_arguments",
       validation_errors: inputValidation.errors,
     });
-    return rpcError(id, -32602, "Invalid tool arguments", {
-      decision_code: "invalid_tool_arguments",
-      validation_errors: inputValidation.errors,
-    });
+    return buildToolInputValidationResult({ id, errors: inputValidation.errors });
   }
 
   auditLog("tool_call_start", buildToolStartAudit(getOptionalTool, context, id, name, args));

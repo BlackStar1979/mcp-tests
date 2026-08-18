@@ -1,7 +1,9 @@
 # Adjacent Runtime-Contract SEP Triage
 
-Status: GREEN / WORKFLOW-ONLY TRIAGE / NO RUNTIME CHANGE
+Status: HISTORICAL / SUPERSEDED FOR CURRENT PROTOCOL TRUTH
 Date: 2026-07-01
+
+Current authority: `SERVER_PROTOCOL_CAPABILITY_SPEC.json`. This record preserves the July 2026 triage as provenance only; later Tasks, Trace Context, CIMD, resources, and MRTR work changed its classifications.
 
 ## Purpose
 

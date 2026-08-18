@@ -123,7 +123,7 @@ function baseArgs(context, prelude) {
     method: "resources/read",
     params: { uri: baseUri },
   }));
-  assert.equal(missing.error.code, -32002);
+  assert.equal(missing.error.code, -32602);
   assert.equal(missing.error.message, "Resource not found");
 
   const defaultChunk = parseProcessArtifactUri(baseUri);

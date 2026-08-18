@@ -21,9 +21,9 @@ Snapshot and full-harness root fidelity are closed: snapshot creation is caller-
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = policy-coverage-critical-gap-closure`
-- `next_primary = pol-1a-consent-boundary`
-- `next_secondary = pol-1a-prompt-content-boundary`
+- `current_working_course = protocol-capability-current-truth-cleanup`
+- `next_primary = protocol-cleanup-live-validation`
+- `next_secondary = pol-1a-mrtr-runtime`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -398,24 +398,22 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Refresh/review the authenticated ChatGPT connector so the model-visible output schemas match accepted live runtime fingerprint `93721a82a339f9d6`; this is an external operator/UI checkpoint, not another implementation package.
-2. Execute `POL-1A-CONSENT`: bind high-risk runtime operations to a server-verifiable consent artifact instead of relying on the current `guarded_process_execution` classification alone.
-3. Execute `POL-1A-PROMPT`: add explicit untrusted-content classification and an instruction-promotion boundary for content-bearing tool results.
-4. Follow with `POL-1B` for the four `partial` policies and `POL-1C` for the four non-critical `specified_only` policies.
-5. Preserve the live-accepted Tasks/Trace/Artifacts/CIMD foundation, fixture-only MRTR evidence, completed `OPS-1`, and completed `DOC-2`.
-6. Re-run `COMP-1A` only when real Codex client-entry traffic newer than `0.148.0-alpha.9` exists; run `COMP-1B` only if that evidence materially changes initialize-retirement.
-Historical records remain traceability evidence, not the active queue.
-`_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as active interpretation.
+1. `PROTOCOL-CLEANUP-LIVE`: commit/push and controlled-restart the modular protocol capability registry plus repo-fixed `SEP-2164` and `SEP-1303`; prove both semantics live without connector fingerprint drift.
+2. `POL-1A-MRTR`: promote the official-SDK MRTR fixture into a production protocol module without restoring transport sessions or classic Sampling.
+3. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR.
+4. `POL-1A-PROMPT`: add explicit untrusted-content classification and instruction-promotion boundaries.
+5. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
+Historical records remain traceability evidence, not the active queue. `_workflow/control_plane/snapshots/**` is archival evidence only. The June/July SEP triage is provenance only and is superseded for current protocol truth by `SERVER_PROTOCOL_CAPABILITY_SPEC.json`.
 
-Next recommended product package is `POL-1A-CONSENT`. Current repository/live/connector truth proves `14/24` required policies implemented. Final DLP remains active, and bounded follow-up source commit `2ae1585` fixes the OAuth Origin regression by scoping mandatory Origin rejection to Streamable HTTP `/mcp`; it is live at `server_start_id = 2026-08-18T14:53:56.306Z`. Live validation shows `/oauth/operator-login` with `Origin: null` reaches the OAuth handler while `/mcp` with the same Origin still returns `403 Invalid Origin`; health is `200`, durable process recovery is green, and the runtime surface is `98` tools with combined fingerprint `93721a82a339f9d6`. The operator's green refresh is corroborated by server audit: `openai-mcp 1.0.0` completed `server/discover` and `tools/list`, receiving `98` tools, `ttl_ms = 0`, `cache_scope = private`, and fingerprint `93721a82a339f9d6`. Therefore `restart_required_now = false` and `connector_refresh_required_now = false`. Two critical runtime gaps remain after DLP: consent and prompt/content.
+Next recommended product package is `PROTOCOL-CLEANUP-LIVE`. `SERVER_PROTOCOL_CAPABILITY_SPEC.json` is now the canonical modular authority for protocol eras, optional extensions, client/SDK applicability, and Final-SEP status. `SEP-2164` and `SEP-1303` are RED-to-GREEN repo-fixed but not yet live-loaded; `restart_required_now = true`, while tool names/schemas are unchanged and `connector_refresh_required_now = false`. MRTR (`SEP-2322`) remains fixture-only and is the next architectural module because consent depends on a human round trip rather than model-supplied confirmation.
 Readiness-derived default next package queue:
 
-1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
-2. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
-3. `POL-1B` — partial policy reconciliation
-4. `POL-1C` — specified-only non-critical reconciliation
-5. `COMP-1A` — event-gated protocol evidence; refresh only for real Codex traffic newer than `0.148.0-alpha.9`
-6. `COMP-1B` — conditional on material `COMP-1A` change
+1. `PROTOCOL-CLEANUP-LIVE` — controlled live load and semantic probes
+2. `POL-1A-MRTR` — production MRTR protocol module
+3. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+4. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
+5. `POL-1B` — partial policy reconciliation
+6. `POL-1C` — specified-only non-critical reconciliation
 
 Recently completed:
 
