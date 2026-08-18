@@ -4,6 +4,11 @@ const { createTestMcpRuntimeStatusTool } = require("../tools/test_mcp_runtime_st
 const { RUNTIME_STATUS_OUTPUT_SCHEMA } = require("../src/schemas/runtime_status");
 const { buildRuntimeStatus } = require("../src/runtime_status");
 const { assertMatchesSchema, validateAgainstSchema } = require("../src/output_schema_guard");
+const { tryHandleOptionalToolCall } = require("../src/runtime/optional_tool_call_handler");
+const { applyOutputTrustMetadata } = require("../src/runtime/tool_result");
+const { handleCoreFetchToolCall } = require("../src/runtime/core_tool_call_handlers");
+const { buildCoreToolDescriptors } = require("../src/runtime/core_tool_descriptors");
+const { loadOptionalTools } = require("../src/tool_loader");
 
 assert.equal(validateAgainstSchema({ ok: true }, {
   oneOf: [
@@ -196,6 +201,202 @@ function baseRuntimeStatus() {
   const extraResult = validateAgainstSchema(extra, RUNTIME_STATUS_OUTPUT_SCHEMA);
   assert.equal(extraResult.success, false);
   assert.ok(extraResult.issues.some((issue) => issue.path === "$.unplanned_field" && issue.message.includes("additional")));
+
+  const dlpSchema = {
+    type: "object",
+    additionalProperties: false,
+    required: ["ok"],
+    properties: { ok: { type: "boolean" } },
+  };
+  const invalidOptionalTool = {
+    name: "dlp_schema_probe",
+    descriptor: { outputSchema: dlpSchema },
+    async execute() {
+      return { ok: true, unexpected: "TOP_SECRET_SHOULD_NEVER_REACH_MODEL" };
+    },
+  };
+  const dlpAudit = [];
+  const rejectedOutput = await tryHandleOptionalToolCall({
+    id: 99,
+    name: invalidOptionalTool.name,
+    args: {},
+    context: { requestId: "dlp-schema-red" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    getOptionalTool: (name) => (name === invalidOptionalTool.name ? invalidOptionalTool : null),
+    auditLog: (event, details) => dlpAudit.push({ event, details }),
+  });
+  assert.equal(rejectedOutput.result?.isError, true, "output that violates outputSchema must be blocked before model exposure");
+  assert.equal(JSON.stringify(rejectedOutput).includes("TOP_SECRET_SHOULD_NEVER_REACH_MODEL"), false);
+  assert.ok(dlpAudit.some((entry) => entry.event === "tool_output_policy_denied"));
+
+  const patternTool = {
+    name: "dlp_pattern_probe",
+    descriptor: {
+      outputSchema: {
+        type: "object",
+        additionalProperties: false,
+        required: ["status"],
+        properties: { status: { type: "string", pattern: "^safe$" } },
+      },
+    },
+    async execute() {
+      return { status: "unsafe" };
+    },
+  };
+  const patternRejected = await tryHandleOptionalToolCall({
+    id: 100,
+    name: patternTool.name,
+    args: {},
+    context: { requestId: "dlp-pattern-red" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    getOptionalTool: (name) => (name === patternTool.name ? patternTool : null),
+    auditLog: () => {},
+  });
+  assert.equal(patternRejected.result?.isError, true, "full outputSchema semantics must be enforced, including pattern");
+
+  const secretTool = {
+    name: "dlp_secret_probe",
+    descriptor: {
+      outputSchema: {
+        type: "object",
+        additionalProperties: false,
+        required: ["ok", "access_token", "message"],
+        properties: {
+          ok: { type: "boolean" },
+          access_token: { type: "string" },
+          message: { type: "string" },
+        },
+      },
+    },
+    async execute() {
+      return {
+        ok: true,
+        access_token: "raw-access-token-value",
+        message: "Authorization: Bearer bearer-secret-value-1234567890",
+      };
+    },
+  };
+  const secretAudit = [];
+  const secretResult = await tryHandleOptionalToolCall({
+    id: 101,
+    name: secretTool.name,
+    args: {},
+    context: { requestId: "dlp-secret-red" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    getOptionalTool: (name) => (name === secretTool.name ? secretTool : null),
+    auditLog: (event, details) => secretAudit.push({ event, details }),
+  });
+  const serializedSecretResult = JSON.stringify(secretResult);
+  assert.equal(secretResult.result?.isError, undefined, "redactable schema-valid output should remain a successful tool result");
+  assert.equal(serializedSecretResult.includes("raw-access-token-value"), false);
+  assert.equal(serializedSecretResult.includes("bearer-secret-value-1234567890"), false);
+  assert.equal(secretResult.result?.structuredContent?.access_token, "[REDACTED_SECRET]");
+  assert.equal(secretResult.result?._meta?.["mcp-tests/outputTrust"], "untrusted_tool_output");
+  assert.equal(secretResult.result?.content?.[0]?._meta?.["mcp-tests/outputTrust"], "untrusted_tool_output");
+  const redactionAudit = secretAudit.find((entry) => entry.event === "tool_output_redacted");
+  assert.ok(redactionAudit, "redaction must emit bounded audit counts");
+  assert.equal(redactionAudit.details.redacted_secret_count, 2);
+  assert.equal(JSON.stringify(secretAudit).includes("raw-access-token-value"), false);
+  assert.equal(JSON.stringify(secretAudit).includes("bearer-secret-value-1234567890"), false);
+
+  assert.throws(() => applyOutputTrustMetadata({
+    content: [{
+      type: "resource_link",
+      uri: "https://evil.example/untrusted",
+      name: "evil",
+    }],
+  }), /output_resource_link_denied/);
+
+  const embeddedSecret = "embedded-bearer-secret-1234567890";
+  const embeddedTextResult = applyOutputTrustMetadata({
+    content: [{
+      type: "resource",
+      resource: {
+        uri: "file:///untrusted.txt",
+        mimeType: "text/plain",
+        text: `Authorization: Bearer ${embeddedSecret}`,
+      },
+    }],
+  });
+  assert.equal(JSON.stringify(embeddedTextResult).includes(embeddedSecret), false);
+  assert.equal(embeddedTextResult.content[0]._meta["mcp-tests/outputTrust"], "untrusted_tool_output");
+  assert.throws(() => applyOutputTrustMetadata({
+    content: [{
+      type: "resource",
+      resource: { uri: "file:///opaque.bin", mimeType: "application/octet-stream", blob: "QUJDRA==" },
+    }],
+  }), /output_embedded_resource_blob_denied/);
+
+  const coreSecret = "core-fetch-secret-1234567890";
+  const coreFetchResult = handleCoreFetchToolCall({
+    id: 102,
+    context: { requestId: "dlp-core-fetch-red" },
+    args: { id: "secret-doc" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    documentRuntimeContext: () => ({
+      docs: [{ id: "secret-doc", title: "Secret doc", text: `Authorization: Bearer ${coreSecret}`, metadata: {} }],
+      publicBaseUrl: "https://example.test",
+      maxFetchTextChars: 2500,
+      connectorShapeVersion: "2025-05-strict-v1",
+    }),
+    auditLog: () => {},
+    getOptionalTool: () => null,
+  });
+  assert.equal(JSON.stringify(coreFetchResult).includes(coreSecret), false, "core fetch structuredContent must pass through DLP redaction");
+
+  const coreDlpAudit = [];
+  const coreSchemaRejected = handleCoreFetchToolCall({
+    id: 103,
+    context: { requestId: "dlp-core-schema-red" },
+    args: { id: "secret-doc" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    outputSchema: {
+      type: "object",
+      required: ["id"],
+      properties: { id: { const: "different-doc" } },
+    },
+    documentRuntimeContext: () => ({
+      docs: [{ id: "secret-doc", title: "Secret doc", text: "safe text", metadata: {} }],
+      publicBaseUrl: "https://example.test",
+      maxFetchTextChars: 2500,
+      connectorShapeVersion: "2025-05-strict-v1",
+    }),
+    auditLog: (event, details) => coreDlpAudit.push({ event, details }),
+    getOptionalTool: () => null,
+  });
+  assert.equal(coreSchemaRejected.result?.isError, true, "core outputSchema mismatch must be rejected as a tool error");
+  assert.ok(coreDlpAudit.some((entry) => entry.event === "tool_output_policy_denied"));
+
+  const activeDescriptors = [
+    ...buildCoreToolDescriptors({
+      connectorShapeVersion: "2025-05-strict-v1",
+      outputMode: "structured",
+      maxFetchTextChars: 2500,
+    }),
+    ...loadOptionalTools({
+      profile: "internal",
+      authMode: "oauth21",
+      authPolicy: { requiresAuth: true },
+      memoryToolsEnabled: true,
+    }).map((tool) => tool.descriptor),
+  ];
+  const placeholderOutputSchemas = activeDescriptors
+    .filter((descriptor) => {
+      const schema = descriptor?.outputSchema;
+      return schema?.type === "object"
+        && schema.additionalProperties === false
+        && Array.isArray(schema.required)
+        && schema.required.length === 0
+        && schema.properties
+        && Object.keys(schema.properties).length === 0;
+    })
+    .map((descriptor) => descriptor.name);
+  assert.deepEqual(placeholderOutputSchemas, [], "active output schemas must not advertise an impossible empty closed-object placeholder");
 
   console.log("smoke_output_schema_guard ok");
 })().catch((error) => {

@@ -183,6 +183,19 @@
     "current_tool_count_after_stage5": 43,
     "current_tool_count_after_stage6": 43,
     "repo_current_expected_tool_count": 98,
+    "repo_target_surface_fingerprints": {
+      "tool_names_hash": "b6526b6d88ccbee3",
+      "input_schema_fingerprint": "440c0f660abff822",
+      "output_schema_fingerprint": "8292895f0216967c",
+      "descriptor_fingerprint": "82ffaaa3adb6e7db",
+      "combined_fingerprint": "93721a82a339f9d6"
+    },
+    "live_connector_surface_fingerprints_before_dlp_refresh": {
+      "output_schema_fingerprint": "64961bbb24c85de3",
+      "descriptor_fingerprint": "19512cb09a5bc329",
+      "combined_fingerprint": "ec7d3af5b4ea17f5"
+    },
+    "current_schema_refresh_required": true,
     "expected_count_source": "SERVER_SPEC.server.full_tests_authenticated_tool_count / SERVER_TOOLS_SPEC.total_mcp_callable_tool_count",
     "historical_expected_public_plus_authorized_count": 45,
     "hidden_internal_tools": [

@@ -44,13 +44,13 @@ Current derivation:
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
 | P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR supplies conformance evidence without a second runtime architecture. | Preserve fixture-only multi-round-trip behavior. |
-| P5 | `POL-1A` critical policy gap closure — active | canonical policy matrix, current runtime/tests | Critical reconciliation now proves `13/24` required policies implemented; transport, session, and scope-minimization are evidence-backed, while consent, prompt/content, and output DLP remain genuine critical runtime gaps. | Execute `POL-1A-DLP` first because it is a centralized server-side boundary with no external UI dependency; then close consent and prompt/content as separately testable packages before `POL-1B`. |
+| P5 | `POL-1A` critical policy gap closure — active | canonical policy matrix, current runtime/tests | Current repository truth proves `14/24` required policies implemented; transport, session, scope-minimization, and output DLP are evidence-backed, while consent and prompt/content remain genuine critical runtime gaps. The DLP source package is repo-applied and awaiting controlled OAuth21 `3008` live-load. | Execute `POL-1A-CONSENT` after the DLP live-load, then close prompt/content as a separately testable package before `POL-1B`. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `POL-1A-DLP` — centralized model-output validation/DLP boundary
-   Enforce one fail-closed output boundary before optional tool payloads become MCP `content` or `structuredContent`; preserve bounded resource links and existing tool-specific schemas.
+0. `POL-1A-DLP` — repo-applied, controlled live-load pending
+   Load the validated DLP source package on OAuth21 `3008`. DLP enforcement exposed and repaired ten impossible placeholder output schemas, so the repository target fingerprints are output `8292895f0216967c`, descriptor `82ffaaa3adb6e7db`, combined `93721a82a339f9d6`; tool names/count and input schemas are unchanged. The output-schema/descriptor delta requires connector refresh after live-load.
 
 1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
    Replace the current `guarded_process_execution` assumption with an auditable consent artifact/receipt for high-risk runtime operations without inventing client-side approval evidence.

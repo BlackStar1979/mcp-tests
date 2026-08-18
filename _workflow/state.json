@@ -65,8 +65,9 @@
   },
   "workflow_progress_markers": {
     "current_working_course": "policy-coverage-critical-gap-closure",
-    "next_primary": "pol-1a-output-dlp-boundary",
-    "next_secondary": "pol-1a-consent-boundary",    "stage_labels": [
+    "next_primary": "pol-1a-consent-boundary",
+    "next_secondary": "pol-1a-prompt-content-boundary",
+    "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
       "Stage 8 / Step 53d - live restart and connector surface reconciliation"
@@ -184,12 +185,12 @@
   },
   "audit_events_spec": {
     "path": "SERVER_EVENT_CATALOG_SPEC.json",
-    "event_count": 100
+    "event_count": 102
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
-    "implemented_required": "13/24",
-    "remaining_non_implemented": 11,
+    "implemented_required": "14/24",
+    "remaining_non_implemented": 10,
     "critical_policy_count": 6
   },
   "restart_supervisor": {
@@ -284,7 +285,7 @@
       "server_start_id": "2026-08-17T19:00:17.718Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "p0_p3_live": true,      "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,
@@ -307,13 +308,13 @@
       "output_schema_fingerprint": "64961bbb24c85de3",
       "descriptor_fingerprint": "19512cb09a5bc329",
       "combined_fingerprint": "ec7d3af5b4ea17f5",
-      "connector_map_status": "repo98_runtime98_model98_aligned",
+      "connector_map_status": "repo98_runtime98_model98_schema_refresh_pending",
       "repo_current_expected_tool_count": 98,
       "server_start_id": "2026-08-17T19:00:17.718Z",
       "connector_ui_visibility_verified_now": true,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,      "cache_scope": "private",
-      "connector_refresh_required_now": false
+      "connector_refresh_required_now": true
     }
   }
 }

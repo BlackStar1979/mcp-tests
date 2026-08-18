@@ -122,12 +122,37 @@ const SYMBOL_SCHEMA = {
   additionalProperties: true,
 };
 
-const DEV_CODE_LOCATE_OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [],
-  properties: {},
-};
+const OUT_BOOL = { type: "boolean" };
+const OUT_INT = { type: "integer" };
+const OUT_STRING = { type: "string" };
+const OUT_ARRAY = { type: "array", items: {} };
+const OUT_OBJECT = { type: "object", additionalProperties: true };
+
+function closedOutputSchema(properties) {
+  return {
+    type: "object",
+    additionalProperties: false,
+    required: [],
+    properties,
+  };
+}
+
+const DEV_CODE_LOCATE_OUTPUT_SCHEMA = closedOutputSchema({
+  success: OUT_BOOL,
+  error: OUT_STRING,
+  path: OUT_STRING,
+  language: OUT_STRING,
+  query_sha256_prefix: OUT_STRING,
+  mode: OUT_STRING,
+  case_sensitive: OUT_BOOL,
+  total_lines: OUT_INT,
+  match_count: OUT_INT,
+  total_matches_estimate: OUT_INT,
+  truncated: OUT_BOOL,
+  max_matches: OUT_INT,
+  include_preview: OUT_BOOL,
+  matches: OUT_ARRAY,
+});
 
 const DEV_CODE_SYMBOLS_OUTPUT_SCHEMA = {
   type: "object",
@@ -146,40 +171,105 @@ const DEV_CODE_SYMBOLS_OUTPUT_SCHEMA = {
   },
 };
 
-const DEV_CODE_DEPENDENCIES_OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [],
-  properties: {},
-};
+const DEV_CODE_DEPENDENCIES_OUTPUT_SCHEMA = closedOutputSchema({
+  success: OUT_BOOL,
+  error: OUT_STRING,
+  path: OUT_STRING,
+  recursive: OUT_BOOL,
+  max_files: OUT_INT,
+  visited_files: OUT_INT,
+  scanned_files: OUT_INT,
+  truncated: OUT_BOOL,
+  nodes_count: OUT_INT,
+  edges_count: OUT_INT,
+  external_workspace_edges_count: OUT_INT,
+  unresolved_count: OUT_INT,
+  nodes: OUT_ARRAY,
+  edges: OUT_ARRAY,
+  external_workspace_edges: OUT_ARRAY,
+  unresolved: OUT_ARRAY,
+});
 
-const DEV_CODE_AUDIT_OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [],
-  properties: {},
-};
+const DEV_CODE_AUDIT_OUTPUT_SCHEMA = closedOutputSchema({
+  success: OUT_BOOL,
+  error: OUT_STRING,
+  path: OUT_STRING,
+  recursive: OUT_BOOL,
+  max_files: OUT_INT,
+  summary: OUT_OBJECT,
+  high_fan_in: OUT_ARRAY,
+  high_fan_out: OUT_ARRAY,
+  external_workspace_edges: OUT_ARRAY,
+  unresolved: OUT_ARRAY,
+});
 
-const DEV_CODE_IMPACT_OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [],
-  properties: {},
-};
+const DEV_CODE_IMPACT_OUTPUT_SCHEMA = closedOutputSchema({
+  success: OUT_BOOL,
+  error: OUT_STRING,
+  scope: OUT_STRING,
+  direction: OUT_STRING,
+  max_depth: OUT_INT,
+  graph: OUT_OBJECT,
+  target: OUT_STRING,
+  requested_target: OUT_STRING,
+  found: OUT_BOOL,
+  resolution: OUT_STRING,
+  target_not_found_reason: OUT_STRING,
+  attempted_targets: OUT_ARRAY,
+  suggested_targets: OUT_ARRAY,
+  scope_path: OUT_STRING,
+  maybe_truncated_graph: OUT_BOOL,
+  affected_count: OUT_INT,
+  dependencies_count: OUT_INT,
+  affected: OUT_ARRAY,
+  dependencies: OUT_ARRAY,
+});
 
-const DEV_CODE_SCENARIO_OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [],
-  properties: {},
-};
+const DEV_CODE_SCENARIO_OUTPUT_SCHEMA = closedOutputSchema({
+  success: OUT_BOOL,
+  error: OUT_STRING,
+  scope: OUT_STRING,
+  change_type: OUT_STRING,
+  direction: OUT_STRING,
+  max_depth: OUT_INT,
+  graph: OUT_OBJECT,
+  target: OUT_STRING,
+  requested_target: OUT_STRING,
+  found: OUT_BOOL,
+  resolution: OUT_STRING,
+  target_not_found_reason: OUT_STRING,
+  attempted_targets: OUT_ARRAY,
+  suggested_targets: OUT_ARRAY,
+  scope_path: OUT_STRING,
+  maybe_truncated_graph: OUT_BOOL,
+  affected_count: OUT_INT,
+  dependencies_count: OUT_INT,
+  affected: OUT_ARRAY,
+  dependencies: OUT_ARRAY,
+  risk: OUT_OBJECT,
+  context_files: OUT_ARRAY,
+  recommended_checks: OUT_ARRAY,
+});
 
-const DEV_CODE_PATCH_PLAN_OUTPUT_SCHEMA = {
-  type: "object",
-  additionalProperties: false,
-  required: [],
-  properties: {},
-};
+const DEV_CODE_PATCH_PLAN_OUTPUT_SCHEMA = closedOutputSchema({
+  success: OUT_BOOL,
+  error: OUT_STRING,
+  scope: OUT_STRING,
+  direction: OUT_STRING,
+  max_depth: OUT_INT,
+  graph: OUT_OBJECT,
+  intent: OUT_STRING,
+  objective: OUT_STRING,
+  change_type: OUT_STRING,
+  scenario: OUT_OBJECT,
+  plan: OUT_ARRAY,
+  gates: OUT_OBJECT,
+  decision: OUT_OBJECT,
+  read_plan: OUT_ARRAY,
+  anchor_strategy: OUT_OBJECT,
+  patch_constraints: OUT_ARRAY,
+  validation_plan: OUT_ARRAY,
+});
 
 const DEV_CODE_SYNTAX_OUTPUT_SCHEMA = {
   type: "object",

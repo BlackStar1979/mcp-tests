@@ -92,6 +92,8 @@ const ARTIFACT_ID = "11111111111111111111111111111111";
   assert.equal(links[0].uri, `mcp-artifact://process/${ARTIFACT_ID}`);
   assert.equal(links[0].name, "process-stdout.txt");
   assert.equal(links[1].name, "process-stderr.txt");
+  assert.equal(links[0]._meta?.["mcp-tests/outputTrust"], "untrusted_tool_output");
+  assert.equal(links[1]._meta?.["mcp-tests/outputTrust"], "untrusted_tool_output");
 
   const smallStatus = { ...status, stdout_chars: 4, stderr_chars: 0, output_limit_chars: 4 };
   const smallManager = {
@@ -113,6 +115,15 @@ const ARTIFACT_ID = "11111111111111111111111111111111";
   const small = buildDetailedTask({ manager: smallManager, ownerId: "client-a", status: smallStatus, outputMode: "structured" });
   assert.equal(small.result.structuredContent.stdout, "done");
   assert.equal(small.result.content.some((item) => item.type === "resource_link"), false);
+
+  const invalidSchemaTask = buildDetailedTask({
+    manager: smallManager,
+    ownerId: "client-a",
+    status: { ...smallStatus, command: 123 },
+    outputMode: "structured",
+  });
+  assert.equal(invalidSchemaTask.result.isError, true, "Task process output must be fail-closed against RUN_PROCESS_OUTPUT_SCHEMA");
+  assert.equal(invalidSchemaTask.result.structuredContent, undefined);
 
   console.log("smoke_process_artifact_task_links ok");
 })();

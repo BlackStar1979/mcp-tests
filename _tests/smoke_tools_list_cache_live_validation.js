@@ -13,8 +13,9 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo98_runtime98_model98_aligned";
-const expectedCurrentFingerprint = SURFACE.combined_fingerprint;
+const expectedCurrentStatus = "repo98_runtime98_model98_schema_refresh_pending";
+const expectedLiveFingerprint = "ec7d3af5b4ea17f5";
+const expectedRepoTargetFingerprint = SURFACE.combined_fingerprint;
 const expectedCurrentHash = SURFACE.tool_names_hash;
 
 const c = state.current_connector_truth.oauth21_3008_tools;
@@ -22,14 +23,14 @@ const currentServerStartId = state.current_runtime_truth.oauth21_3008.server_sta
 assert.equal(c.connector_map_status, expectedCurrentStatus);
 assert.match(currentServerStartId, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
 assert.equal(c.server_start_id, currentServerStartId);
-assert.equal(c.combined_fingerprint, expectedCurrentFingerprint);
+assert.equal(c.combined_fingerprint, expectedLiveFingerprint);
 assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 98);
 assert.equal(c.repo_current_expected_tool_count, 98);
-assert.equal(c.connector_refresh_required_now, false);
+assert.equal(c.connector_refresh_required_now, true);
 assert.equal(c.connector_ui_visibility_verified_now, true);
 assert.equal(c.model_runtime_callable_verified_now, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
 assert.equal(Object.hasOwn(state, "tools_list_cache_diagnostics"), false);
@@ -40,7 +41,8 @@ assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
 assert.ok(index.includes("live OAuth21 `3008` has source commit `555fad0` loaded by controlled restart `manual-1786988583476` at `server_start_id = 2026-08-17T17:43:05.322Z`"));
 assert.ok(index.includes("durable process recovery are green"));
-assert.ok(index.includes(`fingerprint \`${expectedCurrentFingerprint}\``));
+assert.ok(index.includes(`fingerprint \`${expectedLiveFingerprint}\``));
+assert.ok(index.includes(`combined \`${expectedRepoTargetFingerprint}\``));
 assert.ok(index.includes("`MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`)"));
 assert.ok(index.includes("`TRACE-CONTEXT` (`7 + 298`)"));
 assert.ok(index.includes("`PROCESS-ARTIFACTS` (`7 + 301`)"));
@@ -50,8 +52,8 @@ assert.ok(index.includes("`MRTR` remains fixture-only conformance evidence at `7
 assert.ok(index.includes("runtime loading is not applicable"));
 assert.ok(index.includes("The operator refreshed OAuth authorization and the connector tool list"));
 assert.ok(index.includes("survived the subsequent supervisor restart with OAuth state intact"));
-assert.ok(index.includes("`next_primary = pol-1a-output-dlp-boundary`"));
-assert.ok(index.includes("`next_secondary = pol-1a-consent-boundary`"));
+assert.ok(index.includes("`next_primary = pol-1a-consent-boundary`"));
+assert.ok(index.includes("`next_secondary = pol-1a-prompt-content-boundary`"));
 assert.ok(!index.includes("current live and repository surface 84 connector-visible tools"));
 assert.ok(!index.includes("finish the controlled 85-tool task-lifecycle deployment"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 17, 2026"));

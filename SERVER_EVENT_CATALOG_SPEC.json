@@ -72,6 +72,16 @@
       "status": "active_code_event"
     },
     {
+      "name": "tool_output_policy_denied",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, bounded policy reason codes, validation paths/keywords, and duration only; raw output and secrets prohibited"
+    },
+    {
+      "name": "tool_output_redacted",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, policy version, and redaction counts only; redacted values and raw output prohibited"
+    },
+    {
       "name": "tool_call_start",
       "status": "active_code_event"
     },

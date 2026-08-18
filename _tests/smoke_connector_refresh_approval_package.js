@@ -38,12 +38,17 @@ assert.equal(connectorSpec.oauth21_connector.mcp_endpoint, "https://mcp-tests-oa
 assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
 assert.equal(connectorSpec.authenticated_connector.current_tool_count_after_stage6, 43);
 assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 98);
+assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.output_schema_fingerprint, "8292895f0216967c");
+assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.descriptor_fingerprint, "82ffaaa3adb6e7db");
+assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.combined_fingerprint, "93721a82a339f9d6");
+assert.equal(connectorSpec.authenticated_connector.current_schema_refresh_required, true);
 
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, SURFACE.tool_names_hash);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 98);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_aligned");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
+assert.equal(state.current_connector_truth.oauth21_3008_tools.output_schema_fingerprint, "64961bbb24c85de3");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_refresh_pending");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, true);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
 

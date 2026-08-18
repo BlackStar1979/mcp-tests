@@ -22,8 +22,8 @@ The operator refreshed OAuth authorization and the connector tool list before th
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
 - `current_working_course = policy-coverage-critical-gap-closure`
-- `next_primary = pol-1a-output-dlp-boundary`
-- `next_secondary = pol-1a-consent-boundary`
+- `next_primary = pol-1a-consent-boundary`
+- `next_secondary = pol-1a-prompt-content-boundary`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -398,7 +398,7 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Execute `POL-1A-DLP`: add one centralized, fail-closed model-output validation/DLP boundary before optional tool payloads become MCP `content` / `structuredContent`.
+1. Live-load the repo-applied `POL-1A-DLP` source package on OAuth21 `3008`; this is a deployment checkpoint, not another implementation package.
 2. Execute `POL-1A-CONSENT`: bind high-risk runtime operations to a server-verifiable consent artifact instead of relying on the current `guarded_process_execution` classification alone.
 3. Execute `POL-1A-PROMPT`: add explicit untrusted-content classification and an instruction-promotion boundary for content-bearing tool results.
 4. Follow with `POL-1B` for the four `partial` policies and `POL-1C` for the four non-critical `specified_only` policies.
@@ -407,16 +407,15 @@ Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this ind
 Historical records remain traceability evidence, not the active queue.
 `_workflow/control_plane/snapshots/**` is archival evidence only and must not be used as active interpretation.
 
-Next recommended action: execute `POL-1A-DLP`. The completed critical-policy reconciliation now proves `13/24` required policies implemented. `transport_security` gained a fail-closed Origin boundary under RED→GREEN evidence, `scope_minimization` gained OAuth21/internal `mcp:tools` enforcement at tool dispatch, and `session_security` was reconciled to the stateless 2026-07-28 target. Three critical policies remain genuine runtime gaps: consent, prompt/content, and output DLP. Source commit `cbbb284` is live on OAuth21 3008 at `server_start_id = 2026-08-17T19:00:17.718Z`; health is `200`, the `98`-tool fingerprint remains `ec7d3af5b4ea17f5`, OAuth and durable process state survived, and no connector refresh was required.
+Next recommended action: execute `POL-1A-CONSENT` after the repo-applied DLP package is live-loaded. Current repository truth proves `14/24` required policies implemented. `output_dlp` now centralizes JSON Schema 2020-12 validation, secret redaction, explicit untrusted-output metadata, process-artifact resource-link filtering, and embedded-resource handling across optional tools, core search/fetch, and process Tasks. Two critical policies remain genuine runtime gaps: consent and prompt/content. Live OAuth21 3008 still runs source commit `cbbb284` at `server_start_id = 2026-08-17T19:00:17.718Z`; `restart_required_now = true` until the DLP source package is loaded. The live connector/runtime remains on fingerprint `ec7d3af5b4ea17f5`; DLP validation exposed and repaired ten impossible placeholder output schemas, producing repository target fingerprints output `8292895f0216967c`, descriptor `82ffaaa3adb6e7db`, combined `93721a82a339f9d6`. Tool count/names and input schemas are unchanged, but the connector-visible output-schema delta requires connector refresh after live-load.
 Readiness-derived default next package queue:
 
-1. `POL-1A-DLP` — centralized model-output validation/DLP boundary
-2. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
-3. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
-4. `POL-1B` — partial policy reconciliation
-5. `POL-1C` — specified-only non-critical reconciliation
-6. `COMP-1A` — event-gated protocol evidence; refresh only for real Codex traffic newer than `0.148.0-alpha.9`
-7. `COMP-1B` — conditional on material `COMP-1A` change
+1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+2. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
+3. `POL-1B` — partial policy reconciliation
+4. `POL-1C` — specified-only non-critical reconciliation
+5. `COMP-1A` — event-gated protocol evidence; refresh only for real Codex traffic newer than `0.148.0-alpha.9`
+6. `COMP-1B` — conditional on material `COMP-1A` change
 
 Recently completed:
 

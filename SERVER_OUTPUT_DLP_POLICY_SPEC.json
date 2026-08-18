@@ -2,7 +2,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "active_authority_specified_runtime_enforcement_partial",
+  "status": "implemented_output_boundary",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-output-dlp-policy-v1",
   "scope": "Tool output sanitization, secret leakage prevention, untrusted resource links and output-to-model boundary.",
   "policy": {
@@ -54,16 +55,29 @@
     "SERVER_EVENT_CATALOG_SPEC.json",
     "SERVER_RESOURCE_POLICY_SPEC.json"
   ],
-  "runtime_gaps": [
-    "optional tool outputs are converted to MCP results without a centralized outputSchema validation gate",
-    "toolResult serializes the returned payload but does not apply a cross-tool secret/resource-link DLP filter before model-visible content is created",
-    "existing redaction and schema assertions are tool-specific or audit-specific, so they do not prove the full output boundary"
-  ],
-  "reconciliation_evidence": [
-    "src/runtime/optional_tool_call_handler.js executes a tool and passes its payload directly to toolResult after cancellation handling",
-    "src/runtime/tool_result.js mirrors the payload into content JSON and structuredContent without centralized schema or secret inspection",
-    "audit redaction, process-artifact owner binding, CBM bounded-output contracts, and per-tool output-schema guards provide substantial partial coverage",
-    "the remaining gap is a single enforced model-output boundary, not absence of all DLP controls"
+  "runtime_gaps": [],
+  "current_deploy_impact": {
+    "runtime_restart_required_now": true,
+    "connector_visible_surface_changed": true,
+    "connector_refresh_required_now": true,
+    "tool_count_changed": false,
+    "tool_names_changed": false,
+    "input_schema_changed": false,
+    "output_schema_changed": true,
+    "live_combined_fingerprint": "ec7d3af5b4ea17f5",
+    "repo_target_output_schema_fingerprint": "8292895f0216967c",
+    "repo_target_descriptor_fingerprint": "82ffaaa3adb6e7db",
+    "repo_target_combined_fingerprint": "93721a82a339f9d6"
+  },
+  "implementation_evidence": [
+    "src/runtime/output_dlp_boundary.js centralizes JSON-compatible output sanitation, high-confidence secret redaction, bounded complexity checks, and cached JSON Schema 2020-12 validation through pinned ajv@8.20.0 without remote schema loading",
+    "src/runtime/optional_tool_call_handler.js evaluates every optional-tool payload against its descriptor outputSchema before model-visible serialization, returns a bounded fail-closed tool error on rejection, and audits only policy codes, validation locations, and redaction counts",
+    "src/runtime/core_tool_call_handlers.js applies the same output boundary to core search/fetch using the active core descriptor outputSchema",
+    "src/runtime/tool_result.js serializes only sanitized payloads into both content JSON and structuredContent, labels the result and content blocks as untrusted_tool_output, allows only validated mcp-artifact://process resource links, redacts embedded text resources, and rejects opaque embedded blobs",
+    "src/runtime/mcp_tasks_extension.js validates completed process results against RUN_PROCESS_OUTPUT_SCHEMA and re-applies trust/resource-link filtering after process artifact links are attached",
+    "_tests/smoke_output_schema_guard.js and _tests/smoke_process_artifact_task_links.js provide RED-to-GREEN coverage for schema mismatch, nontrivial JSON Schema pattern enforcement, secret redaction, bounded secret-free audit metadata, resource-link filtering, embedded-resource handling, core fetch, Tasks output validation, and output trust metadata",
+    "all 98 active outputSchema descriptors compile under the same Ajv 2020-12 validator and no active output schema uses a credential-key property that would collide with the structural redaction key set",
+    "the first full DLP suite exposed ten impossible empty closed-object outputSchema placeholders on developer/code-mutation tools; those schemas were repaired to the actual bounded top-level result contracts, and smoke_output_schema_guard now rejects any recurrence across the active 98-tool surface"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

@@ -133,7 +133,7 @@
     },
     {
       "id": "output_dlp_policy",
-      "status": "critical_specified",
+      "status": "implemented",
       "spec_ref": "SERVER_OUTPUT_DLP_POLICY_SPEC.json",
       "critical": true,
       "required": true

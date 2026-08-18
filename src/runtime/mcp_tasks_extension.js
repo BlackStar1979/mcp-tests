@@ -1,7 +1,9 @@
 "use strict";
 
-const { rpcError, rpcResult } = require("./rpc_responses");
-const { toolResult } = require("./tool_result");
+const { rpcError, rpcResult, toolError } = require("./rpc_responses");
+const { applyOutputTrustMetadata, toolResult } = require("./tool_result");
+const { evaluateToolOutputPolicy } = require("./output_dlp_boundary");
+const { RUN_PROCESS_OUTPUT_SCHEMA } = require("../schemas/process_tools");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
 const { resolveProcessJobManager } = require("../util/process_job_manager");
 const { resolveProcessJobOwner } = require("../util/process_job_owner");
@@ -95,10 +97,16 @@ function interruptedTaskError(status = {}) {
 function buildDetailedTask({ manager, ownerId, status, outputMode = "structured" }) {
   const task = buildTaskMetadata(status);
   if (task.status === "completed") {
-    const result = toolResult(
-      outputMode,
-      readDurableRunResult(manager, task.taskId, ownerId, status)
-    );
+    const outputPolicy = evaluateToolOutputPolicy({
+      payload: readDurableRunResult(manager, task.taskId, ownerId, status),
+      outputSchema: RUN_PROCESS_OUTPUT_SCHEMA,
+    });
+    const result = outputPolicy.allow === true
+      ? toolResult(outputMode, outputPolicy.sanitized_payload)
+      : applyOutputTrustMetadata(toolError("Tool output rejected by server policy.", {
+        decision_code: "output_dlp_rejected",
+        reason_codes: outputPolicy.reason_codes,
+      }));
     const outputChars = Number(status.stdout_chars || 0) + Number(status.stderr_chars || 0);
     const needsArtifacts = outputChars > TASK_INLINE_OUTPUT_CHARS
       || status.stdout_truncated === true
@@ -109,12 +117,13 @@ function buildDetailedTask({ manager, ownerId, status, outputMode = "structured"
       [PROCESS_TASK_BACKED_META_KEY]: true,
       ...(needsArtifacts ? { "mcp-tests/processArtifactOutputExcerpt": true } : {}),
     };
-    if (needsArtifacts && typeof manager.artifacts === "function") {
+    if (result.isError !== true && needsArtifacts && typeof manager.artifacts === "function") {
       const artifacts = manager.artifacts(task.taskId, { ownerId });
       const links = Array.isArray(artifacts)
         ? artifacts.map(buildProcessArtifactResourceLink)
         : [];
       result.content.push(...links);
+      applyOutputTrustMetadata(result);
       result._meta["mcp-tests/processArtifactCount"] = links.length;
     }
     task.result = result;
