@@ -34,7 +34,7 @@ const TEXT_SECRET_PATTERNS = [
   { regex: /-----BEGIN [A-Z0-9 ]*PRIVATE KEY-----[\s\S]*?-----END [A-Z0-9 ]*PRIVATE KEY-----/g, replacement: REDACTED_SECRET },
   { regex: /\bsk-(?:proj-)?[A-Za-z0-9_-]{16,}\b/g, replacement: REDACTED_SECRET },
   { regex: /\bgh[pousr]_[A-Za-z0-9]{20,}\b/g, replacement: REDACTED_SECRET },
-  { regex: /\b[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\.[A-Za-z0-9_-]{12,}\b/g, replacement: REDACTED_SECRET },
+  { regex: /\beyJ[A-Za-z0-9_-]{5,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\b/g, replacement: REDACTED_SECRET },
 ];
 
 function normalizeSensitiveKey(key) {

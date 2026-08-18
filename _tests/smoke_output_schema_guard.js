@@ -286,6 +286,43 @@ function baseRuntimeStatus() {
   assert.equal(optionalUndefinedResult.result?.isError, undefined, "undefined optional object properties must follow JSON serialization semantics and be omitted");
   assert.equal(Object.hasOwn(optionalUndefinedResult.result?.structuredContent || {}, "hint"), false);
 
+  const dottedIdentifierTool = {
+    name: "dlp_dotted_identifier_probe",
+    descriptor: {
+      outputSchema: {
+        type: "object",
+        additionalProperties: false,
+        required: ["message", "jwt"],
+        properties: {
+          message: { type: "string" },
+          jwt: { type: "string" },
+        },
+      },
+    },
+    async execute() {
+      return {
+        message: "state.current_runtime_truth.oauth21_3008.restart_required_now",
+        jwt: "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJkbHAtcHJvYmUifQ.dGhpcy1pcy1hLWZha2Utc2lnbmF0dXJl",
+      };
+    },
+  };
+  const dottedIdentifierResult = await tryHandleOptionalToolCall({
+    id: 1002,
+    name: dottedIdentifierTool.name,
+    args: {},
+    context: { requestId: "dlp-dotted-identifier-red" },
+    startedAt: Date.now(),
+    outputMode: "structured",
+    getOptionalTool: (name) => (name === dottedIdentifierTool.name ? dottedIdentifierTool : null),
+    auditLog: () => {},
+  });
+  assert.equal(
+    dottedIdentifierResult.result?.structuredContent?.message,
+    "state.current_runtime_truth.oauth21_3008.restart_required_now",
+    "code-like dotted identifiers must not be mistaken for JWT secrets"
+  );
+  assert.equal(dottedIdentifierResult.result?.structuredContent?.jwt, "[REDACTED_SECRET]");
+
   const secretTool = {
     name: "dlp_secret_probe",
     descriptor: {
