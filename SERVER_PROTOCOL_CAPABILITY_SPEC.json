@@ -87,7 +87,7 @@
       },
       "SEP-2322": {
         "m": "mrtr_extension",
-        "s": "fixture_only_activation_gap",
+        "s": "repo_implemented_runtime_pending",
         "server": false
       },
       "SEP-2260": {
@@ -163,6 +163,7 @@
         "_workflow/operator_decisions/mcp_tasks_process_adapter_closeout.md"
       ],
       "mrtr": [
+        "src/runtime/mrtr_extension.js",
         "_tests/helpers/mrtr_conformance_fixture.js",
         "_tests/smoke_mrtr_conformance_fixture.js",
         "_workflow/operator_decisions/mrtr_conformance_closeout.md"
@@ -243,10 +244,10 @@
       "order": 3,
       "sep": "SEP-2322",
       "module": "mrtr_extension",
-      "repo_status": "fixture_only",
-      "runtime_status": "not_implemented",
-      "target": "production module before POL-1A-CONSENT claims human approval",
-      "surface_change": "capability-dependent"
+      "repo_status": "implemented",
+      "runtime_status": "not_loaded",
+      "target": "production MRTR module loaded before POL-1A-CONSENT claims human approval",
+      "surface_change": false
     }
   ],
   "module_notes": {
@@ -307,7 +308,7 @@
     "notes": "Protocol capability authority preserves the accepted single-route no-SSE target; historical sessionless prototype evidence cannot select current protocol work."
   },
   "next_queue": [
-    "SEP-2322 production MRTR module",
+    "SEP-2322 live activation/acceptance",
     "POL-1A-CONSENT on MRTR",
     "POL-1A-PROMPT-CONTENT"
   ]

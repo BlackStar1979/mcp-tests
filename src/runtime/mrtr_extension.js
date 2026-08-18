@@ -244,8 +244,18 @@ function createMrtrExtension({
       payload.scope_sha256 !== binding.scope_sha256 ||
       payload.requirement_sha256 !== binding.requirement_sha256
     ) {
+      const invalidated = stateStore.destroy({
+        handle: requestState,
+        authContext: binding.safeAuth,
+        kind: MRTR_STATE_KIND,
+      });
+      if (!invalidated.ok) {
+        return denied("mrtr_state_invalid", invalidated.reason, {
+          state_handle_sha256: hashValue(requestState),
+        });
+      }
       return denied("mrtr_binding_invalid", "mrtr_request_binding_mismatch", {
-        state_handle_sha256: read.record.handle_id_hash,
+        state_handle_sha256: invalidated.record.handle_id_hash,
       });
     }
 

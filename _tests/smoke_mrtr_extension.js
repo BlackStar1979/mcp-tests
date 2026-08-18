@@ -199,6 +199,17 @@ function firstRound(mrtr, overrides = {}) {
     const result = mrtr.evaluate(call);
     assert.equal(result.status, "denied", testCase.label);
     assert.equal(result.reason, testCase.reason, testCase.label);
+
+    const legitimateRetry = firstRound(mrtr, {
+      requestState: first.result.requestState,
+      inputResponses: acceptedResponse(),
+    });
+    if (testCase.label === "owner") {
+      assert.equal(legitimateRetry.status, "retry_ready", "cross-owner attempt must not revoke another owner's state");
+    } else {
+      assert.equal(legitimateRetry.status, "denied", `${testCase.label} mismatch must consume the state`);
+      assert.equal(legitimateRetry.reason, "state_handle_revoked", testCase.label);
+    }
   }
 })();
 

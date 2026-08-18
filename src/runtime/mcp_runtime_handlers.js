@@ -12,6 +12,7 @@ const { validateModernHttpHeaders, validatePerRequestMetadata } = require("./req
 const { isModernProtocolVersion } = require("./protocol_version_policy");
 const { decorateModernRpcResponse } = require("./modern_protocol_adapter");
 const { traceAuditFields } = require("./trace_context");
+const { createMrtrExtension } = require("./mrtr_extension");
 
 function createMcpRuntimeHandlers({
   serverName,
@@ -29,9 +30,11 @@ function createMcpRuntimeHandlers({
   rateLimiter,
   serverStartId,
   disableLegacyInitialize,
+  mrtrExtension,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
+  const activeMrtrExtension = mrtrExtension || createMrtrExtension();
 
   async function handleRpcMessage(message, context = {}) {
     const validation = validateRpcMessage(message);
@@ -109,6 +112,7 @@ function createMcpRuntimeHandlers({
       auditLog,
       getOptionalTool,
       rateLimiter,
+      mrtrExtension: activeMrtrExtension,
       serverStartId,
       disableLegacyInitialize,
     });

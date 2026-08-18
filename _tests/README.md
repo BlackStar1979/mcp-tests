@@ -6,10 +6,10 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 ## Current Status
 
-Audit snapshot from `2026-08-17`:
+Audit snapshot from `2026-08-18`:
 
-- `401` JavaScript files total in `_tests`
-- `316` active scripts currently listed in `run_all_smoke_scripts.json`
+- `403` JavaScript files total in `_tests`
+- `318` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs
@@ -19,7 +19,7 @@ Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
 - latest full active result from `2026-08-17`: `ok=true, version=0.40.0, public=7, tests_authenticated=308` in durable job `6e4fb407-148c-4a0c-b199-a0becf12628d`; clean-history validation remains a separate post-commit proof
-- current manifest contains `316` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `315` sectioned scripts: `7` public and `308` authenticated
+- current manifest contains `318` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `317` sectioned scripts: `7` public and `310` authenticated
 ## Orientation
 
 - Active smoke entrypoint: `run_all_smokes.js`

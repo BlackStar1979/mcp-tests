@@ -156,6 +156,7 @@
   "_tests/smoke_official_sdk_v2_oauth_interop.js",
   "_tests/smoke_mrtr_conformance_fixture.js",
   "_tests/smoke_mrtr_extension.js",
+  "_tests/smoke_mrtr_runtime_integration.js",
   "_tests/smoke_baseline_manifest.js",
   "_tests/smoke_baseline_drift_guard.js",
   "_tests/smoke_control_plane_audit_env_awareness.js",

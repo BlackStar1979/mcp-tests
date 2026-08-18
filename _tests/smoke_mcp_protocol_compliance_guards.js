@@ -74,7 +74,7 @@ const protocolSpec = require("../SERVER_PROTOCOL_CAPABILITY_SPEC.json");
   assert.equal(modern.modules.transport, "streamable_http_stateless");
   assert.equal(modern.modules.discovery, "server_discover");
   assert.equal(modern.modules.request_state, "explicit_state_handles");
-  assert.equal(modern.modules.mrtr, "fixture_only");
+  assert.equal(modern.modules.mrtr, "mrtr_extension");
   assert.deepEqual(extensionsForProtocolVersion("2026-07-28"), [TASKS_EXTENSION_ID]);
 
   const legacy = adapterForProtocolVersion("2025-11-25");
@@ -90,13 +90,17 @@ const protocolSpec = require("../SERVER_PROTOCOL_CAPABILITY_SPEC.json");
   assert.equal(protocolSpec.release_2026_07_28.included_sep_count, 22);
   assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2663"].s, "live_optional_module");
   assert.equal(protocolSpec.release_2026_07_28.classification["SEP-1865"].s, "optional_module_not_loaded");
-  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2322"].s, "fixture_only_activation_gap");
+  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2322"].s, "repo_implemented_runtime_pending");
   assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2164"].s, "live_aligned");
   assert.equal(protocolSpec.other_final_sep_dispositions.aligned["SEP-1303"], "tool_input_validation_result");
   assert.equal(protocolSpec.deployment_and_activation_queue[0].runtime_status, "live_accepted");
   assert.equal(protocolSpec.deployment_and_activation_queue[1].runtime_status, "live_accepted");
+  assert.equal(protocolSpec.deployment_and_activation_queue[2].repo_status, "implemented");
+  assert.equal(protocolSpec.deployment_and_activation_queue[2].runtime_status, "not_loaded");
+  assert.equal(protocolSpec.deployment_and_activation_queue[2].surface_change, false);
+  assert.ok(protocolSpec.release_2026_07_28.evidence.mrtr.includes("src/runtime/mrtr_extension.js"));
   assert.deepEqual(protocolSpec.next_queue.slice(0, 2), [
-    "SEP-2322 production MRTR module",
+    "SEP-2322 live activation/acceptance",
     "POL-1A-CONSENT on MRTR",
   ]);
 })();

@@ -8,7 +8,7 @@ const {
 const { tryHandleOptionalToolCall } = require("./optional_tool_call_handler");
 const { handleUnknownToolCall } = require("./unknown_tool_call_handler");
 const { logToolCallException } = require("./tool_call_exception_handler");
-const { rpcError } = require("./rpc_responses");
+const { rpcError, rpcResult } = require("./rpc_responses");
 const { tryStartTaskAugmentedToolCall } = require("./mcp_tasks_extension");
 const { buildDecisionRuntimeContext } = require("./decision_runtime_context_builder");
 const { evaluateDecisionRuntimePolicy } = require("./decision_runtime_policy");
@@ -31,6 +31,7 @@ async function handleToolsCall({
   profile,
   getOptionalTool,
   rateLimiter,
+  mrtrExtension,
 }) {
   const name = params.name;
   const args = params.arguments || {};
@@ -134,6 +135,59 @@ async function handleToolsCall({
       validation_errors: inputValidation.errors,
     });
     return buildToolInputValidationResult({ id, errors: inputValidation.errors });
+  }
+
+  if (mrtrExtension && typeof mrtrExtension.evaluate === "function") {
+    const mrtr = mrtrExtension.evaluate({
+      protocolVersion: context.protocolVersion,
+      toolName: name,
+      args,
+      authContext: decisionContext.context?.auth_context || {},
+      requirement: decision.mrtr_requirement || null,
+      requestState: params.requestState,
+      inputResponses: params.inputResponses,
+    });
+    const mrtrAudit = mrtr && mrtr.audit && typeof mrtr.audit === "object" ? mrtr.audit : {};
+    const safeMrtrAudit = {
+      request_id: context.requestId,
+      tool: typeof name === "string" ? name : "unknown",
+      protocol_version: String(context.protocolVersion || ""),
+      duration_ms: Date.now() - startedAt,
+      reason_code: typeof mrtrAudit.reason_code === "string" ? mrtrAudit.reason_code : undefined,
+      state_handle_sha256: typeof mrtrAudit.state_handle_sha256 === "string" ? mrtrAudit.state_handle_sha256 : undefined,
+      requirement_sha256: typeof mrtrAudit.requirement_sha256 === "string" ? mrtrAudit.requirement_sha256 : undefined,
+      input_request_count: Number.isInteger(mrtrAudit.input_request_count) ? mrtrAudit.input_request_count : undefined,
+      expires_at: Number.isFinite(mrtrAudit.expires_at) ? mrtrAudit.expires_at : undefined,
+    };
+
+    if (mrtr?.status === "input_required") {
+      auditLog("tool_call_mrtr_input_required", safeMrtrAudit);
+      return rpcResult(id, mrtr.result);
+    }
+    if (mrtr?.status === "denied") {
+      auditLog("tool_call_mrtr_denied", {
+        ...safeMrtrAudit,
+        decision_code: String(mrtr.code || "mrtr_denied"),
+        reason_code: String(mrtr.reason || safeMrtrAudit.reason_code || "mrtr_denied"),
+      });
+      return rpcError(id, -32602, "MRTR input retry rejected", {
+        decision_code: String(mrtr.code || "mrtr_denied"),
+        reason_codes: [String(mrtr.reason || "mrtr_denied")],
+      });
+    }
+    if (mrtr?.status === "retry_ready") {
+      auditLog("tool_call_mrtr_retry_accepted", safeMrtrAudit);
+    } else if (mrtr?.status !== "not_required") {
+      auditLog("tool_call_mrtr_denied", {
+        ...safeMrtrAudit,
+        decision_code: "mrtr_extension_invalid_outcome",
+        reason_code: "mrtr_extension_invalid_outcome",
+      });
+      return rpcError(id, -32603, "MRTR extension failed closed", {
+        decision_code: "mrtr_extension_invalid_outcome",
+        reason_codes: ["mrtr_extension_invalid_outcome"],
+      });
+    }
   }
 
   auditLog("tool_call_start", buildToolStartAudit(getOptionalTool, context, id, name, args));

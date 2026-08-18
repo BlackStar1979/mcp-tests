@@ -23,7 +23,7 @@ const MODERN_MODULES = Object.freeze({
   resources: "resource_protocol_boundary",
   trace: "w3c_trace_context",
   tasks: "tasks_extension",
-  mrtr: "fixture_only",
+  mrtr: "mrtr_extension",
 });
 
 const LEGACY_MODULES = Object.freeze({

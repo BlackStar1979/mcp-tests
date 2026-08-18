@@ -86,6 +86,21 @@
       "status": "active_code_event"
     },
     {
+      "name": "tool_call_mrtr_input_required",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, protocol version, safe digests, input-request count, expiry metadata, and duration only; raw requestState, inputRequests, arguments, auth identifiers, and secrets prohibited"
+    },
+    {
+      "name": "tool_call_mrtr_retry_accepted",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, protocol version, safe digests, input-request count, and duration only; raw requestState, inputResponses, arguments, auth identifiers, and secrets prohibited"
+    },
+    {
+      "name": "tool_call_mrtr_denied",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, protocol version, bounded MRTR decision/reason codes, safe digests, and duration only; raw requestState, inputResponses, arguments, auth identifiers, and secrets prohibited"
+    },
+    {
       "name": "runtime_restart_requested",
       "status": "active_code_event"
     },
