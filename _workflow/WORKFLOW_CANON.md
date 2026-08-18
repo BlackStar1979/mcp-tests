@@ -66,9 +66,9 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 - Repo-validated 2026-07-16 OAuth21 hardening now additionally covers pre-auth public-route throttling, oversized-body aborts, bounded DCR client-registry growth, and retention-based dead-client pruning. This turn did not independently re-probe live OAuth21 `3008`, so those new guards are repo-and-smoke truth first, not a fresh live-runtime claim.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it runs under `BEGIN IMMEDIATE` before RAM state load, verifies a transaction-bound logical SQLite rollback backup before deletion, records rollback/apply receipts, and executes at most once per 24 hours. The first live run reported `no_candidates`; the final-load restart reported `interval_not_elapsed`; the store retained 475 clients with zero eligible dead clients and zero orphan access, refresh, or used-refresh tokens, and own-connector `get_info` remained callable.
 - Policy coverage remains active as `POL-1 = 2/4` with `14/24` required policies implemented. Current protocol/SEP authority is `SERVER_PROTOCOL_CAPABILITY_SPEC.json`, backed by `src/runtime/protocol_capability_registry.js`: protocol eras select bounded adapters/modules, optional extensions are advertised independently, and client/SDK/governance SEPs do not become server-runtime debt merely because they are Final.
-- Fresh standards cleanup found and repo-fixed two real active Final-SEP defects with RED-to-GREEN coverage: `SEP-2164` missing-resource errors now use `-32602`, and `SEP-1303` valid `tools/call` requests with invalid tool arguments now return `isError = true`. Live OAuth21 `3008` still runs source `2ae1585`, so `restart_required_now = true`; tool names/schemas are unchanged and `connector_refresh_required_now = false`.
-- MRTR (`SEP-2322`) remains fixture-only. Production MRTR is the next protocol-module package after the cleanup live load because `POL-1A-CONSENT` requires server-verifiable human interaction rather than a model-supplied confirmation flag.
-- Workflow progress markers: `current_working_course = protocol-capability-current-truth-cleanup`; `next_primary = protocol-cleanup-live-validation`; `next_secondary = pol-1a-mrtr-runtime`.
+- Standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`. `SEP-2164` and `SEP-1303` have authenticated live semantic proof; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`. `restart_required_now = false`; `connector_refresh_required_now = false`.
+- MRTR (`SEP-2322`) remains fixture-only. Production MRTR is the next protocol-module package because `POL-1A-CONSENT` requires server-verifiable human interaction rather than a model-supplied confirmation flag.
+- Workflow progress markers: `current_working_course = protocol-capability-module-convergence`; `next_primary = pol-1a-mrtr-runtime`; `next_secondary = pol-1a-consent-boundary`.
 - Stage marker vocabulary: `Stage 8 / Step 53b` = modular safe tool surface consolidation; `Stage 8 / Step 53c` = modular unsafe tool governance boundary; `Stage 8 / Step 53d` = live restart and connector surface reconciliation.
 - Cleanup-closeout checkpoint local-only untracked directories outside committed scope: `.codebase-memory/`, `_workflow/experiments/`.
 - Runtime identity / workflow boundary: runtime stage labels may lag repo progress and are compatibility/API labels only. Do not treat `runtime_stage_status` as repo progress, deployment progress, or workflow truth.
@@ -82,14 +82,13 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 The active queue is deliberately short. Historical plans and the June/July SEP triage are evidence, not current next-work lists.
 
-1. `PROTOCOL-CLEANUP-LIVE`: validate the final repo state, commit/push, restart OAuth21 `3008`, and prove `SEP-2164` plus `SEP-1303` live without fingerprint/tool-surface drift.
-2. `POL-1A-MRTR`: promote the official-SDK MRTR fixture into a production protocol module without restoring protocol sessions or classic Sampling machinery.
-3. `POL-1A-CONSENT`: build high-risk human consent on production MRTR; do not accept a model-supplied boolean as human approval evidence.
-4. `POL-1A-PROMPT`: close the untrusted-content/instruction-promotion boundary.
-5. Follow with `POL-1B` and `POL-1C`; keep `COMP-1A` event-gated until newer real Codex entry traffic exists.
-6. Preserve accepted `OPS-1`, live Tasks/Trace/Artifacts/CIMD, completed `DOC-2`, and the modular protocol-registry boundary as regression lines.
+1. `POL-1A-MRTR`: promote the official-SDK MRTR fixture into a production protocol module without restoring protocol sessions or classic Sampling machinery.
+2. `POL-1A-CONSENT`: build high-risk human consent on production MRTR; do not accept a model-supplied boolean as human approval evidence.
+3. `POL-1A-PROMPT`: close the untrusted-content/instruction-promotion boundary.
+4. Follow with `POL-1B` and `POL-1C`; keep `COMP-1A` event-gated until newer real Codex entry traffic exists.
+5. Preserve accepted `OPS-1`, live Tasks/Trace/Artifacts/CIMD, completed `DOC-2`, and the modular protocol-registry boundary as regression lines.
 
-Next recommended action: close `PROTOCOL-CLEANUP-LIVE`; then start the modular production MRTR package.
+Next recommended action: start the modular production MRTR package.
 Restart-boundary clarification: the recovered supervisor-managed OAuth21 `3008` authority is no longer an open blocker. Future `restart_required_now` flags after later runtime code changes are ordinary per-change operational truth, not evidence that the restart-resilience ledger item is still incomplete.
 
 Helper-debt clarification: `SessionStore`, `McpSession`, the classic Sampling context, SSE outbound queuing, and pending response correlation are removed from active source. `_workflow/operator_decisions/deprecated_sampling_helper_retirement_closeout.md` supersedes the earlier retention posture; only fail-closed response-envelope classification remains contract-relevant.

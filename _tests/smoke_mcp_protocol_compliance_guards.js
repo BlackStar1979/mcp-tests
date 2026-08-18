@@ -91,13 +91,13 @@ const protocolSpec = require("../SERVER_PROTOCOL_CAPABILITY_SPEC.json");
   assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2663"].s, "live_optional_module");
   assert.equal(protocolSpec.release_2026_07_28.classification["SEP-1865"].s, "optional_module_not_loaded");
   assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2322"].s, "fixture_only_activation_gap");
-  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2164"].s, "repo_fixed_restart_pending");
-  assert.equal(protocolSpec.other_final_sep_dispositions.repo_fixed_restart_pending["SEP-1303"], "tool_input_validation_result");
-  assert.equal(protocolSpec.deployment_and_activation_queue[0].runtime_status, "restart_pending");
-  assert.equal(protocolSpec.deployment_and_activation_queue[1].runtime_status, "restart_pending");
+  assert.equal(protocolSpec.release_2026_07_28.classification["SEP-2164"].s, "live_aligned");
+  assert.equal(protocolSpec.other_final_sep_dispositions.aligned["SEP-1303"], "tool_input_validation_result");
+  assert.equal(protocolSpec.deployment_and_activation_queue[0].runtime_status, "live_accepted");
+  assert.equal(protocolSpec.deployment_and_activation_queue[1].runtime_status, "live_accepted");
   assert.deepEqual(protocolSpec.next_queue.slice(0, 2), [
-    "protocol cleanup live-load and semantic acceptance",
     "SEP-2322 production MRTR module",
+    "POL-1A-CONSENT on MRTR",
   ]);
 })();
 

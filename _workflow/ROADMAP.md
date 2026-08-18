@@ -43,25 +43,22 @@ Current derivation:
 | P1 | Bounded W3C Trace Context correlation — live accepted | durable task/execution identity | Request, execution, Task, and artifact share one safe correlation spine. | Preserve the verified W3C ancestry/privacy contract. |
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
-| P4 | MRTR conformance fixture — complete, runtime N/A | stable protocol adapters | MRTR supplies conformance evidence without a second runtime architecture. | Preserve fixture-only multi-round-trip behavior. |
-| P5 | `POL-1A` critical policy gap closure — active, standards cleanup first | modular protocol capability authority, current runtime/tests | `SERVER_PROTOCOL_CAPABILITY_SPEC.json` now separates core protocol adapters from optional extensions, client/SDK duties, and governance. Audit found two real active Final-SEP defects: `SEP-2164` resource-not-found semantics and `SEP-1303` tool-input-validation semantics; both are RED-to-GREEN repo-fixed without a tool-surface/schema change, but live OAuth21 `3008` still runs source `2ae1585`. MRTR (`SEP-2322`) is still fixture-only and is a hard dependency for honest human-consent enforcement. | Live-load/accept the standards cleanup; implement production MRTR as a protocol module; then execute `POL-1A-CONSENT`, followed by prompt/content. |
+| P4 | MRTR conformance fixture — complete; production module pending | stable protocol adapters | MRTR supplies official-SDK conformance evidence without a second runtime architecture, but remains fixture-only. | Implement production MRTR as the next modular protocol capability because consent depends on it. |
+| P5 | `POL-1A` critical policy gap closure — active, MRTR first | modular protocol capability authority, current runtime/tests | `SERVER_PROTOCOL_CAPABILITY_SPEC.json` separates core protocol adapters from optional extensions, client/SDK duties, and governance. The standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`; `SEP-2164` and `SEP-1303` have authenticated live semantic proof, while `tools/list` remains `98` / `93721a82a339f9d6`. MRTR (`SEP-2322`) is still fixture-only and is a hard dependency for honest human-consent enforcement. | Implement production MRTR as a protocol module; then execute `POL-1A-CONSENT`, followed by prompt/content. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `PROTOCOL-CLEANUP-LIVE` — modular standards cleanup, repo-fixed/restart-pending
-   Load and live-validate the protocol capability registry plus the isolated `SEP-2164` and `SEP-1303` fixes. No connector refresh is expected because tool names and schemas are unchanged.
-
-1. `POL-1A-MRTR` — production multi-round-trip protocol module
+0. `POL-1A-MRTR` — production multi-round-trip protocol module
    Promote the official-SDK MRTR conformance fixture into a bounded production module using `input_required`, `requestState`, and `inputResponses`, without restoring transport sessions or classic Sampling machinery.
 
-2. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
    Build consent on the production MRTR module so a human response, not a model-supplied boolean, is the authorization evidence for high-risk operations.
 
-3. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
+2. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
    Classify content-bearing tool results as untrusted data by default and require an explicit promotion boundary before returned text can be treated as model instruction.
 
-4. `POL-1B` — partial policy reconciliation
+3. `POL-1B` — partial policy reconciliation
    Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after the remaining critical gaps are closed.
 
 4. `POL-1C` — specified-only non-critical reconciliation

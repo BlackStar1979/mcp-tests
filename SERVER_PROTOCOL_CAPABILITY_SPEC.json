@@ -112,7 +112,7 @@
       },
       "SEP-2164": {
         "m": "resource_protocol_boundary",
-        "s": "repo_fixed_restart_pending",
+        "s": "live_aligned",
         "server": true
       },
       "SEP-2207": {
@@ -193,9 +193,7 @@
       "SEP-985": "oauth_prm",
       "SEP-986": "tool_names",
       "SEP-1613": "schema_2020_12",
-      "SEP-1319": "rpc_dispatch"
-    },
-    "repo_fixed_restart_pending": {
+      "SEP-1319": "rpc_dispatch",
       "SEP-1303": "tool_input_validation_result"
     },
     "optional_inactive": {
@@ -228,7 +226,7 @@
       "sep": "SEP-2164",
       "module": "resource_protocol_boundary",
       "repo_status": "fixed",
-      "runtime_status": "restart_pending",
+      "runtime_status": "live_accepted",
       "target": "-32602 Invalid Params; Resource not found; include uri",
       "surface_change": false
     },
@@ -237,7 +235,7 @@
       "sep": "SEP-1303",
       "module": "tool_input_validation_result",
       "repo_status": "fixed",
-      "runtime_status": "restart_pending",
+      "runtime_status": "live_accepted",
       "target": "tool execution result with isError=true; malformed RPC params and unknown tools remain protocol errors",
       "surface_change": false
     },
@@ -309,7 +307,6 @@
     "notes": "Protocol capability authority preserves the accepted single-route no-SSE target; historical sessionless prototype evidence cannot select current protocol work."
   },
   "next_queue": [
-    "protocol cleanup live-load and semantic acceptance",
     "SEP-2322 production MRTR module",
     "POL-1A-CONSENT on MRTR",
     "POL-1A-PROMPT-CONTENT"

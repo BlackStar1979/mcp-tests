@@ -21,9 +21,9 @@ Snapshot and full-harness root fidelity are closed: snapshot creation is caller-
 The operator refreshed OAuth authorization and the connector tool list before the final controlled load. The connector entered through `server/discover` on MCP `2026-07-28`, returned all `98` tools, survived the subsequent supervisor restart with OAuth state intact, and remains callable.
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
-- `current_working_course = protocol-capability-current-truth-cleanup`
-- `next_primary = protocol-cleanup-live-validation`
-- `next_secondary = pol-1a-mrtr-runtime`
+- `current_working_course = protocol-capability-module-convergence`
+- `next_primary = pol-1a-mrtr-runtime`
+- `next_secondary = pol-1a-consent-boundary`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -398,22 +398,20 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. `PROTOCOL-CLEANUP-LIVE`: commit/push and controlled-restart the modular protocol capability registry plus repo-fixed `SEP-2164` and `SEP-1303`; prove both semantics live without connector fingerprint drift.
-2. `POL-1A-MRTR`: promote the official-SDK MRTR fixture into a production protocol module without restoring transport sessions or classic Sampling.
-3. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR.
-4. `POL-1A-PROMPT`: add explicit untrusted-content classification and instruction-promotion boundaries.
-5. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
+1. `POL-1A-MRTR`: promote the official-SDK MRTR fixture into a production protocol module without restoring transport sessions or classic Sampling.
+2. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR.
+3. `POL-1A-PROMPT`: add explicit untrusted-content classification and instruction-promotion boundaries.
+4. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
 Historical records remain traceability evidence, not the active queue. `_workflow/control_plane/snapshots/**` is archival evidence only. The June/July SEP triage is provenance only and is superseded for current protocol truth by `SERVER_PROTOCOL_CAPABILITY_SPEC.json`.
 
-Next recommended product package is `PROTOCOL-CLEANUP-LIVE`. `SERVER_PROTOCOL_CAPABILITY_SPEC.json` is now the canonical modular authority for protocol eras, optional extensions, client/SDK applicability, and Final-SEP status. `SEP-2164` and `SEP-1303` are RED-to-GREEN repo-fixed but not yet live-loaded; `restart_required_now = true`, while tool names/schemas are unchanged and `connector_refresh_required_now = false`. MRTR (`SEP-2322`) remains fixture-only and is the next architectural module because consent depends on a human round trip rather than model-supplied confirmation.
+The modular standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`. `SEP-2164` and `SEP-1303` have authenticated live semantic proof; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; `restart_required_now = false` and `connector_refresh_required_now = false`. MRTR (`SEP-2322`) remains fixture-only and is the next architectural module because consent depends on a human round trip rather than model-supplied confirmation.
 Readiness-derived default next package queue:
 
-1. `PROTOCOL-CLEANUP-LIVE` — controlled live load and semantic probes
-2. `POL-1A-MRTR` — production MRTR protocol module
-3. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
-4. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
-5. `POL-1B` — partial policy reconciliation
-6. `POL-1C` — specified-only non-critical reconciliation
+1. `POL-1A-MRTR` — production MRTR protocol module
+2. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+3. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
+4. `POL-1B` — partial policy reconciliation
+5. `POL-1C` — specified-only non-critical reconciliation
 
 Recently completed:
 

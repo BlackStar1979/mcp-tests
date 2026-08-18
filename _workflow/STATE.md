@@ -47,18 +47,18 @@ Summarize the current validated product state in one operator-facing place witho
 - W3C Trace Context P1 is live and accepted: live `run_process` request span `b30d7ed041609eb6` created execution child `bdff6e5f06b04cce`; a Task-backed execution persisted trace `8dd0f95cfb76cfa719af99c69bc8e2ae`, child `1f4deb3e376e86f7`, and parent `addcaee3ad7e0838` through the durable process/artifact spine. Repository validation remains `7 + 298`.
 - Process Artifacts P2 is live and accepted: terminal stdout/stderr is materialized immutably in `tests_process_jobs_3008.sqlite` with opaque IDs, SHA-256, independent retention, and W3C ancestry. Authenticated live `resources/read` returned the expected Task stdout through an explicit `mcp-artifact://process/<opaque-id>` URI. Repository validation remains `7 + 301`.
 - CIMD P3 is live and accepted: the runtime SSRF boundary rejected `client_id = https://127.0.0.1/oauth/client.json` with controlled `400 invalid_client`; audit recorded `oauth21_cimd_rejected` / `cimd_special_use_ip`. Repository validation remains `7 + 304`.
-- Protocol capability truth is now modular and canonical in `SERVER_PROTOCOL_CAPABILITY_SPEC.json`, backed by `src/runtime/protocol_capability_registry.js`. The MCP `2026-07-28` release set is classified per adapter/module rather than as a monolithic implemented/not-implemented flag; optional extensions, client/SDK requirements, and governance SEPs no longer create false server-runtime debt.
-- Standards cleanup found two active Final-SEP defects and fixed both in the repository with RED-to-GREEN coverage: `SEP-2164` now maps missing `resources/read` resources to JSON-RPC `-32602`, and `SEP-1303` now maps valid `tools/call` requests with invalid tool arguments to a tool execution result with `isError = true`. The live OAuth21 runtime still runs source `2ae1585`, so these fixes are repo-fixed/restart-pending; tool names and schemas are unchanged and no connector refresh is required.
-- MRTR (`SEP-2322`) remains official-SDK fixture-only evidence. Production MRTR is now an explicit protocol-feature module and the next architectural package after the standards-cleanup live load because `POL-1A-CONSENT` requires server-verifiable human interaction rather than model-supplied confirmation.
+- Protocol capability truth is modular and canonical in `SERVER_PROTOCOL_CAPABILITY_SPEC.json`, backed by `src/runtime/protocol_capability_registry.js`. The MCP `2026-07-28` release set is classified per adapter/module rather than as a monolithic implemented/not-implemented flag; optional extensions, client/SDK requirements, and governance SEPs do not create false server-runtime debt.
+- Standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`: `SEP-2164` missing `resources/read` resources return `-32602 Resource not found`, and `SEP-1303` invalid arguments for a known `tools/call` return a tool execution result with `isError = true`. Authenticated live probes returned HTTP 200 for both semantics. `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; no connector refresh is required.
+- MRTR (`SEP-2322`) remains official-SDK fixture-only evidence. Production MRTR is now the next protocol-feature module because `POL-1A-CONSENT` requires server-verifiable human interaction rather than model-supplied confirmation.
 - `DEBT-1` cleanup remains complete and live-loaded: classic session/SSE/Sampling internals are removed from the active architecture, while bounded legacy `initialize` compatibility remains a separate protocol-era adapter.
-- `POL-1` remains active at `2/4`: `14/24` required policies are implemented; the two genuine critical policy gaps remain `consent` and `prompt/content`. The standards-cleanup checkpoint must close before consent work resumes.
+- `POL-1` remains active at `2/4`: `14/24` required policies are implemented; the two genuine critical policy gaps remain `consent` and `prompt/content`. Consent is sequenced after the production MRTR module.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list.
 
 ## Current workflow track
 
-- `current_working_course = protocol-capability-current-truth-cleanup`
-- `next_primary = protocol-cleanup-live-validation`
-- `next_secondary = pol-1a-mrtr-runtime`
+- `current_working_course = protocol-capability-module-convergence`
+- `next_primary = pol-1a-mrtr-runtime`
+- `next_secondary = pol-1a-consent-boundary`
 
 ## Verified documentation authorities
 
