@@ -139,6 +139,11 @@ function rpcPayload(id, method, params = {}) {
 }
 
 async function issueBearer({ baseUrl, operatorSecret }) {
+  const protectedResource = await jsonFetch(`${baseUrl}/.well-known/oauth-protected-resource`);
+  assert.equal(protectedResource.status, 200, "oauth21 protected-resource metadata must succeed");
+  const resource = String(protectedResource.body?.resource || "");
+  assert.ok(resource, "oauth21 protected-resource metadata must expose resource");
+
   const registration = await jsonFetch(`${baseUrl}/register`, {
     method: "POST",
     headers: { "content-type": "application/json" },
@@ -161,6 +166,7 @@ async function issueBearer({ baseUrl, operatorSecret }) {
   authorize.searchParams.set("code_challenge_method", "S256");
   authorize.searchParams.set("state", `${MARKER}-${Date.now()}`);
   authorize.searchParams.set("scope", "mcp:tools");
+  authorize.searchParams.set("resource", resource);
 
   const authorizeResponse = await fetch(authorize, { redirect: "manual" });
   assert.equal(authorizeResponse.status, 302, "oauth21 authorize must redirect");
@@ -171,7 +177,13 @@ async function issueBearer({ baseUrl, operatorSecret }) {
   const login = await fetch(`${baseUrl}/oauth/operator-login`, {
     method: "POST",
     headers: { "content-type": "application/x-www-form-urlencoded" },
-    body: new URLSearchParams({ pid, password: operatorSecret }),
+    body: new URLSearchParams({
+      pid,
+      client_id: registration.body.client_id,
+      redirect_uri: REDIRECT_URI,
+      scope: "mcp:tools",
+      password: operatorSecret,
+    }),
     redirect: "manual",
   });
   assert.equal(login.status, 302, "oauth21 operator login must redirect");
@@ -188,6 +200,7 @@ async function issueBearer({ baseUrl, operatorSecret }) {
       redirect_uri: REDIRECT_URI,
       client_id: registration.body.client_id,
       code_verifier: verifier,
+      resource,
     }),
   });
   assert.equal(token.status, 200, "oauth21 token exchange must succeed");
