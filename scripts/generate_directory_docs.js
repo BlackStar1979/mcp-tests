@@ -356,7 +356,7 @@ const CONFIG = {
   },
   "docs/superpowers/plans": {
     title: "superpowers plans directory map",
-    updated: "2026-08-18",
+    updated: "2026-08-19",
     entries: {
       "2026-07-26-cbm-cli-bridge-mvp.md": "Execution plan for the CBM CLI bridge MVP package.",
       "2026-07-26-cbm-full-tool-surface.md": "Execution plan for the full CBM tool-surface package.",
@@ -365,12 +365,13 @@ const CONFIG = {
       "2026-08-09-process-runner-async.md": "Execution plan for durable asynchronous process execution and policy hardening.",
       "2026-08-13-structured-file-mutation.md": "Execution plan for staged content, streaming file mutation, physical split/merge, and Markdown structure tools.",
       "2026-08-18-production-mrtr-runtime.md": "Execution plan for the production MCP 2026-07-28 MRTR runtime module and controlled live activation.",
+      "2026-08-19-pol-1a-consent.md": "Execution plan for the POL-1A MRTR-backed human consent boundary and controlled live activation.",
     },
     tail: "Keep these plans bounded to historical or supporting package execution. Active priority still comes from `_workflow/ROADMAP.md`.",
   },
   "docs/superpowers/specs": {
     title: "superpowers specs directory map",
-    updated: "2026-08-18",
+    updated: "2026-08-19",
     entries: {
       "2026-07-26-cbm-cli-bridge-design.md": "Design specification for the CBM CLI bridge MVP package.",
       "2026-07-26-cbm-full-tool-surface-design.md": "Design specification for the full CBM tool-surface package.",
@@ -379,6 +380,7 @@ const CONFIG = {
       "2026-08-09-process-runner-async-design.md": "Design specification for durable asynchronous process execution and policy hardening.",
       "2026-08-13-structured-file-mutation-design.md": "Design specification for staged content, streaming file mutation, physical split/merge, and Markdown structure tools.",
       "2026-08-18-mrtr-production-runtime-design.md": "Design specification for bounded production MRTR state, retry validation, and pre-execution protocol integration.",
+      "2026-08-19-pol-1a-consent-design.md": "Design specification for the POL-1A MRTR-backed human consent boundary and fail-closed execution gate.",
     },
     tail: "Use these specs as supporting design evidence only. Current runtime and connector behavior must still be verified through tests, live probes, and canonical specs.",
   },

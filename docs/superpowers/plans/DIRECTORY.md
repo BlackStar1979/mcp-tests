@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active superpowers plans directory map
-Updated: 2026-08-18
+Updated: 2026-08-19
 
 - `2026-07-26-cbm-cli-bridge-mvp.md`
   Execution plan for the CBM CLI bridge MVP package.
@@ -17,5 +17,7 @@ Updated: 2026-08-18
   Execution plan for staged content, streaming file mutation, physical split/merge, and Markdown structure tools.
 - `2026-08-18-production-mrtr-runtime.md`
   Execution plan for the production MCP 2026-07-28 MRTR runtime module and controlled live activation.
+- `2026-08-19-pol-1a-consent.md`
+  Execution plan for the POL-1A MRTR-backed human consent boundary and controlled live activation.
 
 Keep these plans bounded to historical or supporting package execution. Active priority still comes from `_workflow/ROADMAP.md`.
