@@ -259,7 +259,24 @@ async function connectAndExercise({
   persistedJobId = null,
 }) {
   const clientName = `mcp-tests-official-sdk-oauth-${label}`;
-  const client = new Client({ name: clientName, version: CLIENT_VERSION }, options || undefined);
+  const effectiveOptions = expectedEra === "modern"
+    ? {
+        ...(options || {}),
+        capabilities: { ...(options?.capabilities || {}), elicitation: {} },
+        inputRequired: { autoFulfill: true, maxRounds: 4, ...(options?.inputRequired || {}) },
+      }
+    : (options || undefined);
+  const client = new Client({ name: clientName, version: CLIENT_VERSION }, effectiveOptions);
+  let consentRequestCount = 0;
+  if (expectedEra === "modern") {
+    client.setRequestHandler("elicitation/create", async (request) => {
+      consentRequestCount += 1;
+      assert.equal(request.params?.mode, "form", `${label} receives form-mode human consent`);
+      assert.equal(request.params?.requestedSchema?.properties?.confirmed?.type, "boolean");
+      assert.equal(request.params?.requestedSchema?.additionalProperties, false);
+      return { action: "accept", content: { confirmed: true } };
+    });
+  }
   const transport = new StreamableHTTPClientTransport(new URL(mcpUrl), { authProvider: provider });
   let jobId = "";
   await client.connect(transport);
@@ -289,7 +306,8 @@ async function connectAndExercise({
     assert.equal(call.structuredContent?.success, true, `${label} returns structured success`);
     assert.equal(call.structuredContent?.type, "directory", `${label} reads the workspace root`);
 
-    const started = await client.callTool({
+    if (expectedEra === "modern") {
+      const started = await client.callTool({
       name: "process_start",
       arguments: {
         command: "node",
@@ -401,6 +419,18 @@ async function connectAndExercise({
       assert.notEqual(deniedStart.isError, true, `${label} normalizes process policy denials`);
       assert.equal(deniedStart.structuredContent?.success, false);
       assert.equal(deniedStart.structuredContent?.error?.code, "process_command_not_allowed");
+    }
+      assert.ok(consentRequestCount >= 1, `${label} fulfills at least one server-verifiable consent request`);
+    } else {
+      await assert.rejects(
+        client.callTool({
+          name: "process_start",
+          arguments: { command: "node", cwd: "mcp-tests", timeout_ms: 5000 },
+        }),
+        (error) => error?.code === -32602 && error?.data?.decision_code === "mrtr_protocol_error",
+        `${label} legacy high-risk process call fails closed without modern MRTR`
+      );
+      assert.equal(consentRequestCount, 0, `${label} does not synthesize modern consent on a legacy connection`);
     }
   } finally {
     await client.close().catch(() => {});
@@ -591,9 +621,9 @@ async function connectAndExercise({
       audit.entries.some((entry) => (
         entry.event === "tool_call_decision"
         && entry.decision_receipt?.redacted_context?.tool === "process_start"
-        && entry.decision_receipt?.reason_codes?.includes("guarded_process_execution")
+        && entry.decision_receipt?.reason_codes?.includes("human_consent_required")
       )),
-      "central runtime policy explicitly authorizes guarded process execution"
+      "central runtime policy explicitly requires human consent for process execution"
     );
     assert.equal(audit.raw.includes("oauth-process-ok"), false, "audit log does not expose process output");
     assert.equal(audit.raw.includes("oauth_e2e_cancel"), false, "audit log does not expose raw cancellation reasons");

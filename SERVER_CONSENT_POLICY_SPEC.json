@@ -2,7 +2,7 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "active_authority_specified_runtime_enforcement_partial",
+  "status": "repository_implemented_live_activation_pending",
   "schema_version": "mcp-tests-consent-policy-v1",
   "scope": "Human/operator consent, approval and escalation boundaries for tool calls, scope elevation, sampling, elicitation, runtime mutation and connector refresh.",
   "policy": {
@@ -38,7 +38,7 @@
     "src/runtime/tools_call_handler.js"
   ],
   "repository_implementation": {
-    "status": "process_consent_classification_and_mrtr_requirement_repo_implemented_live_activation_pending",
+    "status": "process_consent_semantics_repo_implemented_live_activation_pending",
     "selected_tools": [
       "run_process",
       "process_start",
@@ -49,12 +49,27 @@
     "resource_and_operation_authority": "SERVER_TOOLS_SPEC.json#tool_catalog",
     "missing_form_capability_fails_closed": true,
     "missing_form_capability_error": -32021,
+    "semantic_response_verification_enforced": true,
+    "accepted_response_shape": "human_approval.action=accept with exact content {confirmed:true}",
     "model_supplied_confirmation_is_human_approval": false,
+    "mrtr_state_consumed_before_consent_semantic_verification": true,
+    "consent_receipt_exposes_raw_arguments_or_scope_digests": false,
     "cbm_confirmation_is_generalized_human_consent": false,
     "live_activation_claimed": false
   },
+  "current_deploy_impact": {
+    "runtime_restart_required_now": true,
+    "connector_visible_surface_changed": false,
+    "connector_refresh_required_now": false,
+    "tool_count_changed": false,
+    "tool_names_changed": false,
+    "input_schema_changed": false,
+    "output_schema_changed": false,
+    "descriptor_changed": false,
+    "repo_target_tool_count": 98,
+    "repo_target_combined_fingerprint": "93721a82a339f9d6"
+  },
   "runtime_gaps": [
-    "semantic verification of the MRTR human_approval response is not yet enforced after retry_ready; only protocol/state validity is implemented at this task boundary",
     "the repository implementation has not yet completed controlled restart and live consent acceptance evidence",
     "scope elevation, new-origin egress, and secret/token access remain separate fail-closed or unimplemented consent classes rather than normalized generalized consent deltas"
   ],

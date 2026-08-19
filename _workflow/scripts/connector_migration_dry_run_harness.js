@@ -76,7 +76,7 @@ function buildHarnessResult({ selfTest = false } = {}) {
   assert.equal(serverSpec.server.authenticated_tool_count, 98);
   assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 98);
   assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
-  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
   assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
   assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
   assert.equal(runtimeTopology.runtime_instances.oauth21_3008.port, 3008);
@@ -135,7 +135,7 @@ function buildHarnessResult({ selfTest = false } = {}) {
       stable_mcp_removal_forbidden: inventory.target_selection_readiness.s11_connector_migration_readiness.stable_mcp_removal_forbidden_now === true,
       stable_session_code_removal_forbidden: state.current_work_constraints.do_not_remove_stable_session_code_before_active_route_migration_completion === true,
       connector_refresh_required_now: false,
-      runtime_restart_required_now: false,
+      runtime_restart_required_now: state.current_runtime_truth.oauth21_3008.restart_required_now === true,
       public_3009_start_required_now: false,
     },
     current_connector_surface: beforeSurface,

@@ -57,6 +57,7 @@ assert.equal(output.candidate_route, "/mcp/sessionless");
 assert.equal(output.connector_refresh_performed, false);
 assert.equal(output.connector_route_migration_performed, false);
 assert.equal(output.runtime_restart_performed, false);
+assert.equal(output.preconditions.runtime_restart_required_now, true);
 assert.equal(output.public_3009_start_performed, false);
 assert.equal(output.stable_mcp_removal_performed, false);
 assert.equal(output.stable_session_code_removal_performed, false);

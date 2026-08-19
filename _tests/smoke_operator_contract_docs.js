@@ -94,7 +94,7 @@ assert.ok(readiness.includes("Governance correctly detected and closed the POL-1
 assert.ok(readiness.includes("No active connector-surface blocker remains"));
 assert.ok(readiness.includes("`SEP-2164` and `SEP-1303` remain live accepted"));
 assert.ok(readiness.includes("production MRTR (`SEP-2322`) is now live-loaded"));
-assert.ok(readiness.includes("Execute `POL-1A-CONSENT` on the production MRTR boundary"));
+assert.ok(readiness.includes("Complete controlled restart and semantic live acceptance for `POL-1A-CONSENT`"));
 assert.ok(readiness.includes("| SURF-1 | Connector-visible surface governance | 4/4 |"));
 assert.ok(readiness.includes("| PROC-1 | Process execution reliability | 4/4 |"));
 assert.ok(readiness.includes("Codebase-Memory bridge and index integrity"));

@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-08-18`:
 
-- `403` JavaScript files total in `_tests`
-- `318` active scripts currently listed in `run_all_smoke_scripts.json`
+- `404` JavaScript files total in `_tests`
+- `319` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs

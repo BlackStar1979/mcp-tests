@@ -6,6 +6,7 @@ const { handleToolsCall } = require("../src/runtime/tools_call_handler");
 const { dispatchRpcMessage } = require("../src/runtime/rpc_message_dispatcher");
 const { runProcessTool } = require("../tools/run_process");
 const { TASKS_EXTENSION_ID } = require("../src/runtime/mcp_tasks_extension");
+const { createMrtrExtension } = require("../src/runtime/mrtr_extension");
 const { resolveTraceContext } = require("../src/runtime/trace_context");
 
 const TRACE_ID = "4bf92f3577b34da6a3ce929d0e0e4736";
@@ -181,15 +182,17 @@ function dispatcherArgs(context, prelude) {
     protocolVersion: "2026-07-28",
     requestMetadata: {
       protocolVersion: "2026-07-28",
-      clientCapabilities: { extensions: { [TASKS_EXTENSION_ID]: {} } },
+      clientCapabilities: { elicitation: {}, extensions: { [TASKS_EXTENSION_ID]: {} } },
     },
     traceContext: requestTrace,
     authResult: { clientId: "client-a", scopes: ["mcp:tools"] },
     processJobManager: manager,
   };
-  const taskStart = await handleToolsCall({
+  const mrtrExtension = createMrtrExtension();
+  const processArgs = { command: "fixture", timeout_ms: 5000 };
+  const consentRound = await handleToolsCall({
     id: 3,
-    params: { name: "run_process", arguments: { command: "fixture", timeout_ms: 5000 } },
+    params: { name: "run_process", arguments: processArgs },
     context: taskContext,
     outputMode: "structured",
     documentRuntimeContext: () => ({ docs: [] }),
@@ -198,6 +201,30 @@ function dispatcherArgs(context, prelude) {
     profile: "internal",
     getOptionalTool(name) { return name === "run_process" ? runProcessTool : null; },
     rateLimiter: null,
+    mrtrExtension,
+  });
+  assert.equal(consentRound.result.resultType, "input_required");
+  assert.equal(executionTrace, null, "trace execution must not start before human consent");
+
+  const taskStart = await handleToolsCall({
+    id: 30,
+    params: {
+      name: "run_process",
+      arguments: processArgs,
+      requestState: consentRound.result.requestState,
+      inputResponses: {
+        human_approval: { action: "accept", content: { confirmed: true } },
+      },
+    },
+    context: taskContext,
+    outputMode: "structured",
+    documentRuntimeContext: () => ({ docs: [] }),
+    auditLog(event, fields) { taskAudit.push({ event, ...fields }); },
+    authMode: "oauth21",
+    profile: "internal",
+    getOptionalTool(name) { return name === "run_process" ? runProcessTool : null; },
+    rateLimiter: null,
+    mrtrExtension,
   });
   assert.equal(taskStart.result.resultType, "task");
   assert.equal(executionTrace.traceId, requestTrace.traceId);

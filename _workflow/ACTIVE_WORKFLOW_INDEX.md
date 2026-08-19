@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-18
+Date: 2026-08-19
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs production MRTR source commit `476038d` at `server_start_id = 2026-08-18T19:03:44.754Z`. Runtime and authenticated connector expose `98` tools with unchanged combined fingerprint `93721a82a339f9d6`; `/healthz`, connector calls, and durable restart recovery are green. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), `DEBT-1-RETIREMENT` (`7 + 305`), `POL-1A-DLP` (`7 + 308`), and production `MRTR` (`7 + 310`) are live-accepted. MRTR is loaded-dormant until policy emits `mrtr_requirement`; no connector refresh is pending.
+Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs production MRTR source commit `476038d` at `server_start_id = 2026-08-18T19:03:44.754Z`. Runtime and authenticated connector expose `98` tools with unchanged combined fingerprint `93721a82a339f9d6`; `/healthz`, connector calls, and durable restart recovery are green. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), `DEBT-1-RETIREMENT` (`7 + 305`), `POL-1A-DLP` (`7 + 308`), and production `MRTR` (`7 + 310`) are live-accepted. MRTR is loaded-dormant until policy emits `mrtr_requirement`; no connector refresh is pending. Separately, `POL-1A-CONSENT` is repository-implemented and targeted-regression GREEN: selected process calls emit deterministic MRTR requirements, require server-verifiable form consent, enforce exact response semantics, and cannot create Tasks/jobs or execute before accepted consent. This repository change is restart-pending; no live consent acceptance is claimed yet, and no connector refresh is required because the governed surface is unchanged.
 
 `DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
@@ -398,12 +398,12 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR.
+1. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR. Repository implementation is complete, so finish pre-deploy validation, controlled restart, and semantic live acceptance before advancing the queue.
 2. `POL-1A-PROMPT`: add explicit untrusted-content classification and instruction-promotion boundaries.
 3. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
 Historical records remain traceability evidence, not the active queue. `_workflow/control_plane/snapshots/**` is archival evidence only. The June/July SEP triage is provenance only and is superseded for current protocol truth by `SERVER_PROTOCOL_CAPABILITY_SPEC.json`.
 
-The modular standards cleanup remains accepted, and production MRTR (`SEP-2322`) is now live from source `476038d` at `server_start_id = 2026-08-18T19:03:44.754Z`. `SEP-2164`, `SEP-1303`, and the dormant `mrtr_extension` are live; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; `restart_required_now = false` and `connector_refresh_required_now = false`. Consent is the next architectural package.
+The modular standards cleanup remains accepted, and production MRTR (`SEP-2322`) remains live from source `476038d` at `server_start_id = 2026-08-18T19:03:44.754Z`. The repository now contains the consent policy that activates MRTR for selected process calls, but the live runtime has not loaded it yet; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`, `restart_required_now = true`, and `connector_refresh_required_now = false`. Consent therefore remains the active package through controlled live acceptance.
 Readiness-derived default next package queue:
 
 1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
