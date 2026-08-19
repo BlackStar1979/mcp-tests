@@ -6,10 +6,10 @@ const { createMcpRuntimeHandlers } = require("../src/runtime/mcp_runtime_handler
 const MODERN = "2026-07-28";
 const OPAQUE_STATE = "mrtr_test_state_012345678901234567890123456789";
 
-function modernMeta() {
+function modernMeta(clientCapabilities = { elicitation: {} }) {
   return {
     "io.modelcontextprotocol/protocolVersion": MODERN,
-    "io.modelcontextprotocol/clientCapabilities": {},
+    "io.modelcontextprotocol/clientCapabilities": clientCapabilities,
   };
 }
 
@@ -103,6 +103,15 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
       assert.equal(input.authContext.clientId, "client-1");
       assert.deepEqual(input.authContext.scopes, ["mcp:tools"]);
 
+      if (!input.clientCapabilities?.elicitation) {
+        return {
+          status: "missing_client_capability",
+          requiredCapabilities: { elicitation: { form: {} } },
+          audit: { reason_code: "mrtr_form_elicitation_capability_missing" },
+        };
+      }
+      assert.deepEqual(input.clientCapabilities, { elicitation: {} });
+
       if (input.requestState === "deny-state") {
         return {
           status: "denied",
@@ -156,6 +165,20 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
     audit,
   });
 
+  const missingCapability = await handlers.handleRpcMessage(toolMessage(0, {
+    _meta: modernMeta({}),
+  }), requestContext("req-mrtr-missing-capability"));
+  assert.equal(missingCapability.result, undefined);
+  assert.equal(missingCapability.error?.code, -32021);
+  assert.deepEqual(missingCapability.error?.data?.requiredCapabilities, {
+    elicitation: { form: {} },
+  });
+  assert.equal(executions, 0, "capability rejection must not execute the tool");
+  assert.equal(
+    audit.some((entry) => entry.event === "tool_call_start" && entry.request_id === "req-mrtr-missing-capability"),
+    false,
+  );
+
   const first = await handlers.handleRpcMessage(toolMessage(1), requestContext("req-mrtr-first"));
   assert.equal(first.error, undefined);
   assert.equal(first.result.resultType, "input_required");
@@ -173,7 +196,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
   assert.equal(retry.result.resultType, "complete");
   assert.equal(executions, 1, "accepted MRTR retry reaches existing execution exactly once");
   assert.equal(audit.some((entry) => entry.event === "tool_call_start" && entry.request_id === "req-mrtr-retry"), true);
-  assert.equal(mrtrCalls.length, 2);
+  assert.equal(mrtrCalls.length, 3);
 
   const beforeInvalid = mrtrCalls.length;
   const invalid = await handlers.handleRpcMessage({

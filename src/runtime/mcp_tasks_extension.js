@@ -5,7 +5,7 @@ const { applyOutputTrustMetadata, toolResult } = require("./tool_result");
 const { evaluateToolOutputPolicy } = require("./output_dlp_boundary");
 const { RUN_PROCESS_OUTPUT_SCHEMA } = require("../schemas/process_tools");
 const { isModernProtocolVersion } = require("./protocol_version_policy");
-const { TASKS_EXTENSION_ID } = require("./protocol_capability_registry");
+const { MISSING_REQUIRED_CLIENT_CAPABILITY, TASKS_EXTENSION_ID } = require("./protocol_capability_registry");
 const { resolveProcessJobManager } = require("../util/process_job_manager");
 const { resolveProcessJobOwner } = require("../util/process_job_owner");
 const { createChildTraceContext, traceAuditFields } = require("./trace_context");
@@ -16,7 +16,6 @@ const TASK_POLL_INTERVAL_MS = 1000;
 const TASK_TTL_MS = 0;
 const TASK_OUTPUT_READ_CHARS = 65536;
 const TASK_INLINE_OUTPUT_CHARS = 32768;
-const MISSING_REQUIRED_CLIENT_CAPABILITY = -32003;
 const PROCESS_ARGS_REDACTED_META_KEY = "mcp-tests/processArgsRedacted";
 const PROCESS_TASK_BACKED_META_KEY = "mcp-tests/taskBackedProcess";
 

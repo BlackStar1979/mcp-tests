@@ -14,6 +14,7 @@ const { buildDecisionRuntimeContext } = require("./decision_runtime_context_buil
 const { evaluateDecisionRuntimePolicy } = require("./decision_runtime_policy");
 const { buildDecisionRuntimeReceipt } = require("./decision_runtime_receipt");
 const { buildCoreToolDescriptors } = require("./core_tool_descriptors");
+const { MISSING_REQUIRED_CLIENT_CAPABILITY } = require("./protocol_capability_registry");
 const { validateToolInput } = require("./tool_input_validator");
 const { buildToolInputValidationResult } = require("./tool_input_validation_result");
 const { decide: decideRuntimePolicyGate } = require("./policy_enforcement_gate");
@@ -144,6 +145,7 @@ async function handleToolsCall({
       args,
       authContext: decisionContext.context?.auth_context || {},
       requirement: decision.mrtr_requirement || null,
+      clientCapabilities: context.requestMetadata?.clientCapabilities || {},
       requestState: params.requestState,
       inputResponses: params.inputResponses,
     });
@@ -160,6 +162,16 @@ async function handleToolsCall({
       expires_at: Number.isFinite(mrtrAudit.expires_at) ? mrtrAudit.expires_at : undefined,
     };
 
+    if (mrtr?.status === "missing_client_capability") {
+      auditLog("tool_call_mrtr_denied", {
+        ...safeMrtrAudit,
+        decision_code: "missing_required_client_capability",
+        reason_code: String(safeMrtrAudit.reason_code || "mrtr_form_elicitation_capability_missing"),
+      });
+      return rpcError(id, MISSING_REQUIRED_CLIENT_CAPABILITY, "Missing required client capability", {
+        requiredCapabilities: mrtr.requiredCapabilities,
+      });
+    }
     if (mrtr?.status === "input_required") {
       auditLog("tool_call_mrtr_input_required", safeMrtrAudit);
       return rpcResult(id, mrtr.result);

@@ -7,7 +7,11 @@ const {
   normalizeScopes,
   summarizeRecord,
 } = require("./state_handle_prototype");
-const { MODERN_PROTOCOL_VERSION } = require("./protocol_capability_registry");
+const {
+  FORM_ELICITATION_REQUIRED_CAPABILITIES,
+  MODERN_PROTOCOL_VERSION,
+  clientSupportsFormElicitation,
+} = require("./protocol_capability_registry");
 
 const MRTR_STATE_KIND = "mrtr_tools_call_v1";
 const DEFAULT_MRTR_TTL_MS = 120000;
@@ -170,6 +174,7 @@ function createMrtrExtension({
     args = {},
     authContext = {},
     requirement,
+    clientCapabilities = {},
     requestState,
     inputResponses,
   } = {}) {
@@ -194,6 +199,13 @@ function createMrtrExtension({
     if (!statePresent) {
       const requests = validateInputRequests(requirement.inputRequests);
       if (!requests.ok) return denied("mrtr_requirement_invalid", requests.reason);
+      if (!clientSupportsFormElicitation(clientCapabilities)) {
+        return {
+          status: "missing_client_capability",
+          requiredCapabilities: cloneJson(FORM_ELICITATION_REQUIRED_CAPABILITIES),
+          audit: { reason_code: "mrtr_form_elicitation_capability_missing" },
+        };
+      }
       const created = stateStore.create({
         kind: MRTR_STATE_KIND,
         ttlMs: boundedTtlMs,

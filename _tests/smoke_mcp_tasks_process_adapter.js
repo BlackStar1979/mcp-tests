@@ -259,7 +259,7 @@ function dispatchArgs(context, prelude) {
     ...taskContext,
     requestMetadata: { protocolVersion: "2026-07-28", clientCapabilities: {} },
   }, { id: 8, method: "tasks/get", params: { taskId: "job-task-1" } }));
-  assert.equal(missingCapability.error.code, -32003);
+  assert.equal(missingCapability.error.code, -32021);
 
   const legacyProtocol = await dispatchRpcMessage(dispatchArgs({ ...taskContext, protocolVersion: "2025-06-18" }, {
     id: 9,

@@ -1,6 +1,7 @@
 "use strict";
 
 const { rpcError } = require("./rpc_responses");
+const { MISSING_REQUIRED_CLIENT_CAPABILITY } = require("./protocol_capability_registry");
 const { resolveTraceContext } = require("./trace_context");
 
 const PROTOCOL_VERSION_HEADER = "mcp-protocol-version";
@@ -12,7 +13,6 @@ const CLIENT_CAPABILITIES_META_KEY = "io.modelcontextprotocol/clientCapabilities
 const SERVER_INFO_META_KEY = "io.modelcontextprotocol/serverInfo";
 const SUPPORTED_PER_REQUEST_PROTOCOL_VERSIONS = Object.freeze(["2026-07-28", "2025-06-18"]);
 const HEADER_MISMATCH = -32020;
-const MISSING_REQUIRED_CLIENT_CAPABILITY = -32021;
 const UNSUPPORTED_PROTOCOL_VERSION = -32022;
 
 function normalizeHeaderValue(value) {

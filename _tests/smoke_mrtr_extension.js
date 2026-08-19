@@ -73,6 +73,7 @@ function firstRound(mrtr, overrides = {}) {
     args: argsA(),
     authContext: auth(),
     requirement: requirement(),
+    clientCapabilities: { elicitation: {} },
     ...overrides,
   });
 }
@@ -85,6 +86,26 @@ function firstRound(mrtr, overrides = {}) {
   assert.deepEqual(mrtr.evaluate({ protocolVersion: LEGACY, toolName: "search", args: {}, authContext: auth() }), {
     status: "not_required",
   });
+})();
+
+(function formElicitationRequiresPerRequestCapability() {
+  const requiredCapabilities = { elicitation: { form: {} } };
+  const cases = [
+    { label: "none", capabilities: {}, expected: "missing_client_capability" },
+    { label: "implicit_form", capabilities: { elicitation: {} }, expected: "input_required" },
+    { label: "explicit_form", capabilities: { elicitation: { form: {} } }, expected: "input_required" },
+    { label: "url_only", capabilities: { elicitation: { url: {} } }, expected: "missing_client_capability" },
+  ];
+
+  for (const testCase of cases) {
+    const mrtr = createMrtrExtension();
+    const result = firstRound(mrtr, { clientCapabilities: testCase.capabilities });
+    assert.equal(result.status, testCase.expected, testCase.label);
+    if (testCase.expected === "missing_client_capability") {
+      assert.deepEqual(result.requiredCapabilities, requiredCapabilities, testCase.label);
+      assert.equal(mrtr.size(), 0, `${testCase.label} must not create MRTR state`);
+    }
+  }
 })();
 
 (function modernInitialRoundIsBoundedAndOpaque() {

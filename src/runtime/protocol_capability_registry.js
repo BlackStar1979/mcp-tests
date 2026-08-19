@@ -9,6 +9,26 @@ const SUPPORTED_LEGACY_PROTOCOL_VERSIONS = Object.freeze([
   LEGACY_PROTOCOL_VERSION,
 ]);
 const TASKS_EXTENSION_ID = "io.modelcontextprotocol/tasks";
+const MISSING_REQUIRED_CLIENT_CAPABILITY = -32021;
+const FORM_ELICITATION_REQUIRED_CAPABILITIES = Object.freeze({
+  elicitation: Object.freeze({
+    form: Object.freeze({}),
+  }),
+});
+
+function isPlainObject(value) {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return false;
+  const proto = Object.getPrototypeOf(value);
+  return proto === Object.prototype || proto === null;
+}
+
+function clientSupportsFormElicitation(clientCapabilities) {
+  if (!isPlainObject(clientCapabilities)) return false;
+  const elicitation = clientCapabilities.elicitation;
+  if (!isPlainObject(elicitation)) return false;
+  if (isPlainObject(elicitation.form)) return true;
+  return !Object.hasOwn(elicitation, "url");
+}
 
 const MODERN_MODULES = Object.freeze({
   transport: "streamable_http_stateless",
@@ -74,11 +94,14 @@ function extensionsForProtocolVersion(version) {
 module.exports = {
   ADAPTERS,
   CURRENT_LEGACY_PROTOCOL_VERSION,
+  FORM_ELICITATION_REQUIRED_CAPABILITIES,
   LEGACY_PROTOCOL_VERSION,
+  MISSING_REQUIRED_CLIENT_CAPABILITY,
   MODERN_PROTOCOL_VERSION,
   SUPPORTED_LEGACY_PROTOCOL_VERSIONS,
   SUPPORTED_PROTOCOL_VERSIONS,
   TASKS_EXTENSION_ID,
   adapterForProtocolVersion,
+  clientSupportsFormElicitation,
   extensionsForProtocolVersion,
 };
