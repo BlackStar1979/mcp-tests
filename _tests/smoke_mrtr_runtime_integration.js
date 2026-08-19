@@ -99,7 +99,8 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
       });
       assert.equal(input.toolName, "run_process");
       assert.equal(input.protocolVersion, MODERN);
-      assert.equal(input.requirement, null, "consent policy must still be dormant in this package");
+      assert.equal(input.requirement?.kind, "human_consent_v1");
+      assert.equal(input.requirement?.consent?.response_key, "human_approval");
       assert.equal(input.authContext.clientId, "client-1");
       assert.deepEqual(input.authContext.scopes, ["mcp:tools"]);
 
@@ -123,7 +124,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
       if (input.requestState !== undefined) {
         assert.equal(input.requestState, OPAQUE_STATE);
         assert.deepEqual(input.inputResponses, {
-          approval: { action: "accept", content: { confirmed: true } },
+          human_approval: { action: "accept", content: { confirmed: true } },
         });
         return {
           status: "retry_ready",
@@ -135,20 +136,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
         status: "input_required",
         result: {
           resultType: "input_required",
-          inputRequests: {
-            approval: {
-              method: "elicitation/create",
-              params: {
-                mode: "form",
-                message: "Approve test mutation",
-                requestedSchema: {
-                  type: "object",
-                  properties: { confirmed: { type: "boolean" } },
-                  required: ["confirmed"],
-                },
-              },
-            },
-          },
+          inputRequests: input.requirement.inputRequests,
           requestState: OPAQUE_STATE,
         },
         audit: { reason_code: "mrtr_input_required", state_handle_sha256: "hash-issued" },
@@ -189,7 +177,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
   const retry = await handlers.handleRpcMessage(toolMessage(2, {
     requestState: OPAQUE_STATE,
     inputResponses: {
-      approval: { action: "accept", content: { confirmed: true } },
+      human_approval: { action: "accept", content: { confirmed: true } },
     },
   }), requestContext("req-mrtr-retry"));
   assert.equal(retry.error, undefined);
@@ -212,7 +200,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
 
   const denied = await handlers.handleRpcMessage(toolMessage(4, {
     requestState: "deny-state",
-    inputResponses: { approval: { action: "accept", content: { confirmed: true } } },
+    inputResponses: { human_approval: { action: "accept", content: { confirmed: true } } },
   }), requestContext("req-mrtr-denied"));
   assert.equal(denied.result, undefined);
   assert.equal(denied.error?.data?.decision_code, "mrtr_state_invalid");
@@ -225,10 +213,14 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
     onExecute() { dormantExecutions += 1; },
     audit: dormantAudit,
   });
-  const dormant = await dormantHandlers.handleRpcMessage(toolMessage(10), requestContext("req-mrtr-dormant"));
-  assert.equal(dormant.error, undefined);
-  assert.equal(dormant.result.resultType, "complete");
-  assert.equal(dormantExecutions, 1, "production MRTR module is dormant until policy supplies a requirement");
+  const productionComposition = await dormantHandlers.handleRpcMessage(toolMessage(10), requestContext("req-mrtr-production-composition"));
+  assert.equal(productionComposition.error, undefined);
+  assert.equal(productionComposition.result.resultType, "input_required");
+  assert.equal(dormantExecutions, 0, "production MRTR composition must gate a consent-classified process call before execution");
+  assert.equal(
+    dormantAudit.some((entry) => entry.event === "tool_call_start" && entry.request_id === "req-mrtr-production-composition"),
+    false,
+  );
 
   const serializedAudit = JSON.stringify(audit);
   assert.equal(serializedAudit.includes(OPAQUE_STATE), false, "audit must not contain raw requestState");

@@ -197,6 +197,7 @@
   "_tests/smoke_mcp_apps_risk_policy.js",
   "_tests/smoke_network.js",
   "_tests/smoke_decision_runtime_shim_implementation.js",
+  "_tests/smoke_human_consent_policy.js",
   "_tests/smoke_raw_rpc_unknown_tool.js",
   "_tests/smoke_decision_runtime_audit_receipt.js",
   "_tests/smoke_decision_runtime_p1_coverage.js",

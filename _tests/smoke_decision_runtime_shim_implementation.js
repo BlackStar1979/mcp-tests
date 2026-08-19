@@ -23,7 +23,13 @@ const optionalTool = {
   summarizeArgs: () => ({ arg_summary_status: "ok", arg_key_count: 1 }),
   resultStats: () => ({ result_count: 1, result_chars: 20 }),
 };
-function getOptionalTool(name) { return name === "demo_optional" ? optionalTool : null; }
+function getOptionalTool(name) {
+  if (name === "demo_optional") return optionalTool;
+  if (["run_process", "process_start", "process_cancel", "process_status", "write_file"].includes(name)) {
+    return { execute: async () => ({ ok: true }) };
+  }
+  return null;
+}
 
 const ctx = buildDecisionRuntimeContext({
   toolName: "search",
@@ -43,6 +49,48 @@ const receipt = buildDecisionRuntimeReceipt({ decision: allowDecision, context: 
 assert.equal(receipt.version, "decision-runtime-receipt-v1");
 assert.equal(receipt.decision_code, "allow");
 assert.equal(JSON.stringify(receipt).includes("REDACT_ME_VALUE"), false);
+
+for (const toolName of ["run_process", "process_start", "process_cancel"]) {
+  const processContext = buildDecisionRuntimeContext({
+    toolName,
+    args: {},
+    authMode: "oauth21",
+    profile: "internal",
+    getOptionalTool,
+    requestMeta: { requestId: `req-${toolName}` },
+    authResult: { subject: "operator-1", clientId: "client-1", scopes: ["mcp:tools"] },
+  });
+  const processDecision = evaluateDecisionRuntimePolicy({ decisionContext: processContext });
+  assert.equal(processDecision.allow, true, toolName);
+  assert.deepEqual(processDecision.decision_meta.reason_codes, ["human_consent_required"], toolName);
+  assert.equal(processDecision.decision_meta.policy, "decision-runtime-policy-v3", toolName);
+  assert.equal(processDecision.mrtr_requirement?.kind, "human_consent_v1", toolName);
+}
+
+const readOnlyProcessContext = buildDecisionRuntimeContext({
+  toolName: "process_status",
+  args: {},
+  authMode: "oauth21",
+  profile: "internal",
+  getOptionalTool,
+  authResult: { subject: "operator-1", clientId: "client-1", scopes: ["mcp:tools"] },
+});
+const readOnlyProcessDecision = evaluateDecisionRuntimePolicy({ decisionContext: readOnlyProcessContext });
+assert.equal(readOnlyProcessDecision.allow, true);
+assert.deepEqual(readOnlyProcessDecision.decision_meta.reason_codes, ["explicit_policy_allow"]);
+assert.equal(readOnlyProcessDecision.mrtr_requirement, undefined);
+
+const otherDestructiveContext = buildDecisionRuntimeContext({
+  toolName: "write_file",
+  args: {},
+  authMode: "oauth21",
+  profile: "internal",
+  getOptionalTool,
+  authResult: { subject: "operator-1", clientId: "client-1", scopes: ["mcp:tools"] },
+});
+const otherDestructiveDecision = evaluateDecisionRuntimePolicy({ decisionContext: otherDestructiveContext });
+assert.equal(otherDestructiveDecision.allow, false);
+assert.equal(otherDestructiveDecision.deny_code, "destructive_tool_denied");
 
 const malformed = buildDecisionRuntimeContext({ toolName: "", authMode: "bearer", profile: "internal" });
 assert.equal(malformed.ok, false);

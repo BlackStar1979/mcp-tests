@@ -1,9 +1,8 @@
 "use strict";
 
 const { PUBLIC_TOOL_NAMES, getToolPolicy } = require("../tool_policy");
+const { resolveConsentRequirement } = require("./consent_runtime_policy");
 const { getDefaultDestructiveToolConfirmationManager } = require("./destructive_tool_confirmation");
-
-const GUARDED_PROCESS_TOOLS = new Set(["run_process", "process_start", "process_cancel"]);
 
 function buildJsonRpcError(code, message) {
   return {
@@ -108,20 +107,30 @@ function evaluateDecisionRuntimePolicy({
     }
   }
 
-  if (toolPolicy.destructive === true) {
-    if (GUARDED_PROCESS_TOOLS.has(toolName)) {
-      return {
-        allow: true,
-        deny_code: null,
-        http_status: 200,
-        json_rpc_error: null,
-        response_data: {},
-        decision_meta: {
-          policy: "decision-runtime-policy-v2",
-          reason_codes: ["guarded_process_execution"],
-        },
-      };
+  const consent = resolveConsentRequirement({ toolName, toolPolicy });
+  if (consent.required === true) {
+    if (consent.ok !== true || !consent.requirement) {
+      return denyDecision({
+        code: "consent_requirement_invalid",
+        message: `Consent requirement for ${toolName} is invalid`,
+        reasons: [String(consent.reason || "consent_requirement_invalid")],
+      });
     }
+    return {
+      allow: true,
+      deny_code: null,
+      http_status: 200,
+      json_rpc_error: null,
+      response_data: {},
+      mrtr_requirement: consent.requirement,
+      decision_meta: {
+        policy: "decision-runtime-policy-v3",
+        reason_codes: ["human_consent_required"],
+      },
+    };
+  }
+
+  if (toolPolicy.destructive === true) {
     if (toolName !== "cbm_delete_project") {
       return denyDecision({ code: "destructive_tool_denied", message: `Tool ${toolName} is destructive` });
     }
