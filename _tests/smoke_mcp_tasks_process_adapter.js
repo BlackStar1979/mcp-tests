@@ -12,8 +12,19 @@ const { TASKS_EXTENSION_ID } = require("../src/runtime/mcp_tasks_extension");
 const { validateModernHttpHeaders } = require("../src/runtime/request_metadata_policy");
 const { createProcessJobManager } = require("../src/util/process_job_manager");
 const { PROCESS_RUNNER_CONFIG } = require("../src/util/process_runner_config");
+const { createMrtrExtension } = require("../src/runtime/mrtr_extension");
 
-const taskCaps = { extensions: { [TASKS_EXTENSION_ID]: {} } };
+const taskCaps = { elicitation: {}, extensions: { [TASKS_EXTENSION_ID]: {} } };
+
+function acceptedConsentParams(params, initial) {
+  return {
+    ...params,
+    requestState: initial.result.requestState,
+    inputResponses: {
+      human_approval: { action: "accept", content: { confirmed: true } },
+    },
+  };
+}
 
 function status(overrides = {}) {
   return {
@@ -102,6 +113,7 @@ function dispatchArgs(context, prelude) {
   let syncRunExecutions = 0;
   let processStartExecutions = 0;
   let durableStarts = 0;
+  const mrtrExtension = createMrtrExtension();
 
   const manager = {
     start(args, owner) {
@@ -166,11 +178,10 @@ function dispatchArgs(context, prelude) {
   const getOptionalTool = (name) => name === "run_process"
     ? fakeRunProcessTool
     : name === "process_start" ? fakeProcessStartTool : null;
-
-  const taskStart = await handleToolsCall({
-    id: 1,
-    params: { name: "run_process", arguments: { command: "node", args: [], timeout_ms: 5000 } },
-    context: taskContext,
+  const callProcessTool = ({ id, name, arguments: args, context = taskContext, extraParams = {} }) => handleToolsCall({
+    id,
+    params: { name, arguments: args, ...extraParams },
+    context,
     outputMode: "structured",
     documentRuntimeContext: () => ({ docs: [] }),
     auditLog() {},
@@ -178,56 +189,92 @@ function dispatchArgs(context, prelude) {
     profile: "internal",
     getOptionalTool,
     rateLimiter: null,
+    mrtrExtension,
+  });
+
+  const taskArgs = { command: "node", args: [], timeout_ms: 5000 };
+  const taskConsent = await callProcessTool({ id: 1, name: "run_process", arguments: taskArgs });
+  assert.equal(taskConsent.result.resultType, "input_required");
+  assert.equal(syncRunExecutions, 0);
+  assert.equal(durableStarts, 0, "consent prompt must precede durable Task creation");
+
+  const taskStart = await callProcessTool({
+    id: 11,
+    name: "run_process",
+    arguments: taskArgs,
+    extraParams: acceptedConsentParams({}, taskConsent),
   });
   assert.equal(taskStart.result.resultType, "task");
   assert.equal(taskStart.result.taskId, "job-task-1");
   assert.equal(syncRunExecutions, 0);
   assert.equal(durableStarts, 1);
 
-  const customAsync = await handleToolsCall({
-    id: 2,
-    params: { name: "process_start", arguments: { command: "node", timeout_ms: 5000 } },
-    context: taskContext,
-    outputMode: "structured",
-    documentRuntimeContext: () => ({ docs: [] }),
-    auditLog() {},
-    authMode: "oauth21",
-    profile: "internal",
-    getOptionalTool,
-    rateLimiter: null,
+  const asyncArgs = { command: "node", timeout_ms: 5000 };
+  const customAsyncConsent = await callProcessTool({ id: 2, name: "process_start", arguments: asyncArgs });
+  assert.equal(customAsyncConsent.result.resultType, "input_required");
+  assert.equal(processStartExecutions, 0, "consent prompt must precede process_start execution");
+
+  const customAsync = await callProcessTool({
+    id: 21,
+    name: "process_start",
+    arguments: asyncArgs,
+    extraParams: acceptedConsentParams({}, customAsyncConsent),
   });
   assert.equal(customAsync.result.resultType, undefined);
   assert.equal(customAsync.result.structuredContent.job_id, "job-task-1");
   assert.equal(processStartExecutions, 1);
 
-  const legacyRun = await handleToolsCall({
+  const missingElicitation = await callProcessTool({
     id: 3,
-    params: { name: "run_process", arguments: { command: "node", timeout_ms: 5000 } },
+    name: "run_process",
+    arguments: { command: "node", timeout_ms: 5000 },
     context: { ...taskContext, requestMetadata: { protocolVersion: "2026-07-28", clientCapabilities: {} } },
-    outputMode: "structured",
-    documentRuntimeContext: () => ({ docs: [] }),
-    auditLog() {},
-    authMode: "oauth21",
-    profile: "internal",
-    getOptionalTool,
-    rateLimiter: null,
   });
-  assert.equal(legacyRun.result.resultType, undefined);
+  assert.equal(missingElicitation.error.code, -32021);
+  assert.equal(syncRunExecutions, 0);
+
+  const plainContext = {
+    ...taskContext,
+    requestMetadata: { protocolVersion: "2026-07-28", clientCapabilities: { elicitation: {} } },
+  };
+  const plainArgs = { command: "node", timeout_ms: 5000 };
+  const plainConsent = await callProcessTool({ id: 30, name: "run_process", arguments: plainArgs, context: plainContext });
+  assert.equal(plainConsent.result.resultType, "input_required");
+  assert.equal(syncRunExecutions, 0);
+  const plainRun = await callProcessTool({
+    id: 31,
+    name: "run_process",
+    arguments: plainArgs,
+    context: plainContext,
+    extraParams: acceptedConsentParams({}, plainConsent),
+  });
+  assert.equal(plainRun.result.resultType, undefined);
   assert.equal(syncRunExecutions, 1);
 
+  const legacyProcess = await callProcessTool({
+    id: 32,
+    name: "run_process",
+    arguments: plainArgs,
+    context: {
+      ...plainContext,
+      protocolVersion: "2025-06-18",
+      requestMetadata: { protocolVersion: "2025-06-18", clientCapabilities: { elicitation: {} } },
+    },
+  });
+  assert.equal(legacyProcess.error.code, -32602);
+  assert.equal(legacyProcess.error.data.decision_code, "mrtr_protocol_error");
+  assert.equal(syncRunExecutions, 1, "legacy high-risk process call must fail closed before execution");
+
   // The ad-hoc legacy trace_id cannot yet be reconstructed after restart. Until
-  // P1 W3C Trace Context lands, such calls stay on the ordinary synchronous path.
-  const tracedRun = await handleToolsCall({
-    id: 31,
-    params: { name: "run_process", arguments: { command: "node", timeout_ms: 5000, trace_id: "legacy-trace" } },
-    context: taskContext,
-    outputMode: "structured",
-    documentRuntimeContext: () => ({ docs: [] }),
-    auditLog() {},
-    authMode: "oauth21",
-    profile: "internal",
-    getOptionalTool,
-    rateLimiter: null,
+  // P1 W3C Trace Context lands, such calls stay on the ordinary synchronous path after consent.
+  const tracedArgs = { command: "node", timeout_ms: 5000, trace_id: "legacy-trace" };
+  const tracedConsent = await callProcessTool({ id: 33, name: "run_process", arguments: tracedArgs });
+  assert.equal(tracedConsent.result.resultType, "input_required");
+  const tracedRun = await callProcessTool({
+    id: 34,
+    name: "run_process",
+    arguments: tracedArgs,
+    extraParams: acceptedConsentParams({}, tracedConsent),
   });
   assert.equal(tracedRun.result.resultType, undefined);
   assert.equal(tracedRun.result.structuredContent.trace_id, "legacy-trace");
@@ -323,9 +370,10 @@ function dispatchArgs(context, prelude) {
       requestId: "req-task-restart-one",
       processJobManager: firstManager,
     };
-    const actualTask = await handleToolsCall({
+    const actualArgs = { command: "node", args: ["--version"], cwd: "mcp-tests", timeout_ms: 5000 };
+    const actualConsent = await handleToolsCall({
       id: 16,
-      params: { name: "run_process", arguments: { command: "node", args: ["--version"], cwd: "mcp-tests", timeout_ms: 5000 } },
+      params: { name: "run_process", arguments: actualArgs },
       context: firstContext,
       outputMode: "structured",
       documentRuntimeContext: () => ({ docs: [] }),
@@ -334,6 +382,21 @@ function dispatchArgs(context, prelude) {
       profile: "internal",
       getOptionalTool(name) { return name === "run_process" ? runProcessTool : null; },
       rateLimiter: null,
+      mrtrExtension,
+    });
+    assert.equal(actualConsent.result.resultType, "input_required");
+    const actualTask = await handleToolsCall({
+      id: 160,
+      params: acceptedConsentParams({ name: "run_process", arguments: actualArgs }, actualConsent),
+      context: firstContext,
+      outputMode: "structured",
+      documentRuntimeContext: () => ({ docs: [] }),
+      auditLog() {},
+      authMode: "oauth21",
+      profile: "internal",
+      getOptionalTool(name) { return name === "run_process" ? runProcessTool : null; },
+      rateLimiter: null,
+      mrtrExtension,
     });
     assert.equal(actualTask.result.resultType, "task");
     assert.match(actualTask.result.taskId, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i);

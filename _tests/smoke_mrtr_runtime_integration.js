@@ -5,6 +5,7 @@ const { createMcpRuntimeHandlers } = require("../src/runtime/mcp_runtime_handler
 
 const MODERN = "2026-07-28";
 const OPAQUE_STATE = "mrtr_test_state_012345678901234567890123456789";
+const RESPONSE_CANARY = "consent-response-canary-must-not-enter-audit";
 const STATE_SHA256 = "a".repeat(64);
 const REQUIREMENT_SHA256 = "b".repeat(64);
 
@@ -214,7 +215,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
 
   const deniedSemanticCases = [
     ["false", { action: "accept", content: { confirmed: false } }, "consent_not_confirmed"],
-    ["decline", { action: "decline" }, "consent_declined"],
+    ["decline", { action: "decline", content: { note: RESPONSE_CANARY } }, "consent_declined"],
     ["cancel", { action: "cancel" }, "consent_cancelled"],
   ];
   for (const [label, response, reason] of deniedSemanticCases) {
@@ -268,11 +269,27 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
     false,
   );
 
+  const legacySearchContext = {
+    ...requestContext("req-legacy-readonly"),
+    protocolVersion: "2025-06-18",
+    protocolVersionHeader: "2025-06-18",
+    requestHeaders: { "mcp-method": "tools/call", "mcp-name": "search" },
+  };
+  const legacySearch = await dormantHandlers.handleRpcMessage({
+    jsonrpc: "2.0",
+    id: 11,
+    method: "tools/call",
+    params: { name: "search", arguments: { query: "nothing" } },
+  }, legacySearchContext);
+  assert.equal(legacySearch.error, undefined, "legacy unrelated read-only call remains unchanged");
+  assert.deepEqual(legacySearch.result.structuredContent.results, []);
+
   const serializedAudit = JSON.stringify(audit);
   assert.equal(serializedAudit.includes(OPAQUE_STATE), false, "audit must not contain raw requestState");
   assert.equal(serializedAudit.includes("inputResponses"), false, "audit must not contain inputResponses field");
   assert.equal(serializedAudit.includes("human_approval"), false, "audit must not contain consent response key");
   assert.equal(serializedAudit.includes("\"confirmed\":true"), false, "audit must not contain accepted consent content");
+  assert.equal(serializedAudit.includes(RESPONSE_CANARY), false, "audit must not contain declined consent content canary");
 
   console.log("smoke_mrtr_runtime_integration ok");
 })().catch((error) => {

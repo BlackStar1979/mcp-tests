@@ -202,6 +202,21 @@ function firstRound(mrtr, overrides = {}) {
       mutate(call) { call.authContext = auth({ subject: "operator-2" }); },
       reason: "state_handle_unauthorized",
     },
+    {
+      label: "client",
+      mutate(call) { call.authContext = auth({ clientId: "client-2" }); },
+      reason: "state_handle_unauthorized",
+    },
+    {
+      label: "audience",
+      mutate(call) { call.authContext = auth({ audience: "other-audience" }); },
+      reason: "state_handle_unauthorized",
+    },
+    {
+      label: "profile",
+      mutate(call) { call.authContext = auth({ profile: "operator" }); },
+      reason: "state_handle_unauthorized",
+    },
   ];
 
   for (const testCase of cases) {
@@ -225,8 +240,8 @@ function firstRound(mrtr, overrides = {}) {
       requestState: first.result.requestState,
       inputResponses: acceptedResponse(),
     });
-    if (testCase.label === "owner") {
-      assert.equal(legitimateRetry.status, "retry_ready", "cross-owner attempt must not revoke another owner's state");
+    if (["owner", "client", "audience", "profile"].includes(testCase.label)) {
+      assert.equal(legitimateRetry.status, "retry_ready", "cross-identity attempt must not revoke another owner's state");
     } else {
       assert.equal(legitimateRetry.status, "denied", `${testCase.label} mismatch must consume the state`);
       assert.equal(legitimateRetry.reason, "state_handle_revoked", testCase.label);
