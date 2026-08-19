@@ -65,6 +65,42 @@ const unknownOptionJson = JSON.parse(unknownOption.stderr);
 assert.equal(unknownOptionJson.error_code, "cli_argument_unknown");
 assert.equal(unknownOptionJson.argument, "surprise");
 
+const sharedProbeHelpers = require("../_workflow/scripts/sessionless_live_authenticated_probe");
+assert.equal(typeof sharedProbeHelpers.jsonFetch, "function");
+assert.equal(typeof sharedProbeHelpers.resolveOAuth21SecretFile, "function");
+assert.equal(typeof sharedProbeHelpers.issueBearer, "function");
+
+const consentProbePath = path.join(ROOT, "_workflow", "scripts", "pol_1a_consent_live_probe.js");
+assert.ok(fs.existsSync(consentProbePath));
+const consentProbe = read("_workflow/scripts/pol_1a_consent_live_probe.js");
+assert.ok(consentProbe.includes('PROTOCOL_VERSION = "2026-07-28"'));
+assert.ok(consentProbe.includes("form_elicitation_capable: true"));
+assert.ok(consentProbe.includes("missing_form_capability_minus_32021_without_execution"));
+assert.ok(consentProbe.includes("exact_accept_executes_once"));
+assert.ok(consentProbe.includes("replay_rejected"));
+assert.ok(consentProbe.includes("audit_has_no_raw_state_responses_arguments_or_private_binding_digests"));
+assert.equal(consentProbe.includes("MCP_TEST_OAUTH_OPERATOR_SECRET"), false);
+
+const consentSelfResult = path.join(ROOT, "_control", "pol-1a-consent-live-probe-smoke-selftest.json");
+try {
+  const consentSelf = spawnSync(process.execPath, [
+    consentProbePath,
+    "--self-test",
+    `--result-file=${consentSelfResult}`,
+  ], { cwd: ROOT, encoding: "utf8" });
+  assert.equal(consentSelf.status, 0, consentSelf.stderr || consentSelf.stdout);
+  const consentSelfJson = JSON.parse(consentSelf.stdout);
+  assert.equal(consentSelfJson.ok, true);
+  assert.equal(consentSelfJson.network, false);
+  assert.equal(consentSelfJson.protocol_version, "2026-07-28");
+  assert.equal(consentSelfJson.form_elicitation_capable, true);
+  assert.equal(consentSelfJson.fresh_oauth_client, true);
+  assert.equal(consentSelfJson.reads_durable_oauth_state, false);
+  assert.deepEqual(JSON.parse(fs.readFileSync(consentSelfResult, "utf8")), consentSelfJson);
+} finally {
+  fs.rmSync(consentSelfResult, { force: true });
+}
+
 const manifest = JSON.parse(read("_tests/run_all_smoke_scripts.json"));
 assert.ok(manifest.includes("_tests/smoke_sessionless_live_authenticated_probe.js"));
 console.log("smoke_sessionless_live_authenticated_probe ok");

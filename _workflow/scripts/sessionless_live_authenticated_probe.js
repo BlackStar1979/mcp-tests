@@ -380,9 +380,17 @@ async function main() {
   }, null, 2));
 }
 
-main().catch((error) => {
-  if (error instanceof CliArgumentError) {
-    fail(2, error.code, { error_code: error.code, argument: error.argument });
-  }
-  fail(1, error && error.message ? error.message : "sessionless_live_probe_failed");
-});
+if (require.main === module) {
+  main().catch((error) => {
+    if (error instanceof CliArgumentError) {
+      fail(2, error.code, { error_code: error.code, argument: error.argument });
+    }
+    fail(1, error && error.message ? error.message : "sessionless_live_probe_failed");
+  });
+}
+
+module.exports = {
+  jsonFetch,
+  resolveOAuth21SecretFile,
+  issueBearer,
+};
