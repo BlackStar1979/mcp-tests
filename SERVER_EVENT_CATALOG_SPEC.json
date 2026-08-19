@@ -96,6 +96,16 @@
       "privacy_boundary": "tool name, protocol version, safe digests, input-request count, and duration only; raw requestState, inputResponses, arguments, auth identifiers, and secrets prohibited"
     },
     {
+      "name": "tool_call_consent_accepted",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, protocol version, consent outcome/classification, safe MRTR state and requirement digests, binding verification, and duration only; raw requestState, inputRequests, inputResponses, elicitation content, arguments, auth identifiers, canonical argument digests, scope digests, and secrets prohibited"
+    },
+    {
+      "name": "tool_call_consent_denied",
+      "status": "active_code_event",
+      "privacy_boundary": "tool name, protocol version, bounded consent decision/reason codes, safe MRTR state and requirement digests, and duration only; raw requestState, inputRequests, inputResponses, elicitation content, arguments, auth identifiers, canonical argument digests, scope digests, and secrets prohibited"
+    },
+    {
       "name": "tool_call_mrtr_denied",
       "status": "active_code_event",
       "privacy_boundary": "tool name, protocol version, bounded MRTR decision/reason codes, safe digests, and duration only; raw requestState, inputResponses, arguments, auth identifiers, and secrets prohibited"

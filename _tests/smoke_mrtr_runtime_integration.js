@@ -5,6 +5,8 @@ const { createMcpRuntimeHandlers } = require("../src/runtime/mcp_runtime_handler
 
 const MODERN = "2026-07-28";
 const OPAQUE_STATE = "mrtr_test_state_012345678901234567890123456789";
+const STATE_SHA256 = "a".repeat(64);
+const REQUIREMENT_SHA256 = "b".repeat(64);
 
 function modernMeta(clientCapabilities = { elicitation: {} }) {
   return {
@@ -123,13 +125,15 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
       }
       if (input.requestState !== undefined) {
         assert.equal(input.requestState, OPAQUE_STATE);
-        assert.deepEqual(input.inputResponses, {
-          human_approval: { action: "accept", content: { confirmed: true } },
-        });
+        assert.deepEqual(Object.keys(input.inputResponses || {}), ["human_approval"]);
         return {
           status: "retry_ready",
           inputResponses: input.inputResponses,
-          audit: { reason_code: "mrtr_retry_accepted", state_handle_sha256: "hash-accepted" },
+          audit: {
+            reason_code: "mrtr_retry_accepted",
+            state_handle_sha256: STATE_SHA256,
+            requirement_sha256: REQUIREMENT_SHA256,
+          },
         };
       }
       return {
@@ -184,7 +188,49 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
   assert.equal(retry.result.resultType, "complete");
   assert.equal(executions, 1, "accepted MRTR retry reaches existing execution exactly once");
   assert.equal(audit.some((entry) => entry.event === "tool_call_start" && entry.request_id === "req-mrtr-retry"), true);
+  const acceptedAuditIndex = audit.findIndex((entry) => entry.event === "tool_call_consent_accepted" && entry.request_id === "req-mrtr-retry");
+  const startAuditIndex = audit.findIndex((entry) => entry.event === "tool_call_start" && entry.request_id === "req-mrtr-retry");
+  assert.ok(acceptedAuditIndex >= 0, "accepted consent audit must exist");
+  assert.ok(acceptedAuditIndex < startAuditIndex, "consent acceptance must be audited before tool execution start");
+  const acceptedAudit = audit[acceptedAuditIndex];
+  assert.deepEqual(acceptedAudit.consent_receipt, {
+    version: "human-consent-receipt-v1",
+    outcome: "accepted",
+    tool_name: "run_process",
+    resource_class: "process_execution_bounded",
+    operation_class: "execute",
+    risk_class: "high",
+    scope_delta: [],
+    external_origin: null,
+    state_handle_sha256: STATE_SHA256,
+    requirement_sha256: REQUIREMENT_SHA256,
+    binding_verified: true,
+  });
+  assert.equal(JSON.stringify(acceptedAudit).includes(OPAQUE_STATE), false);
+  assert.equal(JSON.stringify(acceptedAudit).includes("confirmed"), false);
+  assert.equal(JSON.stringify(acceptedAudit).includes("arguments_sha256"), false);
+  assert.equal(JSON.stringify(acceptedAudit).includes("scope_sha256"), false);
   assert.equal(mrtrCalls.length, 3);
+
+  const deniedSemanticCases = [
+    ["false", { action: "accept", content: { confirmed: false } }, "consent_not_confirmed"],
+    ["decline", { action: "decline" }, "consent_declined"],
+    ["cancel", { action: "cancel" }, "consent_cancelled"],
+  ];
+  for (const [label, response, reason] of deniedSemanticCases) {
+    const beforeExecutions = executions;
+    const deniedConsent = await handlers.handleRpcMessage(toolMessage(`consent-${label}`, {
+      requestState: OPAQUE_STATE,
+      inputResponses: { human_approval: response },
+    }), requestContext(`req-consent-${label}`));
+    assert.equal(deniedConsent.result, undefined, label);
+    assert.equal(deniedConsent.error?.code, -32602, label);
+    assert.equal(deniedConsent.error?.data?.decision_code, "human_consent_denied", label);
+    assert.deepEqual(deniedConsent.error?.data?.reason_codes, [reason], label);
+    assert.equal(executions, beforeExecutions, `${label} must not execute`);
+    assert.equal(audit.some((entry) => entry.event === "tool_call_start" && entry.request_id === `req-consent-${label}`), false, label);
+    assert.equal(audit.some((entry) => entry.event === "tool_call_consent_denied" && entry.request_id === `req-consent-${label}`), true, label);
+  }
 
   const beforeInvalid = mrtrCalls.length;
   const invalid = await handlers.handleRpcMessage({
@@ -224,7 +270,9 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
 
   const serializedAudit = JSON.stringify(audit);
   assert.equal(serializedAudit.includes(OPAQUE_STATE), false, "audit must not contain raw requestState");
-  assert.equal(serializedAudit.includes("confirmed"), false, "audit must not contain inputResponses");
+  assert.equal(serializedAudit.includes("inputResponses"), false, "audit must not contain inputResponses field");
+  assert.equal(serializedAudit.includes("human_approval"), false, "audit must not contain consent response key");
+  assert.equal(serializedAudit.includes("\"confirmed\":true"), false, "audit must not contain accepted consent content");
 
   console.log("smoke_mrtr_runtime_integration ok");
 })().catch((error) => {

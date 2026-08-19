@@ -13,6 +13,7 @@ const { tryStartTaskAugmentedToolCall } = require("./mcp_tasks_extension");
 const { buildDecisionRuntimeContext } = require("./decision_runtime_context_builder");
 const { evaluateDecisionRuntimePolicy } = require("./decision_runtime_policy");
 const { buildDecisionRuntimeReceipt } = require("./decision_runtime_receipt");
+const { verifyConsentResponse } = require("./consent_runtime_policy");
 const { buildCoreToolDescriptors } = require("./core_tool_descriptors");
 const { MISSING_REQUIRED_CLIENT_CAPABILITY } = require("./protocol_capability_registry");
 const { validateToolInput } = require("./tool_input_validator");
@@ -138,6 +139,21 @@ async function handleToolsCall({
     return buildToolInputValidationResult({ id, errors: inputValidation.errors });
   }
 
+  if (decision.mrtr_requirement && (!mrtrExtension || typeof mrtrExtension.evaluate !== "function")) {
+    auditLog("tool_call_mrtr_denied", {
+      request_id: context.requestId,
+      tool: typeof name === "string" ? name : "unknown",
+      protocol_version: String(context.protocolVersion || ""),
+      duration_ms: Date.now() - startedAt,
+      decision_code: "mrtr_extension_required",
+      reason_code: "mrtr_extension_required",
+    });
+    return rpcError(id, -32603, "MRTR extension required for this tool call", {
+      decision_code: "mrtr_extension_required",
+      reason_codes: ["mrtr_extension_required"],
+    });
+  }
+
   if (mrtrExtension && typeof mrtrExtension.evaluate === "function") {
     const mrtr = mrtrExtension.evaluate({
       protocolVersion: context.protocolVersion,
@@ -189,6 +205,46 @@ async function handleToolsCall({
     }
     if (mrtr?.status === "retry_ready") {
       auditLog("tool_call_mrtr_retry_accepted", safeMrtrAudit);
+      const consent = verifyConsentResponse({
+        requirement: decision.mrtr_requirement,
+        inputResponses: mrtr.inputResponses,
+        mrtrAudit,
+      });
+      if (consent.status === "denied") {
+        auditLog("tool_call_consent_denied", {
+          request_id: context.requestId,
+          tool: typeof name === "string" ? name : "unknown",
+          protocol_version: String(context.protocolVersion || ""),
+          duration_ms: Date.now() - startedAt,
+          decision_code: String(consent.code || "human_consent_denied"),
+          reason_code: String(consent.reason || "human_consent_denied"),
+          state_handle_sha256: safeMrtrAudit.state_handle_sha256,
+          requirement_sha256: safeMrtrAudit.requirement_sha256,
+        });
+        return rpcError(id, -32602, "Human consent denied", {
+          decision_code: String(consent.code || "human_consent_denied"),
+          reason_codes: [String(consent.reason || "human_consent_denied")],
+        });
+      }
+      if (consent.status === "accepted") {
+        auditLog("tool_call_consent_accepted", {
+          request_id: context.requestId,
+          tool: typeof name === "string" ? name : "unknown",
+          protocol_version: String(context.protocolVersion || ""),
+          duration_ms: Date.now() - startedAt,
+          consent_receipt: consent.receipt,
+        });
+      }
+    } else if (mrtr?.status === "not_required" && decision.mrtr_requirement) {
+      auditLog("tool_call_mrtr_denied", {
+        ...safeMrtrAudit,
+        decision_code: "mrtr_required_but_not_applied",
+        reason_code: "mrtr_required_but_not_applied",
+      });
+      return rpcError(id, -32603, "MRTR requirement was not applied", {
+        decision_code: "mrtr_required_but_not_applied",
+        reason_codes: ["mrtr_required_but_not_applied"],
+      });
     } else if (mrtr?.status !== "not_required") {
       auditLog("tool_call_mrtr_denied", {
         ...safeMrtrAudit,

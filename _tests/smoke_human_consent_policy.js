@@ -6,6 +6,7 @@ const {
   CONSENT_REQUIREMENT_KIND,
   CONSENT_RESPONSE_KEY,
   resolveConsentRequirement,
+  verifyConsentResponse,
 } = require("../src/runtime/consent_runtime_policy");
 
 function classify(toolName, overrides = {}) {
@@ -77,6 +78,94 @@ function classify(toolName, overrides = {}) {
   assert.equal(result.required, true);
   assert.equal(result.ok, false);
   assert.equal(result.reason, "consent_tool_policy_invalid");
+})();
+
+(function semanticConsentVerifierAcceptsOnlyExactHumanApproval() {
+  const requirement = classify("run_process").requirement;
+  const mrtrAudit = {
+    state_handle_sha256: "state-handle-sha256",
+    requirement_sha256: "requirement-sha256",
+  };
+  const accepted = verifyConsentResponse({
+    requirement,
+    inputResponses: {
+      human_approval: { action: "accept", content: { confirmed: true } },
+    },
+    mrtrAudit,
+  });
+  assert.equal(accepted.status, "accepted");
+  assert.deepEqual(accepted.receipt, {
+    version: "human-consent-receipt-v1",
+    outcome: "accepted",
+    tool_name: "run_process",
+    resource_class: "process_execution_bounded",
+    operation_class: "execute",
+    risk_class: "high",
+    scope_delta: [],
+    external_origin: null,
+    state_handle_sha256: "state-handle-sha256",
+    requirement_sha256: "requirement-sha256",
+    binding_verified: true,
+  });
+  assert.deepEqual(Object.keys(accepted.receipt).sort(), [
+    "binding_verified",
+    "external_origin",
+    "operation_class",
+    "outcome",
+    "requirement_sha256",
+    "resource_class",
+    "risk_class",
+    "scope_delta",
+    "state_handle_sha256",
+    "tool_name",
+    "version",
+  ]);
+})();
+
+(function semanticConsentVerifierFailsClosedForAllNonApprovalShapes() {
+  const requirement = classify("run_process").requirement;
+  const mrtrAudit = {
+    state_handle_sha256: "state-handle-sha256",
+    requirement_sha256: "requirement-sha256",
+  };
+  const cases = [
+    ["confirmed_false", { human_approval: { action: "accept", content: { confirmed: false } } }, "consent_not_confirmed"],
+    ["missing_content", { human_approval: { action: "accept" } }, "consent_content_invalid"],
+    ["missing_confirmed", { human_approval: { action: "accept", content: {} } }, "consent_content_keys_invalid"],
+    ["extra_content_key", { human_approval: { action: "accept", content: { confirmed: true, extra: true } } }, "consent_content_keys_invalid"],
+    ["decline", { human_approval: { action: "decline" } }, "consent_declined"],
+    ["cancel", { human_approval: { action: "cancel" } }, "consent_cancelled"],
+    ["wrong_key", { approval: { action: "accept", content: { confirmed: true } } }, "consent_response_keys_invalid"],
+    ["missing_key", {}, "consent_response_keys_invalid"],
+    ["malformed_response", { human_approval: "accept" }, "consent_response_invalid"],
+  ];
+
+  for (const [label, inputResponses, reason] of cases) {
+    const result = verifyConsentResponse({ requirement, inputResponses, mrtrAudit });
+    assert.equal(result.status, "denied", label);
+    assert.equal(result.code, "human_consent_denied", label);
+    assert.equal(result.reason, reason, label);
+    assert.equal(result.receipt, undefined, label);
+  }
+})();
+
+(function semanticConsentVerifierRequiresMrtrBindingEvidence() {
+  const requirement = classify("run_process").requirement;
+  const result = verifyConsentResponse({
+    requirement,
+    inputResponses: {
+      human_approval: { action: "accept", content: { confirmed: true } },
+    },
+    mrtrAudit: {},
+  });
+  assert.equal(result.status, "denied");
+  assert.equal(result.reason, "consent_binding_evidence_missing");
+})();
+
+(function nonConsentRequirementDoesNotInvokeConsentSemantics() {
+  assert.deepEqual(verifyConsentResponse({ requirement: null, inputResponses: {}, mrtrAudit: {} }), {
+    status: "not_required",
+  });
 })();
 
 console.log("smoke_human_consent_policy ok");
