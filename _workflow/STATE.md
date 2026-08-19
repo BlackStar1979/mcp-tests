@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-08-17
+Updated: 2026-08-18
 
 ## Purpose
 
@@ -33,32 +33,32 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current validation baseline
 
 - Latest full smoke baseline:
-  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=308`
+  - `node ./_tests/run_all_smokes.js --skip-network = ok=true, version=0.40.0, public=7, tests_authenticated=310`
 - Latest validated public section count: `7`
-- Latest validated authenticated smoke count: `308`
+- Latest validated authenticated smoke count: `310`
 
 ## Surface model
 
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `85`
 - Authenticated repo target for profile `tests`: `98`
-- Live OAuth21 runtime exposes `98` tools at `server_start_id = 2026-08-18T14:53:56.306Z` with governed fingerprint `93721a82a339f9d6`. Controlled restart `manual-1787064834593` loaded source commit `2ae1585`; `/healthz` returned OAuth21/internal with `98` tools, `/oauth/operator-login` no longer trips the MCP Origin guard, `/mcp` still rejects invalid Origin, the refreshed `openai-mcp 1.0.0` connector received the same 98-tool fingerprint, and a durable pre-restart process record was recovered after restart.
+- Live OAuth21 runtime exposes `98` tools at `server_start_id = 2026-08-18T19:03:44.754Z` with governed fingerprint `93721a82a339f9d6`. Controlled restart `manual-1787079823223` loaded production MRTR source commit `476038d`; `/healthz` returned OAuth21/internal with `98` tools, the durable restart job recovered across the restart, and post-restart connector calls succeeded without descriptor/schema/tool-surface drift or connector refresh.
 - MCP Tasks P0 is live and accepted: a modern localhost client declared `io.modelcontextprotocol/tasks`, `server/discover` advertised the extension, `run_process` returned a Task, and `tasks/get` reached `completed/complete` with expected output, argv redaction, and task-backed metadata. Non-Tasks clients retain the synchronous fallback. Repository validation remains `7 + 294`.
 - W3C Trace Context P1 is live and accepted: live `run_process` request span `b30d7ed041609eb6` created execution child `bdff6e5f06b04cce`; a Task-backed execution persisted trace `8dd0f95cfb76cfa719af99c69bc8e2ae`, child `1f4deb3e376e86f7`, and parent `addcaee3ad7e0838` through the durable process/artifact spine. Repository validation remains `7 + 298`.
 - Process Artifacts P2 is live and accepted: terminal stdout/stderr is materialized immutably in `tests_process_jobs_3008.sqlite` with opaque IDs, SHA-256, independent retention, and W3C ancestry. Authenticated live `resources/read` returned the expected Task stdout through an explicit `mcp-artifact://process/<opaque-id>` URI. Repository validation remains `7 + 301`.
 - CIMD P3 is live and accepted: the runtime SSRF boundary rejected `client_id = https://127.0.0.1/oauth/client.json` with controlled `400 invalid_client`; audit recorded `oauth21_cimd_rejected` / `cimd_special_use_ip`. Repository validation remains `7 + 304`.
 - Protocol capability truth is modular and canonical in `SERVER_PROTOCOL_CAPABILITY_SPEC.json`, backed by `src/runtime/protocol_capability_registry.js`. The MCP `2026-07-28` release set is classified per adapter/module rather than as a monolithic implemented/not-implemented flag; optional extensions, client/SDK requirements, and governance SEPs do not create false server-runtime debt.
 - Standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`: `SEP-2164` missing `resources/read` resources return `-32602 Resource not found`, and `SEP-1303` invalid arguments for a known `tools/call` return a tool execution result with `isError = true`. Authenticated live probes returned HTTP 200 for both semantics. `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; no connector refresh is required.
-- MRTR (`SEP-2322`) remains official-SDK fixture-only evidence. Production MRTR is now the next protocol-feature module because `POL-1A-CONSENT` requires server-verifiable human interaction rather than model-supplied confirmation.
+- MRTR (`SEP-2322`) is production-loaded and live accepted through `src/runtime/mrtr_extension.js`. The module is intentionally dormant until policy emits a deterministic `mrtr_requirement`; it reuses the bounded state-handle store, persists digest-only binding metadata, and introduces no second execution/task/session architecture.
 - `DEBT-1` cleanup remains complete and live-loaded: classic session/SSE/Sampling internals are removed from the active architecture, while bounded legacy `initialize` compatibility remains a separate protocol-era adapter.
-- `POL-1` remains active at `2/4`: `14/24` required policies are implemented; the two genuine critical policy gaps remain `consent` and `prompt/content`. Consent is sequenced after the production MRTR module.
+- `POL-1` remains active at `2/4`: `14/24` required policies are implemented; the two genuine critical policy gaps remain `consent` and `prompt/content`. The MRTR prerequisite is now live, so `POL-1A-CONSENT` is the next primary package.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list.
 
 ## Current workflow track
 
 - `current_working_course = protocol-capability-module-convergence`
-- `next_primary = pol-1a-mrtr-runtime`
-- `next_secondary = pol-1a-consent-boundary`
+- `next_primary = pol-1a-consent-boundary`
+- `next_secondary = pol-1a-prompt-content`
 
 ## Verified documentation authorities
 

@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-17
+Date: 2026-08-18
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs source commit `2ae1585` at `server_start_id = 2026-08-18T14:53:56.306Z`. The runtime and refreshed authenticated connector expose `98` tools with combined fingerprint `93721a82a339f9d6`; `/healthz`, OAuth operator-login routing, MCP Origin rejection, connector calls, and durable process recovery are green. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), `DEBT-1-RETIREMENT` (`7 + 305`), and `POL-1A-DLP` (`7 + 308`) are live-accepted. `MRTR` remains fixture-only conformance evidence; runtime loading is not applicable because it has no production runtime surface.
+Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs production MRTR source commit `476038d` at `server_start_id = 2026-08-18T19:03:44.754Z`. Runtime and authenticated connector expose `98` tools with unchanged combined fingerprint `93721a82a339f9d6`; `/healthz`, connector calls, and durable restart recovery are green. `MCP-TASKS-PROCESS-ADAPTER` (`7 + 294`), `TRACE-CONTEXT` (`7 + 298`), `PROCESS-ARTIFACTS` (`7 + 301`), `CIMD` (`7 + 304`), `DEBT-1-RETIREMENT` (`7 + 305`), `POL-1A-DLP` (`7 + 308`), and production `MRTR` (`7 + 310`) are live-accepted. MRTR is loaded-dormant until policy emits `mrtr_requirement`; no connector refresh is pending.
 
 `DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
@@ -22,8 +22,8 @@ The operator refreshed OAuth authorization and the connector tool list before th
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
 - `current_working_course = protocol-capability-module-convergence`
-- `next_primary = pol-1a-mrtr-runtime`
-- `next_secondary = pol-1a-consent-boundary`
+- `next_primary = pol-1a-consent-boundary`
+- `next_secondary = pol-1a-prompt-content`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -85,9 +85,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=308`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=310`.
 - Public section count: `7`.
-- Authenticated smoke count: `308`.
+- Authenticated smoke count: `310`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -398,22 +398,22 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. `POL-1A-MRTR`: promote the official-SDK MRTR fixture into a production protocol module without restoring transport sessions or classic Sampling.
-2. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR.
-3. `POL-1A-PROMPT`: add explicit untrusted-content classification and instruction-promotion boundaries.
-4. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
+1. `POL-1A-CONSENT`: bind high-risk operations to server-verifiable human consent carried through production MRTR.
+2. `POL-1A-PROMPT`: add explicit untrusted-content classification and instruction-promotion boundaries.
+3. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
 Historical records remain traceability evidence, not the active queue. `_workflow/control_plane/snapshots/**` is archival evidence only. The June/July SEP triage is provenance only and is superseded for current protocol truth by `SERVER_PROTOCOL_CAPABILITY_SPEC.json`.
 
-The modular standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`. `SEP-2164` and `SEP-1303` have authenticated live semantic proof; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; `restart_required_now = false` and `connector_refresh_required_now = false`. MRTR (`SEP-2322`) remains fixture-only and is the next architectural module because consent depends on a human round trip rather than model-supplied confirmation.
+The modular standards cleanup remains accepted, and production MRTR (`SEP-2322`) is now live from source `476038d` at `server_start_id = 2026-08-18T19:03:44.754Z`. `SEP-2164`, `SEP-1303`, and the dormant `mrtr_extension` are live; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; `restart_required_now = false` and `connector_refresh_required_now = false`. Consent is the next architectural package.
 Readiness-derived default next package queue:
 
-1. `POL-1A-MRTR` — production MRTR protocol module
-2. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
-3. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
-4. `POL-1B` — partial policy reconciliation
-5. `POL-1C` — specified-only non-critical reconciliation
+1. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
+2. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
+3. `POL-1B` — partial policy reconciliation
+4. `POL-1C` — specified-only non-critical reconciliation
 
 Recently completed:
+
+- Completed production `MRTR` on August 18, 2026: source `476038d` adds `src/runtime/mrtr_extension.js`, exact-call/digest binding over the bounded state-handle store, pre-execution `input_required` dispatch, and safe MRTR audit events. Full `7 + 310` passed before supervisor restart `manual-1787079823223`; live runtime `2026-08-18T19:03:44.754Z` retained `98` tools and fingerprint `93721a82a339f9d6` without connector refresh. The module is loaded-dormant until policy emits `mrtr_requirement`.
 
 - Accepted `OPS-1B` on August 17, 2026: connector-visible TEST MCP used external config ref `C:\Work\www\remote-site-tools-config.json`; live `list_remote_site_files` returned the real two-file site root, `read_remote_site_file` returned the retained `41`-byte smoke file, and `remote_site_runtime_status` reported `healthy` with no warnings. No remote mutation occurred. `OPS-1` is now `4/4`; no runtime restart, connector refresh, credential migration, or `www` repository change was required.
 

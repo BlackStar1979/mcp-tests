@@ -1,7 +1,7 @@
 # DIRECTORY
 
 Status: active workflow operator decisions directory map
-Updated: 2026-08-17
+Updated: 2026-08-18
 
 - `deprecated_sampling_helper_retirement_closeout.md`
   Acceptance evidence for retiring the inactive classic Sampling/session helper path while preserving fail-closed client-response rejection.
@@ -33,6 +33,8 @@ Updated: 2026-08-17
   Repository acceptance evidence for SSRF-hardened ephemeral Client ID Metadata Document resolution, DCR separation, clean-history validation, and the not-yet-live runtime boundary.
 - `mrtr_conformance_closeout.md`
   Repository acceptance evidence for fixture-only 2026-07-28 multi-round-trip elicitation/retry conformance, clean-history validation, and the not-live-loaded runtime boundary.
+- `mrtr_runtime_closeout.md`
+  Live acceptance evidence for the production 2026-07-28 MRTR extension, exact-call binding, controlled restart, and loaded-dormant consent boundary.
 - `run_process_sync_ceiling.md`
   Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.
 - `ops_1a_operational_e2e_closeout.md`

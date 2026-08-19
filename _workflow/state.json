@@ -65,8 +65,8 @@
   },
   "workflow_progress_markers": {
     "current_working_course": "protocol-capability-module-convergence",
-    "next_primary": "pol-1a-mrtr-runtime",
-    "next_secondary": "pol-1a-consent-boundary",    "stage_labels": [
+    "next_primary": "pol-1a-consent-boundary",
+    "next_secondary": "pol-1a-prompt-content",    "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
       "Stage 8 / Step 53d - live restart and connector surface reconciliation"
@@ -282,7 +282,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 98,
-      "server_start_id": "2026-08-18T17:21:55.694Z",
+      "server_start_id": "2026-08-18T19:03:44.754Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,      "c3_cooperative_cancellation_live_loaded": true,
@@ -309,7 +309,7 @@
       "combined_fingerprint": "93721a82a339f9d6",
       "connector_map_status": "repo98_runtime98_model98_schema_current",
       "repo_current_expected_tool_count": 98,
-      "server_start_id": "2026-08-18T17:21:55.694Z",      "connector_ui_visibility_verified_now": true,
+      "server_start_id": "2026-08-18T19:03:44.754Z",      "connector_ui_visibility_verified_now": true,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,      "cache_scope": "private",
       "connector_refresh_required_now": false

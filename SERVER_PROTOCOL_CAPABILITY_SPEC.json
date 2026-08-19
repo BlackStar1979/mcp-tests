@@ -87,7 +87,7 @@
       },
       "SEP-2322": {
         "m": "mrtr_extension",
-        "s": "repo_implemented_runtime_pending",
+        "s": "live_optional_module",
         "server": false
       },
       "SEP-2260": {
@@ -166,7 +166,8 @@
         "src/runtime/mrtr_extension.js",
         "_tests/helpers/mrtr_conformance_fixture.js",
         "_tests/smoke_mrtr_conformance_fixture.js",
-        "_workflow/operator_decisions/mrtr_conformance_closeout.md"
+        "_workflow/operator_decisions/mrtr_conformance_closeout.md",
+        "_workflow/operator_decisions/mrtr_runtime_closeout.md"
       ],
       "resources": [
         "src/runtime/resources_read_message_handler.js",
@@ -245,7 +246,7 @@
       "sep": "SEP-2322",
       "module": "mrtr_extension",
       "repo_status": "implemented",
-      "runtime_status": "not_loaded",
+      "runtime_status": "live_accepted",
       "target": "production MRTR module loaded before POL-1A-CONSENT claims human approval",
       "surface_change": false
     }
@@ -254,7 +255,7 @@
     "SEP-2207": "Resource-server metadata/challenges do not advertise offline_access; authorization-server refresh policy stays separate.",
     "SEP-837": "Server validates application_type and preserves bounded legacy inference; normative client behavior is client-side.",
     "SEP-1865": "MCP Apps is optional and not loaded; this is not core protocol non-conformance.",
-    "SEP-2322": "MRTR becomes a project requirement only because consent needs server-verifiable human interaction.",
+    "SEP-2322": "Production MRTR is loaded as a dormant optional module; it becomes an active project requirement when consent policy emits deterministic mrtr_requirement decisions.",
     "SEP-2567": "Explicit state handles are a tool-design pattern; no custom protocol handle type is invented."
   },
   "non_final_watchlist": {
@@ -308,7 +309,6 @@
     "notes": "Protocol capability authority preserves the accepted single-route no-SSE target; historical sessionless prototype evidence cannot select current protocol work."
   },
   "next_queue": [
-    "SEP-2322 live activation/acceptance",
     "POL-1A-CONSENT on MRTR",
     "POL-1A-PROMPT-CONTENT"
   ]

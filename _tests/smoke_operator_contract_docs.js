@@ -3,7 +3,11 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertCurrentRuntimeStartIdentity } = require("./helpers/workflow_baseline");
+const {
+  assertCurrentRuntimeStartIdentity,
+  latestAuthenticatedSmokeCount,
+  latestFullSmokeToken,
+} = require("./helpers/workflow_baseline");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
@@ -42,6 +46,7 @@ for (const rel of [
   ["_workflow", "operator_decisions", "process_artifacts_closeout.md"],
   ["_workflow", "operator_decisions", "oauth_cimd_closeout.md"],
   ["_workflow", "operator_decisions", "mrtr_conformance_closeout.md"],
+  ["_workflow", "operator_decisions", "mrtr_runtime_closeout.md"],
   ["_workflow", "operator_decisions", "observability_live_trail_acceptance.md"],
 ]) {
   assert.equal(exists(...rel), true, `missing required documentation file: ${rel.join("/")}`);
@@ -64,6 +69,7 @@ const traceCloseout = read("_workflow", "operator_decisions", "w3c_trace_context
 const artifactsCloseout = read("_workflow", "operator_decisions", "process_artifacts_closeout.md");
 const cimdCloseout = read("_workflow", "operator_decisions", "oauth_cimd_closeout.md");
 const mrtrCloseout = read("_workflow", "operator_decisions", "mrtr_conformance_closeout.md");
+const mrtrRuntimeCloseout = read("_workflow", "operator_decisions", "mrtr_runtime_closeout.md");
 const observabilityCloseout = read("_workflow", "operator_decisions", "observability_live_trail_acceptance.md");
 const processPersistenceAcceptance = read("_workflow", "operator_decisions", "process_job_persistence_live_acceptance.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
@@ -75,8 +81,8 @@ assert.ok(northstar.includes("Single-route on `/mcp`"));
 assert.ok(northstar.includes("Streamable HTTP only"));
 assert.ok(stateDoc.includes("Server version: `0.40.0`"));
 assert.ok(stateDoc.includes("repository target connector-visible tools `98`"));
-assert.ok(stateDoc.includes("tests_authenticated=308"));
-assert.ok(stateDoc.includes("Latest validated authenticated smoke count: `308`"));
+assert.ok(stateDoc.includes(latestFullSmokeToken));
+assert.ok(stateDoc.includes(`Latest validated authenticated smoke count: \`${latestAuthenticatedSmokeCount}\``));
 assert.ok(stateDoc.includes("`mcp__workbench` is callable again"));
 assert.ok(stateDoc.includes("`src/integrations/codebase_memory/DIRECTORY.md`"));
 assert.ok(stateDoc.includes("`codex-mcp-client 0.148.0-alpha.9`"));
@@ -86,8 +92,9 @@ assert.ok(readiness.includes("## Component maturity"));
 assert.ok(readiness.includes("Operator-facing documentation contract"));
 assert.ok(readiness.includes("Governance correctly detected and closed the POL-1A-DLP schema delta"));
 assert.ok(readiness.includes("No active connector-surface blocker remains"));
-assert.ok(readiness.includes("`SEP-2164` and `SEP-1303` are live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52`"));
-assert.ok(readiness.includes("production MRTR module"));
+assert.ok(readiness.includes("`SEP-2164` and `SEP-1303` remain live accepted"));
+assert.ok(readiness.includes("production MRTR (`SEP-2322`) is now live-loaded"));
+assert.ok(readiness.includes("Execute `POL-1A-CONSENT` on the production MRTR boundary"));
 assert.ok(readiness.includes("| SURF-1 | Connector-visible surface governance | 4/4 |"));
 assert.ok(readiness.includes("| PROC-1 | Process execution reliability | 4/4 |"));
 assert.ok(readiness.includes("Codebase-Memory bridge and index integrity"));
@@ -117,6 +124,7 @@ assert.ok(roadmap.includes("Completed execution identity: `PROC-1B-R2`"));
 assert.ok(roadmap.includes("Completed MCP Tasks foundation: `MCP-TASKS-PROCESS-ADAPTER`"));
 assert.ok(roadmap.includes("Completed operational E2E package: `OPS-1A`"));
 assert.ok(roadmap.includes("Completed process execution: `PROC-1A`"));
+assert.ok(roadmap.includes("Completed production MRTR runtime: `pol-1a-mrtr-runtime`"));
 assert.ok(roadmap.includes("`COMP-1A` — event-gated protocol evidence"));
 assert.ok(roadmap.includes("the August 17 operational `codex-mcp-client 0.148.0-alpha.9` sample"));
 assert.ok(processPersistenceAcceptance.includes("Status: GREEN / LIVE / ACCEPTED"));
@@ -169,11 +177,17 @@ assert.ok(mrtrCloseout.includes("Status: repo-validated, fixture-only, runtime-n
 assert.ok(mrtrCloseout.includes("tests_authenticated=305"));
 assert.ok(mrtrCloseout.includes("`resultType: \"complete\"`"));
 assert.ok(mrtrCloseout.includes("`COMP-1A` refresh remains blocked"));
+assert.ok(mrtrRuntimeCloseout.includes("Status: live-accepted, loaded-dormant"));
+assert.ok(mrtrRuntimeCloseout.includes("manual-1787079823223"));
+assert.ok(mrtrRuntimeCloseout.includes("server_start_id: 2026-08-18T19:03:44.754Z"));
+assert.ok(mrtrRuntimeCloseout.includes("combined_fingerprint: 93721a82a339f9d6"));
+assert.ok(mrtrRuntimeCloseout.includes("POL-1A-CONSENT"));
 assert.ok(operatorDecisionsDirectory.includes("Status: active workflow operator decisions directory map"));
 assert.ok(operatorDecisionsDirectory.includes("initialize_client_compatibility_evidence.md"));
 assert.ok(operatorDecisionsDirectory.includes("run_process_sync_ceiling.md"));
 assert.ok(operatorDecisionsDirectory.includes("oauth_cimd_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("mrtr_conformance_closeout.md"));
+assert.ok(operatorDecisionsDirectory.includes("mrtr_runtime_closeout.md"));
 assert.ok(operatorDecisionsDirectory.includes("observability_live_trail_acceptance.md"));
 assert.ok(observabilityCloseout.includes("Status: GREEN / LIVE ACCEPTED"));
 assert.ok(observabilityCloseout.includes("followup_traffic_without_fresh_entry = true"));
@@ -184,8 +198,8 @@ assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "protocol-capability-module-convergence");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "pol-1a-mrtr-runtime");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1a-consent-boundary");
+assert.equal(workflowState.workflow_progress_markers.next_primary, "pol-1a-consent-boundary");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1a-prompt-content");
 assert.ok(readiness.includes("| POL-1 | Policy coverage convergence | 2/4 |"));
 assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
@@ -209,8 +223,8 @@ assert.ok(workflowIndex.includes("all `68/68` directories containing tracked fil
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = protocol-capability-module-convergence`"));
-assert.ok(workflowIndex.includes("`next_primary = pol-1a-mrtr-runtime`"));
-assert.ok(workflowIndex.includes("`next_secondary = pol-1a-consent-boundary`"));
+assert.ok(workflowIndex.includes("`next_primary = pol-1a-consent-boundary`"));
+assert.ok(workflowIndex.includes("`next_secondary = pol-1a-prompt-content`"));
 assert.ok(readiness.includes("| OPS-1 | Operational E2E and soak coverage | 4/4 |"));
 assert.ok(roadmap.includes("`OPS-1B` live SFTP boundary — accepted"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));
