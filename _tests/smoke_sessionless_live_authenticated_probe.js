@@ -74,6 +74,8 @@ const consentProbePath = path.join(ROOT, "_workflow", "scripts", "pol_1a_consent
 assert.ok(fs.existsSync(consentProbePath));
 const consentProbe = read("_workflow/scripts/pol_1a_consent_live_probe.js");
 assert.ok(consentProbe.includes('PROTOCOL_VERSION = "2026-07-28"'));
+assert.ok(consentProbe.includes('"mcp-method": method'));
+assert.ok(consentProbe.includes('"mcp-name": String(params.name)'));
 assert.ok(consentProbe.includes("form_elicitation_capable: true"));
 assert.ok(consentProbe.includes("missing_form_capability_minus_32021_without_execution"));
 assert.ok(consentProbe.includes("exact_accept_executes_once"));

@@ -64,6 +64,8 @@ async function rpcCall({ baseUrl, authorization, id, method, params = {}, client
     headers: {
       "content-type": "application/json",
       [PROTOCOL_VERSION_HEADER]: PROTOCOL_VERSION,
+      "mcp-method": method,
+      ...(method === "tools/call" && params?.name ? { "mcp-name": String(params.name) } : {}),
       authorization,
     },
     body: JSON.stringify({
