@@ -29,6 +29,7 @@ function denyDecision({ code, httpStatus = 403, rpcCode = -32602, message = "Too
 function evaluateDecisionRuntimePolicy({
   decisionContext,
   destructiveConfirmationManager = getDefaultDestructiveToolConfirmationManager(),
+  toolPolicyResolver = getToolPolicy,
 } = {}) {
   const result = decisionContext && typeof decisionContext === "object" ? decisionContext : null;
   const context = result && result.context && typeof result.context === "object" ? result.context : null;
@@ -63,7 +64,7 @@ function evaluateDecisionRuntimePolicy({
   const toolName = typeof context.tool === "string" ? context.tool : "unknown";
   const profile = typeof context.profile === "string" ? context.profile : "unknown";
   const authMode = typeof context.auth_mode === "string" ? context.auth_mode : "unknown";
-  const toolPolicy = getToolPolicy(toolName);
+  const toolPolicy = typeof toolPolicyResolver === "function" ? toolPolicyResolver(toolName) : null;
 
   if (!toolPolicy) {
     return denyDecision({ code: "missing_tool_policy", message: `Missing policy for tool: ${toolName}` });
@@ -130,10 +131,7 @@ function evaluateDecisionRuntimePolicy({
     };
   }
 
-  if (toolPolicy.destructive === true) {
-    if (toolName !== "cbm_delete_project") {
-      return denyDecision({ code: "destructive_tool_denied", message: `Tool ${toolName} is destructive` });
-    }
+  if (toolPolicy.consent_mode === "tool_confirmation") {
     const confirmation = context.destructive_confirmation || {};
     const confirmationDecision = destructiveConfirmationManager.evaluate({
       toolName,
@@ -147,7 +145,7 @@ function evaluateDecisionRuntimePolicy({
         code: confirmationDecision.code,
         message: confirmationDecision.code === "cbm_confirmation_required"
           ? "Explicit confirmation is required for CBM project deletion"
-          : "CBM deletion confirmation is invalid or expired",
+          : "Tool confirmation is invalid or expired",
         reasons: [confirmationDecision.code],
         responseData: confirmationDecision.challenge || { confirmation_reason: confirmationDecision.reason },
       });
@@ -159,8 +157,8 @@ function evaluateDecisionRuntimePolicy({
       json_rpc_error: null,
       response_data: {},
       decision_meta: {
-        policy: "decision-runtime-policy-v2",
-        reason_codes: ["cbm_confirmation_accepted"],
+        policy: "decision-runtime-policy-v3",
+        reason_codes: [String(confirmationDecision.code || "tool_confirmation_accepted")],
       },
     };
   }

@@ -2,6 +2,7 @@
 
 const assert = require("node:assert/strict");
 const { createMcpRuntimeHandlers } = require("../src/runtime/mcp_runtime_handlers");
+const { getToolPolicy } = require("../src/tool_policy");
 
 const MODERN = "2026-07-28";
 const OPAQUE_STATE = "mrtr_test_state_012345678901234567890123456789";
@@ -66,6 +67,12 @@ function createFakeTool(onExecute) {
   };
 }
 
+function mrtrFixtureToolPolicyResolver(toolName) {
+  const toolPolicy = getToolPolicy(toolName);
+  if (toolName !== "run_process" || !toolPolicy) return toolPolicy;
+  return { ...toolPolicy, consent_mode: "mrtr_human_approval" };
+}
+
 function createHandlers({ mrtrExtension, onExecute, audit }) {
   const fakeTool = createFakeTool(onExecute);
   return createMcpRuntimeHandlers({
@@ -80,6 +87,7 @@ function createHandlers({ mrtrExtension, onExecute, audit }) {
     documentRuntimeContext: () => ({ docs: [] }),
     auditLog(event, fields) { audit.push({ event, ...(fields || {}) }); },
     getOptionalTool(name) { return name === "run_process" ? fakeTool : null; },
+    toolPolicyResolver: mrtrFixtureToolPolicyResolver,
     publicBaseUrl: "https://example.invalid",
     rateLimiter: null,
     serverStartId: "start-1",

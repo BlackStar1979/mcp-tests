@@ -420,16 +420,14 @@ async function connectAndExercise({
       assert.equal(deniedStart.structuredContent?.success, false);
       assert.equal(deniedStart.structuredContent?.error?.code, "process_command_not_allowed");
     }
-      assert.ok(consentRequestCount >= 1, `${label} fulfills at least one server-verifiable consent request`);
+      assert.equal(consentRequestCount, 0, `${label} uses standing OAuth authorization without redundant per-call elicitation`);
     } else {
-      await assert.rejects(
-        client.callTool({
-          name: "process_start",
-          arguments: { command: "node", cwd: "mcp-tests", timeout_ms: 5000 },
-        }),
-        (error) => error?.code === -32602 && error?.data?.decision_code === "mrtr_protocol_error",
-        `${label} legacy high-risk process call fails closed without modern MRTR`
-      );
+      const legacyStarted = await client.callTool({
+        name: "process_start",
+        arguments: { command: "node", cwd: "mcp-tests", timeout_ms: 5000 },
+      });
+      assert.notEqual(legacyStarted.isError, true, `${label} uses the same bounded OAuth process authorization without MRTR`);
+      assert.equal(typeof legacyStarted.structuredContent?.job_id, "string", `${label} receives a bounded process job id`);
       assert.equal(consentRequestCount, 0, `${label} does not synthesize modern consent on a legacy connection`);
     }
   } finally {
@@ -621,9 +619,9 @@ async function connectAndExercise({
       audit.entries.some((entry) => (
         entry.event === "tool_call_decision"
         && entry.decision_receipt?.redacted_context?.tool === "process_start"
-        && entry.decision_receipt?.reason_codes?.includes("human_consent_required")
+        && entry.decision_receipt?.reason_codes?.includes("explicit_policy_allow")
       )),
-      "central runtime policy explicitly requires human consent for process execution"
+      "central runtime policy authorizes bounded process execution through standing OAuth policy"
     );
     assert.equal(audit.raw.includes("oauth-process-ok"), false, "audit log does not expose process output");
     assert.equal(audit.raw.includes("oauth_e2e_cancel"), false, "audit log does not expose raw cancellation reasons");

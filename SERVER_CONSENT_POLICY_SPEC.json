@@ -2,23 +2,35 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "repository_implemented_live_activation_pending",
-  "schema_version": "mcp-tests-consent-policy-v1",
-  "scope": "Human/operator consent, approval and escalation boundaries for tool calls, scope elevation, sampling, elicitation, runtime mutation and connector refresh.",
+  "status": "capability_adaptive_authorization_repository_implemented_pending_live_acceptance",
+  "schema_version": "mcp-tests-consent-policy-v2",
+  "scope": "Human/operator authorization, fresh-consent and escalation boundaries for tool calls, scope elevation, sampling, elicitation, runtime mutation and connector refresh.",
   "policy": {
-    "default": "deny_or_require_operator_approval_for_high_risk",
-    "high_risk_requires_explicit_approval": [
-      "runtime_restart",
-      "connector_refresh",
-      "process_mutation",
-      "network_egress_to_new_origin",
-      "scope_elevation",
-      "sampling_request",
-      "elicitation_request",
-      "secret_or_token_access"
+    "default": "standing_authorization_for_bounded_authorized_surface_fresh_consent_only_for_explicit_consent_mode",
+    "server_authorization_authority": "oauth_profile_scope_plus_central_tool_policy",
+    "descriptor_hints_are_authorization_authority": false,
+    "host_approval_preference_is_server_authority": false,
+    "bounded_internal_oauth_scope": "mcp:tools",
+    "fresh_consent_modes": [
+      "tool_confirmation",
+      "mrtr_human_approval"
     ],
-    "consent_record_required": true,
-    "ui_or_operator_must_see": [
+    "fresh_consent_is_not_inferred_from": [
+      "destructiveHint",
+      "tool_policy.destructive",
+      "tool_category=process"
+    ],
+    "fresh_consent_must_remain_available_for": [
+      "explicit_mrtr_human_approval_policy",
+      "tool_owned_confirmation_policy",
+      "scope_elevation",
+      "network_egress_to_new_origin",
+      "secret_or_token_access",
+      "runtime_restart",
+      "connector_refresh"
+    ],
+    "consent_record_required_when_fresh_consent_is_selected": true,
+    "ui_or_operator_must_see_for_fresh_consent": [
       "tool_name",
       "resource_class",
       "operation_class",
@@ -32,28 +44,40 @@
     "SERVER_POLICY_RUNTIME_SPEC.json",
     "SERVER_SAMPLING_POLICY_SPEC.json",
     "SERVER_TOOLS_SPEC.json",
+    "src/tool_policy.js",
     "src/runtime/consent_runtime_policy.js",
     "src/runtime/decision_runtime_policy.js",
     "src/runtime/mrtr_extension.js",
     "src/runtime/tools_call_handler.js"
   ],
   "repository_implementation": {
-    "status": "process_consent_semantics_repo_implemented_live_activation_pending",
-    "selected_tools": [
+    "status": "capability_adaptive_authorization_semantics_implemented",
+    "authorization_class_authority": "src/tool_policy.js",
+    "authorization_class_default": "bounded_authorized",
+    "consent_mode_authority": "src/tool_policy.js",
+    "consent_mode_default": "none",
+    "routine_process_tools": [
       "run_process",
       "process_start",
       "process_cancel"
     ],
+    "routine_process_consent_mode": "none",
+    "tool_confirmation_tools": [
+      "cbm_delete_project"
+    ],
+    "mrtr_human_approval_tools": [],
+    "mrtr_human_approval_mode_available": true,
     "requirement_kind": "human_consent_v1",
     "human_approval_response_key": "human_approval",
     "resource_and_operation_authority": "SERVER_TOOLS_SPEC.json#tool_catalog",
-    "missing_form_capability_fails_closed": true,
+    "missing_form_capability_fails_closed_when_mrtr_selected": true,
     "missing_form_capability_error": -32021,
-    "semantic_response_verification_enforced": true,
+    "semantic_response_verification_enforced_when_mrtr_selected": true,
     "accepted_response_shape": "human_approval.action=accept with exact content {confirmed:true}",
     "model_supplied_confirmation_is_human_approval": false,
     "mrtr_state_consumed_before_consent_semantic_verification": true,
     "consent_receipt_exposes_raw_arguments_or_scope_digests": false,
+    "descriptor_destructive_hint_is_authorization_authority": false,
     "cbm_confirmation_is_generalized_human_consent": false,
     "live_activation_claimed": false
   },
@@ -69,17 +93,43 @@
     "repo_target_tool_count": 98,
     "repo_target_combined_fingerprint": "93721a82a339f9d6"
   },
+  "live_acceptance": {
+    "status": "pending_controlled_restart_and_connector_probe",
+    "required_proofs": [
+      "ChatGPT connector run_process succeeds without elicitation.form",
+      "bounded workspace mutation is not blanket-denied",
+      "command/workspace/scope negative controls remain fail-closed",
+      "tool surface remains 98 / 93721a82a339f9d6"
+    ]
+  },
+  "historical_process_mrtr_acceptance": {
+    "status": "accepted_then_superseded_as_default_process_policy",
+    "reason": "The MRTR implementation was semantically correct but using fresh consent for every bounded process call duplicated host approval and made primary clients without elicitation.form unusable.",
+    "source_commit": "4321b8f",
+    "restart_request_id": "manual-1787194958781",
+    "server_start_id": "2026-08-20T03:02:40.571Z",
+    "tool_count": 98,
+    "combined_fingerprint": "93721a82a339f9d6",
+    "missing_form_capability_error": -32021,
+    "form_capable_input_required_without_execution": true,
+    "decline_denied_without_execution": true,
+    "invalid_response_denied_without_execution": true,
+    "exact_accept_executes_once": true,
+    "replay_rejected": true,
+    "safe_audit_privacy_verified": true
+  },
   "runtime_gaps": [
-    "the repository implementation has not yet completed controlled restart and live consent acceptance evidence",
-    "scope elevation, new-origin egress, and secret/token access remain separate fail-closed or unimplemented consent classes rather than normalized generalized consent deltas"
+    "scope elevation, new-origin egress, and secret/token access still need normalized explicit authorization/consent classes rather than implicit inference",
+    "no current production tool selects mrtr_human_approval; the generic MRTR path remains regression-covered for future explicit policy selection"
   ],
   "reconciliation_evidence": [
-    "decision_runtime_policy delegates consent classification to src/runtime/consent_runtime_policy.js rather than retaining the guarded_process_execution bypass",
-    "the process consent classifier derives resource_class and operation_class from SERVER_TOOLS_SPEC.json#tool_catalog and emits a deterministic MRTR requirement",
-    "MRTR form elicitation capability enforcement fails closed with -32021 before state creation when the per-request client capability is absent",
-    "OAuth21 operator authorization visibly binds client_id, redirect_uri, and requested scope before token issuance",
-    "CBM deletion retains its bounded two-phase confirmation handle for compatibility but is not claimed as generalized human consent",
-    "classic Sampling remains absent from the active runtime; consent-owned bounded MRTR elicitation is the selected process approval mechanism"
+    "src/tool_policy.js owns authorization_class and consent_mode defaults and marks cbm_delete_project as tool_confirmation",
+    "src/runtime/consent_runtime_policy.js constructs MRTR requirements only when central policy selects mrtr_human_approval",
+    "src/runtime/decision_runtime_policy.js no longer treats destructive metadata as a blanket deny authority",
+    "run_process, process_start and process_cancel use standing internal OAuth mcp:tools authorization and remain constrained by their dedicated runner guards",
+    "MRTR form capability enforcement still fails closed with -32021 whenever mrtr_human_approval is explicitly selected",
+    "CBM deletion retains its bounded one-time confirmation handle and replay protection",
+    "official modern and legacy SDK OAuth interop exercises bounded process execution without redundant elicitation while command allowlist denials remain enforced"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

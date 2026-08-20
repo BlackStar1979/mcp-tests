@@ -98,7 +98,7 @@
     },
     {
       "id": "consent_policy",
-      "status": "critical_specified",
+      "status": "implemented",
       "spec_ref": "SERVER_CONSENT_POLICY_SPEC.json",
       "critical": true,
       "required": true

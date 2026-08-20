@@ -264,6 +264,7 @@ const CONFIG = {
       "oauth_cimd_closeout.md": "Repository acceptance evidence for SSRF-hardened ephemeral Client ID Metadata Document resolution, DCR separation, clean-history validation, and the not-yet-live runtime boundary.",
       "mrtr_conformance_closeout.md": "Repository acceptance evidence for fixture-only 2026-07-28 multi-round-trip elicitation/retry conformance, clean-history validation, and the not-live-loaded runtime boundary.",
       "mrtr_runtime_closeout.md": "Live acceptance evidence for the production 2026-07-28 MRTR extension, exact-call binding, controlled restart, and loaded-dormant consent boundary.",
+      "pol_1a_consent_closeout.md": "Historical, superseded selected-process MRTR acceptance retained as evidence for MRTR binding, replay rejection, semantic verification, audit privacy, and unchanged connector surface.",
       "run_process_sync_ceiling.md": "Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.",
       "ops_1a_operational_e2e_closeout.md": "Evidence-classified closeout for the bounded operational E2E matrix, hermetic/live soak, and remaining external boundaries.",
       "stage*.md, p*.md, post_stage*.md": "Historical stage/package records retained for traceability; current authority stays in active workflow files.",

@@ -30,6 +30,7 @@ async function dispatchRpcMessage({
   getOptionalTool,
   rateLimiter,
   mrtrExtension,
+  toolPolicyResolver,
   serverStartId,
   disableLegacyInitialize,
 }) {
@@ -137,6 +138,7 @@ async function dispatchRpcMessage({
         getOptionalTool,
         rateLimiter,
         mrtrExtension,
+        toolPolicyResolver,
       });
     }
 

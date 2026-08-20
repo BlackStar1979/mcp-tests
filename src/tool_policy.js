@@ -156,7 +156,7 @@ const TOOL_POLICIES = Object.freeze({
   cbm_get_code_snippet: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "codebase-memory-readonly" }),
   cbm_get_graph_schema: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "codebase-memory-readonly" }),
   cbm_search_code: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "codebase-memory-readonly" }),
-  cbm_delete_project: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, readOnly: false, destructive: true, usesFs: true, fsScope: "codebase-memory-destructive" }),
+  cbm_delete_project: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, readOnly: false, destructive: true, usesFs: true, fsScope: "codebase-memory-destructive", consentMode: "tool_confirmation" }),
   cbm_index_status: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "codebase-memory-readonly" }),
   cbm_detect_changes: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, usesFs: true, fsScope: "codebase-memory-readonly" }),
   cbm_manage_adr: policy({ profileAllowed: ["internal"], authRequired: true, publicSafe: false, readOnly: false, destructive: false, usesFs: true, fsScope: "codebase-memory-mutation" }),
@@ -274,6 +274,8 @@ function policy(overrides = {}) {
     auth_required: overrides.authRequired ?? false,
     public_safe: overrides.publicSafe ?? true,
     workspace_fs: overrides.workspaceFs ?? false,
+    authorization_class: overrides.authorizationClass || "bounded_authorized",
+    consent_mode: overrides.consentMode || "none",
     aitool: overrides.aiTool ?? false,
   });
 }
@@ -401,6 +403,8 @@ function summarizeToolPolicies(toolNames) {
       fs_scope: toolPolicy?.fs_scope || "unknown",
       auth_required: Boolean(toolPolicy?.auth_required),
       public_safe: Boolean(toolPolicy?.public_safe),
+      authorization_class: toolPolicy?.authorization_class || "unknown",
+      consent_mode: toolPolicy?.consent_mode || "none",
     };
   });
 }

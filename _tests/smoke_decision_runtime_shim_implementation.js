@@ -62,9 +62,8 @@ for (const toolName of ["run_process", "process_start", "process_cancel"]) {
   });
   const processDecision = evaluateDecisionRuntimePolicy({ decisionContext: processContext });
   assert.equal(processDecision.allow, true, toolName);
-  assert.deepEqual(processDecision.decision_meta.reason_codes, ["human_consent_required"], toolName);
-  assert.equal(processDecision.decision_meta.policy, "decision-runtime-policy-v3", toolName);
-  assert.equal(processDecision.mrtr_requirement?.kind, "human_consent_v1", toolName);
+  assert.deepEqual(processDecision.decision_meta.reason_codes, ["explicit_policy_allow"], toolName);
+  assert.equal(processDecision.mrtr_requirement, undefined, toolName);
 }
 
 const readOnlyProcessContext = buildDecisionRuntimeContext({
@@ -89,8 +88,9 @@ const otherDestructiveContext = buildDecisionRuntimeContext({
   authResult: { subject: "operator-1", clientId: "client-1", scopes: ["mcp:tools"] },
 });
 const otherDestructiveDecision = evaluateDecisionRuntimePolicy({ decisionContext: otherDestructiveContext });
-assert.equal(otherDestructiveDecision.allow, false);
-assert.equal(otherDestructiveDecision.deny_code, "destructive_tool_denied");
+assert.equal(otherDestructiveDecision.allow, true);
+assert.equal(otherDestructiveDecision.deny_code, null);
+assert.deepEqual(otherDestructiveDecision.decision_meta.reason_codes, ["explicit_policy_allow"]);
 
 const malformed = buildDecisionRuntimeContext({ toolName: "", authMode: "bearer", profile: "internal" });
 assert.equal(malformed.ok, false);

@@ -34,6 +34,7 @@ async function handleToolsCall({
   getOptionalTool,
   rateLimiter,
   mrtrExtension,
+  toolPolicyResolver,
 }) {
   const name = params.name;
   const args = params.arguments || {};
@@ -49,7 +50,7 @@ async function handleToolsCall({
     },
     authResult: context.authResult || {},
   });
-  const decision = evaluateDecisionRuntimePolicy({ decisionContext });
+  const decision = evaluateDecisionRuntimePolicy({ decisionContext, toolPolicyResolver });
   const decisionReceipt = buildDecisionRuntimeReceipt({
     decision,
     context: decisionContext.context,

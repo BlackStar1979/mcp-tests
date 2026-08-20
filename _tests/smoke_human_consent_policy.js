@@ -17,7 +17,22 @@ function classify(toolName, overrides = {}) {
   });
 }
 
-(function selectedProcessToolsProduceDeterministicHumanConsentRequirements() {
+function classifyWithMrtr(toolName, overrides = {}) {
+  const toolPolicy = {
+    ...getToolPolicy(toolName),
+    consent_mode: "mrtr_human_approval",
+    ...(overrides.toolPolicy || {}),
+  };
+  return classify(toolName, { ...overrides, toolPolicy });
+}
+
+(function boundedAuthorizedToolsDoNotRequireFreshConsentByDefault() {
+  for (const toolName of ["run_process", "process_start", "process_cancel", "process_status", "search"]) {
+    assert.deepEqual(classify(toolName), { required: false, ok: true }, toolName);
+  }
+})();
+
+(function explicitMrtrClassificationProducesDeterministicHumanConsentRequirements() {
   const expectations = {
     run_process: ["process_execution_bounded", "execute"],
     process_start: ["process_execution_bounded", "execute"],
@@ -25,7 +40,7 @@ function classify(toolName, overrides = {}) {
   };
 
   for (const [toolName, [resourceClass, operationClass]] of Object.entries(expectations)) {
-    const result = classify(toolName);
+    const result = classifyWithMrtr(toolName);
     assert.equal(result.required, true, toolName);
     assert.equal(result.ok, true, toolName);
     assert.equal(result.requirement.kind, CONSENT_REQUIREMENT_KIND, toolName);
@@ -53,27 +68,21 @@ function classify(toolName, overrides = {}) {
     assert.ok(result.requirement.inputRequests.human_approval.params.message.includes("scope_delta=none"), toolName);
     assert.ok(result.requirement.inputRequests.human_approval.params.message.includes("external_origin=none"), toolName);
     assert.ok(result.requirement.inputRequests.human_approval.params.message.endsWith("Approve this exact call?"), toolName);
-    assert.deepEqual(classify(toolName), result, `${toolName} requirement must be deterministic`);
+    assert.deepEqual(classifyWithMrtr(toolName), result, `${toolName} requirement must be deterministic`);
   }
 })();
 
-(function readOnlyToolsDoNotRequireConsent() {
-  assert.deepEqual(classify("process_status"), { required: false, ok: true });
-  assert.deepEqual(classify("search"), { required: false, ok: true });
-})();
-
-(function missingCatalogTruthForConsentToolFailsClosed() {
-  const result = classify("run_process", { toolCatalog: {} });
+(function missingCatalogTruthForExplicitConsentToolFailsClosed() {
+  const result = classifyWithMrtr("run_process", { toolCatalog: {} });
   assert.equal(result.required, true);
   assert.equal(result.ok, false);
   assert.equal(result.reason, "consent_tool_catalog_entry_missing");
   assert.equal(result.requirement, undefined);
 })();
 
-(function inconsistentRuntimePolicyForConsentToolFailsClosed() {
-  const result = resolveConsentRequirement({
-    toolName: "process_start",
-    toolPolicy: { ...getToolPolicy("process_start"), destructive: false },
+(function explicitMrtrClassificationRequiresAuthenticatedPolicy() {
+  const result = classifyWithMrtr("process_start", {
+    toolPolicy: { ...getToolPolicy("process_start"), consent_mode: "mrtr_human_approval", auth_required: false },
   });
   assert.equal(result.required, true);
   assert.equal(result.ok, false);
@@ -81,7 +90,7 @@ function classify(toolName, overrides = {}) {
 })();
 
 (function semanticConsentVerifierAcceptsOnlyExactHumanApproval() {
-  const requirement = classify("run_process").requirement;
+  const requirement = classifyWithMrtr("run_process").requirement;
   const mrtrAudit = {
     state_handle_sha256: "state-handle-sha256",
     requirement_sha256: "requirement-sha256",
@@ -123,7 +132,7 @@ function classify(toolName, overrides = {}) {
 })();
 
 (function semanticConsentVerifierFailsClosedForAllNonApprovalShapes() {
-  const requirement = classify("run_process").requirement;
+  const requirement = classifyWithMrtr("run_process").requirement;
   const mrtrAudit = {
     state_handle_sha256: "state-handle-sha256",
     requirement_sha256: "requirement-sha256",
@@ -150,7 +159,7 @@ function classify(toolName, overrides = {}) {
 })();
 
 (function semanticConsentVerifierRequiresMrtrBindingEvidence() {
-  const requirement = classify("run_process").requirement;
+  const requirement = classifyWithMrtr("run_process").requirement;
   const result = verifyConsentResponse({
     requirement,
     inputResponses: {

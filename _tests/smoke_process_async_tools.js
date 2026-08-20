@@ -88,8 +88,9 @@ async function waitFor(predicate, timeoutMs = 5000) {
     });
     const decision = evaluateDecisionRuntimePolicy({ decisionContext });
     assert.equal(decision.allow, true, `${toolName} must be callable after its dedicated runner guards pass`);
-    assert.deepEqual(decision.decision_meta.reason_codes, ["human_consent_required"]);
-    assert.equal(decision.mrtr_requirement?.kind, "human_consent_v1");
+    assert.deepEqual(decision.decision_meta.reason_codes, ["explicit_policy_allow"]);
+    assert.equal(decision.mrtr_requirement, undefined);
+    assert.equal(getToolPolicy(toolName).consent_mode, "none");
   }
   const publicLoadedNames = new Set(loadOptionalTools({
     profile: "public",

@@ -31,6 +31,7 @@ function createMcpRuntimeHandlers({
   serverStartId,
   disableLegacyInitialize,
   mrtrExtension,
+  toolPolicyResolver,
 }) {
   const nextRequestId = createRequestIdGenerator();
   const replayTracker = createSessionReplayTracker();
@@ -113,6 +114,7 @@ function createMcpRuntimeHandlers({
       getOptionalTool,
       rateLimiter,
       mrtrExtension: activeMrtrExtension,
+      toolPolicyResolver,
       serverStartId,
       disableLegacyInitialize,
     });

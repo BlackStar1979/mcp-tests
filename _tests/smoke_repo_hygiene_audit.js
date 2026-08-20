@@ -65,8 +65,8 @@ const unisolatedServerSpawningTests = serverSpawningTests.filter((name) => {
   return !source.includes("withHermeticServerControlEnv") && !source.includes("MCP_TEST_TOOL_SURFACE_STATE_FILE");
 });
 
-assert.equal(totalJsFiles.length, 404);
-assert.equal(smokeScripts.length, 319);
+assert.equal(totalJsFiles.length, 405);
+assert.equal(smokeScripts.length, 320);
 assert.equal(nonRunAll.length, 43);
 assert.equal(workflowHelperManifest.length, 26);
 assert.equal(readinessHelperManifest.length, 45);
@@ -75,8 +75,8 @@ assert.deepEqual(undocumentedNonRunAll, []);
 assert.deepEqual(unisolatedServerSpawningTests, []);
 assert.ok(hermeticServerControlEnv.includes("MCP_TEST_AUDIT_LOG"), "shared hermetic child-server env must isolate the audit log");
 
-assert.ok(testsReadme.includes("`404` JavaScript files total in `_tests`"));
-assert.ok(testsReadme.includes("`319` active scripts currently listed in `run_all_smoke_scripts.json`"));
+assert.ok(testsReadme.includes("`405` JavaScript files total in `_tests`"));
+assert.ok(testsReadme.includes("`320` active scripts currently listed in `run_all_smoke_scripts.json`"));
 assert.ok(testsReadme.includes("`43` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `26` scripts"));
 assert.ok(testsReadme.includes("Current readiness helper manifest size: `45` scripts"));

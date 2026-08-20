@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-18
+Updated: 2026-08-20
 
 ## Purpose
 
@@ -43,28 +43,25 @@ Current derivation:
 | P1 | Bounded W3C Trace Context correlation — live accepted | durable task/execution identity | Request, execution, Task, and artifact share one safe correlation spine. | Preserve the verified W3C ancestry/privacy contract. |
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
-| P4 | Production MRTR runtime — live accepted | stable protocol adapters | MRTR now provides the production multi-round-trip primitive required for server-verifiable consent without a second execution architecture. | Preserve exact-call binding, digest-only state, one-time retry semantics, and the loaded-dormant boundary until consent policy activates it. |
-| P5 | `POL-1A` critical policy gap closure — consent pre-deploy | production MRTR, modular policy authority, current runtime/tests | Production MRTR (`SEP-2322`) is live at `2026-08-18T19:03:44.754Z` with unchanged `98` / `93721a82a339f9d6`. `POL-1A-CONSENT` is repository-implemented and targeted-regression GREEN for selected process tools, with exact-call MRTR binding and strict human approval semantics; the live runtime still requires controlled restart. `prompt/content` remains the subsequent critical gap. | Complete consent pre-deploy/full-suite/restart/live acceptance, then advance to `POL-1A-PROMPT-CONTENT`. |
+| P4 | Production MRTR runtime — live accepted | stable protocol adapters | MRTR now provides the production multi-round-trip primitive required for server-verifiable consent without a second execution architecture. | Preserve exact-call binding, digest-only state, one-time retry semantics, and the accepted consent composition seam. |
+| P5 | `POL-1A` critical policy gap closure — authorization reconciliation, then prompt/content | production MRTR, central tool policy authority | Capability-adaptive `POL-1A-CONSENT` authorization is repository-GREEN and pending controlled live acceptance; the current recovery runtime is `2026-08-20T16:36:54.796Z`. Production MRTR remains live as the explicit fresh-consent primitive, and the governed surface remains `98` / `93721a82a339f9d6`. Policy coverage remains `15/24`; `prompt/content` is the remaining critical policy gap after activation. | Complete the authorization reconciliation live proof, then execute `POL-1A-PROMPT-CONTENT` and continue bounded `POL-1B` reconciliation. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `POL-1A-CONSENT` — server-verifiable high-risk consent boundary
-   Build consent on the production MRTR module so a human response, not a model-supplied boolean, is the authorization evidence for high-risk operations.
-
-1. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
+0. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
    Classify content-bearing tool results as untrusted data by default and require an explicit promotion boundary before returned text can be treated as model instruction.
 
-2. `POL-1B` — partial policy reconciliation
+1. `POL-1B` — partial policy reconciliation
    Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after the remaining critical gaps are closed.
 
-3. `POL-1C` — specified-only non-critical reconciliation
+2. `POL-1C` — specified-only non-critical reconciliation
    Reconcile `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy` without assuming that a stale status implies missing implementation.
 
-4. `COMP-1A` — event-gated protocol evidence
+3. `COMP-1A` — event-gated protocol evidence
    Refresh only for real Codex client-entry traffic newer than `0.148.0-alpha.9`; preserve both compatibility paths until that evidence changes the verdict.
 
-5. `COMP-1B`
+4. `COMP-1B`
    Run only if fresh `COMP-1A` evidence materially changes initialize-retirement.
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed protocol-debt cleanup: `DEBT-1-RETIREMENT` removes the inactive classic Sampling/session helper stack, aligns Sampling/Auth/Event specs, and preserves the authenticated smoke count by converting historical roundtrip fixtures into retirement guards.
@@ -78,6 +75,7 @@ Completed full-harness lifecycle hygiene: `run_all_smokes.js` uses the shared fa
 Completed official client interoperability: `MCP-OFFICIAL-SDK-V2-INTEROP` pins `@modelcontextprotocol/client@2.0.0` for tests and guards default legacy, automatic modern, pinned modern, full OAuth21 DCR/PKCE/callback/refresh behavior, process-restart recovery from SQLite, authorized list/call, and server-side evidence without touching production runtime.
 Completed MRTR conformance: `MRTR` keeps multi-round-trip `2026-07-28` behavior fixture-scoped and passed clean-history `7 + 305` in run `31963602072` without production `src/` changes or a second execution/session architecture; runtime loading is deliberately non-applicable.
 Completed production MRTR runtime: `pol-1a-mrtr-runtime` adds `src/runtime/mrtr_extension.js`, exact-call/digest binding over the existing bounded state-handle store, pre-execution `input_required` dispatch, and safe MRTR audit events. Full `7 + 310` passed before supervisor restart `manual-1787079823223`; live runtime `2026-08-18T19:03:44.754Z` retained `98` tools and fingerprint `93721a82a339f9d6` without connector refresh.
+Historical POL-1A process-MRTR acceptance (superseded as the default process policy): `POL-1A-CONSENT` previously activated exact-call-bound MRTR form approval for `run_process`, `process_start`, and `process_cancel`; full `7 + 311` passed before live activation. Restart `manual-1787194958781` loaded source `4321b8f` at `server_start_id = 2026-08-20T03:02:40.571Z`; the form-capable live probe proved fail-closed missing capability, pre-execution `input_required`, decline/malformed denial, exact accept-once execution, replay rejection, audit privacy, and unchanged `98` / `93721a82a339f9d6` surface. This remains authoritative MRTR evidence but no longer defines routine bounded-process authorization.
 Completed protocol live acceptance: controlled restart `manual-1786907075795` loaded final source `737cdc8b97ec1e966823dc2566eb7d5cd221e9b6` at `server_start_id 2026-08-16T19:04:37.288Z`, preserving `98` tools and fingerprint `ec7d3af5b4ea17f5`; live probes accepted Tasks, W3C correlation, process artifacts/resources, CIMD SSRF rejection, and OAuth reconnect/recovery.
 Completed memory activation: `MEM-1-LIVE` activated OVH `bge-m3`, fixed live ranking noise, proved PL/EN and fallback behavior, verified a non-plaintext cache, and backfilled all active unique memories.
 Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`; live partial-result metadata is now guarded in `_tests/smoke_cbm_live_bridge_stress.js` and agent-facing CBM interpretation guidance is guarded by `_tests/smoke_cbm_agent_skill.js`.

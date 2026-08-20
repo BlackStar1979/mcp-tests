@@ -4,7 +4,6 @@ const toolsSpec = require("../../SERVER_TOOLS_SPEC.json");
 
 const CONSENT_REQUIREMENT_KIND = "human_consent_v1";
 const CONSENT_RESPONSE_KEY = "human_approval";
-const PROCESS_CONSENT_TOOLS = new Set(["run_process", "process_start", "process_cancel"]);
 
 function isPlainObject(value) {
   if (!value || typeof value !== "object" || Array.isArray(value)) return false;
@@ -34,16 +33,11 @@ function resolveConsentRequirement({
   toolCatalog = toolsSpec.tool_catalog,
 } = {}) {
   const normalizedToolName = typeof toolName === "string" ? toolName : "";
-  if (!PROCESS_CONSENT_TOOLS.has(normalizedToolName)) {
+  if (!isPlainObject(toolPolicy) || toolPolicy.consent_mode !== "mrtr_human_approval") {
     return { required: false, ok: true };
   }
 
-  if (
-    !isPlainObject(toolPolicy)
-    || toolPolicy.destructive !== true
-    || toolPolicy.read_only !== false
-    || toolPolicy.auth_required !== true
-  ) {
+  if (toolPolicy.auth_required !== true) {
     return invalidRequired("consent_tool_policy_invalid");
   }
 
