@@ -2,7 +2,7 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "active_authority_specified_runtime_enforcement_partial",
+  "status": "repo_implemented_live_load_pending",
   "schema_version": "mcp-tests-prompt-content-policy-v1",
   "scope": "Prompt, tool metadata, prompt-template and untrusted content injection boundary.",
   "policy": {
@@ -11,21 +11,62 @@
     "tool_description_mutation_detection": "required",
     "prompt_template_source_trust": "required",
     "prompt_result_separation": true,
-    "model_instruction_from_tool_output": "forbidden_unless_explicitly_promoted"
+    "model_instruction_from_tool_output": "forbidden_unless_explicitly_promoted",
+    "model_visible_tool_result_boundary": "required",
+    "detected_instruction_content": "return_as_data_with_risk_label_do_not_suppress",
+    "default_tool_output_promotion": "forbidden"
   },
   "current_repo_bindings": [
     "SERVER_TOOLS_SPEC.json",
-    "SERVER_EVENT_CATALOG_SPEC.json"
+    "SERVER_EVENT_CATALOG_SPEC.json",
+    "SERVER_OUTPUT_DLP_POLICY_SPEC.json",
+    "src/runtime/prompt_content_policy.js",
+    "src/runtime/tool_result.js",
+    "src/runtime/tool_result_assertion.js",
+    "_workflow/scripts/io_prompt_firewall.js"
   ],
-  "runtime_gaps": [
-    "ingested document/tool content has no centralized trust label or hidden-instruction detection before it is returned to the model",
-    "src/runtime/search_fetch_docs.js returns bounded document text but does not classify embedded instructions as untrusted content",
-    "there is no runtime promotion boundary that distinguishes ordinary tool data from content explicitly authorized to act as model instruction"
+  "repository_implementation": {
+    "status": "implemented_pending_controlled_live_load",
+    "runtime_owner": "src/runtime/prompt_content_policy.js",
+    "tool_result_composition_owner": "src/runtime/tool_result.js",
+    "workflow_compatibility_adapter": "_workflow/scripts/io_prompt_firewall.js",
+    "default_trust_class": "untrusted_tool_output",
+    "instruction_handling": "data_only",
+    "promotion_allowed": false,
+    "model_visible_boundary_content_index": 1,
+    "primary_json_content_index": 0,
+    "structured_content_contract_preserved": true,
+    "raw_detected_content_in_boundary_metadata": false,
+    "content_suppression_on_detection": false
+  },
+  "current_deploy_impact": {
+    "runtime_restart_required_now": true,
+    "connector_visible_surface_changed": false,
+    "connector_refresh_required_now": false,
+    "tool_count_changed": false,
+    "tool_names_changed": false,
+    "input_schema_changed": false,
+    "output_schema_changed": false,
+    "descriptor_changed": false,
+    "tool_result_content_contract_changed": true,
+    "repo_target_tool_count": 98,
+    "repo_target_combined_fingerprint": "93721a82a339f9d6"
+  },
+  "runtime_gaps": [],
+  "implementation_evidence": [
+    "src/runtime/prompt_content_policy.js is the single runtime owner for recursive content inspection, stable finding ids, severity aggregation, data-only classification and model-visible trust-boundary construction",
+    "src/runtime/tool_result.js applies the prompt/content boundary after output DLP sanitation to every normal toolResult without changing content[0] JSON or structuredContent",
+    "the model-visible boundary contains only policy metadata, risk severity and finding ids; it never copies hostile source text and never grants promotion",
+    "_workflow/scripts/io_prompt_firewall.js is now a compatibility adapter that re-exports the runtime owner instead of maintaining duplicate classifier rules",
+    "_tests/smoke_prompt_content_policy.js covers safe, hostile, hidden-instruction, structured and content-only results and proves original data remains intact while promotion stays forbidden",
+    "src/runtime/tool_result_assertion.js makes the two-block result boundary part of connector self-test while preserving the primary JSON/structuredContent equality contract"
   ],
   "reconciliation_evidence": [
     "tool descriptor mutation detection is already covered by the implemented capability-attestation fingerprint and tool-surface drift controls",
     "prompts/list is an empty compatibility surface, so prompt-template source trust is currently inactive rather than an implementation blocker",
-    "the remaining current-target gap is untrusted content handling on content-bearing tool results, not descriptor fingerprinting or prompt-template execution"
+    "the implemented output DLP boundary already labels tool output in result _meta, but current OpenAI tool-result semantics hide _meta from the model while surfacing content and structuredContent",
+    "the prompt/content boundary therefore adds a second model-visible content block instead of relying on hidden _meta or changing every tool outputSchema",
+    "instruction detection is classification rather than content censorship: matching content remains available as data so documentation, security fixtures and code examples are not destroyed by false positives"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",

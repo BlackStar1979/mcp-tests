@@ -194,6 +194,7 @@
   "_tests/smoke_control_plane_deploy_rollback.js",
   "_tests/smoke_io_safety_policy.js",
   "_tests/smoke_io_safety_active_controls.js",
+  "_tests/smoke_prompt_content_policy.js",
   "_tests/smoke_mcp_apps_risk_policy.js",
   "_tests/smoke_network.js",
   "_tests/smoke_decision_runtime_shim_implementation.js",

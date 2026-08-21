@@ -8,8 +8,8 @@ Executable smoke tests, stress checks, topology guards, archive fixtures, and he
 
 Audit snapshot from `2026-08-20`:
 
-- `405` JavaScript files total in `_tests`
-- `320` active scripts currently listed in `run_all_smoke_scripts.json`
+- `406` JavaScript files total in `_tests`
+- `321` active scripts currently listed in `run_all_smoke_scripts.json`
 - `17` archived legacy retired-auth scripts in `archive/legacy_retired_auth/`
 - `17` archived stale non-`run_all` scripts in `archive/non_run_all_stale/`
 - `8` `stress_*.js` scripts for explicit manual stress runs
@@ -18,8 +18,8 @@ Audit snapshot from `2026-08-20`:
 Latest full active validation:
 
 - `node _tests/run_all_smokes.js --skip-network`
-- latest full active result from `2026-08-20`: `ok=true, version=0.40.0, public=7, tests_authenticated=312`; TESTS_MCP `run_process` exited `0`, and clean-history validation remains a separate post-commit proof
-- current manifest contains `320` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `319` sectioned scripts: `7` public and `312` authenticated
+- latest full active result from `2026-08-21`: `ok=true, version=0.40.0, public=7, tests_authenticated=313`; durable TESTS_MCP job `592bdbe7-7e97-417c-b4f7-4dd067f7ac66` exited `0` with empty stderr; clean-history validation remains a separate post-commit proof
+- current manifest contains `321` entries, including `_tests/smoke_network.js`; `--skip-network` therefore targets `320` sectioned scripts: `7` public and `313` authenticated
 ## Orientation
 
 - Active smoke entrypoint: `run_all_smokes.js`

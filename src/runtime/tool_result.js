@@ -1,6 +1,7 @@
 "use strict";
 
 const { parseProcessArtifactUri } = require("./process_artifact_resource");
+const { buildModelVisibleContentBoundary } = require("./prompt_content_policy");
 const { sanitizeJsonPayload } = require("./output_dlp_boundary");
 
 const OUTPUT_TRUST_META_KEY = "mcp-tests/outputTrust";
@@ -48,6 +49,7 @@ function toolResult(outputMode, payload, freshness = null) {
         type: "text",
         text: JSON.stringify(safePayload),
       },
+      buildModelVisibleContentBoundary(safePayload),
     ],
   };
 

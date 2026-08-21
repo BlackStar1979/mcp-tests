@@ -7,7 +7,7 @@ const { assertProfilePolicy } = require("../tool_policy");
 const { normalizeRelativePath } = require("../util/path_policy");
 const { fetchDoc, searchDocs } = require("./search_fetch_docs");
 const { toolResult } = require("./tool_result");
-const { parseSingleTextJsonToolResult } = require("./tool_result_assertion");
+const { parsePrimaryTextJsonToolResult } = require("./tool_result_assertion");
 const { assertPublicSearchResults } = require("./search_result_assertion");
 const { assertTextExcludesMarkers } = require("./text_marker_assertion");
 const { assertFetchMetadataRuntimeFields } = require("./fetch_metadata_assertion");
@@ -99,7 +99,7 @@ async function assertConnectorShapeSelfTest({
     results: searchDocs(documentRuntimeContext(), "test-mcp-health-canary"),
   });
 
-  const parsedSearch = parseSingleTextJsonToolResult(searchResult, "search", outputMode);
+  const parsedSearch = parsePrimaryTextJsonToolResult(searchResult, "search", outputMode);
 
   assertPublicSearchResults(parsedSearch, {
     label: "search",
@@ -117,7 +117,7 @@ async function assertConnectorShapeSelfTest({
 
   const fetchResult = toolResult(outputMode, fetchPayload);
 
-  const parsedFetch = parseSingleTextJsonToolResult(fetchResult, "fetch", outputMode);
+  const parsedFetch = parsePrimaryTextJsonToolResult(fetchResult, "fetch", outputMode);
 
   assertPublicFetchPayloadFields(parsedFetch, {
     label: "fetch",
