@@ -1,10 +1,10 @@
 # Active Workflow Index
 
 Status: active navigation index
-Date: 2026-08-20
+Date: 2026-08-21
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs the capability-adaptive authorization source from `cc75a66` at current `server_start_id = 2026-08-20T17:34:29.129Z`. Acceptance was established by supervisor restart `manual-1787246667424` at `server_start_id = 2026-08-20T17:24:29.112Z`; the later restart retained the same `98`-tool surface and combined fingerprint `93721a82a339f9d6`. Runtime and authenticated connector expose `98` tools with unchanged combined fingerprint `93721a82a339f9d6`. Internal OAuth `mcp:tools` is standing authorization for bounded tools, `destructiveHint` is not an authorization authority, and fresh consent is selected only by explicit `consent_mode`. Live ChatGPT probes proved `run_process`, `process_start`, and bounded `write_file` execution without `elicitation.form`, while the process command allowlist still rejected an unapproved command. The earlier form-capable process-MRTR acceptance at `2026-08-20T03:02:40.571Z` remains historical evidence for the generic MRTR path but is superseded as the default process policy. `restart_required_now = false`; connector refresh is not required because the governed surface is unchanged. Live policy coverage remains `15/24`; `prompt/content` is the active critical gap.
+Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs source `20ab92155dfb9ba356d079f7a9264e7d8cf67005` at `server_start_id = 2026-08-21T18:44:38.849Z` after supervisor restart `manual-1787337877357`. Runtime and authenticated connector expose the unchanged `98`-tool surface with combined fingerprint `93721a82a339f9d6`; `restart_required_now = false` and connector refresh is not required. `POL-1A-PROMPT-CONTENT` is live accepted: safe and hostile raw OAuth tool calls preserve primary data and `structuredContent`, while the model-visible boundary marks tool output `untrusted_tool_output`, enforces `instruction_handling=data_only` and `promotion_allowed=false`, and classifies the hostile fixture as `critical` without copying hostile text into boundary metadata. Capability-adaptive authorization and production MRTR remain accepted. Live policy coverage is `16/24`, all `6/6` critical policies are implemented, and `POL-1B` is the active non-critical reconciliation package.
 
 `DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
@@ -22,8 +22,8 @@ The operator refreshed OAuth authorization and the connector tool list before th
 Current workflow markers:
 - The project-local CBM skill routes documentation/workflow questions to the dependency-free knowledge index.
 - `current_working_course = protocol-capability-module-convergence`
-- `next_primary = pol-1a-prompt-content`
-- `next_secondary = pol-1b`
+- `next_primary = pol-1b`
+- `next_secondary = pol-1c`
 - `Stage 8 / Step 53b` = modular safe tool surface consolidation
 - `Stage 8 / Step 53c` = modular unsafe tool governance boundary
 - `Stage 8 / Step 53d` = live restart and connector surface reconciliation
@@ -85,9 +85,9 @@ Do not infer active work from historical plan files unless `_workflow/state.json
 - Validated cleanup-closeout anchor on `main`: `aecec58`.
 - Later workflow-only truth-sync commits may advance `main` without reopening the cleanup debt.
 - Server version: `0.40.0`.
-- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=312`.
+- Latest full smoke: `ok=true, version=0.40.0, public=7, tests_authenticated=313`.
 - Public section count: `7`.
-- Authenticated smoke count: `312`.
+- Authenticated smoke count: `313`.
 - Cleanup-closeout checkpoint expected only `?? .codebase-memory/` and `?? _workflow/experiments/`; later local deviations require separate triage and do not retroactively reopen the cleanup closeout record.
 - Earlier checkpointed hygiene closeout is complete.
 - Repo hygiene audit is green.
@@ -398,18 +398,21 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Execute `POL-1A-PROMPT` for explicit untrusted-content classification and instruction-promotion boundaries; capability-adaptive `POL-1A-CONSENT` authorization is live accepted.
-2. Follow with `POL-1B`/`POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
+1. Execute `POL-1B` against the four `partial` non-critical policies using current code/runtime evidence before adding new behavior.
+2. Follow with `POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
 Historical records remain traceability evidence, not the active queue. `_workflow/control_plane/snapshots/**` is archival evidence only. The June/July SEP triage is provenance only and is superseded for current protocol truth by `SERVER_PROTOCOL_CAPABILITY_SPEC.json`.
 
-`POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes — is live accepted on OAuth21/internal. Acceptance restart `manual-1787246667424` loaded source `cc75a66` at `server_start_id = 2026-08-20T17:24:29.112Z`; the current post-restart runtime is `2026-08-20T17:34:29.129Z`. `tools/list` remains `98` with fingerprint `93721a82a339f9d6`, `restart_required_now = false`, and `connector_refresh_required_now = false`. Direct ChatGPT connector probes proved normal bounded process/workspace execution without `elicitation.form` while the process command allowlist remained fail-closed. The generic MRTR implementation remains accepted; `prompt/content` is now the active critical package.
+`POL-1A-PROMPT-CONTENT` — explicit untrusted-content classification and instruction-promotion boundary — is live accepted on OAuth21/internal. Restart `manual-1787337877357` loaded source `20ab92155dfb9ba356d079f7a9264e7d8cf67005` at `server_start_id = 2026-08-21T18:44:38.849Z`; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`, `restart_required_now = false`, and `connector_refresh_required_now = false`. Safe and hostile raw OAuth tool-call probes both verified the two-block result boundary while preserving tool data; all critical policy rows are now implemented.
+
+`POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes — remains live accepted on OAuth21/internal as a regression line. Internal OAuth `mcp:tools` remains standing authorization for bounded tools, while explicit `consent_mode` continues to own fresh-consent selection.
 Readiness-derived default next package queue:
 
-1. `POL-1A-PROMPT` — untrusted-content classification and instruction-promotion boundary
-2. `POL-1B` — partial policy reconciliation
-3. `POL-1C` — specified-only non-critical reconciliation
+1. `POL-1B` — partial policy reconciliation
+2. `POL-1C` — specified-only non-critical reconciliation
 
 Recently completed:
+
+- `POL-1A-PROMPT-CONTENT` accepted on August 21, 2026: source `20ab92155dfb9ba356d079f7a9264e7d8cf67005` passed the full `7 + 313` pre-live suite; supervisor restart `manual-1787337877357` loaded it at `server_start_id = 2026-08-21T18:44:38.849Z`. Safe and hostile raw OAuth tool-call probes proved the model-visible `untrusted_tool_output` / `data_only` / `promotion_allowed=false` boundary while preserving primary data and `structuredContent`. The surface remained `98` / `93721a82a339f9d6`, so no connector refresh was required. See `_workflow/operator_decisions/pol_1a_prompt_content_live_closeout.md`.
 
 - Capability-adaptive `POL-1A-CONSENT` authorization reconciliation accepted on August 20, 2026: pre-live source `cc75a66` passed the full `7 + 312` offline suite; supervisor restart `manual-1787246667424` loaded it at `server_start_id = 2026-08-20T17:24:29.112Z`. Direct ChatGPT connector probes proved `run_process`, durable `process_start`, and bounded `write_file` without `elicitation.form`; an unapproved `cmd` process remained rejected as `process_command_not_allowed`. The tool surface remained `98` / `93721a82a339f9d6`, so no connector refresh was required.
 

@@ -48,6 +48,7 @@ for (const rel of [
   ["_workflow", "operator_decisions", "mrtr_conformance_closeout.md"],
   ["_workflow", "operator_decisions", "mrtr_runtime_closeout.md"],
   ["_workflow", "operator_decisions", "observability_live_trail_acceptance.md"],
+  ["_workflow", "operator_decisions", "pol_1a_prompt_content_live_closeout.md"],
 ]) {
   assert.equal(exists(...rel), true, `missing required documentation file: ${rel.join("/")}`);
 }
@@ -71,6 +72,7 @@ const cimdCloseout = read("_workflow", "operator_decisions", "oauth_cimd_closeou
 const mrtrCloseout = read("_workflow", "operator_decisions", "mrtr_conformance_closeout.md");
 const mrtrRuntimeCloseout = read("_workflow", "operator_decisions", "mrtr_runtime_closeout.md");
 const observabilityCloseout = read("_workflow", "operator_decisions", "observability_live_trail_acceptance.md");
+const promptContentCloseout = read("_workflow", "operator_decisions", "pol_1a_prompt_content_live_closeout.md");
 const processPersistenceAcceptance = read("_workflow", "operator_decisions", "process_job_persistence_live_acceptance.md");
 const workflowState = JSON.parse(read("_workflow", "state.json"));
 const eventCatalog = JSON.parse(read("SERVER_EVENT_CATALOG_SPEC.json"));
@@ -93,8 +95,8 @@ assert.ok(readiness.includes("Operator-facing documentation contract"));
 assert.ok(readiness.includes("Governance correctly detected and closed the POL-1A-DLP schema delta"));
 assert.ok(readiness.includes("No active connector-surface blocker remains"));
 assert.ok(readiness.includes("`SEP-2164` and `SEP-1303` remain live accepted"));
-assert.ok(readiness.includes("Production MRTR (`SEP-2322`) is live-loaded as the generic fresh-consent primitive"));
-assert.ok(readiness.includes("capability-adaptive `POL-1A-CONSENT` is live accepted on OAuth21/internal"));
+assert.ok(readiness.includes("Production MRTR (`SEP-2322`), capability-adaptive `POL-1A-CONSENT`, and `POL-1A-PROMPT-CONTENT` are live accepted on OAuth21/internal"));
+assert.ok(readiness.includes("all `6/6` critical policies are now implemented"));
 assert.ok(readiness.includes("| SURF-1 | Connector-visible surface governance | 4/4 |"));
 assert.ok(readiness.includes("| PROC-1 | Process execution reliability | 4/4 |"));
 assert.ok(readiness.includes("Codebase-Memory bridge and index integrity"));
@@ -198,9 +200,11 @@ assert.ok(cbmSkillDirectory.includes("truth boundaries"));
 assert.ok(cbmSkillReferencesDirectory.includes("Status: active using-codebase-memory references directory map"));
 assert.ok(cbmSkillReferencesDirectory.includes("Per-tool argument, mutation, and caveat reference"));
 assert.equal(workflowState.workflow_progress_markers.current_working_course, "protocol-capability-module-convergence");
-assert.equal(workflowState.workflow_progress_markers.next_primary, "pol-1a-prompt-content");
-assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1b");
-assert.ok(readiness.includes("| POL-1 | Policy coverage convergence | 2/4 |"));
+assert.equal(workflowState.workflow_progress_markers.next_primary, "pol-1b");
+assert.equal(workflowState.workflow_progress_markers.next_secondary, "pol-1c");
+assert.ok(readiness.includes("| POL-1 | Policy coverage convergence | 3/4 |"));
+assert.ok(promptContentCloseout.includes("Status: GREEN / LIVE ACCEPTED / CONNECTOR UNCHANGED"));
+assert.ok(promptContentCloseout.includes("all `6/6` critical policy rows are implemented") || promptContentCloseout.includes("All `6/6` critical policy rows are implemented"));
 assert.equal(workflowState.audit_events_spec.event_count, eventCatalog.events.length);
 
 assertCurrentRuntimeStartIdentity(workflowState);
@@ -223,8 +227,8 @@ assert.ok(workflowIndex.includes("all `68/68` directories containing tracked fil
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = protocol-capability-module-convergence`"));
-assert.ok(workflowIndex.includes("`next_primary = pol-1a-prompt-content`"));
-assert.ok(workflowIndex.includes("`next_secondary = pol-1b`"));
+assert.ok(workflowIndex.includes("`next_primary = pol-1b`"));
+assert.ok(workflowIndex.includes("`next_secondary = pol-1c`"));
 assert.ok(readiness.includes("| OPS-1 | Operational E2E and soak coverage | 4/4 |"));
 assert.ok(roadmap.includes("`OPS-1B` live SFTP boundary — accepted"));
 assert.ok(rootReadme.includes("## Operator-Facing Documentation"));

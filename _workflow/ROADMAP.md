@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-20
+Updated: 2026-08-21
 
 ## Purpose
 
@@ -21,7 +21,7 @@ Current derivation:
 - Earlier post-refresh destructive verification returned `deleted`, then `cbm_project_not_found` through a fresh `state_handle`; the source fixture remained intact. The snippet-integrity package is live and required no connector refresh.
 - `COMP-1` is 3/4: official `@modelcontextprotocol/client@2.0.0` regression and independent operational `openai-mcp 1.0.0` traffic prove modern `2026-07-28` `server/discover`, but the August 17 operational `codex-mcp-client 0.148.0-alpha.9` sample still contains `3` successful legacy `initialize` entries and `0` `server/discover` entries.
 - `DOC-2` is `4/4`: all `68/68` directories containing tracked files have generator-owned or guarded maps, non-mutating generator `--check` is green, and the repo-wide audit prevents silent coverage regression.
-- `RETR-1` retrieval now exposes workflow facts directly, rejects silent staleness, parses complete canonical workflow documents through a bounded transient sample, and ranks authoritative current evidence ahead of historical records. The refreshed live v3 knowledge index contains `288` documents, visited `1238` files and `48` directories, reports freshness `fresh`, extracts all `14` readiness components, and links all `36` source-of-truth documents through `758` internal links.
+- `RETR-1` retrieval now exposes workflow facts directly, rejects silent staleness, parses complete canonical workflow documents through a bounded transient sample, and ranks authoritative current evidence ahead of historical records. The refreshed live v3 knowledge index contains `301` documents, visited `1265` files and `48` directories, reports freshness `fresh`, extracts all `15` readiness components, and links all `37` source-of-truth documents through `791` internal links.
 - `UPSTREAM-PATTERN-LAB` now keeps a seven-repo local extraction corpus and records implementation signals plus transplant candidates before future retrieval/memory behavior is adopted.
 - OAuth21 startup maintenance is live at `server_start_id = 2026-07-29T19:28:19.541Z`: it is transaction-coordinated before RAM load, backup/receipt guarded, daily bounded, and live passes found no eligible clients or orphan tokens without interrupting connector callability.
 - Descriptor refresh review is closed: runtime `2026-08-01T19:48:43.083Z` serves the intentional additive retrieval output contract with combined fingerprint `73c0bc08dad53e8c`; live retrieval calls succeeded without OAuth relogin.
@@ -44,18 +44,15 @@ Current derivation:
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
 | P4 | Production MRTR runtime — live accepted | stable protocol adapters | MRTR now provides the production multi-round-trip primitive required for server-verifiable consent without a second execution architecture. | Preserve exact-call binding, digest-only state, one-time retry semantics, and the accepted consent composition seam. |
-| P5 | `POL-1A` critical policy gap closure — prompt/content | live-accepted production MRTR and capability-adaptive consent/authorization authority | Capability-adaptive `POL-1A-CONSENT` was live accepted from source `cc75a66` at acceptance `server_start_id = 2026-08-20T17:24:29.112Z`; the current runtime `2026-08-20T17:34:29.129Z` retains that source and governed surface. Direct ChatGPT connector probes proved bounded process/workspace usability without weakening command guards. Production MRTR remains live as the explicit fresh-consent primitive, the governed surface remains `98` / `93721a82a339f9d6`, and policy coverage remains `15/24`. `prompt/content` is the remaining critical policy gap. | Execute `POL-1A-PROMPT-CONTENT`, then continue bounded `POL-1B` reconciliation. |
+| P5 | `POL-1B` partial policy reconciliation | live-accepted `POL-1A-PROMPT-CONTENT` and all critical policy gaps closed | `POL-1A-PROMPT-CONTENT` is live accepted from source `20ab92155dfb9ba356d079f7a9264e7d8cf67005` at `server_start_id = 2026-08-21T18:44:38.849Z`. Policy coverage is `16/24`; all `6/6` critical policies are implemented. Four non-critical rows remain `partial`: network, plugin visibility, runtime topology, and rate-limit/quota. | Reconcile those four rows against current code/runtime evidence before implementing any new behavior; then continue to `POL-1C`. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `POL-1A-PROMPT` — untrusted-content and instruction-promotion boundary
-   Classify content-bearing tool results as untrusted data by default and require an explicit promotion boundary before returned text can be treated as model instruction.
+0. `POL-1B` — partial policy reconciliation
+   Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` against current code/runtime evidence before adding new enforcement.
 
-1. `POL-1B` — partial policy reconciliation
-   Reconcile `network_policy`, `plugin_visibility_policy`, `runtime_topology`, and `rate_limit_quota_policy` after the remaining critical gaps are closed.
-
-2. `POL-1C` — specified-only non-critical reconciliation
+1. `POL-1C` — specified-only non-critical reconciliation
    Reconcile `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy` without assuming that a stale status implies missing implementation.
 
 3. `COMP-1A` — event-gated protocol evidence

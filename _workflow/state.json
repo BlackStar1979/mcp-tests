@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-21T17:48:19.584Z",
+  "updated_at": "2026-08-21T18:49:06.347Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -65,8 +65,8 @@
   },
   "workflow_progress_markers": {
     "current_working_course": "protocol-capability-module-convergence",
-    "next_primary": "pol-1a-prompt-content",
-    "next_secondary": "pol-1b",
+    "next_primary": "pol-1b",
+    "next_secondary": "pol-1c",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -190,8 +190,8 @@
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
-    "implemented_required": "15/24",
-    "remaining_non_implemented": 9,
+    "implemented_required": "16/24",
+    "remaining_non_implemented": 8,
     "critical_policy_count": 6
   },
   "restart_supervisor": {
@@ -283,7 +283,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 98,
-      "server_start_id": "2026-08-20T17:34:29.129Z",
+      "server_start_id": "2026-08-21T18:44:38.849Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -312,7 +312,7 @@
       "combined_fingerprint": "93721a82a339f9d6",
       "connector_map_status": "repo98_runtime98_model98_schema_current",
       "repo_current_expected_tool_count": 98,
-      "server_start_id": "2026-08-20T17:34:29.129Z",
+      "server_start_id": "2026-08-21T18:44:38.849Z",
       "connector_ui_visibility_verified_now": true,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,

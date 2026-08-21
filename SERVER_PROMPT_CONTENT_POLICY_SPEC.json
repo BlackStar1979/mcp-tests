@@ -2,7 +2,7 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "repo_implemented_live_load_pending",
+  "status": "implemented_live_accepted",
   "schema_version": "mcp-tests-prompt-content-policy-v1",
   "scope": "Prompt, tool metadata, prompt-template and untrusted content injection boundary.",
   "policy": {
@@ -26,7 +26,7 @@
     "_workflow/scripts/io_prompt_firewall.js"
   ],
   "repository_implementation": {
-    "status": "implemented_pending_controlled_live_load",
+    "status": "implemented_live_loaded",
     "runtime_owner": "src/runtime/prompt_content_policy.js",
     "tool_result_composition_owner": "src/runtime/tool_result.js",
     "workflow_compatibility_adapter": "_workflow/scripts/io_prompt_firewall.js",
@@ -40,7 +40,7 @@
     "content_suppression_on_detection": false
   },
   "current_deploy_impact": {
-    "runtime_restart_required_now": true,
+    "runtime_restart_required_now": false,
     "connector_visible_surface_changed": false,
     "connector_refresh_required_now": false,
     "tool_count_changed": false,
@@ -51,6 +51,43 @@
     "tool_result_content_contract_changed": true,
     "repo_target_tool_count": 98,
     "repo_target_combined_fingerprint": "93721a82a339f9d6"
+  },
+  "live_acceptance": {
+    "date": "2026-08-21",
+    "closeout_record": "_workflow/operator_decisions/pol_1a_prompt_content_live_closeout.md",
+    "source_commit": "20ab92155dfb9ba356d079f7a9264e7d8cf67005",
+    "prelive_full_suite_job": "592bdbe7-7e97-417c-b4f7-4dd067f7ac66",
+    "prelive_full_suite": "7 public + 313 authenticated GREEN",
+    "restart_request_id": "manual-1787337877357",
+    "server_start_id": "2026-08-21T18:44:38.849Z",
+    "profile": "internal",
+    "tool_count": 98,
+    "combined_fingerprint": "93721a82a339f9d6",
+    "connector_refresh_required": false,
+    "safe_raw_rpc_probe": {
+      "http_status": 200,
+      "content_count": 2,
+      "structured_matches_primary": true,
+      "trust_class": "untrusted_tool_output",
+      "instruction_handling": "data_only",
+      "promotion_allowed": false,
+      "instruction_risk": "none"
+    },
+    "hostile_fixture_raw_rpc_probe": {
+      "http_status": 200,
+      "content_count": 2,
+      "primary_content_preserved": true,
+      "structured_matches_primary": true,
+      "trust_class": "untrusted_tool_output",
+      "instruction_handling": "data_only",
+      "promotion_allowed": false,
+      "instruction_risk": "critical",
+      "finding_ids_verified": [
+        "ignore_previous",
+        "secret_exfiltration"
+      ],
+      "boundary_copies_hostile_text": false
+    }
   },
   "runtime_gaps": [],
   "implementation_evidence": [

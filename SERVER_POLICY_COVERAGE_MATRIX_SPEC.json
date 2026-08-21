@@ -126,7 +126,7 @@
     },
     {
       "id": "prompt_content_policy",
-      "status": "critical_specified",
+      "status": "implemented",
       "spec_ref": "SERVER_PROMPT_CONTENT_POLICY_SPEC.json",
       "critical": true,
       "required": true
