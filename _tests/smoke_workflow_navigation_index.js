@@ -113,7 +113,7 @@ assert.ok(canon.includes("MRTR (`SEP-2322`) remains the existing production prot
 assert.ok(canon.includes("Next recommended action: execute `POL-1A-PROMPT-CONTENT`"));
 assert.equal(index.includes("`OPS-1B` — event-gated live SFTP completion"), false);
 assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "93721a82a339f9d6");

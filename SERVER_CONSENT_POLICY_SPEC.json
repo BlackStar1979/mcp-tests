@@ -2,7 +2,7 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": false,
   "priority": "critical",
-  "status": "capability_adaptive_authorization_repository_implemented_pending_live_acceptance",
+  "status": "capability_adaptive_authorization_live_accepted",
   "schema_version": "mcp-tests-consent-policy-v2",
   "scope": "Human/operator authorization, fresh-consent and escalation boundaries for tool calls, scope elevation, sampling, elicitation, runtime mutation and connector refresh.",
   "policy": {
@@ -79,10 +79,10 @@
     "consent_receipt_exposes_raw_arguments_or_scope_digests": false,
     "descriptor_destructive_hint_is_authorization_authority": false,
     "cbm_confirmation_is_generalized_human_consent": false,
-    "live_activation_claimed": false
+    "live_activation_claimed": true
   },
   "current_deploy_impact": {
-    "runtime_restart_required_now": true,
+    "runtime_restart_required_now": false,
     "connector_visible_surface_changed": false,
     "connector_refresh_required_now": false,
     "tool_count_changed": false,
@@ -94,13 +94,18 @@
     "repo_target_combined_fingerprint": "93721a82a339f9d6"
   },
   "live_acceptance": {
-    "status": "pending_controlled_restart_and_connector_probe",
-    "required_proofs": [
-      "ChatGPT connector run_process succeeds without elicitation.form",
-      "bounded workspace mutation is not blanket-denied",
-      "command/workspace/scope negative controls remain fail-closed",
-      "tool surface remains 98 / 93721a82a339f9d6"
-    ]
+    "status": "accepted_on_oauth21_internal",
+    "source_commit": "cc75a66a82b3ac49a65f5fa1ad9986c3b03612f2",
+    "restart_request_id": "manual-1787246667424",
+    "server_start_id": "2026-08-20T17:24:29.112Z",
+    "tool_count": 98,
+    "combined_fingerprint": "93721a82a339f9d6",
+    "connector_refresh_required": false,
+    "chatgpt_run_process_without_elicitation_form": true,
+    "chatgpt_process_start_without_elicitation_form": true,
+    "bounded_workspace_write_not_blanket_denied": true,
+    "command_allowlist_negative_control_preserved": true,
+    "audit_decision_reason": "explicit_policy_allow"
   },
   "historical_process_mrtr_acceptance": {
     "status": "accepted_then_superseded_as_default_process_policy",

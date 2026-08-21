@@ -23,7 +23,7 @@ for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliat
   assert.equal(Object.hasOwn(state, forbidden), false);
 }
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, true);
+assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_current");
@@ -40,7 +40,9 @@ assert.ok(index.includes("initialize_retirement_decision_prep.md"));
 assert.ok(index.includes("state.json` is only the compact machine-readable orientation map"));
 assert.equal(operatorState.includes("The current live server process predates these changes"), false);
 assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
-assert.ok(operatorState.includes("Live OAuth21 runtime currently exposes `98` tools at recovery"));
+assert.ok(operatorState.includes("Live OAuth21 runtime exposes `98` tools at current `server_start_id ="));
+assert.ok(operatorState.includes("Capability-adaptive `consent_policy` is live accepted"));
+assert.equal(operatorState.includes("awaits controlled live acceptance"), false);
 assert.ok(operatorState.includes(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint));
 assert.ok(operatorState.includes("The former bounded `DOC-2A` fallback is superseded by accepted repo-wide `DOC-2` coverage"));
 assert.ok(index.includes("Refreshed `COMP-1A` on August 17, 2026"));

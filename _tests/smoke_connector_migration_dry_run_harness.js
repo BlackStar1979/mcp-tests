@@ -11,6 +11,7 @@ const readJson = (rel) => JSON.parse(read(rel));
 
 const record = read("_workflow/operator_decisions/connector_migration_dry_run_harness.md");
 const inventory = readJson("_workflow/sessionless_inventory.json");
+const state = readJson("_workflow/state.json");
 const canon = read("_workflow/WORKFLOW_CANON.md");
 const index = read("_workflow/ACTIVE_WORKFLOW_INDEX.md");
 const manifest = readJson("_tests/run_all_smoke_scripts.json");
@@ -57,7 +58,7 @@ assert.equal(output.candidate_route, "/mcp/sessionless");
 assert.equal(output.connector_refresh_performed, false);
 assert.equal(output.connector_route_migration_performed, false);
 assert.equal(output.runtime_restart_performed, false);
-assert.equal(output.preconditions.runtime_restart_required_now, true);
+assert.equal(output.preconditions.runtime_restart_required_now, state.current_runtime_truth.oauth21_3008.restart_required_now);
 assert.equal(output.public_3009_start_performed, false);
 assert.equal(output.stable_mcp_removal_performed, false);
 assert.equal(output.stable_session_code_removal_performed, false);
