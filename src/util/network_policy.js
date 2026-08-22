@@ -189,6 +189,49 @@ function makeBlockedOutput(url, message) {
   };
 }
 
+async function readResponseBodyBounded(response, maxBytes) {
+  const safeMaxBytes = Number.isInteger(Number(maxBytes)) && Number(maxBytes) > 0
+    ? Number(maxBytes)
+    : DEFAULT_MAX_BYTES;
+  const reader = response?.body?.getReader?.();
+  const hasher = crypto.createHash("sha256");
+  if (!reader) {
+    const buffer = Buffer.from(await response.arrayBuffer());
+    hasher.update(buffer);
+    return {
+      buffer: buffer.length > safeMaxBytes ? buffer.subarray(0, safeMaxBytes) : buffer,
+      bytes_observed: buffer.length,
+      truncated: buffer.length > safeMaxBytes,
+      sha256: hasher.digest("hex"),
+    };
+  }
+
+  const chunks = [];
+  let bytesObserved = 0;
+  let bytesKept = 0;
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    const chunk = Buffer.from(value);
+    hasher.update(chunk);
+    bytesObserved += chunk.length;
+    if (bytesKept < safeMaxBytes) {
+      const remaining = safeMaxBytes - bytesKept;
+      const kept = chunk.length > remaining ? chunk.subarray(0, remaining) : chunk;
+      if (kept.length) {
+        chunks.push(kept);
+        bytesKept += kept.length;
+      }
+    }
+  }
+  return {
+    buffer: Buffer.concat(chunks),
+    bytes_observed: bytesObserved,
+    truncated: bytesObserved > safeMaxBytes,
+    sha256: hasher.digest("hex"),
+  };
+}
+
 async function fetchAllowlisted(inputUrl, options = {}) {
   const startedAt = Date.now();
   const method = options.method === "HEAD" ? "HEAD" : "GET";
@@ -256,15 +299,18 @@ async function fetchAllowlisted(inputUrl, options = {}) {
       throw new Error(`Content-Type is not allowed for text fetch: ${contentType || "unknown"}`);
     }
 
-    const arrayBuffer = await response.arrayBuffer();
-    const buffer = Buffer.from(arrayBuffer);
-    output.bytes = buffer.length;
-    output.truncated = buffer.length > maxBytes;
-    const bounded = output.truncated ? buffer.subarray(0, maxBytes) : buffer;
-    output.sha256 = crypto.createHash("sha256").update(buffer).digest("hex");
-    output.text = bounded.toString("utf8");
-    output.duration_ms = Date.now() - startedAt;
-    return output;
+    const bodyTimer = setTimeout(() => controller.abort(), timeoutMs);
+    try {
+      const bounded = await readResponseBodyBounded(response, maxBytes);
+      output.bytes = bounded.bytes_observed;
+      output.truncated = bounded.truncated;
+      output.sha256 = bounded.sha256;
+      output.text = bounded.buffer.toString("utf8");
+      output.duration_ms = Date.now() - startedAt;
+      return output;
+    } finally {
+      clearTimeout(bodyTimer);
+    }
   }
 }
 
@@ -308,6 +354,7 @@ module.exports = {
   isAllowedDomain,
   isBlockedIp,
   isTextContentType,
+  readResponseBodyBounded,
   makeBlockedOutput,
   networkResultStats,
   sha256,

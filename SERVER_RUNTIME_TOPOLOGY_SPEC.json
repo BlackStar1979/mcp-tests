@@ -2,6 +2,9 @@
   "schema_version": "mcp-tests-runtime-topology-spec-v1",
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "scope": "Active runtime topology, port ownership, process-start intent, restart authority boundaries and validation rules for TEST MCP. This file is an authority map, not a deployment log.",
+  "status": "implemented_supervisor_managed_current_target",
+  "runtime_enforced": true,
+  "runtime_gaps": [],
   "runtime_instances": {
     "public_3009": {
       "port": 3009,
@@ -46,19 +49,15 @@
     "state": "repo_supervisor_authority_live_loaded_on_3008",
     "required_before_touching_oauth21_3008": false,
     "expected_model": "file-triggered or supervisor-mediated restart preserving original runtime topology and startup arguments",
-    "known_missing_authority": "previous file-triggered restart mechanism is not present in active repo authority as of this audit",
+    "authority_restored": true,
+    "known_missing_authority": null,
     "forbidden_operations": [
       "generic port-kill restart for oauth21_3008",
       "using _workflow/scripts/test_mcp_restart.ps1 for oauth21_3008",
       "treating public_3009 restart as oauth21_3008 live-load validation",
       "claiming Stage14.5 OAuth21 live-load from TESTS_MCP status without an approved oauth21_3008 restart"
     ],
-    "allowed_until_restored": [
-      "read-only process inspection",
-      "repo-only tests",
-      "isolated-port prototype of restart mechanism",
-      "operator-approved creation of explicit restart authority"
-    ],
+    "allowed_until_restored": [],
     "supervisor_model": {
       "scripts": [
         "scripts/server.sh",

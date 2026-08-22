@@ -61,6 +61,8 @@ assert.deepEqual(spec.protocol_versions, ["2026-07-28", "2025-11-25", "2025-06-1
 assert.equal(spec.behavior_refs.cors, "MCP_TEST_CORS_ALLOW_ORIGIN");
 assert.equal(spec.behavior_refs.health_full, "MCP_TEST_HEALTH_FULL");
 assert.equal(spec.behavior_refs.batch_limit, "MCP_TEST_MAX_BATCH_ITEMS");
+assert.equal(spec.behavior_refs.rate_limit_network_max, "MCP_TEST_RATE_LIMIT_NETWORK_MAX");
+assert.equal(spec.behavior_refs.rate_limit_process_max, "MCP_TEST_RATE_LIMIT_PROCESS_MAX");
 
 assert.equal(rootSpec.spec_refs.runtime_config, "SERVER_RUNTIME_CONFIG_SPEC.json");
 assert.ok(rootSpec.repository_layout_contract.root_policy.active_root_files.includes("SERVER_RUNTIME_CONFIG_SPEC.json"));

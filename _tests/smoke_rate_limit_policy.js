@@ -65,7 +65,9 @@ assert.equal(corruptDecision.error_code, "rate_limit_state_read_failed");
 const runtimeLimiter = createRuntimeRateLimiter({
   rootDir: tmp,
   env: {
-    MCP_TEST_RATE_LIMIT_TOOL_MAX: "1",
+    MCP_TEST_RATE_LIMIT_TOOL_MAX: "10",
+    MCP_TEST_RATE_LIMIT_NETWORK_MAX: "1",
+    MCP_TEST_RATE_LIMIT_PROCESS_MAX: "2",
     MCP_TEST_RATE_LIMIT_TOOL_WINDOW_MS: "60000",
     MCP_TEST_RATE_LIMIT_RESTART_MAX: "1",
     MCP_TEST_RATE_LIMIT_RESTART_WINDOW_MS: "60000",
@@ -73,8 +75,21 @@ const runtimeLimiter = createRuntimeRateLimiter({
   },
   clock: () => 10000,
 });
-assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "search", profile: "internal", authMode: "oauth21" }).allow, true);
-assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "search", profile: "internal", authMode: "oauth21" }).allow, false);
+const clientAFirst = runtimeLimiter.evaluateToolCall({ toolName: "search", profile: "internal", authMode: "oauth21", clientId: "client-a" });
+const clientBFirst = runtimeLimiter.evaluateToolCall({ toolName: "search", profile: "internal", authMode: "oauth21", clientId: "client-b" });
+assert.equal(clientAFirst.allow, true);
+assert.equal(clientBFirst.allow, true);
+assert.notEqual(clientAFirst.key, clientBFirst.key);
+assert.equal(clientAFirst.key.includes("client-a"), false);
+assert.equal(clientBFirst.key.includes("client-b"), false);
+assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "net_fetch_text_allowlisted", profile: "internal", authMode: "oauth21", clientId: "client-a" }).allow, true);
+assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "net_fetch_text_allowlisted", profile: "internal", authMode: "oauth21", clientId: "client-a" }).allow, false);
+assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "run_process", profile: "internal", authMode: "oauth21", clientId: "client-a" }).allow, true);
+assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "run_process", profile: "internal", authMode: "oauth21", clientId: "client-a" }).allow, true);
+assert.equal(runtimeLimiter.evaluateToolCall({ toolName: "run_process", profile: "internal", authMode: "oauth21", clientId: "client-a" }).allow, false);
+const status = runtimeLimiter.status();
+assert.equal(status.network_max, 1);
+assert.equal(status.process_max, 2);
 assert.equal(runtimeLimiter.evaluateRestart({ code: 42, source: "file_trigger" }).allow, true);
 assert.equal(runtimeLimiter.evaluateRestart({ code: 42, source: "file_trigger" }).allow, false);
 console.log("smoke_rate_limit_policy ok");

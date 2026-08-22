@@ -1,5 +1,6 @@
 "use strict";
 const assert = require("node:assert/strict");
+const crypto = require("node:crypto");
 const fs = require("node:fs");
 function read(p){return JSON.parse(fs.readFileSync(p,"utf8"));}
 const root=read("SERVER_SPEC.json");
@@ -11,8 +12,11 @@ const tools=read("SERVER_TOOLS_SPEC.json");
 const pub=read("profiles/public.json");
 const tests=read("profiles/tests.json");
 const { validateProfileObject } = require("../src/profile_schema_validator");
+const { readResponseBodyBounded } = require("../src/util/network_policy");
 assert.equal(net.schema_version,"mcp-tests-server-network-policy-spec-v1");
-assert.equal(net.runtime_enforced,false);
+assert.match(net.status,/^implemented_/);
+assert.equal(net.runtime_enforced,true);
+assert.deepEqual(net.runtime_gaps,[]);
 assert.equal(net.safety_rules.no_cli_extension,true);
 assert.equal(net.safety_rules.allowlist_required,true);
 assert.equal(net.safety_rules.private_ip_resolution_forbidden,true);
@@ -56,4 +60,35 @@ result=validateProfileObject(bad,{expectedName:"tests",profilePath:"profiles/tes
 assert.equal(result.ok,false);
 assert.ok(result.errors.join(";").includes("duplicate"));
 assert.equal(Boolean(root.cli?.parameters?.["--network-policy"]),false);
-console.log("smoke_network_policy_spec ok");
+
+(async () => {
+  let reads = 0;
+  let cancelled = false;
+  const fullBody = Buffer.concat([Buffer.alloc(800, "a"), Buffer.alloc(800, "b"), Buffer.alloc(400, "c")]);
+  const response = {
+    body: {
+      getReader() {
+        return {
+          async read() {
+            reads += 1;
+            if (reads === 1) return { done: false, value: Buffer.alloc(800, "a") };
+            if (reads === 2) return { done: false, value: Buffer.alloc(800, "b") };
+            if (reads === 3) return { done: false, value: Buffer.alloc(400, "c") };
+            return { done: true, value: undefined };
+          },
+          async cancel() { cancelled = true; },
+        };
+      },
+    },
+  };
+  const bounded = await readResponseBodyBounded(response, 1024);
+  assert.equal(bounded.buffer.length,1024);
+  assert.equal(bounded.truncated,true);
+  assert.equal(bounded.bytes_observed,2000);
+  assert.equal(bounded.sha256,crypto.createHash("sha256").update(fullBody).digest("hex"));
+  assert.equal(cancelled,false);
+  console.log("smoke_network_policy_spec ok");
+})().catch((error) => {
+  console.error(error);
+  process.exitCode = 1;
+});

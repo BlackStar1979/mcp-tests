@@ -16,10 +16,27 @@ assert.equal(matrix.policies.some((p) => p.status === "target" + "_missing"), fa
 assert.equal(matrix.rules.no_complete_claim_if_any_required_policy_not_implemented, true);
 assert.equal(matrix.rules.specified_only_is_not_runtime_enforced, true);
 const statusById = Object.fromEntries(matrix.policies.map((item) => [item.id, item.status]));
-for (const id of ["sampling_policy", "roots_boundary_policy", "elicitation_policy", "capability_attestation_policy"]) {
-  assert.equal(statusById[id], "implemented", `${id} must reflect current enforced or fail-closed target behavior`);
+for (const id of [
+  "network_policy",
+  "plugin_visibility_policy",
+  "runtime_topology",
+  "rate_limit_quota_policy",
+  "sampling_policy",
+  "roots_boundary_policy",
+  "elicitation_policy",
+  "capability_attestation_policy",
+]) {
+  assert.equal(statusById[id], "implemented", `${id} must reflect current enforced, bounded, or explicitly non-target target behavior`);
 }
-for (const rel of ["SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json", "SERVER_ELICITATION_POLICY_SPEC.json", "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json"]) {
+for (const rel of [
+  "SERVER_NETWORK_POLICY_SPEC.json",
+  "SERVER_PLUGIN_VISIBILITY_POLICY_SPEC.json",
+  "SERVER_RUNTIME_TOPOLOGY_SPEC.json",
+  "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json",
+  "SERVER_ROOTS_BOUNDARY_POLICY_SPEC.json",
+  "SERVER_ELICITATION_POLICY_SPEC.json",
+  "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json",
+]) {
   const spec = read(rel);
   assert.match(spec.status, /^implemented_/);
   assert.equal(spec.runtime_enforced, true);

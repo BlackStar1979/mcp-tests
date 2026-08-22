@@ -2,6 +2,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
 const ROOT = path.resolve(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const json = (...parts) => JSON.parse(read(...parts));
@@ -23,7 +24,7 @@ for (const forbidden of ["active_planned_work", "runtime_enforcement_reconciliat
   assert.equal(Object.hasOwn(state, forbidden), false);
 }
 assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_when_authorized, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_current");

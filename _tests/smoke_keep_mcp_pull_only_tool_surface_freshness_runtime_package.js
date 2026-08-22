@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -31,7 +32,7 @@ assert.ok(record.includes("Prepare the final `state/handle/*` fate decision requ
 assert.equal(state.active_target_direction.pull_only_tool_surface_freshness_runtime_package_record, "_workflow/operator_decisions/keep_mcp_pull_only_tool_surface_freshness_runtime_package.md");
 assert.equal(state.active_target_direction.stable_list_changed_capability_advertised_now, false);
 assert.equal(state.active_target_direction.sessionless_prototype_subscriptions_listen_active_now, false);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_subscriptions_listen_active, false);
 

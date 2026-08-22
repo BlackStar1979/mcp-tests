@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { createStateHandleStore, hashValue } = require("../src/runtime/state_handle_prototype");
+const { assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
 
 const ROOT = path.resolve(__dirname, "..");
 function read(rel) { return fs.readFileSync(path.join(ROOT, rel), "utf8"); }
@@ -61,7 +62,7 @@ assert.equal(rpcDestroy.ok, true);
 const rpcAfterDestroy = rpcStore.read({ handle: rpcCreate.handle, authContext: authA, kind: "task" });
 assert.equal(rpcAfterDestroy.reason, "state_handle_revoked");
 
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_active, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_repo_retired_now, true);

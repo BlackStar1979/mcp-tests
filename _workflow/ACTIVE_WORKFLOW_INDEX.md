@@ -4,8 +4,7 @@ Status: active navigation index
 Date: 2026-08-21
 Purpose: provide the current workflow entrypoint and separate active work from historical evidence. Do not create a separate master document.
 
-Current repo/runtime note: profile `tests`; live OAuth21 `3008` runs closeout commit `3acaefe7a4df6cd0557076d634776499418893e9` at `server_start_id = 2026-08-21T19:27:12.690Z` after supervisor restart `manual-1787340431244`; that commit retains the accepted prompt/content behavior source `20ab92155dfb9ba356d079f7a9264e7d8cf67005`. Runtime and authenticated connector expose the unchanged `98`-tool surface with combined fingerprint `93721a82a339f9d6`; `restart_required_now = false` and connector refresh is not required. `POL-1A-PROMPT-CONTENT` remains live accepted: safe and hostile raw OAuth tool calls preserve primary data and `structuredContent`, while the model-visible boundary marks tool output `untrusted_tool_output`, enforces `instruction_handling=data_only` and `promotion_allowed=false`, and classifies the hostile fixture as `critical` without copying hostile text into boundary metadata. Capability-adaptive authorization and production MRTR remain accepted. Live policy coverage is `16/24`, all `6/6` critical policies are implemented, and `POL-1B` is the active non-critical reconciliation package.
-
+Current repo/runtime note: profile `tests`; live OAuth21 `3008` still runs closeout commit `3acaefe7a4df6cd0557076d634776499418893e9` at `server_start_id = 2026-08-21T19:27:12.690Z` after supervisor restart `manual-1787340431244`. Repository `POL-1B` truth has advanced to `20/24` implemented: network body reads are stream-bounded, plugin visibility is reconciled to the pull-only/static surface target, supervisor topology authority is closed, and quota state is SHA-256 client-partitioned with dedicated network/process ceilings. The loaded runtime remains on the prior accepted `16/24` policy baseline until the pending controlled restart, so `restart_required_now = true`. Runtime and authenticated connector still expose the unchanged `98`-tool surface with combined fingerprint `93721a82a339f9d6`; connector refresh is not required. `POL-1A-PROMPT-CONTENT`, capability-adaptive authorization, and production MRTR remain accepted regression lines. `POL-1B` stays `next_primary` until its live proof completes.
 `DEBT-1-RETIREMENT` is live-loaded. Controlled restart `manual-1786939596474` loaded the cleanup at `server_start_id = 2026-08-17T04:06:37.912Z`; post-restart `workbench.get_info` succeeded, and the tool count plus all governed surface fingerprints remained unchanged. No connector refresh or OAuth reauthorization was required.
 
 `OBS-1-LIVE-TRAIL` is accepted at `4/4`: current and retained audit windows answer the active client-entry question without broader logging. All named-option local JavaScript CLI entrypoints now converge on the shared fail-closed parser, including explicit repeatable options for snapshot files, CBM projects, and ignored trace IDs; malformed arguments cannot silently alter scope, select implicit defaults, or reach mutation behavior. Relative marker-patch and runtime-log compaction paths are repository-root anchored independently of caller cwd, with explicit absolute paths preserved.
@@ -398,8 +397,8 @@ Current records:
 
 Current active queue is maintained in `_workflow/WORKFLOW_CANON.md` and this index. `_workflow/state.json` is only the compact machine-readable orientation map.
 
-1. Execute `POL-1B` against the four `partial` non-critical policies using current code/runtime evidence before adding new behavior.
-2. Follow with `POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
+1. Complete the repo-validated `POL-1B` controlled live load and verify the new network/quota runtime behavior with the unchanged `98`-tool surface.
+2. Then advance to `POL-1C`; keep `COMP-1A` event-gated until newer real Codex client-entry traffic exists.
 Historical records remain traceability evidence, not the active queue. `_workflow/control_plane/snapshots/**` is archival evidence only. The June/July SEP triage is provenance only and is superseded for current protocol truth by `SERVER_PROTOCOL_CAPABILITY_SPEC.json`.
 
 `POL-1A-PROMPT-CONTENT` — explicit untrusted-content classification and instruction-promotion boundary — is live accepted on OAuth21/internal. Restart `manual-1787337877357` loaded source `20ab92155dfb9ba356d079f7a9264e7d8cf67005` at `server_start_id = 2026-08-21T18:44:38.849Z`; `tools/list` remains `98` with fingerprint `93721a82a339f9d6`, `restart_required_now = false`, and `connector_refresh_required_now = false`. Safe and hostile raw OAuth tool-call probes both verified the two-block result boundary while preserving tool data; all critical policy rows are now implemented.
@@ -407,7 +406,7 @@ Historical records remain traceability evidence, not the active queue. `_workflo
 `POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes — remains live accepted on OAuth21/internal as a regression line. Internal OAuth `mcp:tools` remains standing authorization for bounded tools, while explicit `consent_mode` continues to own fresh-consent selection.
 Readiness-derived default next package queue:
 
-1. `POL-1B` — partial policy reconciliation
+1. `POL-1B` — repo validated / live acceptance pending
 2. `POL-1C` — specified-only non-critical reconciliation
 
 Recently completed:

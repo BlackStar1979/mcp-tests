@@ -10,6 +10,12 @@ const sessionless = JSON.parse(read("_workflow/sessionless_inventory.json"));
 
 assert.equal(spec.schema_version, "mcp-tests-runtime-topology-spec-v1");
 assert.equal(spec.spec_mode, "canonical_structured_spec_not_progress_log");
+assert.match(spec.status, /^implemented_/);
+assert.equal(spec.runtime_enforced, true);
+assert.deepEqual(spec.runtime_gaps, []);
+assert.equal(spec.restart_authority.authority_restored, true);
+assert.equal(spec.restart_authority.known_missing_authority, null);
+assert.deepEqual(spec.restart_authority.allowed_until_restored, []);
 assert.equal(spec.runtime_instances.public_3009.port, 3009);
 assert.equal(spec.runtime_instances.public_3009.auth_mode, "none");
 assert.equal(spec.runtime_instances.public_3009.expected_tool_count, 13);

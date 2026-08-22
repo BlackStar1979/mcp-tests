@@ -181,7 +181,7 @@
   },
   "runtime_config_spec": {
     "path": "SERVER_RUNTIME_CONFIG_SPEC.json",
-    "env_var_count": 104,
+    "env_var_count": 106,
     "http_route_count": 11
   },
   "audit_events_spec": {
@@ -190,8 +190,9 @@
   },
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
-    "implemented_required": "16/24",
-    "remaining_non_implemented": 8,
+    "repo_implemented_required": "20/24",
+    "live_implemented_required": "16/24",
+    "remaining_non_implemented": 4,
     "critical_policy_count": 6
   },
   "restart_supervisor": {
@@ -209,11 +210,9 @@
     "operator_controlled_restart_test": "passed_code_42"
   },
   "rate_limit_quota_runtime": {
-    "status": "partial_runtime_enforcement_active",
-    "tool_call_limits": "active_generic_sliding_window",
-    "restart_limits": "active_persistent_sliding_window"
-  },
-  "oauth21_durable_state": {
+    "status": "repo_implemented_live_pending",
+    "details_ref": "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json"
+  },  "oauth21_durable_state": {
     "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "env": "MCP_TEST_OAUTH_STORAGE_FILE",
     "default": "~/.romion/tests_oauth.sqlite"
@@ -286,7 +285,7 @@
       "server_start_id": "2026-08-21T19:27:12.690Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": false,
+      "restart_required_now": true,
       "c3_cooperative_cancellation_live_loaded": true,
       "p0_p3_live": true,
       "sessionless_hidden_route_active": false,

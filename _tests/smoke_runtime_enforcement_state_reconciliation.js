@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
@@ -35,7 +36,7 @@ assert.equal(state.policy_layers.runtime_policy_gate.runtime_enforced, true);
 assert.equal(state.policy_layers.runtime_policy_gate.live_3008_status, "live_loaded_from_repo_applied_runtime_gate");
 assert.equal(state.policy_layers.runtime_policy_gate.public_3009_status, "not_currently_live");
 assert.equal(state.current_runtime_truth.oauth21_3008.runtime_gate_live_loaded_from_repo_applied_runtime_gate, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_runtime_truth.public_3009.currently_live_local, false);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);

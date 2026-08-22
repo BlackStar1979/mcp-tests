@@ -9,7 +9,16 @@
     "SERVER_AUTHZ_DECISION_SPEC.json",
     "SERVER_DATABASE_POLICY_SPEC.json"
   ],
-  "runtime_enforced": false,
+  "status": "implemented_for_pull_only_static_target",
+  "runtime_enforced": true,
+  "runtime_gaps": [],
+  "current_target": {
+    "tool_surface_freshness_model": "pull_only_tools_list_ttl0_private",
+    "live_tools_list_mutation_required": false,
+    "notifications_tools_list_changed_required": false,
+    "dynamic_import_required": false,
+    "runtime_state_store_write_required": false
+  },
   "connector_visible": false,
   "current_runtime_contracts": {
     "visibility_state_module": "src/plugin_visibility_state.js",
@@ -191,7 +200,7 @@
     "hpl2_diff_model": "done",
     "hpl3_state_store_apply_gate": "done",
     "hpl4_local_harness_emission": "done_mock_only",
-    "hpl5_runtime_apply_prototype": "gated_pending_explicit_operator_runtime_step",
+    "hpl5_runtime_apply_prototype": "non_target_for_current_pull_only_end_state",
     "real_tools_list_mutation_enabled_now": false,
     "live_list_changed_emission_enabled_now": false,
     "runtime_state_store_write_enabled_now": false,

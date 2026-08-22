@@ -106,7 +106,12 @@ async function handleToolsCall({
   }
 
   if (rateLimiter && typeof rateLimiter.evaluateToolCall === "function") {
-    const rateDecision = rateLimiter.evaluateToolCall({ toolName: name, profile, authMode, requestId: context.requestId });
+    const rateDecision = rateLimiter.evaluateToolCall({
+      toolName: name,
+      profile,
+      authMode,
+      clientId: context.authResult?.clientId || context.authResult?.client_id || "",
+    });
     if (rateDecision.allow !== true) {
       auditLog("tool_call_rate_limited", {
         request_id: context.requestId,

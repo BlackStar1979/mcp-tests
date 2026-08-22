@@ -4,6 +4,7 @@ const assert = require("node:assert/strict");
 
 const latestFullSmokeToken = "ok=true, version=0.40.0, public=7, tests_authenticated=313";
 const latestAuthenticatedSmokeCount = 313;
+const currentRestartRequiredNow = true;
 
 const latestCanonFullSmokeLine = `Latest known full smoke: \`node ./_tests/run_all_smokes.js --skip-network = ${latestFullSmokeToken}\``;
 const latestCanonAuthenticatedCountLine = `Latest validated authenticated smoke count: \`${latestAuthenticatedSmokeCount}\``;
@@ -37,9 +38,14 @@ function assertCurrentRuntimeStartIdentity(state) {
   }
 }
 
+function assertCurrentRestartRequirement(state) {
+  assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, currentRestartRequiredNow);
+}
+
 module.exports = {
   latestFullSmokeToken,
   latestAuthenticatedSmokeCount,
+  currentRestartRequiredNow,
   latestCanonFullSmokeLine,
   latestCanonAuthenticatedCountLine,
   latestIndexFullSmokeLine,
@@ -48,5 +54,6 @@ module.exports = {
   assertIndexCurrentSmokeBaseline,
   serverStartIdPattern,
   assertCurrentRuntimeStartIdentity,
+  assertCurrentRestartRequirement,
   assertWorkflowCurrentSmokeBaseline,
 };

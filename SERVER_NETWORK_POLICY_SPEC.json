@@ -8,7 +8,9 @@
     "SERVER_RESOURCE_POLICY_SPEC.json",
     "SERVER_AUTHZ_DECISION_SPEC.json"
   ],
-  "runtime_enforced": false,
+  "status": "implemented_allowlisted_bounded_runtime",
+  "runtime_enforced": true,
+  "runtime_gaps": [],
   "connector_visible": false,
   "current_runtime_policy": {
     "implementation": "src/util/network_policy.js",
@@ -28,6 +30,8 @@
     "default_max_bytes": 262144,
     "schema_max_bytes": 2097152,
     "max_redirects": 3,
+    "response_body_streaming_cap_enforced": true,
+    "truncated_sha256_scope": "returned_bounded_body",
     "text_content_types": [
       "text/*",
       "application/json",

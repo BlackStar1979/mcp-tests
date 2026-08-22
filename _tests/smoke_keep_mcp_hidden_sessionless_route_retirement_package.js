@@ -3,6 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
+const { assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
 
 const ROOT = path.resolve(__dirname, "..");
 const read = (rel) => fs.readFileSync(path.join(ROOT, rel), "utf8");
@@ -33,7 +34,7 @@ assert.ok(liveRecord.includes("GET http://127.0.0.1:3008/mcp/sessionless -> 404"
 assert.equal(state.active_target_direction.hidden_sessionless_route_retirement_package_record, "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_retirement_package.md");
 assert.equal(state.active_target_direction.hidden_sessionless_route_live_verification_record, "_workflow/operator_decisions/keep_mcp_hidden_sessionless_route_live_verification.md");
 assert.equal(state.active_target_direction.hidden_sessionless_route_repo_retired_now, true);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_active, false);
 assert.equal(state.current_runtime_truth.oauth21_3008.sessionless_hidden_route_repo_retired_now, true);

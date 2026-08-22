@@ -2,7 +2,8 @@
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "runtime_change": true,
   "priority": "high",
-  "status": "partial_runtime_enforcement_active",
+  "status": "implemented_runtime_enforcement_active",
+  "runtime_enforced": true,
   "schema_version": "mcp-tests-rate-limit-quota-policy-v1",
   "scope": "Rate limit, quota and budget policy for tool calls, batch requests, network/process/sampling operations and controlled restart triggers.",
   "policy": {
@@ -19,11 +20,17 @@
     "SERVER_RUNTIME_CONFIG_SPEC.json",
     "SERVER_NETWORK_POLICY_SPEC.json"
   ],
-  "runtime_gaps": [
-    "per-client identity-specific quotas remain coarse",
-    "batch budget not yet separately enforced",
-    "network/process budgets still inherit generic per-tool limits"
-  ],
+  "runtime_gaps": [],
+  "runtime_enforcement": {
+    "client_partitioning": "sha256(client_id)_without_raw_identifier_in_receipts",
+    "default_per_tool_window_env": "MCP_TEST_RATE_LIMIT_TOOL_WINDOW_MS",
+    "default_per_tool_max_env": "MCP_TEST_RATE_LIMIT_TOOL_MAX",
+    "network_per_tool_max_env": "MCP_TEST_RATE_LIMIT_NETWORK_MAX",
+    "process_per_tool_max_env": "MCP_TEST_RATE_LIMIT_PROCESS_MAX",
+    "batch_budget": "legacy_batch_item_count_bounded_by_MCP_TEST_MAX_BATCH_ITEMS_modern_batch_forbidden",
+    "restart_cooldown": "persistent_sliding_window_by_source_and_exit_code",
+    "state_store_failure_mode": "deny"
+  },
   "implemented_runtime_bindings": [
     "src/runtime/rate_limit_policy.js",
     "src/runtime/rate_limit_state.js",

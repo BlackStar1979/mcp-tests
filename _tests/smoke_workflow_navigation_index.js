@@ -3,7 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertCanonCurrentSmokeBaseline, assertCurrentRuntimeStartIdentity } = require("./helpers/workflow_baseline");
+const { assertCanonCurrentSmokeBaseline, assertCurrentRestartRequirement, assertCurrentRuntimeStartIdentity } = require("./helpers/workflow_baseline");
 const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -24,7 +24,7 @@ assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evi
 assert.equal(index.includes("`PROTOCOL-CLEANUP-LIVE`"), false);
 assert.ok(index.includes("Completed production `MRTR` on August 18, 2026"));
 assert.ok(index.includes("`POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes"));
-assert.ok(index.includes("`POL-1B` — partial policy reconciliation"));
+assert.ok(index.includes("`POL-1B` — repo validated / live acceptance pending"));
 assert.ok(index.includes("`POL-1C` — specified-only non-critical reconciliation"));
 assert.ok(index.includes("Accepted `OPS-1B` on August 17, 2026"));
 assert.ok(index.includes("Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026"));
@@ -110,10 +110,10 @@ assert.ok(canon.includes("`next_primary = pol-1b`"));
 assert.ok(canon.includes("`next_secondary = pol-1c`"));
 assert.ok(canon.includes("`SERVER_PROTOCOL_CAPABILITY_SPEC.json`"));
 assert.ok(canon.includes("MRTR (`SEP-2322`) remains the existing production protocol primitive"));
-assert.ok(canon.includes("Next recommended action: execute bounded `POL-1B` reconciliation"));
+assert.ok(canon.includes("Next recommended action: complete `POL-1B` live acceptance"));
 assert.equal(index.includes("`OPS-1B` — event-gated live SFTP completion"), false);
 assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
-assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, false);
+assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "93721a82a339f9d6");

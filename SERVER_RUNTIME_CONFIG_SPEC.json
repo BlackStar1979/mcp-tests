@@ -120,6 +120,8 @@
     "MCP_TEST_PUBLIC_BASE_URL",
     "MCP_TEST_PYTHON_BIN",
     "MCP_TEST_RATE_LIMIT_ENABLED",
+    "MCP_TEST_RATE_LIMIT_NETWORK_MAX",
+    "MCP_TEST_RATE_LIMIT_PROCESS_MAX",
     "MCP_TEST_RATE_LIMIT_RESTART_MAX",
     "MCP_TEST_RATE_LIMIT_RESTART_WINDOW_MS",
     "MCP_TEST_RATE_LIMIT_STATE_FILE",
@@ -159,7 +161,9 @@
     "batch_limit": "MCP_TEST_MAX_BATCH_ITEMS",
     "strict_accept": "MCP_TEST_STRICT_STREAMABLE_HTTP_ACCEPT",
     "public_bind_guard": "MCP_TEST_ALLOW_PUBLIC_BIND",
-    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED"
+    "rate_limit": "MCP_TEST_RATE_LIMIT_ENABLED",
+    "rate_limit_network_max": "MCP_TEST_RATE_LIMIT_NETWORK_MAX",
+    "rate_limit_process_max": "MCP_TEST_RATE_LIMIT_PROCESS_MAX"
   },
   "stable_mcp_post_accept_policy": {
     "route": "/mcp",
