@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-21T18:49:06.347Z",
+  "updated_at": "2026-08-21T19:28:02.270Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -283,7 +283,7 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 98,
-      "server_start_id": "2026-08-21T18:44:38.849Z",
+      "server_start_id": "2026-08-21T19:27:12.690Z",
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
       "restart_required_now": false,
@@ -312,7 +312,7 @@
       "combined_fingerprint": "93721a82a339f9d6",
       "connector_map_status": "repo98_runtime98_model98_schema_current",
       "repo_current_expected_tool_count": 98,
-      "server_start_id": "2026-08-21T18:44:38.849Z",
+      "server_start_id": "2026-08-21T19:27:12.690Z",
       "connector_ui_visibility_verified_now": true,
       "model_runtime_callable_verified_now": true,
       "ttl_ms": 0,
