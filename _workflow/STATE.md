@@ -1,7 +1,7 @@
 # State
 
 Status: active as-is summary
-Updated: 2026-08-21
+Updated: 2026-09-04
 
 ## Purpose
 
@@ -42,7 +42,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Public MCP-visible tools: `13`
 - Authorized MCP-visible tools: `85`
 - Authenticated repo target for profile `tests`: `98`
-- Live OAuth21 runtime exposes `98` tools at current `server_start_id = 2026-08-21T19:27:12.690Z` with governed fingerprint `93721a82a339f9d6`, loaded from closeout commit `3acaefe7a4df6cd0557076d634776499418893e9`, a descendant retaining prompt/content behavior source `20ab92155dfb9ba356d079f7a9264e7d8cf67005`. Supervisor restart `manual-1787340431244` preserved the tool names and input/output/descriptor fingerprints, so connector refresh is not required. Raw authenticated tool-call probes proved the model-visible trust boundary on both safe and hostile content while preserving primary data and `structuredContent`; the hostile fixture remained data-only with `promotion_allowed=false` and `instruction_risk=critical`. Capability-adaptive `consent_policy` is live accepted; production MRTR remains accepted as the generic fresh-consent primitive. Both remain regression lines.
+- Live OAuth21 runtime exposes `98` tools at current `server_start_id = 2026-09-04T15:21:41.190Z` with governed fingerprint `93721a82a339f9d6`, running source `6fc195d4ef5e86dceeb89a88fc82c83048d368c4`. Local health is `ok`, SQLite OAuth state loaded successfully, startup maintenance returned `no_candidates`, and the tool names plus input/output/descriptor fingerprints remain unchanged. Capability-adaptive `consent_policy` remains loaded: bounded process and workspace tools use standing internal OAuth authorization, while MRTR is reserved for explicit fresh-consent policy selection. Connector refresh is not required, but current Codex connector callability is unverified because post-rebuild CLI auth reports `Not logged in`; OAuth reauthentication and a fresh Codex runtime are required for that separate proof.
 - MCP Tasks P0 is live and accepted: a modern localhost client declared `io.modelcontextprotocol/tasks`, `server/discover` advertised the extension, `run_process` returned a Task, and `tasks/get` reached `completed/complete` with expected output, argv redaction, and task-backed metadata. Non-Tasks clients retain the synchronous fallback. Repository validation remains `7 + 294`.
 - W3C Trace Context P1 is live and accepted: live `run_process` request span `b30d7ed041609eb6` created execution child `bdff6e5f06b04cce`; a Task-backed execution persisted trace `8dd0f95cfb76cfa719af99c69bc8e2ae`, child `1f4deb3e376e86f7`, and parent `addcaee3ad7e0838` through the durable process/artifact spine. Repository validation remains `7 + 298`.
 - Process Artifacts P2 is live and accepted: terminal stdout/stderr is materialized immutably in `tests_process_jobs_3008.sqlite` with opaque IDs, SHA-256, independent retention, and W3C ancestry. Authenticated live `resources/read` returned the expected Task stdout through an explicit `mcp-artifact://process/<opaque-id>` URI. Repository validation remains `7 + 301`.
@@ -51,14 +51,14 @@ Summarize the current validated product state in one operator-facing place witho
 - Standards cleanup is live accepted from source `e258e8196f5d0643895ff5948ee2993a575b8c52` at `server_start_id = 2026-08-18T17:21:55.694Z`: `SEP-2164` missing `resources/read` resources return `-32602 Resource not found`, and `SEP-1303` invalid arguments for a known `tools/call` return a tool execution result with `isError = true`. Authenticated live probes returned HTTP 200 for both semantics. `tools/list` remains `98` with fingerprint `93721a82a339f9d6`; no connector refresh is required.
 - MRTR (`SEP-2322`) is production-loaded and remains live accepted through `src/runtime/mrtr_extension.js` as the explicit fresh-consent primitive. Capability-adaptive `POL-1A-CONSENT` is now live accepted: central `authorization_class` / `consent_mode` policy gives bounded internal OAuth `mcp:tools` calls standing authorization, preserves `tool_confirmation` for CBM deletion, and retains exact-call MRTR semantics only when `mrtr_human_approval` is explicitly selected. The corrective live proof at `2026-08-20T17:24:29.112Z` confirms primary-client usability without weakening runner guards; the historical form-capable probe remains authoritative evidence for MRTR `-32021`, `input_required`, strict accept/decline semantics, replay rejection, and audit privacy.
 - `DEBT-1` cleanup remains complete and live-loaded: classic session/SSE/Sampling internals are removed from the active architecture, while bounded legacy `initialize` compatibility remains a separate protocol-era adapter.
-- `POL-1` remains `3/4`. Repository target coverage is now `20/24` implemented after `POL-1B`; the currently loaded runtime remains at the previously accepted `16/24` policy baseline until the pending controlled restart. `network_policy` now has bounded streaming enforcement, `plugin_visibility_policy` is reconciled to the accepted pull-only/static surface target, `runtime_topology` records the restored supervisor authority without contradictory missing-authority debt, and `rate_limit_quota_policy` now partitions OAuth clients by SHA-256-derived identity and applies dedicated network/process ceilings. The only four repo rows outside `implemented` are `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy`, all `specified_only`. `POL-1B` is repo-validated but still live-pending; `POL-1C` begins only after live acceptance. `restart_required_now = true`; connector refresh is not required because the governed `98`-tool surface and fingerprints are unchanged.
+- `POL-1` remains `3/4`. Repository and live OAuth21 target coverage are aligned at `20/24` implemented after live-accepted `POL-1B`. `network_policy` has bounded streaming enforcement with preserved full-byte/SHA-256 semantics, `plugin_visibility_policy` matches the accepted pull-only/static surface target, `runtime_topology` records supervisor authority, and `rate_limit_quota_policy` partitions OAuth clients by SHA-256-derived identity with dedicated network/process ceilings. Source `6fc195d4ef5e86dceeb89a88fc82c83048d368c4` passed binding `7 + 313` and repeated live network probes before and after the independent host reset. The only four rows outside `implemented` are `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy`, all `specified_only`; `POL-1C` is active. `restart_required_now = false`; connector refresh is not required.
 - Server-internal helper tools remain intentionally hidden from MCP schema/tools-list.
 
 ## Current workflow track
 
 - `current_working_course = protocol-capability-module-convergence`
-- `next_primary = pol-1b`
-- `next_secondary = pol-1c`
+- `next_primary = pol-1c`
+- `next_secondary = comp-1a` (event-gated)
 
 ## Verified documentation authorities
 

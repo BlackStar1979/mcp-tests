@@ -28,14 +28,15 @@ assert.throws(() => parseArgs(["--since"]), { code: "cli_argument_value_missing"
 assert.throws(() => parseArgs(["--limit", "0"]), { code: "cli_argument_value_invalid" });
 assert.throws(() => parseArgs(["--json", "--json"]), { code: "cli_argument_duplicate" });
 
-const jsonResult = run(["--json", "--since=30 days ago", "--limit=25", "--min-churn=5", "--fail-on-missing"]);
+// Use the complete repository history so this regression does not expire with wall-clock time.
+const jsonResult = run(["--json", "--since=1970-01-01", "--limit=10000", "--min-churn=1", "--fail-on-missing"]);
 assert.equal(jsonResult.status, 0, `directory docs audit must pass\nSTDOUT:\n${jsonResult.stdout}\nSTDERR:\n${jsonResult.stderr}`);
 
 const report = JSON.parse(jsonResult.stdout);
 assert.equal(report.ok, true);
-assert.equal(report.since, "30 days ago");
-assert.equal(report.limit, 25);
-assert.equal(report.min_churn, 5);
+assert.equal(report.since, "1970-01-01");
+assert.equal(report.limit, 10000);
+assert.equal(report.min_churn, 1);
 assert.equal(report.missing_count, 0);
 assert.ok(report.rows.length > 0);
 assert.ok(report.rows.some((row) => row.dir === "_workflow/operator_decisions" && row.has_directory === true));
@@ -44,7 +45,7 @@ assert.ok(report.rows.some((row) => row.dir === "docs/superpowers/plans" && row.
 assert.ok(report.rows.some((row) => row.dir === "docs/superpowers/specs" && row.has_directory === true));
 assert.deepEqual(report.rows.filter((row) => !row.has_directory), []);
 
-const textResult = run(["--since=30 days ago", "--limit=5", "--min-churn=5"]);
+const textResult = run(["--since=1970-01-01", "--limit=5", "--min-churn=1"]);
 assert.equal(textResult.status, 0, `text audit must succeed\nSTDOUT:\n${textResult.stdout}\nSTDERR:\n${textResult.stderr}`);
 assert.match(textResult.stdout, /Directory documentation audit/);
 assert.match(textResult.stdout, /missing: 0/);

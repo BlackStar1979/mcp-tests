@@ -2,7 +2,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertWorkflowCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
+const { assertCurrentConnectorVerificationState, assertWorkflowCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
 const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -47,10 +47,8 @@ assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, SURFACE.tool_names_hash);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.output_schema_fingerprint, "8292895f0216967c");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_current");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
+assertCurrentConnectorVerificationState(state);
 
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.status, "prepared_no_execution");
 assert.equal(inventory.target_selection_readiness.s14_connector_refresh_approval_package.record, "_workflow/operator_decisions/connector_refresh_approval_package.md");

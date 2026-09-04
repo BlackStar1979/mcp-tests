@@ -1,7 +1,7 @@
 # Roadmap
 
 Status: active dependency-aware roadmap
-Updated: 2026-08-21
+Updated: 2026-09-04
 
 ## Purpose
 
@@ -35,6 +35,7 @@ Current derivation:
 - The earlier persisted autonomous quality task produced completed `OPS-1A`; task-memory state is not queue authority. Current queue authority is `_workflow/WORKFLOW_CANON.md` plus `_workflow/ACTIVE_WORKFLOW_INDEX.md`.
 - `OPS-1` is `4/4`: the classified matrix retains `56/56` green invocations, the August 16 OAuth reconnect/recovery remains accepted, and the August 17 connector-visible TEST MCP live SFTP list/read/`opsRoot` status closed the final external boundary without remote mutation or credential migration.
 - `DEBT-1` is 4/4 in repo truth: the unreachable `McpSession`, classic Sampling context, SSE outbound queue, and pending-response resolver are removed; active `/mcp` keeps only a deterministic fail-closed response-envelope boundary.
+- `POL-1B` is live accepted at `20/24`: source `6fc195d4ef5e86dceeb89a88fc82c83048d368c4` passed binding `7 + 313`; live network probes preserved full-byte/SHA-256 semantics; the same `98`-tool / `93721a82a339f9d6` surface is healthy after the operator restored the runtime following an independent recurring WHEA host reset. `POL-1C` is now the only actionable policy package.
 ## Priority matrix
 
 | Priority | Item | Depends on | Why it matters now | Current action |
@@ -44,21 +45,21 @@ Current derivation:
 | P2 | Owner-bound process output artifacts — live accepted | durable execution plus accepted tracing contract | Large terminal output needs immutable, rediscoverable artifacts. | Preserve opaque handles, hashes, owner binding, retention, bounded `resources/read`, and Task links. |
 | P3 | CIMD SSRF-hardened compatibility — live accepted | stable Tasks/artifacts/tracing | CIMD adds remote metadata fetching and a security boundary while DCR compatibility remains. | Preserve the accepted SSRF/cache/exact-match contract. |
 | P4 | Production MRTR runtime — live accepted | stable protocol adapters | MRTR now provides the production multi-round-trip primitive required for server-verifiable consent without a second execution architecture. | Preserve exact-call binding, digest-only state, one-time retry semantics, and the accepted consent composition seam. |
-| P5 | `POL-1B` partial policy reconciliation — repo validated / live pending | live-accepted `POL-1A-PROMPT-CONTENT` and all critical policy gaps closed | Repository coverage is now `20/24`; all `6/6` critical policies remain implemented and all four formerly `partial` rows are reconciled in code/spec truth. Network body reads are bounded during streaming, plugin visibility is aligned to the pull-only/static target, supervisor topology debt is closed, and quota state is client-partitioned with dedicated network/process ceilings. The loaded runtime remains on the prior `16/24` acceptance until restart. | Run the final pre-live suite, publish the bounded package, perform the controlled `3008` restart, prove the unchanged `98`-tool surface/fingerprints and new policy behavior, then advance to `POL-1C`. |
+| P5 | `POL-1C` specified-only policy reconciliation — active | live-accepted `POL-1B` at `20/24` and all critical/partial rows closed | Only four non-critical `specified_only` rows remain: `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy`. Their status must be reconciled against current runtime/repository truth rather than assumed to represent implementation gaps. | Reproduce each row's current gap or stale classification, implement only real missing enforcement in the owning module/spec, and advance `POL-1` only after guarded evidence. |
 | P6 | Refresh `COMP-1A` only on newer external Codex traffic | fresh evidence after the 2026-08-17 sample | Modern entry is operationally proven, but latest measured Codex still uses legacy `initialize`. | Preserve both paths until real Codex traffic newer than `0.148.0-alpha.9` changes the verdict. |
 | P7 | `OPS-1B` live SFTP boundary — accepted | completed `OPS-1A` | Real external SFTP list/read/status was accepted without remote mutation. | Preserve closeout and external credential/config boundary. |
 ## Bounded package queue
 
-0. `POL-1B` — repo validated / live acceptance pending
-   All four formerly partial rows are reconciled in repository truth. Complete the controlled restart and live proof before advancing the workflow marker.
-
-1. `POL-1C` — specified-only non-critical reconciliation
+0. `POL-1C` — specified-only non-critical reconciliation
    Reconcile `memory_policy`, `database_policy`, `supply_chain_policy`, and `incident_response_policy` without assuming that a stale status implies missing implementation.
 
-3. `COMP-1A` — event-gated protocol evidence
+1. `POL-1B` — completed / live accepted regression line
+   Preserve the accepted network/plugin/topology/quota behavior and reopen only on reproduced regression or target change.
+
+2. `COMP-1A` — event-gated protocol evidence
    Refresh only for real Codex client-entry traffic newer than `0.148.0-alpha.9`; preserve both compatibility paths until that evidence changes the verdict.
 
-4. `COMP-1B`
+3. `COMP-1B`
    Run only if fresh `COMP-1A` evidence materially changes initialize-retirement.
 Completed repair chain: `CBM-ADR-REPAIR`, `OAUTH-DUPLICATE-HELPER-REVIEW`, and `FINAL-LIVE-LOAD`.
 Completed protocol-debt cleanup: `DEBT-1-RETIREMENT` removes the inactive classic Sampling/session helper stack, aligns Sampling/Auth/Event specs, and preserves the authenticated smoke count by converting historical roundtrip fixtures into retirement guards.

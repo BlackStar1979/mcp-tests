@@ -2,7 +2,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertCurrentRestartRequirement, assertWorkflowCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
+const { assertCurrentConnectorVerificationState, assertCurrentRestartRequirement, assertWorkflowCurrentSmokeBaseline } = require("./helpers/workflow_baseline");
 const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -52,10 +52,8 @@ assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_harden
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_names_hash, SURFACE.tool_names_hash);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.repo_current_expected_tool_count, 98);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_current");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
+assertCurrentConnectorVerificationState(state);
 
 assert.ok(inventory.target_selection_readiness.s15_connector_reconnect_execution_evidence);
 assert.equal(pluginSpec.hotplug_lifecycle_readiness.status, "hpl1_to_hpl4_reconciled_hpl5_gated");

@@ -1,7 +1,7 @@
 {
   "schema_version": "workflow-state-spec-map-v2",
   "status": "compact_orientation_map_not_progress_log",
-  "updated_at": "2026-08-21T19:28:02.270Z",
+  "updated_at": "2026-09-04T15:24:05.755Z",
   "project": "mcp-tests",
   "purpose": "Orientation only.",
   "read_order": [
@@ -65,8 +65,8 @@
   },
   "workflow_progress_markers": {
     "current_working_course": "protocol-capability-module-convergence",
-    "next_primary": "pol-1b",
-    "next_secondary": "pol-1c",
+    "next_primary": "pol-1c",
+    "next_secondary": "comp-1a",
     "stage_labels": [
       "Stage 8 / Step 53b - modular safe tool surface consolidation",
       "Stage 8 / Step 53c - modular unsafe tool governance boundary",
@@ -191,7 +191,7 @@
   "policy_coverage_matrix": {
     "path": "SERVER_POLICY_COVERAGE_MATRIX_SPEC.json",
     "repo_implemented_required": "20/24",
-    "live_implemented_required": "16/24",
+    "live_implemented_required": "20/24",
     "remaining_non_implemented": 4,
     "critical_policy_count": 6
   },
@@ -210,9 +210,10 @@
     "operator_controlled_restart_test": "passed_code_42"
   },
   "rate_limit_quota_runtime": {
-    "status": "repo_implemented_live_pending",
+    "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "details_ref": "SERVER_RATE_LIMIT_QUOTA_POLICY_SPEC.json"
-  },  "oauth21_durable_state": {
+  },
+  "oauth21_durable_state": {
     "status": "implemented_repo_and_live_loaded_on_oauth21_3008",
     "env": "MCP_TEST_OAUTH_STORAGE_FILE",
     "default": "~/.romion/tests_oauth.sqlite"
@@ -282,17 +283,19 @@
       "auth_mode": "oauth21",
       "profile": "internal",
       "expected_tool_count": 98,
-      "server_start_id": "2026-08-21T19:27:12.690Z",
+      "server_start_id": "2026-09-04T15:21:41.190Z",
+      "currently_live_local": true,
       "runtime_gate_live_loaded_from_repo_applied_runtime_gate": true,
       "assistant_restart_capable_when_authorized": true,
-      "restart_required_now": true,
+      "restart_required_now": false,
       "c3_cooperative_cancellation_live_loaded": true,
       "p0_p3_live": true,
       "sessionless_hidden_route_active": false,
       "sessionless_hidden_route_subscriptions_listen_active": false,
       "sessionless_hidden_route_repo_retired_now": true,
       "cbm_contract": "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity"
-    },    "public_3009": {
+    },
+    "public_3009": {
       "auth_mode": "none",
       "profile": "public",
       "expected_tool_count": 13,
@@ -309,11 +312,11 @@
       "output_schema_fingerprint": "8292895f0216967c",
       "descriptor_fingerprint": "82ffaaa3adb6e7db",
       "combined_fingerprint": "93721a82a339f9d6",
-      "connector_map_status": "repo98_runtime98_model98_schema_current",
+      "connector_map_status": "repo98_runtime98_model_unverified_auth",
       "repo_current_expected_tool_count": 98,
-      "server_start_id": "2026-08-21T19:27:12.690Z",
-      "connector_ui_visibility_verified_now": true,
-      "model_runtime_callable_verified_now": true,
+      "server_start_id": "2026-09-04T15:21:41.190Z",
+      "connector_ui_visibility_verified_now": false,
+      "model_runtime_callable_verified_now": false,
       "ttl_ms": 0,
       "cache_scope": "private",
       "connector_refresh_required_now": false

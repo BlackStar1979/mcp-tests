@@ -2,7 +2,7 @@ const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
 const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
-const { assertCurrentRestartRequirement, currentRestartRequiredNow } = require("./helpers/workflow_baseline");
+const { assertCurrentConnectorVerificationState, assertCurrentRestartRequirement, currentRestartRequiredNow } = require("./helpers/workflow_baseline");
 
 const ROOT = path.resolve(__dirname, "..");
 const state = JSON.parse(fs.readFileSync(path.join(ROOT, "_workflow", "state.json"), "utf8"));
@@ -14,14 +14,13 @@ const descriptorReview = fs.readFileSync(
   "utf8",
 );
 
-const expectedCurrentStatus = "repo98_runtime98_model98_schema_current";
 const expectedLiveFingerprint = SURFACE.combined_fingerprint;
 const expectedRepoTargetFingerprint = SURFACE.combined_fingerprint;
 const expectedCurrentHash = SURFACE.tool_names_hash;
 
 const c = state.current_connector_truth.oauth21_3008_tools;
 const currentServerStartId = state.current_runtime_truth.oauth21_3008.server_start_id;
-assert.equal(c.connector_map_status, expectedCurrentStatus);
+assertCurrentConnectorVerificationState(state);
 assert.match(currentServerStartId, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\.\d{3}Z$/);
 assert.equal(c.server_start_id, currentServerStartId);
 assert.equal(c.combined_fingerprint, expectedLiveFingerprint);
@@ -29,8 +28,6 @@ assert.equal(c.tool_names_hash, expectedCurrentHash);
 assert.equal(c.tool_count, 98);
 assert.equal(c.repo_current_expected_tool_count, 98);
 assert.equal(c.connector_refresh_required_now, false);
-assert.equal(c.connector_ui_visibility_verified_now, true);
-assert.equal(c.model_runtime_callable_verified_now, true);
 assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(Object.hasOwn(state, "active_planned_work"), false);
@@ -41,7 +38,7 @@ assert.ok(plan.includes("f43a3eed6fb79bb6"));
 assert.ok(plan.includes("8b62ecaf89227335"));
 assert.ok(plan.includes("Connector-visible map comparison is `in_sync` at `43/43`"));
 assert.ok(index.includes(`server_start_id = ${currentServerStartId}`));
-assert.ok(index.includes("unchanged `98`-tool surface with combined fingerprint"));
+assert.ok(index.includes("authenticated runtime surface remains `98` tools with combined fingerprint"));
 assert.ok(index.includes(`fingerprint \`${expectedLiveFingerprint}\``));
 assert.ok(index.includes(`combined fingerprint \`${expectedRepoTargetFingerprint}\``));
 assert.ok(index.includes(`\`restart_required_now = ${currentRestartRequiredNow}\``));
@@ -50,9 +47,10 @@ assert.ok(index.includes("Live-loaded the P0-P3 protocol foundation on August 16
 assert.ok(index.includes("Live acceptance proved Tasks negotiation/completion, W3C request-to-execution ancestry, immutable Task artifacts plus authenticated `resources/read`, and CIMD special-use-IP SSRF rejection."));
 assert.ok(index.includes("Completed production `MRTR` on August 18, 2026"));
 assert.ok(index.includes("The module is loaded-dormant until policy emits `mrtr_requirement`."));
-assert.ok(index.includes("The operator refreshed OAuth authorization and the connector tool list"));
+assert.ok(index.includes("At the August 2026 acceptance checkpoint, the operator refreshed OAuth authorization and the connector tool list"));
+assert.ok(index.includes("current post-rebuild callability is deliberately unclaimed until reauthentication"));
 assert.ok(index.includes("survived the subsequent supervisor restart with OAuth state intact"));
-assert.ok(index.includes("1. Complete the repo-validated `POL-1B` controlled live load"));
+assert.ok(index.includes("1. Execute `POL-1C` reconciliation for the four remaining `specified_only` non-critical policy rows."));
 assert.ok(index.includes("`POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes — remains live accepted"));
 assert.ok(index.includes("Historical `POL-1A-CONSENT` process-MRTR acceptance"));
 assert.ok(index.includes("bounded process tools no longer require fresh consent by default"));

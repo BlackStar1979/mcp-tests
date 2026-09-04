@@ -3,7 +3,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertCanonCurrentSmokeBaseline, assertCurrentRestartRequirement, assertCurrentRuntimeStartIdentity } = require("./helpers/workflow_baseline");
+const { assertCanonCurrentSmokeBaseline, assertCurrentConnectorVerificationState, assertCurrentRestartRequirement, assertCurrentRuntimeStartIdentity } = require("./helpers/workflow_baseline");
 const { EXPECTED: SURFACE } = require("../src/truth/project_truth_audit");
 
 const ROOT = path.resolve(__dirname, "..");
@@ -24,7 +24,7 @@ assert.ok(index.includes("`_workflow/control_plane/snapshots/**` is archival evi
 assert.equal(index.includes("`PROTOCOL-CLEANUP-LIVE`"), false);
 assert.ok(index.includes("Completed production `MRTR` on August 18, 2026"));
 assert.ok(index.includes("`POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes"));
-assert.ok(index.includes("`POL-1B` — repo validated / live acceptance pending"));
+assert.ok(index.includes("`POL-1B` accepted on August 22, 2026"));
 assert.ok(index.includes("`POL-1C` — specified-only non-critical reconciliation"));
 assert.ok(index.includes("Accepted `OPS-1B` on August 17, 2026"));
 assert.ok(index.includes("Completed CBM reliability hardening, native-cache repair, and final live load on July 27, 2026"));
@@ -100,17 +100,17 @@ for (const stale of [
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
 assert.equal(state.workflow_progress_markers.current_working_course, "protocol-capability-module-convergence");
-assert.equal(state.workflow_progress_markers.next_primary, "pol-1b");
-assert.equal(state.workflow_progress_markers.next_secondary, "pol-1c");
+assert.equal(state.workflow_progress_markers.next_primary, "pol-1c");
+assert.equal(state.workflow_progress_markers.next_secondary, "comp-1a");
 assert.ok(index.includes("`current_working_course = protocol-capability-module-convergence`"));
-assert.ok(index.includes("`next_primary = pol-1b`"));
-assert.ok(index.includes("`next_secondary = pol-1c`"));
+assert.ok(index.includes("`next_primary = pol-1c`"));
+assert.ok(index.includes("`next_secondary = comp-1a`"));
 assert.ok(canon.includes("`current_working_course = protocol-capability-module-convergence`"));
-assert.ok(canon.includes("`next_primary = pol-1b`"));
-assert.ok(canon.includes("`next_secondary = pol-1c`"));
+assert.ok(canon.includes("`next_primary = pol-1c`"));
+assert.ok(canon.includes("`next_secondary = comp-1a`"));
 assert.ok(canon.includes("`SERVER_PROTOCOL_CAPABILITY_SPEC.json`"));
 assert.ok(canon.includes("MRTR (`SEP-2322`) remains the existing production protocol primitive"));
-assert.ok(canon.includes("Next recommended action: complete `POL-1B` live acceptance"));
+assert.ok(canon.includes("Next recommended action: execute bounded `POL-1C` reconciliation"));
 assert.equal(index.includes("`OPS-1B` — event-gated live SFTP completion"), false);
 assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
 assertCurrentRestartRequirement(state);
@@ -118,14 +118,12 @@ assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_harden
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
 assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "93721a82a339f9d6");
 assert.equal(SURFACE.combined_fingerprint, "93721a82a339f9d6");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_current");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
+assertCurrentConnectorVerificationState(state);
 
 assertCurrentRuntimeStartIdentity(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.p0_p3_live, true);
 
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_ui_visibility_verified_now, true);
 assert.ok(!Object.hasOwn(state, "post_stage13_hygiene"));
 assert.equal(state.active_target_direction.single_route_only, true);
 assert.equal(state.active_target_direction.sse_allowed_in_end_state, false);

@@ -39,6 +39,10 @@ Updated: 2026-08-18
   Historical, superseded selected-process MRTR acceptance retained as evidence for MRTR binding, replay rejection, semantic verification, audit privacy, and unchanged connector surface.
 - `pol_1a_authorization_reconciliation_live_closeout.md`
   Live acceptance evidence for capability-adaptive operator authorization: standing bounded OAuth authorization, explicit fresh-consent selection, direct ChatGPT process/workspace callability, preserved runner guards, and unchanged connector surface.
+- `pol_1a_prompt_content_live_closeout.md`
+  Live acceptance evidence for the untrusted-content classification and instruction-promotion boundary.
+- `pol_1b_policy_reconciliation_live_closeout.md`
+  Live acceptance and post-rebuild recovery evidence for network, plugin-visibility, runtime-topology, and rate-limit policy reconciliation.
 - `run_process_sync_ceiling.md`
   Evidence and rationale for the synchronous 90-second ceiling below Cloudflare's proxy read timeout.
 - `ops_1a_operational_e2e_closeout.md`

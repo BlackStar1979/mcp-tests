@@ -2,7 +2,7 @@
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
 const path = require("node:path");
-const { assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
+const { assertCurrentConnectorVerificationState, assertCurrentRestartRequirement } = require("./helpers/workflow_baseline");
 const ROOT = path.resolve(__dirname, "..");
 const read = (...parts) => fs.readFileSync(path.join(ROOT, ...parts), "utf8");
 const json = (...parts) => JSON.parse(read(...parts));
@@ -27,8 +27,7 @@ assert.equal(state.current_runtime_truth.oauth21_3008.assistant_restart_capable_
 assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_map_status, "repo98_runtime98_model98_schema_current");
-assert.equal(state.current_connector_truth.oauth21_3008_tools.model_runtime_callable_verified_now, true);
+assertCurrentConnectorVerificationState(state);
 
 assert.ok(readme.includes("## Next-step recommendation duty"));
 assert.ok(readme.includes("Do not ask the operator to restart `3008`"));
@@ -42,7 +41,7 @@ assert.ok(index.includes("state.json` is only the compact machine-readable orien
 assert.equal(operatorState.includes("The current live server process predates these changes"), false);
 assert.equal(operatorState.includes("one controlled restart and connector refresh will be required"), false);
 assert.ok(operatorState.includes("Live OAuth21 runtime exposes `98` tools at current `server_start_id ="));
-assert.ok(operatorState.includes("Capability-adaptive `consent_policy` is live accepted"));
+assert.ok(operatorState.includes("Capability-adaptive `consent_policy` remains loaded"));
 assert.equal(operatorState.includes("awaits controlled live acceptance"), false);
 assert.ok(operatorState.includes(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint));
 assert.ok(operatorState.includes("The former bounded `DOC-2A` fallback is superseded by accepted repo-wide `DOC-2` coverage"));

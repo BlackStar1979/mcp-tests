@@ -4,7 +4,7 @@ const assert = require("node:assert/strict");
 
 const latestFullSmokeToken = "ok=true, version=0.40.0, public=7, tests_authenticated=313";
 const latestAuthenticatedSmokeCount = 313;
-const currentRestartRequiredNow = true;
+const currentRestartRequiredNow = false;
 
 const latestCanonFullSmokeLine = `Latest known full smoke: \`node ./_tests/run_all_smokes.js --skip-network = ${latestFullSmokeToken}\``;
 const latestCanonAuthenticatedCountLine = `Latest validated authenticated smoke count: \`${latestAuthenticatedSmokeCount}\``;
@@ -42,6 +42,21 @@ function assertCurrentRestartRequirement(state) {
   assert.equal(state.current_runtime_truth.oauth21_3008.restart_required_now, currentRestartRequiredNow);
 }
 
+function assertCurrentConnectorVerificationState(state) {
+  const connector = state.current_connector_truth.oauth21_3008_tools;
+  assert.equal(typeof connector.connector_ui_visibility_verified_now, "boolean");
+  assert.equal(typeof connector.model_runtime_callable_verified_now, "boolean");
+
+  if (connector.model_runtime_callable_verified_now) {
+    assert.equal(connector.connector_map_status, "repo98_runtime98_model98_schema_current");
+    assert.equal(connector.connector_ui_visibility_verified_now, true);
+    return;
+  }
+
+  assert.equal(connector.connector_map_status, "repo98_runtime98_model_unverified_auth");
+  assert.equal(connector.connector_ui_visibility_verified_now, false);
+}
+
 module.exports = {
   latestFullSmokeToken,
   latestAuthenticatedSmokeCount,
@@ -54,6 +69,7 @@ module.exports = {
   assertIndexCurrentSmokeBaseline,
   serverStartIdPattern,
   assertCurrentRuntimeStartIdentity,
+  assertCurrentConnectorVerificationState,
   assertCurrentRestartRequirement,
   assertWorkflowCurrentSmokeBaseline,
 };
