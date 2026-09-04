@@ -15,7 +15,7 @@ The repository now accepts HTTPS Client ID Metadata Document identifiers as ephe
 - Resolution rejects RFC 6890/IANA special-use IP ranges, validates DNS before connect, pins the selected address for transport, and does not automatically follow redirects.
 - Response processing is bounded to 5 KiB and rejects non-200 responses, malformed JSON, invalid metadata, and private JWK material.
 - Cache lifetime respects HTTP freshness, including `Age`; `no-store` disables caching and failures are not cached.
-- CIMD redirect URIs use exact textual matching. Existing DCR loopback-port tolerance remains isolated to DCR clients.
+- CIMD and DCR redirect URIs use exact textual matching except for the port component of HTTP loopback IP redirects. For `127.0.0.1` and `[::1]`, the authorization request may select an ephemeral port while scheme, host, path, query, and fragment remain unchanged, as required for native-app loopback callbacks by RFC 8252 section 7.3.
 - CIMD clients are ephemeral: authorize, code exchange, refresh, and revocation can use resolved metadata without persisting the remote client into the DCR registry.
 - Opaque unknown client identifiers do not trigger network resolution.
 - Audit events distinguish accepted and rejected CIMD resolution without logging fetched private material.

@@ -147,11 +147,12 @@ function canonicalizeResource(value, canonicalResource, aliases = []) {
   return "";
 }
 
-function matchesRegisteredRedirectUri(registeredValue, requestedValue) {
+function matchesRegisteredRedirectUri(registeredValue, requestedValue, { allowLoopbackPortVariation = false } = {}) {
   const registeredText = String(registeredValue || "").trim();
   const requestedText = String(requestedValue || "").trim();
   if (!registeredText || !requestedText) return false;
   if (registeredText === requestedText) return true;
+  if (!allowLoopbackPortVariation) return false;
 
   let registered;
   let requested;
@@ -788,15 +789,21 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     return { status: 201, body: client };
   }
 
-  function authorizeResolvedClient(query = {}, client, { exactRedirectUri = false } = {}) {
+  function authorizeResolvedClient(query = {}, client) {
     const redirectUri = String(query.redirect_uri || "");
     const requestedResource = canonicalizeResource(query.resource, resource, resourceAliases);
     const state = String(query.state || "");
     const scopes = normalizeScopeTokens(query.scope || "mcp:tools");
-    const redirectMatches = exactRedirectUri
-      ? client.redirect_uris.some((item) => String(item) === redirectUri)
-      : client.redirect_uris.some((item) => matchesRegisteredRedirectUri(item, redirectUri));
-    if (!redirectMatches) return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
+    const allowLoopbackPortVariation = String(client.application_type || "").trim().toLowerCase() === "native";
+    const redirectMatches = client.redirect_uris.some((item) => matchesRegisteredRedirectUri(
+      item,
+      redirectUri,
+      { allowLoopbackPortVariation }
+    ));
+    if (!redirectMatches) {
+      auditOAuth("oauth21_authorize_rejected", { reason: "redirect_uri_mismatch", client_id: client.client_id });
+      return { status: 400, body: { error: "invalid_request", error_description: "redirect_uri_mismatch" } };
+    }
     if (String(query.response_type || "") !== "code") return { status: 400, body: { error: "unsupported_response_type" } };
     if (String(query.code_challenge_method || "") !== "S256") {
       auditOAuth("oauth21_authorize_rejected", { reason: "pkce_s256_required", client_id: client.client_id });
@@ -842,7 +849,7 @@ function createOAuth21AuthorizationServer({ issuer, resource = "", operatorSecre
     if (!clientId.startsWith("https://")) return { status: 400, body: { error: "invalid_client" } };
     return cimd.resolve(clientId).then(({ client, cacheHit }) => {
       auditOAuth("oauth21_cimd_resolved", { client_id: clientId, cache_hit: Boolean(cacheHit) });
-      return authorizeResolvedClient(query, client, { exactRedirectUri: true });
+      return authorizeResolvedClient(query, client);
     }).catch((error) => {
       auditOAuth("oauth21_cimd_rejected", { client_id: clientId, reason: String(error?.code || "cimd_fetch_failed") });
       return { status: 400, body: { error: "invalid_client", error_description: "client_metadata_unavailable" } };
