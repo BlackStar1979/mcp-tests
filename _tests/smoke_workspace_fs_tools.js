@@ -70,10 +70,11 @@ async function callTool(name, args) {
   assert.equal(absolute.success, false);
   assert.match(absolute.error, /drive-letter/i);
 
+  process.env.MCP_TEST_WORK_ROOT = path.join(__dirname, "..");
   const workspaceFs = require("../src/util/workspace_fs");
   const tempDir = path.join(__dirname, "..", "_tmp");
   const tempFile = path.join(tempDir, "workspace-fs-read-file-streaming.txt");
-  const tempRelative = "mcp-tests/_tmp/workspace-fs-read-file-streaming.txt";
+  const tempRelative = "_tmp/workspace-fs-read-file-streaming.txt";
   const source = Array.from({ length: 1200 }, (_, index) => `line-${String(index + 1).padStart(4, "0")} ${"x".repeat(64)}`).join("\n");
   const originalReadFile = fs.readFile;
   let blockedCalls = 0;
@@ -87,9 +88,12 @@ async function callTool(name, args) {
 
   try {
     const streamed = await workspaceFs.readFile(tempRelative, { maxChars: 120 });
-    assert.equal(streamed.chars, source.length);
+    assert.equal(streamed.chars, null);
     assert.equal(streamed.returned_chars, 120);
-    assert.equal(streamed.total_lines, source.split(/\r\n|\n|\r/).length);
+    assert.equal(streamed.total_lines, null);
+    assert.equal(streamed.complete, false);
+    assert.equal(streamed.has_more, true);
+    assert.equal(streamed.scanned_chars, 121);
     assert.equal(streamed.truncated, true);
     assert.equal(streamed.text, source.slice(0, 120));
     assert.equal(blockedCalls, 0);
@@ -99,7 +103,10 @@ async function callTool(name, args) {
       endLine: 102,
       maxChars: 1000,
     });
-    assert.equal(streamedLines.total_lines, source.split(/\r\n|\n|\r/).length);
+    assert.equal(streamedLines.total_lines, null);
+    assert.equal(streamedLines.complete, false);
+    assert.equal(streamedLines.has_more, true);
+    assert.equal(streamedLines.scanned_lines, 103);
     assert.equal(streamedLines.returned_lines, 3);
     assert.equal(streamedLines.text, [
       `L100 ${source.split("\n")[99]}`,
@@ -112,9 +119,11 @@ async function callTool(name, args) {
       offset: 10,
       length: 50,
     });
-    assert.equal(streamedChunk.chars, source.length);
+    assert.equal(streamedChunk.chars, null);
     assert.equal(streamedChunk.returned_chars, 50);
     assert.equal(streamedChunk.text, source.slice(10, 60));
+    assert.equal(streamedChunk.complete, false);
+    assert.equal(streamedChunk.scanned_chars, 61);
     assert.equal(streamedChunk.has_more, true);
     assert.equal(blockedCalls, 0);
   } finally {

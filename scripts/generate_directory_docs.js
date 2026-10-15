@@ -162,7 +162,7 @@ const CONFIG = {
   },
   "scripts": {
     title: "scripts directory map",
-    updated: "2026-08-01",
+    updated: "2026-08-02",
     entries: {
       "audit-memory-embedding-runtime.ps1": "Reads only allowlisted MEM-1 environment names from a live Windows process and emits secret-free activation booleans.",
       "audit_directory_docs.js": "Audits high-churn tracked directories for `DIRECTORY.md` coverage without modifying files.",
@@ -172,6 +172,7 @@ const CONFIG = {
       "server.ps1": "PowerShell helper for controlled local server startup/orchestration.",
       "server.sh": "Shell helper for controlled local server startup/orchestration.",
       "generate_directory_docs.js": "Regenerates selected `DIRECTORY.md` files from a bounded description map.",
+      "github_api.py": "Sends bounded GitHub REST requests with an operator-owned credential file; mutating methods require explicit confirmation and outputs are credential-redacted.",
     },
   },
   "profiles": {
@@ -442,7 +443,11 @@ for (const rootConfig of runtimeOwnedRoots) {
   for (const entry of entries) {
     if (!entry.isDirectory()) continue;
     const childAbs = path.join(absRoot, entry.name);
+    const childDirectoryPath = path.join(childAbs, "DIRECTORY.md");
     const childEntries = fs.readdirSync(childAbs, { withFileTypes: true }).filter((item) => item.name !== "DIRECTORY.md");
+    if (childEntries.length === 0 && fs.existsSync(childDirectoryPath)) {
+      continue;
+    }
     writeFile(
       path.join(childAbs, "DIRECTORY.md"),
       renderRuntimeOwnedDirectory({

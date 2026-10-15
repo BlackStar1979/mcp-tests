@@ -282,7 +282,7 @@ async function connectAndExercise({
 
 (async () => {
   const packageJson = JSON.parse(fs.readFileSync(
-    path.join(ROOT, "node_modules", "@modelcontextprotocol", "client", "package.json"),
+    path.join(path.dirname(require.resolve("@modelcontextprotocol/client")), "..", "package.json"),
     "utf8"
   ));
   assert.equal(packageJson.version, CLIENT_VERSION, "official client version is pinned");

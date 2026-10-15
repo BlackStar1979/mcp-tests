@@ -438,7 +438,16 @@
       ],
       "audit_required": true,
       "auth_required": true,
-      "public_safe": false
+      "public_safe": false,
+      "runtime_contract": {
+        "append_only_extensions": [
+          ".log",
+          ".jsonl",
+          ".ndjson"
+        ],
+        "other_text_targets": "deny_and_use_edit_file_patch",
+        "allow_protected_bypasses_semantic_policy": false
+      }
     },
     "copy_path": {
       "name": "copy_path",
@@ -538,7 +547,14 @@
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
-      "audit_required": true
+      "audit_required": true,
+      "runtime_contract": {
+        "ordering": "stable_name_order",
+        "pagination": "opaque_cursor",
+        "default_limit": 100,
+        "max_limit": 500,
+        "stat_scope": "selected_page_only"
+      }
     },
     "read_file": {
       "name": "read_file",
@@ -549,7 +565,11 @@
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
-      "audit_required": true
+      "audit_required": true,
+      "runtime_contract": {
+        "work_bound": "max_chars_plus_one_probe_character",
+        "partial_totals": "null_when_eof_not_observed"
+      }
     },
     "read_file_lines": {
       "name": "read_file_lines",
@@ -560,7 +580,11 @@
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
-      "audit_required": true
+      "audit_required": true,
+      "runtime_contract": {
+        "work_bound": "end_line_plus_one_probe_line_or_max_chars",
+        "partial_totals": "null_when_eof_not_observed"
+      }
     },
     "read_file_chunk": {
       "name": "read_file_chunk",
@@ -571,7 +595,11 @@
       "resource_policy_refs": [
         "SERVER_RESOURCE_POLICY_SPEC.json"
       ],
-      "audit_required": true
+      "audit_required": true,
+      "runtime_contract": {
+        "work_bound": "offset_plus_length_plus_one_probe_character",
+        "partial_totals": "null_when_eof_not_observed"
+      }
     },
     "fits_info": {
       "name": "fits_info",
@@ -1409,7 +1437,11 @@
       ],
       "audit_required": true,
       "auth_required": true,
-      "public_safe": false
+      "public_safe": false,
+      "runtime_contract": {
+        "operation_context": "single_shared_identity",
+        "existing_file_diff_path": "calculated_once_and_reused"
+      }
     },
     "edit_remote_site_file": {
       "name": "edit_remote_site_file",
@@ -1448,7 +1480,12 @@
       ],
       "audit_required": true,
       "auth_required": true,
-      "public_safe": false
+      "public_safe": false,
+      "runtime_contract": {
+        "operation_context": "single_shared_identity",
+        "metadata_manifest_required": true,
+        "audit_failure": "attempt_rename_rollback"
+      }
     },
     "restore_remote_site_file": {
       "name": "restore_remote_site_file",
@@ -1485,7 +1522,11 @@
       ],
       "audit_required": true,
       "auth_required": true,
-      "public_safe": false
+      "public_safe": false,
+      "runtime_contract": {
+        "validation_capability_reported_in_dry_run": true,
+        "real_apply_without_checker": "validation_unavailable_before_mutation"
+      }
     },
     "code_rollback_patch": {
       "name": "code_rollback_patch",
@@ -1683,5 +1724,41 @@
     "windows_non_ascii_project_warning": true,
     "path_with_space_index_path_warning": true,
     "project_with_space_warning": true
+  },
+  "filesystem_tooling_hardening": {
+    "status": "verified_in_isolated_worktree_not_live_loaded",
+    "tool_names_changed": false,
+    "tool_count_changed": false,
+    "input_schema_changed": [
+      "list_directory"
+    ],
+    "output_schema_changed": [
+      "list_directory",
+      "read_file",
+      "read_file_lines",
+      "read_file_chunk"
+    ],
+    "descriptor_changed": [
+      "append_file",
+      "list_directory",
+      "read_file",
+      "read_file_lines",
+      "read_file_chunk"
+    ],
+    "behavior_changed_without_connector_name_change": [
+      "append_file",
+      "write_remote_site_file",
+      "move_remote_site_file",
+      "code_apply_patch"
+    ],
+    "source_refs": [
+      "src/schemas/workspace_fs_tools.js",
+      "src/util/workspace_fs.js",
+      "src/util/workspace_mutation.js",
+      "src/util/workspace_roots.js",
+      "src/util/remote_site_tools.js",
+      "src/util/code_workspace.js",
+      "src/util/code_mutation_tools.js"
+    ]
   }
 }

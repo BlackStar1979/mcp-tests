@@ -193,8 +193,19 @@ async function withSftp(configRef, fn, deps = {}, options = {}) {
   return result;
 }
 
-function timestamp() {
-  return new Date().toISOString().replace(/[:.]/g, "-");
+function timestamp(value = new Date()) {
+  return value.toISOString().replace(/[:.]/g, "-");
+}
+
+function createRemoteOperationContext(deps = {}) {
+  const now = typeof deps.now === "function" ? deps.now() : new Date();
+  const createdAt = now instanceof Date ? now.toISOString() : new Date(now).toISOString();
+  return {
+    operationId: typeof deps.generateOperationId === "function" ? deps.generateOperationId() : generateOperationId(),
+    correlationId: typeof deps.generateCorrelationId === "function" ? deps.generateCorrelationId() : generateCorrelationId(),
+    createdAt,
+    artifactStamp: timestamp(new Date(createdAt)),
+  };
 }
 
 function generateOperationId() {
@@ -205,17 +216,17 @@ function generateCorrelationId() {
   return crypto.randomUUID();
 }
 
-function artifactPath({ opsRoot, kind, remotePath, suffix }) {
+function artifactPath({ opsRoot, kind, remotePath, suffix, artifactStamp = timestamp() }) {
   const cleanRel = normalizeRemoteRelativePath(remotePath);
   const parsed = posixPath.parse(cleanRel);
-  const safeName = `${parsed.name}__${suffix}_${timestamp()}${parsed.ext || ""}`;
+  const safeName = `${parsed.name}__${suffix}_${artifactStamp}${parsed.ext || ""}`;
   return posixPath.join(opsRoot, kind, parsed.dir, safeName);
 }
 
-function diffPath({ opsRoot, remotePath }) {
+function diffPath({ opsRoot, remotePath, artifactStamp = timestamp() }) {
   const cleanRel = normalizeRemoteRelativePath(remotePath);
   const parsed = posixPath.parse(cleanRel);
-  const safeName = `${parsed.name}__edited_${timestamp()}${parsed.ext || ""}.diff`;
+  const safeName = `${parsed.name}__edited_${artifactStamp}${parsed.ext || ""}.diff`;
   return posixPath.join(opsRoot, "edits", parsed.dir, safeName);
 }
 
@@ -277,6 +288,7 @@ function buildRemoteMetadataRecord({
   actor = "codex-mcp-tests",
   correlationId,
   operationId,
+  createdAt,
   details = {},
 }) {
   if (!operation) throw new Error("buildRemoteMetadataRecord requires operation");
@@ -289,7 +301,7 @@ function buildRemoteMetadataRecord({
     actor,
     remote_path: remotePath,
     artifact_path: remoteArtifactPath || null,
-    created_at: new Date().toISOString(),
+    created_at: createdAt || new Date().toISOString(),
     details: safeValue(details),
   };
 }
@@ -325,13 +337,22 @@ async function writeRemoteMetadataManifest(client, config, manifest) {
   return location.full_path;
 }
 
-function buildMetadataManifest({ operation, remotePath, artifactPath: remoteArtifactPath, correlationId, operationId, details = {} }) {
+function buildMetadataManifest({
+  operation,
+  remotePath,
+  artifactPath: remoteArtifactPath,
+  correlationId,
+  operationId,
+  createdAt,
+  details = {},
+}) {
   return buildRemoteMetadataRecord({
     operation,
     remotePath,
     artifactPath: remoteArtifactPath,
     correlationId,
     operationId,
+    createdAt,
     details,
   });
 }
@@ -794,8 +815,9 @@ async function readRemoteSiteFile(args = {}, deps = {}) {
   }, deps, { ensureOpsDirs: false });
 }
 
-async function writeRemoteSiteFile(args = {}) {
+async function writeRemoteSiteFile(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
+    const operation = createRemoteOperationContext(deps);
     const rel = normalizeRemoteRelativePath(args.remote_path);
     assertAllowedFileExtension(rel, config.allowedExtensions);
     const remoteFile = joinRemoteUnderRoot(config.siteRoot, rel);
@@ -806,8 +828,10 @@ async function writeRemoteSiteFile(args = {}) {
     } catch {
       existed = false;
     }
-    if (existed) {
-      const patchFile = diffPath({ opsRoot: config.opsRoot, remotePath: rel });
+    const patchFile = existed
+      ? diffPath({ opsRoot: config.opsRoot, remotePath: rel, artifactStamp: operation.artifactStamp })
+      : null;
+    if (patchFile) {
       await ensureRemoteDir(client, posixPath.dirname(patchFile));
       await client.put(Buffer.from(makeUnifiedDiff({ remotePath: rel, before, after: args.content }), "utf8"), patchFile);
     }
@@ -815,9 +839,13 @@ async function writeRemoteSiteFile(args = {}) {
     const manifest = buildMetadataManifest({
       operation: "write",
       remotePath: rel,
-      artifactPath: existed ? diffPath({ opsRoot: config.opsRoot, remotePath: rel }) : null,
+      artifactPath: patchFile,
+      operationId: operation.operationId,
+      correlationId: operation.correlationId,
+      createdAt: operation.createdAt,
       details: {
         existed,
+        diff_path: patchFile,
         bytes_after: bytes,
         bytes_before: existed ? Buffer.byteLength(before, "utf8") : 0,
       },
@@ -825,12 +853,13 @@ async function writeRemoteSiteFile(args = {}) {
     const metadataPath = await writeRemoteMetadataManifest(client, config, manifest);
     await appendRemoteSiteOpsLog(client, config, {
       action: "write",
+      ts: operation.createdAt,
       remote_path: rel,
       bytes,
       existed,
       operation_id: manifest.operation_id,
       correlation_id: manifest.correlation_id,
-      artifact: manifest.artifact_path,
+      artifact: patchFile,
       details: {
         metadata_path: metadataPath,
         bytes_before: existed ? Buffer.byteLength(before, "utf8") : 0,
@@ -841,12 +870,13 @@ async function writeRemoteSiteFile(args = {}) {
       status: "written",
       remote_path: rel,
       bytes,
-      diff_created: existed,
+      diff_created: Boolean(patchFile),
+      diff: patchFile,
       metadata_path: metadataPath,
       operation_id: manifest.operation_id,
       correlation_id: manifest.correlation_id,
     };
-  });
+  }, deps);
 }
 
 async function editRemoteSiteFile(args = {}) {
@@ -934,8 +964,9 @@ async function deleteRemoteSiteFile(args = {}) {
   });
 }
 
-async function moveRemoteSiteFile(args = {}) {
+async function moveRemoteSiteFile(args = {}, deps = {}) {
   return withSftp(args.vps_config_ref, async (client, config) => {
+    const operation = createRemoteOperationContext(deps);
     const sourceRel = normalizeRemoteRelativePath(args.source_path);
     const targetRel = normalizeRemoteRelativePath(args.target_path);
     assertAllowedFileExtension(sourceRel, config.allowedExtensions);
@@ -950,17 +981,56 @@ async function moveRemoteSiteFile(args = {}) {
     }
     await ensureRemoteDir(client, posixPath.dirname(target));
     await client.rename(source, target);
-    await appendRemoteSiteOpsLog(client, config, {
-      action: "move",
-      source_path: sourceRel,
-      target_path: targetRel,
-    });
+
+    let metadataPath;
+    try {
+      const manifest = buildMetadataManifest({
+        operation: "move",
+        remotePath: targetRel,
+        artifactPath: null,
+        operationId: operation.operationId,
+        correlationId: operation.correlationId,
+        createdAt: operation.createdAt,
+        details: {
+          source_path: sourceRel,
+          target_path: targetRel,
+          source_absolute_path: source,
+          target_absolute_path: target,
+        },
+      });
+      metadataPath = await writeRemoteMetadataManifest(client, config, manifest);
+      await appendRemoteSiteOpsLog(client, config, {
+        action: "move",
+        ts: operation.createdAt,
+        remote_path: targetRel,
+        operation_id: manifest.operation_id,
+        correlation_id: manifest.correlation_id,
+        artifact: null,
+        details: {
+          source_path: sourceRel,
+          target_path: targetRel,
+          metadata_path: metadataPath,
+        },
+      });
+    } catch (auditError) {
+      try {
+        await client.rename(target, source);
+        auditError.message = `${auditError.message} [audit failed; rolled back]`;
+      } catch (rollbackError) {
+        auditError.message = `${auditError.message} [audit failed; rollback failed: ${rollbackError?.message || String(rollbackError)}]`;
+      }
+      throw auditError;
+    }
+
     return {
       status: "moved",
       source_path: sourceRel,
       target_path: targetRel,
+      metadata_path: metadataPath,
+      operation_id: operation.operationId,
+      correlation_id: operation.correlationId,
     };
-  });
+  }, deps);
 }
 
 async function restoreRemoteSiteFile(args = {}) {

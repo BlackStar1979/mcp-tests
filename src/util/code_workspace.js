@@ -754,29 +754,60 @@ function runBoundedProcess(command, args, { timeoutMs = 6000, cwd = WORKSPACE_RO
   });
 }
 
-async function syntaxCheck(filePath) {
-  const item = await statCodeFile(filePath);
+function validationCapability(filePath) {
+  const item = resolveWorkspacePath(filePath, { allowDirectory: false });
   const ext = path.extname(item.relative_path).toLowerCase();
   if (JS_CHECK_EXTENSIONS.has(ext)) {
-    const result = await runBoundedProcess(process.execPath, ["--check", item.absolute_path]);
-    return { path: item.relative_path, language: "javascript", checker: "node --check", ...result };
+    return {
+      path: item.relative_path,
+      extension: ext,
+      language: "javascript",
+      checker: "node --check",
+      available: true,
+      reason: "",
+    };
   }
   if (PY_CHECK_EXTENSIONS.has(ext)) {
-    const py = process.env.MCP_TEST_PYTHON_BIN || "python";
-    const result = await runBoundedProcess(py, ["-m", "py_compile", item.absolute_path]);
-    return { path: item.relative_path, language: "python", checker: "python -m py_compile", ...result };
+    return {
+      path: item.relative_path,
+      extension: ext,
+      language: "python",
+      checker: "python -m py_compile",
+      available: true,
+      reason: "",
+    };
   }
   return {
     path: item.relative_path,
+    extension: ext,
     language: languageForPath(item.relative_path),
     checker: "none",
-    ok: false,
-    exit_code: null,
-    timed_out: false,
-    duration_ms: 0,
-    stdout: "",
-    stderr: "No syntax checker configured for this file extension.",
+    available: false,
+    reason: "No syntax checker configured for this file extension.",
   };
+}
+
+async function syntaxCheck(filePath) {
+  const capability = validationCapability(filePath);
+  const item = await statCodeFile(filePath);
+  if (!capability.available) {
+    return {
+      ...capability,
+      ok: false,
+      exit_code: null,
+      timed_out: false,
+      duration_ms: 0,
+      stdout: "",
+      stderr: capability.reason,
+    };
+  }
+  if (capability.checker === "node --check") {
+    const result = await runBoundedProcess(process.execPath, ["--check", item.absolute_path]);
+    return { ...capability, ...result };
+  }
+  const py = process.env.MCP_TEST_PYTHON_BIN || "python";
+  const result = await runBoundedProcess(py, ["-m", "py_compile", item.absolute_path]);
+  return { ...capability, ...result };
 }
 
 module.exports = {
@@ -802,4 +833,5 @@ module.exports = {
   scenarioPlan,
   shouldIgnoreWorkspaceCandidateError,
   syntaxCheck,
+  validationCapability,
 };

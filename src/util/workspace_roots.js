@@ -1,3 +1,4 @@
+const fs = require("node:fs");
 const path = require("node:path");
 
 const PRIMARY_WORK_ROOT_ALIAS = "work";
@@ -196,6 +197,97 @@ function findBlockedPrefix(fullPath, prefixes, rootPath) {
   return null;
 }
 
+function isPathInside(rootPath, candidatePath) {
+  const root = comparePath(rootPath);
+  const candidate = comparePath(candidatePath);
+  return candidate === root || candidate.startsWith(`${root}/`);
+}
+
+function realpathSync(targetPath) {
+  const implementation = fs.realpathSync.native || fs.realpathSync;
+  return implementation(targetPath);
+}
+
+function nearestExistingPath(absolutePath) {
+  let current = absolutePath;
+  while (true) {
+    try {
+      fs.lstatSync(current);
+      return current;
+    } catch (error) {
+      if (error?.code !== "ENOENT") throw error;
+      const parent = path.dirname(current);
+      if (parent === current) throw error;
+      current = parent;
+    }
+  }
+}
+
+function assertNoLinkedComponents(resolved) {
+  const relative = path.relative(resolved.rootPath, resolved.absolutePath);
+  if (!relative) return;
+  let current = resolved.rootPath;
+  for (const segment of relative.split(path.sep).filter(Boolean)) {
+    current = path.join(current, segment);
+    let stat;
+    try {
+      stat = fs.lstatSync(current);
+    } catch (error) {
+      if (error?.code === "ENOENT") return;
+      throw error;
+    }
+    if (stat.isSymbolicLink()) {
+      throw new Error(`Mutation path contains a symlink, junction, or reparse point: ${segment}`);
+    }
+  }
+}
+
+function enforceWorkspaceBoundary(resolved, { boundaryMode = "read" } = {}) {
+  if (!new Set(["read", "mutation", "lexical"]).has(boundaryMode)) {
+    throw new Error(`Unsupported workspace boundary mode: ${boundaryMode}`);
+  }
+  if (boundaryMode === "lexical") return resolved;
+
+  const realRootPath = realpathSync(resolved.rootPath);
+  if (boundaryMode === "mutation") {
+    assertNoLinkedComponents(resolved);
+  }
+
+  const existingPath = nearestExistingPath(resolved.absolutePath);
+  const realExistingPath = realpathSync(existingPath);
+  if (!isPathInside(realRootPath, realExistingPath)) {
+    throw new Error("Resolved real path escapes workspace root.");
+  }
+
+  let realPath = null;
+  if (comparePath(existingPath) === comparePath(resolved.absolutePath)) {
+    realPath = realExistingPath;
+  }
+
+  const blockedPrefix = realPath
+    ? findBlockedPrefix(realPath, READ_BLOCKED_PATH_PREFIXES, realRootPath)
+    : null;
+  if (blockedPrefix) {
+    throw new Error(`Blocked path: ${blockedPrefix}`);
+  }
+
+  return {
+    ...resolved,
+    realRootPath,
+    realPath,
+    existingAncestorPath: existingPath,
+  };
+}
+
+function resolveReadableWorkspacePath(relativePath = ".", options = {}) {
+  const resolved = safeWorkspacePath(relativePath, { ...options, boundaryMode: "read" });
+  return {
+    ...resolved,
+    lexicalAbsolutePath: resolved.absolutePath,
+    absolutePath: resolved.realPath || resolved.absolutePath,
+  };
+}
+
 function safeWorkspacePath(relativePath = ".", options = {}) {
   const roots = options.roots || buildWorkRoots();
   const primaryAlias = options.primaryAlias || PRIMARY_WORK_ROOT_ALIAS;
@@ -212,10 +304,13 @@ function safeWorkspacePath(relativePath = ".", options = {}) {
     throw new Error(`Blocked path: ${blockedPrefix}`);
   }
 
-  return {
-    ...target,
-    absolutePath,
-  };
+  return enforceWorkspaceBoundary(
+    {
+      ...target,
+      absolutePath,
+    },
+    { boundaryMode: options.boundaryMode || "read" }
+  );
 }
 
 module.exports = {
@@ -223,7 +318,9 @@ module.exports = {
   READ_BLOCKED_PATH_PREFIXES,
   WORK_ROOTS_ENV_VAR,
   buildWorkRoots,
+  enforceWorkspaceBoundary,
   listWorkspaceRoots,
+  resolveReadableWorkspacePath,
   resolveWorkspaceTarget,
   safeWorkspacePath,
 };

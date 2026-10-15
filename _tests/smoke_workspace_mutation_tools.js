@@ -21,7 +21,7 @@ const TMP_ROOT = path.join(WORK_ROOT, "_control", "smoke_workspace_mutation_tool
   await fs.rm(TMP_ROOT, { recursive: true, force: true });
   await fs.mkdir(TMP_ROOT, { recursive: true });
 
-  const file = "_control/smoke_workspace_mutation_tools/source.txt";
+  const file = "_control/smoke_workspace_mutation_tools/source.log";
   const copy = "_control/smoke_workspace_mutation_tools/copy.txt";
   const moved = "_control/smoke_workspace_mutation_tools/moved.txt";
 

@@ -1,8 +1,8 @@
 {
   "spec_mode": "canonical_structured_spec_not_progress_log",
-  "runtime_change": false,
+  "runtime_change": true,
   "priority": "target",
-  "status": "specified_only_runtime_enforcement_pending",
+  "status": "implemented_runtime_enforced_for_workspace_paths",
   "schema_version": "mcp-tests-roots-boundary-policy-v1",
   "scope": "Filesystem roots boundary for MCP roots semantics and repository FS tools.",
   "policy": {
@@ -11,7 +11,13 @@
     "path_traversal": "deny",
     "symlink_escape": "deny",
     "root_list_changed": "audit_and_revalidate",
-    "fs_tools_must_respect_configured_root": true
+    "fs_tools_must_respect_configured_root": true,
+    "lexical_containment": "required_first_gate",
+    "existing_target_realpath_containment": "required",
+    "nonexistent_target_nearest_existing_ancestor_realpath_containment": "required",
+    "readonly_in_root_links": "allowed_only_when_real_target_remains_inside_selected_root",
+    "mutation_link_components": "deny_symlink_junction_or_reparse_point",
+    "pre_mutation_revalidation": "required_immediately_before_write_copy_move_delete_restore_backup_or_patch"
   },
   "current_repo_bindings": [
     "SERVER_RESOURCE_POLICY_SPEC.json",
@@ -20,7 +26,7 @@
   ],
   "runtime_gaps": [
     "MCP roots protocol capability is not exposed as target runtime feature",
-    "symlink escape tests need expansion"
+    "OS-level path replacement races cannot be eliminated completely without handle-relative filesystem APIs; immediate pre-mutation revalidation narrows but does not remove this residual TOCTOU risk"
   ],
   "sessionless_ready_review": {
     "status": "sessionless_ready_reviewed",
@@ -42,5 +48,22 @@
     "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart.",
     "sessionless_transition_route_retired_from_active_runtime": true,
     "sessionless_transition_env_retired_from_active_runtime": true
+  },
+  "implementation": {
+    "status": "verified_in_isolated_worktree",
+    "source_refs": [
+      "src/util/workspace_roots.js",
+      "src/util/workspace_mutation.js"
+    ],
+    "guards": [
+      "_tests/smoke_workspace_realpath_boundary.js",
+      "_tests/smoke_workspace_mutation_tools.js"
+    ],
+    "validation": {
+      "full_smoke_command": "node _tests/run_all_smokes.js --skip-network",
+      "public_scripts": 7,
+      "tests_authenticated_scripts": 278,
+      "result": "ok"
+    }
   }
 }

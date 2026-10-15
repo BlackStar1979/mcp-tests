@@ -225,7 +225,34 @@
     "active_connector_targets": [
       "public:none",
       "authorized:oauth21"
-    ]
+    ],
+    "pending_repository_surface_change": {
+      "status": "validated_in_isolated_worktree_not_live_loaded",
+      "change_kind": "input_output_schema_descriptor_and_behavior_change_with_stable_tool_names_and_counts",
+      "affected_tools": [
+        "append_file",
+        "list_directory",
+        "read_file",
+        "read_file_lines",
+        "read_file_chunk",
+        "write_remote_site_file",
+        "move_remote_site_file",
+        "code_apply_patch"
+      ],
+      "tool_names_changed": false,
+      "tool_count_changed": false,
+      "runtime_restart_required_after_integration": true,
+      "connector_refresh_required_after_restart": true,
+      "restart_command": "node .\\scripts\\request-restart.js --code=42 --reason=manual",
+      "competing_instance_on_active_port_forbidden": true,
+      "temporary_instance_port_policy": "use_a_different_higher_or_ephemeral_port",
+      "pre_integration_validation": {
+        "command": "node _tests/run_all_smokes.js --skip-network",
+        "public_scripts": 7,
+        "tests_authenticated_scripts": 278,
+        "result": "ok"
+      }
+    }
   },
   "oauth21_connector": {
     "status": "implemented_h10_local_as_ready",

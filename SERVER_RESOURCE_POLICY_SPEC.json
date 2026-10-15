@@ -27,7 +27,7 @@
       "public_surface_allowed": true
     },
     "filesystem_workspace_readonly": {
-      "description": "Read-only code/workspace inspection for developer/test profile.",
+      "description": "Read-only code/workspace inspection for developer/test profile with lexical and realpath containment, stable directory pagination, and bounded early-terminating text reads.",
       "allowed_operations": [
         "read",
         "list",
@@ -37,7 +37,7 @@
       "public_surface_allowed": false
     },
     "filesystem_workspace_mutation": {
-      "description": "Bounded authenticated workspace mutation inside configured writable roots with backup/trash/restore controls.",
+      "description": "Bounded authenticated workspace mutation inside configured writable roots with realpath/reparse-point enforcement, immediate pre-mutation revalidation, backup/trash/restore controls, and semantic append-only restrictions.",
       "allowed_operations": [
         "write"
       ],
@@ -208,7 +208,7 @@
       "public_surface_allowed": false
     },
     "remote_site_mutation": {
-      "description": "Authenticated remote-site SFTP mutation resource bounded by per-call config references, remote site/ops roots, soft-delete discipline, and metadata/audit artifact generation outside webroot.",
+      "description": "Authenticated remote-site SFTP mutation resource bounded by per-call config references, remote site/ops roots, soft-delete discipline, one shared operation context, metadata/log identity, and rollback attempts when post-rename audit persistence fails.",
       "allowed_operations": [
         "write"
       ],
@@ -299,7 +299,13 @@
     "public_surface_disallows_non_public_resource_classes": true,
     "mutating_operation_requires_audit": true,
     "database_raw_query_tools_forbidden": true,
-    "resource_policy_refs_must_be_declared_in_profiles_when_profile_controls_resources": true
+    "resource_policy_refs_must_be_declared_in_profiles_when_profile_controls_resources": true,
+    "workspace_realpath_containment_required": true,
+    "workspace_mutation_link_components_denied": true,
+    "bounded_read_work_required": true,
+    "semantic_append_only_classification_required": true,
+    "remote_mutation_operation_identity_required": true,
+    "code_mutation_validation_capability_preflight_required": true
   },
   "profile_schema_fields": {
     "allowed_resource_policy_refs": "optional string array on each profile surface",
@@ -342,5 +348,42 @@
     "notes": "Root spec reviewed for sessionless-ready workflow posture; stable connector route remains unchanged and sessionless activation/migration remain separate explicit operator stages. The hidden /mcp/sessionless route is a historical transition route, not the final target architecture, and it is now retired from active repo runtime and confirmed absent on live OAuth21 3008 after the controlled restart.",
     "sessionless_transition_route_retired_from_active_runtime": true,
     "sessionless_transition_env_retired_from_active_runtime": true
+  },
+  "filesystem_hardening_contract": {
+    "status": "verified_in_isolated_worktree",
+    "local_read_contract": {
+      "directory_default_limit": 100,
+      "directory_max_limit": 500,
+      "pagination": "stable_opaque_cursor_name_order",
+      "partial_totals": "null_when_eof_not_observed",
+      "work_bound": "requested_range_plus_one_probe_unit"
+    },
+    "local_mutation_contract": {
+      "append_only_extensions": [
+        ".log",
+        ".jsonl",
+        ".ndjson"
+      ],
+      "canonical_or_editable_text_append": "deny_and_direct_to_edit_file_patch",
+      "allow_protected_bypasses_semantic_append_policy": false
+    },
+    "remote_mutation_contract": {
+      "write_diff_path_calculated_once": true,
+      "move_manifest_required": true,
+      "manifest_log_result_identity_required": true,
+      "audit_failure_after_move": "attempt_rename_rollback_and_report_outcome"
+    },
+    "code_patch_contract": {
+      "analysis_without_checker_allowed_for_dry_run": true,
+      "real_apply_without_checker": "validation_unavailable_before_backup_or_write",
+      "network_checker_install_forbidden": true
+    },
+    "guards": [
+      "_tests/smoke_workspace_fs_bounded.js",
+      "_tests/smoke_workspace_realpath_boundary.js",
+      "_tests/smoke_append_file_policy.js",
+      "_tests/smoke_remote_site_mutation_audit.js",
+      "_tests/smoke_code_patch_validation_capability.js"
+    ]
   }
 }

@@ -14,7 +14,7 @@ const appendFileTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "Append workspace file",
-    description: "Append UTF-8 text to a file inside configured workspace roots with backup-before-append discipline.",
+    description: "Append UTF-8 records only to append-only operational files (.log, .jsonl, .ndjson) with backup-before-append discipline; use edit_file_patch for editable or canonical text.",
     inputSchema: APPEND_FILE_INPUT_SCHEMA,
     outputSchema: APPEND_FILE_OUTPUT_SCHEMA,
     annotations: STATE_CHANGING_WORKSPACE_MUTATION_ANNOTATIONS,

@@ -5,6 +5,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 const { buildPluginLabelsSync } = require("../src/tool_labels");
 
+const PLUGINS_ROOT = path.resolve(__dirname, "..", "plugins");
+
 const originalExistsSync = fs.existsSync;
 const originalReaddirSync = fs.readdirSync;
 const originalStatSync = fs.statSync;
@@ -19,7 +21,7 @@ try {
     return originalExistsSync(targetPath);
   };
   fs.readdirSync = (targetPath, options) => {
-    if (String(targetPath).endsWith(path.join("mcp-tests", "plugins"))) {
+    if (path.resolve(String(targetPath)) === PLUGINS_ROOT) {
       return [{
         name: "alpha",
         isDirectory: () => true,

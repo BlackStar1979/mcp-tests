@@ -12,6 +12,7 @@ const { hdf5InfoTool } = require("../tools/hdf5_info");
 const { runPythonCandidate } = require("../src/util/science_tools");
 
 const ROOT = path.resolve(__dirname, "..");
+process.env.MCP_TEST_WORK_ROOT = ROOT;
 const TMP_ROOT = path.join(ROOT, "_control", "smoke_science_tools");
 
 async function prepareFixtures() {
@@ -31,7 +32,7 @@ async function main() {
   await prepareFixtures();
 
   const inventory = await inventoryTreeTool.execute({
-    path: "mcp-tests/_control/smoke_science_tools",
+    path: "_control/smoke_science_tools",
     top_n_largest: 5,
   });
   assert.equal(inventory.success, true);
@@ -43,7 +44,7 @@ async function main() {
   assert.ok(inventory.largest.some((entry) => entry.path.endsWith("sample.csv")));
 
   const table = await tableProfileTool.execute({
-    path: "mcp-tests/_control/smoke_science_tools/sample.csv",
+    path: "_control/smoke_science_tools/sample.csv",
     sample_rows: 5,
   });
   assert.equal(table.success, true);
@@ -53,13 +54,13 @@ async function main() {
   assert.deepEqual(table.sample_rows[0], ["alpha", "1"]);
 
   const fits = await fitsInfoTool.execute({
-    path: "mcp-tests/_control/smoke_science_tools/broken.fits",
+    path: "_control/smoke_science_tools/broken.fits",
   });
   assert.equal(fits.success, false);
   assert.match(fits.error, /fits|python|astropy|no such file|invalid|error/i);
 
   const hdf5 = await hdf5InfoTool.execute({
-    path: "mcp-tests/_control/smoke_science_tools/broken.h5",
+    path: "_control/smoke_science_tools/broken.h5",
   });
   assert.equal(hdf5.success, false);
   assert.match(hdf5.error, /hdf5|python|h5py|unable|invalid|error/i);

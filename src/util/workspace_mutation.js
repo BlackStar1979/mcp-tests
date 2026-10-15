@@ -3,7 +3,11 @@
 const fs = require("node:fs/promises");
 const path = require("node:path");
 
-const { PRIMARY_WORK_ROOT_ALIAS, safeWorkspacePath } = require("./workspace_roots");
+const {
+  PRIMARY_WORK_ROOT_ALIAS,
+  resolveReadableWorkspacePath,
+  safeWorkspacePath,
+} = require("./workspace_roots");
 
 const MAX_WRITE_BYTES = Number(process.env.MCP_TEST_MAX_WRITE_BYTES || 5 * 1024 * 1024);
 const PROTECTED_SEGMENTS = new Set([
@@ -19,6 +23,63 @@ const PROTECTED_SEGMENTS = new Set([
 
 function toPosix(value) {
   return String(value || "").replaceAll("\\", "/");
+}
+
+const APPEND_ONLY_EXTENSIONS = new Set([".log", ".jsonl", ".ndjson"]);
+const EDITABLE_TEXT_EXTENSIONS = new Set([
+  ".c",
+  ".cc",
+  ".cjs",
+  ".cpp",
+  ".css",
+  ".go",
+  ".h",
+  ".hpp",
+  ".html",
+  ".java",
+  ".js",
+  ".json",
+  ".jsx",
+  ".md",
+  ".mjs",
+  ".ps1",
+  ".py",
+  ".rs",
+  ".sh",
+  ".sql",
+  ".toml",
+  ".ts",
+  ".tsx",
+  ".txt",
+  ".xml",
+  ".yaml",
+  ".yml",
+]);
+const CANONICAL_BASENAMES = new Set([
+  "AGENT.md",
+  "DIRECTORY.md",
+  "README.md",
+  "package-lock.json",
+  "package.json",
+]);
+
+function classifyMutationTarget(relativePath) {
+  const normalized = toPosix(relativePath || "").replace(/^@[^/]+\/?/, "");
+  const basename = path.posix.basename(normalized);
+  const extension = path.posix.extname(basename).toLowerCase();
+  const canonical = CANONICAL_BASENAMES.has(basename)
+    || /^SERVER(?:_[A-Z0-9]+)*_SPEC\.json$/i.test(basename)
+    || basename === "SERVER_SPEC.json";
+  if (canonical) {
+    return { classification: "canonical", extension, basename };
+  }
+  if (APPEND_ONLY_EXTENSIONS.has(extension)) {
+    return { classification: "append_only", extension, basename };
+  }
+  if (EDITABLE_TEXT_EXTENSIONS.has(extension)) {
+    return { classification: "editable_text", extension, basename };
+  }
+  return { classification: "binary_or_unsupported", extension, basename };
 }
 
 function makeDisplayPath(rootAlias, rootRelativePath) {
@@ -40,7 +101,14 @@ function assertWritableTarget(resolved, { allowProtected = false } = {}) {
 }
 
 function resolveWritableWorkspacePath(relativePath, options = {}) {
-  return assertWritableTarget(safeWorkspacePath(relativePath), options);
+  return assertWritableTarget(
+    safeWorkspacePath(relativePath, { boundaryMode: "mutation" }),
+    options
+  );
+}
+
+function revalidateMutationBoundary(resolved) {
+  return safeWorkspacePath(resolved.displayPath, { boundaryMode: "mutation" });
 }
 
 function stamp() {
@@ -58,19 +126,23 @@ async function pathExists(absolutePath, fsImpl = fs) {
 }
 
 async function createBackupIfExists(resolvedTarget) {
-  if (!(await pathExists(resolvedTarget.absolutePath))) {
+  let current = revalidateMutationBoundary(resolvedTarget);
+  if (!(await pathExists(current.absolutePath))) {
     return null;
   }
-  const parsed = path.posix.parse(toPosix(resolvedTarget.rootRelativePath || "."));
+  const parsed = path.posix.parse(toPosix(current.rootRelativePath || "."));
   const backupRelative = path.posix.join(
     ".mcp_backups",
     parsed.dir || "",
     `${parsed.name}__backup_${stamp()}${parsed.ext || ""}`
   );
-  const backupAbsolute = path.resolve(resolvedTarget.rootPath, backupRelative);
-  await fs.mkdir(path.dirname(backupAbsolute), { recursive: true });
-  await fs.cp(resolvedTarget.absolutePath, backupAbsolute, { recursive: true, force: true });
-  return makeDisplayPath(resolvedTarget.rootAlias, backupRelative);
+  const backupDisplay = makeDisplayPath(current.rootAlias, backupRelative);
+  let backupResolved = safeWorkspacePath(backupDisplay, { boundaryMode: "mutation" });
+  await fs.mkdir(path.dirname(backupResolved.absolutePath), { recursive: true });
+  current = revalidateMutationBoundary(current);
+  backupResolved = safeWorkspacePath(backupDisplay, { boundaryMode: "mutation" });
+  await fs.cp(current.absolutePath, backupResolved.absolutePath, { recursive: true, force: true });
+  return backupDisplay;
 }
 
 async function writeFile(relativePath, content, { allowProtected = false } = {}) {
@@ -80,8 +152,10 @@ async function writeFile(relativePath, content, { allowProtected = false } = {})
     throw new Error(`Write blocked: content is larger than ${MAX_WRITE_BYTES} bytes.`);
   }
   const backup = await createBackupIfExists(resolved);
-  await fs.mkdir(path.dirname(resolved.absolutePath), { recursive: true });
-  await fs.writeFile(resolved.absolutePath, String(content), "utf8");
+  let current = revalidateMutationBoundary(resolved);
+  await fs.mkdir(path.dirname(current.absolutePath), { recursive: true });
+  current = revalidateMutationBoundary(current);
+  await fs.writeFile(current.absolutePath, String(content), "utf8");
   return {
     status: "written",
     path: resolved.displayPath,
@@ -91,14 +165,24 @@ async function writeFile(relativePath, content, { allowProtected = false } = {})
 }
 
 async function appendFile(relativePath, content, { allowProtected = false } = {}) {
+  const classification = classifyMutationTarget(relativePath);
+  if (classification.classification !== "append_only") {
+    throw new Error(
+      `Semantic append denied for ${classification.classification} target. `
+      + "append_file only supports append-only operational files (.log, .jsonl, .ndjson); "
+      + "use edit_file_patch for editable or canonical text."
+    );
+  }
   const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected });
   const bytes = Buffer.byteLength(String(content), "utf8");
   if (bytes > MAX_WRITE_BYTES) {
     throw new Error(`Append blocked: content is larger than ${MAX_WRITE_BYTES} bytes.`);
   }
   const backup = await createBackupIfExists(resolved);
-  await fs.mkdir(path.dirname(resolved.absolutePath), { recursive: true });
-  await fs.appendFile(resolved.absolutePath, String(content), "utf8");
+  let current = revalidateMutationBoundary(resolved);
+  await fs.mkdir(path.dirname(current.absolutePath), { recursive: true });
+  current = revalidateMutationBoundary(current);
+  await fs.appendFile(current.absolutePath, String(content), "utf8");
   return {
     status: "appended",
     path: resolved.displayPath,
@@ -108,10 +192,13 @@ async function appendFile(relativePath, content, { allowProtected = false } = {}
 }
 
 async function copyPath(fromPath, toPath, { allowProtected = false } = {}) {
-  const fromResolved = safeWorkspacePath(fromPath);
-  const toResolved = resolveWritableWorkspacePath(toPath, { allowProtected });
+  let fromResolved = resolveReadableWorkspacePath(fromPath);
+  let toResolved = resolveWritableWorkspacePath(toPath, { allowProtected });
   const backup = await createBackupIfExists(toResolved);
+  toResolved = revalidateMutationBoundary(toResolved);
   await fs.mkdir(path.dirname(toResolved.absolutePath), { recursive: true });
+  fromResolved = resolveReadableWorkspacePath(fromPath);
+  toResolved = revalidateMutationBoundary(toResolved);
   await fs.cp(fromResolved.absolutePath, toResolved.absolutePath, { recursive: true, force: true });
   return {
     status: "copied",
@@ -122,12 +209,18 @@ async function copyPath(fromPath, toPath, { allowProtected = false } = {}) {
 }
 
 async function movePath(fromPath, toPath, { allowProtected = false } = {}) {
-  const fromResolved = resolveWritableWorkspacePath(fromPath, { allowProtected });
-  const toResolved = resolveWritableWorkspacePath(toPath, { allowProtected });
+  let fromResolved = resolveWritableWorkspacePath(fromPath, { allowProtected });
+  let toResolved = resolveWritableWorkspacePath(toPath, { allowProtected });
   if (await pathExists(toResolved.absolutePath)) {
     throw new Error("Destination already exists. move_path does not overwrite existing targets.");
   }
+  toResolved = revalidateMutationBoundary(toResolved);
   await fs.mkdir(path.dirname(toResolved.absolutePath), { recursive: true });
+  fromResolved = revalidateMutationBoundary(fromResolved);
+  toResolved = revalidateMutationBoundary(toResolved);
+  if (await pathExists(toResolved.absolutePath)) {
+    throw new Error("Destination already exists. move_path does not overwrite existing targets.");
+  }
   await fs.rename(fromResolved.absolutePath, toResolved.absolutePath);
   return {
     status: "moved",
@@ -137,7 +230,7 @@ async function movePath(fromPath, toPath, { allowProtected = false } = {}) {
 }
 
 async function deletePath(relativePath, { allowProtected = false } = {}, { fsImpl = fs } = {}) {
-  const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected });
+  let resolved = resolveWritableWorkspacePath(relativePath, { allowProtected });
   if (resolved.rootRelativePath === ".") {
     throw new Error("Refusing to delete root.");
   }
@@ -147,22 +240,27 @@ async function deletePath(relativePath, { allowProtected = false } = {}, { fsImp
     parsed.dir || "",
     `${parsed.name}__deleted_${stamp()}${parsed.ext || ""}`
   );
-  const trashAbsolute = path.resolve(resolved.rootPath, trashRelative);
-  await fsImpl.mkdir(path.dirname(trashAbsolute), { recursive: true });
-  await fsImpl.rename(resolved.absolutePath, trashAbsolute);
+  const trashDisplay = makeDisplayPath(resolved.rootAlias, trashRelative);
+  let trashResolved = safeWorkspacePath(trashDisplay, { boundaryMode: "mutation" });
+  await fsImpl.mkdir(path.dirname(trashResolved.absolutePath), { recursive: true });
+  resolved = revalidateMutationBoundary(resolved);
+  trashResolved = safeWorkspacePath(trashDisplay, { boundaryMode: "mutation" });
+  await fsImpl.rename(resolved.absolutePath, trashResolved.absolutePath);
 
   const metadataRelative = `${trashRelative}.json`;
-  const metadataAbsolute = path.resolve(resolved.rootPath, metadataRelative);
+  const metadataDisplay = makeDisplayPath(resolved.rootAlias, metadataRelative);
+  let metadataResolved = safeWorkspacePath(metadataDisplay, { boundaryMode: "mutation" });
   try {
+    metadataResolved = safeWorkspacePath(metadataDisplay, { boundaryMode: "mutation" });
     await fsImpl.writeFile(
-      metadataAbsolute,
+      metadataResolved.absolutePath,
       JSON.stringify(
         {
           deleted_at: new Date().toISOString(),
           original_path: resolved.displayPath,
           original_root_alias: resolved.rootAlias,
           original_root_relative_path: toPosix(resolved.rootRelativePath),
-          trash_path: makeDisplayPath(resolved.rootAlias, trashRelative),
+          trash_path: trashDisplay,
         },
         null,
         2
@@ -171,8 +269,10 @@ async function deletePath(relativePath, { allowProtected = false } = {}, { fsImp
     );
   } catch (error) {
     try {
-      await fsImpl.mkdir(path.dirname(resolved.absolutePath), { recursive: true });
-      await fsImpl.rename(trashAbsolute, resolved.absolutePath);
+      const rollbackTarget = revalidateMutationBoundary(resolved);
+      const rollbackSource = safeWorkspacePath(trashDisplay, { boundaryMode: "mutation" });
+      await fsImpl.mkdir(path.dirname(rollbackTarget.absolutePath), { recursive: true });
+      await fsImpl.rename(rollbackSource.absolutePath, rollbackTarget.absolutePath);
     } catch (rollbackError) {
       error.message = `${error.message} [rollback failed: ${rollbackError?.message || String(rollbackError)}]`;
     }
@@ -182,19 +282,20 @@ async function deletePath(relativePath, { allowProtected = false } = {}, { fsImp
   return {
     status: "moved_to_trash",
     from: resolved.displayPath,
-    to: makeDisplayPath(resolved.rootAlias, trashRelative),
-    metadata: makeDisplayPath(resolved.rootAlias, metadataRelative),
+    to: trashDisplay,
+    metadata: metadataDisplay,
   };
 }
 
 async function restorePath(trashPath, { destination, overwrite = false, allowProtected = false } = {}, { fsImpl = fs } = {}) {
-  const trashResolved = safeWorkspacePath(trashPath);
+  let trashResolved = safeWorkspacePath(trashPath, { boundaryMode: "mutation" });
   const trashRelative = toPosix(trashResolved.rootRelativePath || ".");
   if (!trashRelative.startsWith(".mcp_trash/")) {
     throw new Error("restore_path only accepts paths inside .mcp_trash.");
   }
 
-  const metadataAbsolute = `${trashResolved.absolutePath}.json`;
+  const metadataResolved = safeWorkspacePath(`${trashResolved.displayPath}.json`, { boundaryMode: "mutation" });
+  const metadataAbsolute = metadataResolved.absolutePath;
   let destinationPath = destination;
   if (!destinationPath) {
     let metadata;
@@ -206,16 +307,20 @@ async function restorePath(trashPath, { destination, overwrite = false, allowPro
     destinationPath = metadata.original_path;
   }
 
-  const destResolved = resolveWritableWorkspacePath(destinationPath, { allowProtected });
+  let destResolved = resolveWritableWorkspacePath(destinationPath, { allowProtected });
   if (await pathExists(destResolved.absolutePath, fsImpl)) {
     if (!overwrite) {
       throw new Error("Destination already exists. Set overwrite=true to replace it.");
     }
     await createBackupIfExists(destResolved);
+    destResolved = revalidateMutationBoundary(destResolved);
     await fsImpl.rm(destResolved.absolutePath, { recursive: true, force: true });
   }
 
+  destResolved = revalidateMutationBoundary(destResolved);
   await fsImpl.mkdir(path.dirname(destResolved.absolutePath), { recursive: true });
+  trashResolved = safeWorkspacePath(trashResolved.displayPath, { boundaryMode: "mutation" });
+  destResolved = revalidateMutationBoundary(destResolved);
   await fsImpl.rename(trashResolved.absolutePath, destResolved.absolutePath);
   const warnings = [];
   try {
@@ -325,7 +430,8 @@ function countPatchAnchorMatches(source, anchor) {
 }
 
 async function editFilePatch(relativePath, { anchor, content, mode = "replace", dry_run = true, allow_protected = false, require_markers = [] } = {}) {
-  const resolved = resolveWritableWorkspacePath(relativePath, { allowProtected: allow_protected });
+  let resolved = resolveWritableWorkspacePath(relativePath, { allowProtected: allow_protected });
+  resolved = revalidateMutationBoundary(resolved);
   const stat = await fs.stat(resolved.absolutePath);
   if (!stat.isFile()) {
     throw new Error("Not a file.");
@@ -358,6 +464,7 @@ async function editFilePatch(relativePath, { anchor, content, mode = "replace", 
     return payload;
   }
   payload.backup = await createBackupIfExists(resolved);
+  resolved = revalidateMutationBoundary(resolved);
   await fs.writeFile(resolved.absolutePath, patched, "utf8");
   return payload;
 }
@@ -366,6 +473,7 @@ module.exports = {
   MAX_WRITE_BYTES,
   appendFile,
   applyTextPatch,
+  classifyMutationTarget,
   copyPath,
   countPatchAnchorMatches,
   createBackupIfExists,

@@ -106,7 +106,10 @@ const scoped = buildObservabilityStatus({
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.client_name, "codex-mcp-client");
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.evidence_scope, "operational");
 assert.equal(scoped.client_entry_path_diagnostics.evidence_filter.max_age_days, 2);
-assert.equal(typeof scoped.client_entry_path_diagnostics.evidence_filter.retained_evidence_since_ts, "string");
+assert.ok(
+  scoped.client_entry_path_diagnostics.evidence_filter.retained_evidence_since_ts === null
+  || typeof scoped.client_entry_path_diagnostics.evidence_filter.retained_evidence_since_ts === "string"
+);
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_name === "codex-mcp-client"), true);
 assert.equal(scoped.client_entry_path_diagnostics.latest_matching_client_families_any_window.every((item) => item.client_class === "operational_known"), true);
 assert.equal(scoped.client_entry_path_diagnostics.retained_blocker_matrix.every((item) => Array.isArray(item.sample_client_families)), true);

@@ -2,6 +2,9 @@
 node_modules/
 
 # Local environment and secrets
+.venv/
+__pycache__/
+*.py[cod]
 .env
 .env.*
 !.env.example

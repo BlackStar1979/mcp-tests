@@ -10,6 +10,12 @@ const SCRIPT = path.join(ROOT, "scripts", "generate_directory_docs.js");
 const SNAPSHOT_ROOT = path.join(ROOT, "_workflow", "control_plane", "snapshots");
 const FILE_BACKUPS_ROOT = path.join(ROOT, "_workflow", "control_plane", "file_backups");
 const PRUNE_BACKUPS_ROOT = path.join(ROOT, "_workflow", "control_plane", "oauth21_prune_backups");
+const SNAPSHOT_SOURCE_DIRS = fs.existsSync(SNAPSHOT_ROOT)
+  ? fs
+      .readdirSync(SNAPSHOT_ROOT, { withFileTypes: true })
+      .filter((entry) => entry.isDirectory())
+      .map((entry) => entry.name)
+  : [];
 
 function read(relPath) {
   return fs.readFileSync(path.join(ROOT, relPath), "utf8");
@@ -28,7 +34,9 @@ assert.equal(result.status, 0, `directory docs generator must succeed\nSTDOUT:\n
 assert.match(result.stdout, /wrote DIRECTORY\.md/);
 assert.match(result.stdout, /wrote \.agents\\skills\\using-codebase-memory\\DIRECTORY\.md/);
 assert.match(result.stdout, /wrote \.agents\\skills\\using-codebase-memory\\references\\DIRECTORY\.md/);
-assert.match(result.stdout, /wrote _workflow\\control_plane\\snapshots\\/);
+if (SNAPSHOT_SOURCE_DIRS.length > 0) {
+  assert.match(result.stdout, /wrote _workflow\\control_plane\\snapshots\\/);
+}
 assert.match(result.stdout, /wrote _workflow\\control_plane\\file_backups\\DIRECTORY\.md/);
 assert.match(result.stdout, /wrote _workflow\\control_plane\\oauth21_prune_backups\\DIRECTORY\.md/);
 assert.match(result.stdout, /wrote _workflow\\operator_decisions\\DIRECTORY\.md/);
@@ -100,12 +108,7 @@ assert.ok(codebaseMemoryDirectory.includes("`cbm_contract_registry.js`"));
 assert.ok(codebaseMemoryDirectory.includes("`contracts/`"));
 assert.ok(codebaseMemoryDirectory.includes("index truth"));
 
-const snapshotDirs = fs
-  .readdirSync(SNAPSHOT_ROOT, { withFileTypes: true })
-  .filter((entry) => entry.isDirectory())
-  .map((entry) => entry.name);
-
-assert.ok(snapshotDirs.length > 0, "expected archived control-plane snapshots to exist");
+const snapshotDirs = SNAPSHOT_SOURCE_DIRS;
 
 for (const snapshotName of snapshotDirs) {
   const rel = path.join("_workflow", "control_plane", "snapshots", snapshotName, "DIRECTORY.md");

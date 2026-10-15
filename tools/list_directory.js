@@ -9,14 +9,25 @@ const TOOL_NAME = "list_directory";
 
 async function execute(args = {}) {
   try {
-    return { success: true, error: "", ...(await listDirectory(args.path || ".")) };
+    return {
+      success: true,
+      error: "",
+      ...(await listDirectory(args.path || ".", {
+        limit: args.limit,
+        cursor: args.cursor,
+      })),
+    };
   } catch (error) {
     return {
       success: false,
       path: String(args.path || "."),
       root_alias: "",
       count: 0,
+      returned_count: 0,
+      has_more: false,
+      next_cursor: null,
       entries: [],
+      warnings: [],
       error: error?.message || String(error),
     };
   }
@@ -27,7 +38,7 @@ const listDirectoryTool = {
   descriptor: {
     name: TOOL_NAME,
     title: "List workspace directory",
-    description: "Read-only directory listing inside configured workspace roots.",
+    description: "Read a stable, cursor-paginated directory listing inside configured workspace roots.",
     inputSchema: WORKSPACE_LIST_INPUT_SCHEMA,
     outputSchema: WORKSPACE_LIST_DIRECTORY_OUTPUT_SCHEMA,
     annotations: READ_ONLY_WORKSPACE_FS_ANNOTATIONS,

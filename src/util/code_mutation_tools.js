@@ -13,6 +13,7 @@ const {
   patchPlan,
   scenarioPlan,
   syntaxCheck,
+  validationCapability,
 } = require("./code_workspace");
 const { editFilePatch, resolveWritableWorkspacePath } = require("./workspace_mutation");
 const { safeWorkspacePath } = require("./workspace_roots");
@@ -120,6 +121,7 @@ async function executeCodeApplyPatch(args = {}) {
   }
 
   const targetPath = plan.scenario?.target || plan.patch_scope?.target || String(args.target || "");
+  const validationCap = validationCapability(targetPath);
   const dryRunPatch = await editFilePatch(targetPath, {
     anchor: args.anchor,
     content: args.content,
@@ -143,6 +145,7 @@ async function executeCodeApplyPatch(args = {}) {
     bytes_after: dryRunPatch.bytes_after,
     delta_bytes: dryRunPatch.delta_bytes,
     dry_run: dryRun,
+    validation_capability: validationCap,
     plan,
   };
 
@@ -203,6 +206,23 @@ async function executeCodeApplyPatch(args = {}) {
       success: false,
       error: "commit_ref does not match target/mode/content of this apply request.",
       status: "commit_integrity_violation",
+    };
+  }
+
+  if (!validationCap.available) {
+    await appendActionLedger({
+      ...baseAudit,
+      status: "validation_unavailable",
+      applied: false,
+      target: targetPath,
+      validation_capability: validationCap,
+    });
+    return {
+      ...readyPayload,
+      success: false,
+      error: validationCap.reason,
+      status: "validation_unavailable",
+      validation_capability: validationCap,
     };
   }
 
