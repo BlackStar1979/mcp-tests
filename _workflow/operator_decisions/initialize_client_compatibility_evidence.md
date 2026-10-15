@@ -298,6 +298,22 @@ The newer client line does not change the retirement decision. The server's mode
 
 ## Compatibility interpretation
 
+## Live evidence refresh on 2026-09-04
+
+Post-rebuild OAuth recovery produced a current operational Codex entry sample newer than the August 17 evidence:
+
+- source: `_logs/.mcp-tests-audit.jsonl`
+- report command: `node _workflow/scripts/client_entry_path_report.js --latest-entry-window --client-name=codex-mcp-client --evidence-scope=operational --max-age-days=30 --limit=20`
+- selected and current server start: `2026-09-04T15:49:05.071Z`
+- client: `codex-mcp-client 0.153.1`
+- protocol: `2025-06-18`
+- selected-window result: `2` successful legacy `initialize` entries and `0` `server/discover` entries
+- follow-up result: `2` `notifications/initialized`, `2` successful `tools/list` responses returning the complete `98`-tool surface, and `1` successful isolated `workbench.get_info` call
+- audit parse errors: `0`
+- retirement verdict: `blocked_by_operational_initialize_clients`
+
+This closes the previous event wait without changing the decision. The server's modern path remains independently proven, while current Codex still requires the bounded legacy shim. Refresh again only after a Codex client newer than `0.153.1` produces a real entry event.
+
 This record authorizes only a bounded compatibility interpretation on the surviving `/mcp` route:
 
 1. Keep one route only: `/mcp`.

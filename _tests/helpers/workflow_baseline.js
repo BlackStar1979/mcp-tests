@@ -53,8 +53,10 @@ function assertCurrentConnectorVerificationState(state) {
     return;
   }
 
-  assert.equal(connector.connector_map_status, "repo98_runtime98_model_unverified_auth");
+  assert.equal(connector.connector_map_status, "repo98_runtime98_fresh_cli98_current_task_stale");
   assert.equal(connector.connector_ui_visibility_verified_now, false);
+  assert.equal(connector.fresh_isolated_cli_callable_verified_now, true);
+  assert.equal(connector.current_task_tool_surface_refreshed_now, false);
 }
 
 module.exports = {
