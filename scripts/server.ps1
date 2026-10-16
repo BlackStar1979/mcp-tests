@@ -69,7 +69,9 @@ function Test-CompatibleRunningServer {
   $serverName = [string]$Status.Health.server
   $healthAuth = [string]$Status.Health.auth.mode
   $healthProfile = [string]$Status.Health.profile
-  $expectedHealthProfile = if ($ProfileName -eq 'tests') { 'internal' } else { $ProfileName }
+  # healthz reports the RUNTIME profile, which the server derives from the auth mode (none -> public,
+  # anything else -> internal), not from the profile file name ('tests', 'production', ...).
+  $expectedHealthProfile = if ($AuthMode -eq 'none') { 'public' } else { 'internal' }
 
   # LocalNodeMCP since 2026-10-16; the legacy name must still be recognised so a running pre-rename
   # server is taken over instead of being treated as a foreign process on the port.

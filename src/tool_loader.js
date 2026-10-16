@@ -177,7 +177,22 @@ function loadOptionalTools(options = {}) {
     add("../tools/authorized/memory_update_task", "memoryUpdateTaskTool", "memory_update_task");
   }
 
-  return tools;
+  return applyAuthModeExclusions(tools, serverProfileSurface, authMode);
+}
+
+// auth_mode_exclusions was validated by the profile schema but never applied until 2026-10-16, so a
+// tool listed there to hide it stayed exposed. An unknown name fails startup: a typo must not leave
+// the tool it meant to hide on the surface.
+function applyAuthModeExclusions(tools, surface, authMode) {
+  const exclusions = surface?.auth_mode_exclusions?.[authMode];
+  if (!Array.isArray(exclusions) || exclusions.length === 0) return tools;
+  const catalog = require("../SERVER_TOOLS_SPEC.json").tool_catalog || {};
+  const unknown = exclusions.filter((name) => !Object.prototype.hasOwnProperty.call(catalog, name));
+  if (unknown.length) {
+    throw new Error(`Profile auth_mode_exclusions.${authMode} names unknown tools: ${unknown.join(", ")}`);
+  }
+  const excluded = new Set(exclusions);
+  return tools.filter((tool) => !excluded.has(tool.name));
 }
 
 module.exports = {

@@ -20,7 +20,7 @@ check_existing_server() {
 const data = JSON.parse(process.argv[1]);
 const profileName = process.argv[2];
 const authMode = process.argv[3];
-const expectedProfile = profileName === "tests" ? "internal" : profileName;
+const expectedProfile = authMode === "none" ? "public" : "internal";
 const ok = data
   && data.status === "ok"
   && ["LocalNodeMCP", "mcp-tests-response-shape"].includes(data.server)

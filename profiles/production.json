@@ -1,0 +1,131 @@
+{
+  "name": "production",
+  "version": 1,
+  "description": "LocalNodeMCP production profile: the tests profile minus the tests-only tools and the memory_* tools (moved to the TinyPyMCP shared store), excluded for oauth21 via auth_mode_exclusions. Classification and evidence: _workflow/SURFACE_CLASSIFICATION.md.",
+  "surfaces": {
+    "public": {
+      "description": "auth none surface",
+      "optional_tool_groups": [
+        "public"
+      ],
+      "include_non_public_tools": false,
+      "include_memory_tools": false,
+      "allowed_resource_policy_refs": [
+        "public_index",
+        "filesystem_public",
+        "network_allowlisted"
+      ],
+      "denied_resource_policy_refs": [],
+      "allowed_memory_scopes": [],
+      "denied_memory_scopes": [],
+      "allowed_network_scopes": [
+        "allowlisted_https_fetch",
+        "allowlisted_text_fetch",
+        "allowlisted_head",
+        "github_raw_allowlisted",
+        "package_metadata_npm",
+        "package_metadata_pypi"
+      ],
+      "denied_network_scopes": [],
+      "allowed_database_scopes": [],
+      "denied_database_scopes": [],
+      "allowed_plugin_scopes": [],
+      "denied_plugin_scopes": []
+    },
+    "authenticated": {
+      "description": "authenticated access, bearer, or future OAuth surface",
+      "optional_tool_groups": [
+        "public",
+        "authorized",
+        "internal"
+      ],
+      "include_non_public_tools": true,
+      "include_memory_tools": true,
+      "auth_mode_exclusions": {
+        "bearer": [],
+        "oauth21": [
+          "code_sample_js",
+          "fs_list_public",
+          "fs_get_public_info",
+          "fs_read_public_text",
+          "fs_read_public_lines",
+          "fs_read_public_chunk",
+          "write_remote_site_file",
+          "edit_remote_site_file",
+          "delete_remote_site_file",
+          "move_remote_site_file",
+          "restore_remote_site_file",
+          "preview_remote_site_retention",
+          "tool_dispatch",
+          "change_workflow_simulator",
+          "deploy_decision_guard",
+          "memory_save",
+          "memory_search",
+          "memory_get_state",
+          "memory_set_state",
+          "memory_create_task",
+          "memory_get_tasks",
+          "memory_update_task"
+        ]
+      },
+      "allowed_resource_policy_refs": [
+        "public_index",
+        "filesystem_public",
+        "network_allowlisted",
+        "filesystem_workspace_readonly",
+        "memory_context_scoped",
+        "plugin_registry_readonly",
+        "plugin_visibility_state_preview",
+        "plugin_execution_readonly",
+        "auth_runtime_readonly",
+        "observability_audit_readonly",
+        "tool_surface_planning",
+        "runtime_tool_registry_readonly",
+        "workspace_index_readonly",
+        "workspace_index_mutation",
+        "codebase_memory_readonly",
+        "codebase_memory_mutation",
+        "codebase_memory_destructive",
+        "filesystem_workspace_mutation",
+        "filesystem_workspace_structured_readonly",
+        "filesystem_workspace_structured_mutation",
+        "runtime_status_readonly",
+        "process_execution_bounded",
+        "process_job_registry_readonly",
+        "process_job_control",
+        "remote_site_readonly",
+        "remote_site_mutation"
+      ],
+      "denied_resource_policy_refs": [],
+      "allowed_memory_scopes": [
+        "agent_state",
+        "memory_entries",
+        "task_entries"
+      ],
+      "denied_memory_scopes": [],
+      "allowed_network_scopes": [
+        "allowlisted_https_fetch",
+        "allowlisted_text_fetch",
+        "allowlisted_head",
+        "github_raw_allowlisted",
+        "package_metadata_npm",
+        "package_metadata_pypi"
+      ],
+      "denied_network_scopes": [],
+      "allowed_database_scopes": [
+        "process_job_registry",
+        "content_stage_store",
+        "file_compose_journal"
+      ],
+      "denied_database_scopes": [],
+      "allowed_plugin_scopes": [
+        "plugin_registry_read",
+        "plugin_visibility_plan",
+        "plugin_visibility_status",
+        "plugin_execution_preflight",
+        "plugin_execution_readonly"
+      ],
+      "denied_plugin_scopes": []
+    }
+  }
+}
