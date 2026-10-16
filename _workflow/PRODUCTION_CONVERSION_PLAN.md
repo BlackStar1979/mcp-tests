@@ -47,8 +47,13 @@ design input that later packages are cut from. Retire it once the conversion has
   `mcp-tests.romionologic.dev` deleted, local `~/.cloudflared/config.yml` block removed (backup
   `config.yml.bak-20261016`; the running service applies it at its next restart). Only
   `mcp-tests-oauth21` -> 127.0.0.1:3008 remains on tunnel `mcp` (4cf51ef4).
-- 2026-10-16 FOUND, queued: 1563 `tests_content_stages_<port>.sqlite` files in `~/.romion` -- test
-  runs write content-stage state into the SECRET store; tests must isolate that path.
+- 2026-10-16 FIXED: test runs wrote content-stage and file-compose SQLite state into the SECRET
+  store `~/.romion` (`tests_{content_stages,file_compose}_<port>.sqlite`, one set per dynamic port;
+  1563 stage DBs in the morning, 1574 after my own runs, 9444 files incl. -shm/-wal and compose).
+  `withHermeticServerControlEnv` isolated audit/restart/rate-limit state but not these two stores;
+  it now sets `MCP_CONTENT_STAGE_STORAGE_FILE` and `MCP_FILE_COMPOSE_STORAGE_FILE` into the test
+  temp root. A full suite afterwards added 0 files. 9438 debris files moved (not deleted) to
+  `~/.romion/_archive_test_debris_20261016/`; the 6 files of the live 3008 server stay.
 - 2026-10-16 FS-HARDEN Task 6 (append-only policy): DROPPED as superseded. Its premise was that
   append bypasses mutation safety; on `main` `appendFile` already goes through the file-transform
   engine (expected hash, receipt, atomic replace), the same path as `edit_file_patch` append.
