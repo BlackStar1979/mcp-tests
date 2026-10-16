@@ -57,7 +57,21 @@ try {
       '--memory-embedding-token-file', (Resolve-HomePath $config.memory_embedding_token_file)
     )
   }
-  $supervisor = Join-Path $PSScriptRoot 'server.ps1'
+  # Production runs from a PINNED release worktree (release_dir), not from this development tree:
+  # a crash-restart must never ship half-done work. State stays in state_dir (the dev tree) so the
+  # audit trail, restart trigger and indexes continue across releases. Both keys optional.
+  $codeDir = if ($config.release_dir) { Resolve-HomePath $config.release_dir } else { $RootDir }
+  $stateDir = if ($config.state_dir) { Resolve-HomePath $config.state_dir } else { $RootDir }
+  $env:MCP_TEST_LOG_DIR = Join-Path $stateDir '_logs'
+  $env:MCP_TEST_AUDIT_LOG = Join-Path $stateDir '_logs\.mcp-tests-audit.jsonl'
+  $env:MCP_TEST_MEMORY_LOG_DIR = Join-Path $stateDir '_logs'
+  $env:MCP_TEST_RATE_LIMIT_STATE_FILE = Join-Path $stateDir '_control\rate-limit-state.json'
+  $env:MCP_TEST_TOOL_SURFACE_STATE_FILE = Join-Path $stateDir '_control\tool-surface-state.json'
+  $env:MCP_TEST_WORKSPACE_INDEX_FILE = Join-Path $stateDir '_control\workspace-index.json'
+  $serverArgs += @('--trigger-file', (Join-Path $stateDir '_control\restart-request.json'))
+  $supervisor = Join-Path $codeDir 'scripts\server.ps1'
+  if (-not (Test-Path -LiteralPath $supervisor)) { throw "supervisor not found in code dir $codeDir" }
+  Write-KeeperLog ("code_dir={0} state_dir={1}" -f $codeDir, $stateDir)
   $shell = (Get-Process -Id $PID).Path
   $backoff = 5
   Write-KeeperLog ("keeper started; port={0} profile={1} auth={2}" -f $config.port, $config.profile, $config.auth)

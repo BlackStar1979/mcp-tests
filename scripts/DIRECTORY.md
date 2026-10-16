@@ -27,6 +27,8 @@ Updated: 2026-08-17
   LocalNodeMCP keeper: runs server.ps1 and relaunches it after any exit with back-off; single instance per session; logs to _logs/localnode-keeper.log.
 - `localnode.config.json`
   LocalNodeMCP runtime settings for the keeper (profile, auth, port, secret FILE paths under ~/.romion; no secret values).
+- `deploy-localnode.ps1`
+  Deploys a TAG of LocalNodeMCP to the pinned release worktree (outside C:\Work), runs npm ci there, restarts, and waits for a NEW process to answer; rollback = deploy the previous tag.
 - `register-localnode-task.ps1`
   Registers the per-user, logon-triggered Task Scheduler task LocalNodeMCP (headless conhost), and stops or removes the whole keeper/supervisor/server tree.
 - `server.sh`
