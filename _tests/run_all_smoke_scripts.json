@@ -37,6 +37,7 @@
   "_tests/smoke_science_tools.js",
   "_tests/smoke_remote_site_lifecycle.js",
   "_tests/smoke_workspace_mutation_tools.js",
+  "_tests/smoke_workspace_realpath_boundary.js",
   "_tests/smoke_workspace_root_symlink_boundary.js",
   "_tests/smoke_truth_tools.js",
   "_tests/smoke_devtools.js",

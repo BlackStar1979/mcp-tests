@@ -11,9 +11,12 @@
     "file_uri_only_for_roots": true,
     "path_traversal": "deny",
     "symlink_escape": "deny",
+    "mutation_link_components": "deny_symlink_junction_or_reparse_point",
+    "readonly_in_root_links": "allowed_only_when_real_target_remains_inside_selected_root",
     "root_list_changed": "audit_and_revalidate",
     "fs_tools_must_respect_configured_root": true
   },
+  "residual_risk": "A path component can still be swapped between the boundary check and the OS call; closing that completely needs handle-relative filesystem APIs. Denying links on the mutation path removes the planted-link case.",
   "current_repo_bindings": [
     "SERVER_RESOURCE_POLICY_SPEC.json",
     "SERVER_RUNTIME_CONFIG_SPEC.json",
@@ -23,6 +26,8 @@
   "implementation_evidence": [
     "src/util/workspace_roots.js enforces lexical and resolved-path containment for configured workspace roots",
     "_tests/smoke_workspace_root_symlink_boundary.js rejects symlink/junction escape while preserving normal in-root destinations",
+    "src/util/workspace_mutation.js resolveWritableWorkspacePath denies any symlink/junction/reparse component on a mutation path, including links that resolve inside the root (2026-10-16, FS-HARDEN Task 2)",
+    "_tests/smoke_workspace_realpath_boundary.js proves read/write/copy/move/delete through a junction to outside are rejected per operation, in-root link reads still work, and in-root link writes are denied",
     "active initialize/server-discover capabilities do not advertise MCP roots; conditional roots/listChanged rules therefore remain inactive"
   ],
   "sessionless_ready_review": {

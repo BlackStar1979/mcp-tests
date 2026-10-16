@@ -27,6 +27,13 @@ design input that later packages are cut from. Retire it once the conversion has
     `boundedWorkspaceWriteIsNotBlanketDeniedByDestructiveMetadata`.
   - f2f5e44b file_inspect on an empty file: real defect; `eof` selector returned line 0 against a
     schema minimum of 1. Fixed in this session with a regression through the DLP boundary.
+- 2026-10-16 FS-HARDEN Task 2 (realpath/junction boundary): the archived test, run unchanged
+  against `main` FIRST, showed every escape to outside (read/write/copy/move/delete through a
+  junction) was already rejected by `555fad0`; the one gap was MUTATION through an in-root
+  junction (swappable target). Ported `assertNoLinkedComponents` into
+  `resolveWritableWorkspacePath`; spec + test registered; suite 7 + 314. Remaining archive tasks:
+  1 (github_api.py helper), 3 (remote operation context), 4 (code-patch validation preflight),
+  5+ (bounded reads/lists, append semantics).
 
 ## 1. What "production" means here (the decision this plan rests on)
 

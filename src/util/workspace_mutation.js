@@ -2,6 +2,7 @@
 
 const crypto = require("node:crypto");
 const fs = require("node:fs/promises");
+const fsSync = require("node:fs");
 const path = require("node:path");
 
 const { PRIMARY_WORK_ROOT_ALIAS, safeWorkspacePath } = require("./workspace_roots");
@@ -42,8 +43,32 @@ function assertWritableTarget(resolved, { allowProtected = false } = {}) {
   return resolved;
 }
 
+// A mutation must not traverse any symlink, junction or reparse point, even one that currently
+// resolves inside the workspace: its target can be swapped between this check and the write.
+// Ported 2026-10-16 from archive/feature/filesystem-hardening-20260802 (FS-HARDEN Task 2).
+function assertNoLinkedComponents(resolved) {
+  const relative = path.relative(resolved.rootPath, resolved.absolutePath);
+  if (!relative) return;
+  let current = resolved.rootPath;
+  for (const segment of relative.split(path.sep).filter(Boolean)) {
+    current = path.join(current, segment);
+    let stat;
+    try {
+      stat = fsSync.lstatSync(current);
+    } catch (error) {
+      if (error?.code === "ENOENT") return;
+      throw error;
+    }
+    if (stat.isSymbolicLink()) {
+      throw new Error(`Mutation path contains a symlink, junction, or reparse point: ${segment}`);
+    }
+  }
+}
+
 function resolveWritableWorkspacePath(relativePath, options = {}) {
-  return assertWritableTarget(safeWorkspacePath(relativePath), options);
+  const resolved = assertWritableTarget(safeWorkspacePath(relativePath), options);
+  assertNoLinkedComponents(resolved);
+  return resolved;
 }
 
 function stamp() {

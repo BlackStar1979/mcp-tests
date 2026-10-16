@@ -65,8 +65,9 @@ const unisolatedServerSpawningTests = serverSpawningTests.filter((name) => {
   return !source.includes("withHermeticServerControlEnv") && !source.includes("MCP_TEST_TOOL_SURFACE_STATE_FILE");
 });
 
-assert.equal(totalJsFiles.length, 406);
-assert.equal(smokeScripts.length, 321);
+// Totals grow with every new test, so they are not frozen here; the README must state the live
+// numbers (checked below), and every manifest entry must exist.
+assert.deepEqual(smokeScripts.filter((name) => !fs.existsSync(path.join(ROOT, name))), [], "manifest entries missing on disk");
 assert.equal(nonRunAll.length, 43);
 assert.equal(workflowHelperManifest.length, 26);
 assert.equal(readinessHelperManifest.length, 45);
@@ -75,8 +76,10 @@ assert.deepEqual(undocumentedNonRunAll, []);
 assert.deepEqual(unisolatedServerSpawningTests, []);
 assert.ok(hermeticServerControlEnv.includes("MCP_TEST_AUDIT_LOG"), "shared hermetic child-server env must isolate the audit log");
 
-assert.ok(testsReadme.includes("`406` JavaScript files total in `_tests`"));
-assert.ok(testsReadme.includes("`321` active scripts currently listed in `run_all_smoke_scripts.json`"));
+assert.ok(testsReadme.includes(`\`${totalJsFiles.length}\` JavaScript files total in \`_tests\``),
+  `_tests/README.md must state the live total: ${totalJsFiles.length} JavaScript files`);
+assert.ok(testsReadme.includes(`\`${smokeScripts.length}\` active scripts currently listed in \`run_all_smoke_scripts.json\``),
+  `_tests/README.md must state the live manifest size: ${smokeScripts.length}`);
 assert.ok(testsReadme.includes("`43` top-level `_tests/*.js` files currently outside default `run_all`"));
 assert.ok(testsReadme.includes("Current workflow/control-plane helper manifest size: `26` scripts"));
 assert.ok(testsReadme.includes("Current readiness helper manifest size: `45` scripts"));
