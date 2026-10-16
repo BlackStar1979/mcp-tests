@@ -18,6 +18,8 @@ function withHermeticServerControlEnv(env = {}, tempRoot) {
     // 1574 stage files had piled up in the SECRET store by 2026-10-16, one set per dynamic port.
     MCP_CONTENT_STAGE_STORAGE_FILE: env.MCP_CONTENT_STAGE_STORAGE_FILE || path.join(root, "content-stages.sqlite"),
     MCP_FILE_COMPOSE_STORAGE_FILE: env.MCP_FILE_COMPOSE_STORAGE_FILE || path.join(root, "file-compose.sqlite"),
+    // Same leak, third store: ~/.romion/tests_process_jobs_<port>.sqlite (120 files by 2026-10-16).
+    MCP_PROCESS_JOB_STORAGE_FILE: env.MCP_PROCESS_JOB_STORAGE_FILE || path.join(root, "process-jobs.sqlite"),
   };
 }
 
