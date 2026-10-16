@@ -261,7 +261,9 @@ async function resolveSelector(absolutePath, selector = {}, options = {}) {
   } else if (kind === "anchor") {
     range = await resolveAnchorRange(absolutePath, selector, options);
   } else if (kind === "eof") {
-    range = { startByte: info.bytes, endByte: info.bytes, lineStart: info.totalLines, lineEnd: info.totalLines, matches: 1 };
+    // An empty file has no line (totalLines 0), so its EOF has no line number; lines are 1-based.
+    const eofLine = info.totalLines > 0 ? info.totalLines : null;
+    range = { startByte: info.bytes, endByte: info.bytes, lineStart: eofLine, lineEnd: eofLine, matches: 1 };
   } else if (kind === "markdown_section") {
     if (typeof options.markdownResolver !== "function") {
       throw selectorError("Markdown section selectors require the Markdown structure resolver.", "file_selector_markdown_unavailable");

@@ -94,6 +94,36 @@ function hash(value) {
     const eof = await resolveSelector(emoji, { kind: "eof" });
     assert.equal(eof.startByte, emojiBytes.length);
     assert.equal(eof.endByte, emojiBytes.length);
+    assert.equal(eof.lineStart, 1);
+    assert.equal(eof.lineEnd, 1);
+
+    // gpt task f2f5e44b (2026-08-19): an EMPTY file has no line, so its EOF carries no line number.
+    // Returning line 0 broke the declared output schema (minimum 1) and the DLP boundary rejected
+    // the whole file_inspect result as output_schema_mismatch.
+    const empty = path.join(root, "empty.txt");
+    fs.writeFileSync(empty, "");
+    const emptyEof = await resolveSelector(empty, { kind: "eof" });
+    assert.equal(emptyEof.startByte, 0);
+    assert.equal(emptyEof.endByte, 0);
+    assert.equal(emptyEof.lineStart, null);
+    assert.equal(emptyEof.lineEnd, null);
+
+    const { fileInspectTool } = require("../tools/file_inspect");
+    const { evaluateToolOutputPolicy } = require("../src/runtime/output_dlp_boundary");
+    const previousRoots = process.env.MCP_TEST_EXTRA_ROOTS;
+    process.env.MCP_TEST_EXTRA_ROOTS = `selectorfx=${root}`;
+    try {
+      for (const [name, expectedLine] of [["empty.txt", null], ["emoji.txt", 1]]) {
+        const inspected = await fileInspectTool.execute({ path: `@selectorfx/${name}`, selector: { kind: "eof" } }, {});
+        assert.equal(inspected.success, true, `${name}: ${JSON.stringify(inspected.error)}`);
+        assert.equal(inspected.selector.line_start, expectedLine);
+        const verdict = evaluateToolOutputPolicy({ payload: inspected, outputSchema: fileInspectTool.descriptor.outputSchema });
+        assert.equal(verdict.allow, true, `${name}: ${JSON.stringify(verdict.validation_errors)}`);
+      }
+    } finally {
+      if (previousRoots === undefined) delete process.env.MCP_TEST_EXTRA_ROOTS;
+      else process.env.MCP_TEST_EXTRA_ROOTS = previousRoots;
+    }
 
     const markdown = await resolveSelector(file, {
       kind: "markdown_section",
