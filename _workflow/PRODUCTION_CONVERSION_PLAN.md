@@ -31,9 +31,19 @@ design input that later packages are cut from. Retire it once the conversion has
   against `main` FIRST, showed every escape to outside (read/write/copy/move/delete through a
   junction) was already rejected by `555fad0`; the one gap was MUTATION through an in-root
   junction (swappable target). Ported `assertNoLinkedComponents` into
-  `resolveWritableWorkspacePath`; spec + test registered; suite 7 + 314. Remaining archive tasks:
-  1 (github_api.py helper), 3 (remote operation context), 4 (code-patch validation preflight),
-  5+ (bounded reads/lists, append semantics).
+  `resolveWritableWorkspacePath`; spec + test registered; suite 7 + 314.
+- 2026-10-16 FS-HARDEN Task 6 (append-only policy): DROPPED as superseded. Its premise was that
+  append bypasses mutation safety; on `main` `appendFile` already goes through the file-transform
+  engine (expected hash, receipt, atomic replace), the same path as `edit_file_patch` append.
+  Restricting it to .log/.jsonl/.ndjson would remove function without adding protection
+  (5 append_file calls in all retained audit logs, all successful).
+- 2026-10-16 FS-HARDEN Task 4 (code-patch validation preflight): MEASURED, DEFERRED to the schema
+  batch. On `main`, `.ts/.tsx/.jsx` count as code but have no checker (only .js/.mjs/.cjs/.py do),
+  so `code_apply_patch` on them always writes, fails validation and rolls back from backup: it can
+  never succeed, and a hard reset inside that window leaves an unvalidated file. The fix adds a
+  new status/field to the output schema, which changes the descriptor fingerprint and forces a
+  connector refresh -- so it ships together with Task 5 (bounded reads, also schema-visible) at
+  cutover (P6), not alone. Remaining archive tasks: 1 (github_api.py), 3 (remote op context).
 
 ## 1. What "production" means here (the decision this plan rests on)
 
