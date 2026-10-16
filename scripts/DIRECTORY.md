@@ -23,6 +23,12 @@ Updated: 2026-08-17
   Writes a bounded restart request for the supervisor-managed runtime path after fail-closed CLI validation.
 - `server.ps1`
   PowerShell helper for controlled local server startup/orchestration.
+- `localnode-keeper.ps1`
+  LocalNodeMCP keeper: runs server.ps1 and relaunches it after any exit with back-off; single instance per session; logs to _logs/localnode-keeper.log.
+- `localnode.config.json`
+  LocalNodeMCP runtime settings for the keeper (profile, auth, port, secret FILE paths under ~/.romion; no secret values).
+- `register-localnode-task.ps1`
+  Registers the per-user, logon-triggered Task Scheduler task LocalNodeMCP (headless conhost), and stops or removes the whole keeper/supervisor/server tree.
 - `server.sh`
   Shell helper for controlled local server startup/orchestration.
 - `generate_directory_docs.js`

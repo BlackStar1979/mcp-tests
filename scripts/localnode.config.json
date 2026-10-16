@@ -1,0 +1,9 @@
+{
+  "profile": "tests",
+  "auth": "oauth21",
+  "port": 3008,
+  "oauth_secret_file": "~/.romion/tests_oauth_secret.json",
+  "memory_embedding_provider": "ovh",
+  "memory_embedding_external_egress": 1,
+  "memory_embedding_token_file": "~/.romion/mcp-tests-memory-embedding-token.txt"
+}

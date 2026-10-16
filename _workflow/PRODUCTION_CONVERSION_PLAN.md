@@ -32,6 +32,23 @@ design input that later packages are cut from. Retire it once the conversion has
   junction) was already rejected by `555fad0`; the one gap was MUTATION through an in-root
   junction (swappable target). Ported `assertNoLinkedComponents` into
   `resolveWritableWorkspacePath`; spec + test registered; suite 7 + 314.
+- 2026-10-16 P0 ANSWERED by the operator: (1) background autostart without him: yes; (2) clients:
+  all, as needed; (3) public 3009 retired; (4) name: LocalNodeMCP (my pick from his options).
+- 2026-10-16 P5.1 DONE: per-user logon task `LocalNodeMCP` (no elevation) runs
+  `scripts/localnode-keeper.ps1` under a HEADLESS conhost (a plain `-WindowStyle Hidden` pwsh was
+  delegated to Windows Terminal and left empty windows on his desktop on every start). The keeper
+  runs `server.ps1` with the September settings from `scripts/localnode.config.json` and relaunches
+  it after any exit (back-off 5-60 s); a named mutex keeps one keeper per session. Verified:
+  98 tools, public healthz 200 and unauthenticated POST 401 through the tunnel; killed node came
+  back in 6 s; a second keeper exits without touching the server; `-Stop` stops the whole tree.
+  Found and fixed on the way: `server.ps1` takeover of a supervised server killed only the parent,
+  so node kept the port and the takeover failed (now it stops the server too).
+- 2026-10-16 3009 RETIRED: tunnel route removed (remote config v26), DNS record
+  `mcp-tests.romionologic.dev` deleted, local `~/.cloudflared/config.yml` block removed (backup
+  `config.yml.bak-20261016`; the running service applies it at its next restart). Only
+  `mcp-tests-oauth21` -> 127.0.0.1:3008 remains on tunnel `mcp` (4cf51ef4).
+- 2026-10-16 FOUND, queued: 1563 `tests_content_stages_<port>.sqlite` files in `~/.romion` -- test
+  runs write content-stage state into the SECRET store; tests must isolate that path.
 - 2026-10-16 FS-HARDEN Task 6 (append-only policy): DROPPED as superseded. Its premise was that
   append bypasses mutation safety; on `main` `appendFile` already goes through the file-transform
   engine (expected hash, receipt, atomic replace), the same path as `edit_file_patch` append.

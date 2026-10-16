@@ -144,8 +144,11 @@ function Stop-ExistingMcpServerForTakeover {
 
   $isSupervisorManaged = Test-SupervisorManagedRunningServer -Status $Status
   if ($isSupervisorManaged -and $Status.ParentProcessId) {
-    Write-Host "Przejmowanie supervisora na porcie 127.0.0.1:$($Status.Port): zatrzymuję parent pid=$($Status.ParentProcessId)." -ForegroundColor Yellow
+    Write-Host "Przejmowanie supervisora na porcie 127.0.0.1:$($Status.Port): zatrzymuję parent pid=$($Status.ParentProcessId) i jego serwer pid=$($Status.ProcessId)." -ForegroundColor Yellow
     Stop-Process -Id $Status.ParentProcessId -Force -ErrorAction Stop
+    # On Windows killing the parent does not kill its child: the node server kept the port and
+    # the takeover failed (seen 2026-10-16). Stop the listening server process as well.
+    Stop-Process -Id $Status.ProcessId -Force -ErrorAction SilentlyContinue
   } else {
     Write-Host "Przejmowanie standalone servera na porcie 127.0.0.1:$($Status.Port): zatrzymuję pid=$($Status.ProcessId)." -ForegroundColor Yellow
     Stop-Process -Id $Status.ProcessId -Force -ErrorAction Stop
