@@ -62,6 +62,7 @@ design input that later packages are cut from. Retire it once the conversion has
   it now sets `MCP_CONTENT_STAGE_STORAGE_FILE` and `MCP_FILE_COMPOSE_STORAGE_FILE` into the test
   temp root. A full suite afterwards added 0 files. 9438 debris files moved (not deleted) to
   `~/.romion/_archive_test_debris_20261016/`; the 6 files of the live 3008 server stay.
+- 2026-10-16 P3 CLASSIFIED (not applied): `_workflow/SURFACE_CLASSIFICATION.md` from 12,328 audited client calls -- 15 tools go tests-only (incl. the 6 never-used remote-site write tools), memory_* stays until migrated; 98 -> 83. Applied in the cutover batch with an `excluded_tools` profile key, because every surface change forces a connector refresh.
 - 2026-10-16 FS-HARDEN Task 1 (`scripts/github_api.py`, a secret-safe GitHub REST helper):
   DROPPED as superseded. Its premise was that `gh` is not installed; `gh` is installed
   (`C:\Program Files\GitHub CLI\gh.exe`) and drove today's CI work.
