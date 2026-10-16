@@ -51,7 +51,12 @@ assert.ok(index.includes("Controlled OAuth21 `3008` restart and bounded live ver
 
 assert.ok(dispatcher.includes('case "tools/list"'));
 assert.ok(dispatcher.includes('case "resources/list"'));
-assert.equal(dispatcher.includes('case "resources/read"'), false);
+// resources/read was absent at inventory time; PROCESS-ARTIFACTS (2026-08-16) added it deliberately
+// for opaque Task artifact URIs. The SEP-2549 requirement then applies to it: private, bounded TTL.
+assert.ok(dispatcher.includes('case "resources/read"'));
+const resourcesReadHandler = fs.readFileSync(path.join(__dirname, "..", "src", "runtime", "resources_read_message_handler.js"), "utf8");
+assert.ok(resourcesReadHandler.includes('cacheScope: "private"'));
+assert.ok(/\bttlMs\b/.test(resourcesReadHandler));
 assert.ok(dispatcher.includes('case "resources/templates/list"'));
 assert.ok(dispatcher.includes('case "prompts/list"'));
 assert.equal(dispatcher.includes('case "prompts/get"'), false);
