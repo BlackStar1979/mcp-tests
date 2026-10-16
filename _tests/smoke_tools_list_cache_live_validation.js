@@ -48,7 +48,8 @@ assert.ok(index.includes("Live acceptance proved Tasks negotiation/completion, W
 assert.ok(index.includes("Completed production `MRTR` on August 18, 2026"));
 assert.ok(index.includes("The module is loaded-dormant until policy emits `mrtr_requirement`."));
 assert.ok(index.includes("At the August 2026 acceptance checkpoint, the operator refreshed OAuth authorization and the connector tool list"));
-assert.ok(index.includes("current post-rebuild callability is deliberately unclaimed until reauthentication"));
+assert.ok(index.includes("an isolated fresh client then called `workbench.get_info` successfully"));
+assert.ok(index.includes("does not claim that the older current task dynamically acquired the namespace"));
 assert.ok(index.includes("survived the subsequent supervisor restart with OAuth state intact"));
 assert.ok(index.includes("1. Execute `POL-1C` reconciliation for the four remaining `specified_only` non-critical policy rows."));
 assert.ok(index.includes("`POL-1A-CONSENT` — capability-adaptive operator authorization and explicit fresh-consent classes — remains live accepted"));

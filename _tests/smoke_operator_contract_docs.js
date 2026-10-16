@@ -87,8 +87,19 @@ assert.ok(stateDoc.includes(latestFullSmokeToken));
 assert.ok(stateDoc.includes(`Latest validated authenticated smoke count: \`${latestAuthenticatedSmokeCount}\``));
 assert.ok(stateDoc.includes("`mcp__workbench` is callable again"));
 assert.ok(stateDoc.includes("`src/integrations/codebase_memory/DIRECTORY.md`"));
-assert.ok(stateDoc.includes("`codex-mcp-client 0.148.0-alpha.9`"));
-assert.ok(stateDoc.includes("`3` successful legacy `initialize` entries"));
+// COMP-1 current-state claims are bound to the LATEST dated refresh in the evidence record, not to a
+// frozen sample: each refresh changes the client version, and entry counts grow while the runtime serves.
+const initializeRefreshes = [...initializeEvidence.matchAll(/^## Live evidence refresh on (\d{4}-\d{2}-\d{2})\r?\n([\s\S]*?)(?=^## |(?![\s\S]))/gm)]
+  .map((m) => ({ date: m[1], body: m[2] }))
+  .sort((a, b) => a.date.localeCompare(b.date));
+assert.ok(initializeRefreshes.length > 0, "initialize evidence has no dated refresh sections");
+const latestInitializeRefresh = initializeRefreshes[initializeRefreshes.length - 1];
+const latestCodexClientMatch = latestInitializeRefresh.body.match(/^- client: `(codex-mcp-client [^`]+)`/m);
+assert.ok(latestCodexClientMatch, `latest initialize evidence refresh (${latestInitializeRefresh.date}) names no Codex client`);
+const latestCodexClient = `\`${latestCodexClientMatch[1]}\``;
+for (const [name, doc] of [["STATE.md", stateDoc], ["READINESS.md", readiness], ["ROADMAP.md", roadmap]]) {
+  assert.ok(doc.includes(latestCodexClient), `${name} does not name the latest evidenced Codex client ${latestCodexClient}`);
+}
 assert.ok(stateDoc.includes("`0` `server/discover` entries"));
 assert.ok(readiness.includes("## Component maturity"));
 assert.ok(readiness.includes("Operator-facing documentation contract"));
@@ -119,7 +130,7 @@ assert.ok(readiness.includes("duplicate dynamic control-plane targets are elimin
 assert.ok(readiness.includes("Generator check, repo-wide audit, operator-contract guard, and full smoke remain green"));
 assert.ok(readiness.includes("upstream reviews cover ordinals 1-277"));
 assert.ok(readiness.includes("the local skill routes documentation/workflow questions to the knowledge index"));
-assert.ok(readiness.includes("`codex-mcp-client 0.148.0-alpha.9` as `initialize_only`, with `3` successful legacy `initialize` entries and `0` `server/discover` entries"));
+assert.ok(readiness.includes(`${latestCodexClient} as \`initialize_only\``));
 assert.ok(roadmap.includes("## Priority matrix"));
 assert.ok(roadmap.includes("Completed stress closeout: `CBM-BRIDGE-SAMPLE-STRESS`"));
 assert.ok(roadmap.includes("Completed memory activation: `MEM-1-LIVE`"));
@@ -129,7 +140,7 @@ assert.ok(roadmap.includes("Completed operational E2E package: `OPS-1A`"));
 assert.ok(roadmap.includes("Completed process execution: `PROC-1A`"));
 assert.ok(roadmap.includes("Completed production MRTR runtime: `pol-1a-mrtr-runtime`"));
 assert.ok(roadmap.includes("`COMP-1A` — event-gated protocol evidence"));
-assert.ok(roadmap.includes("the August 17 operational `codex-mcp-client 0.148.0-alpha.9` sample"));
+assert.ok(roadmap.includes(`operational ${latestCodexClient} sample`));
 assert.ok(processPersistenceAcceptance.includes("Status: GREEN / LIVE / ACCEPTED"));
 assert.ok(processPersistenceAcceptance.includes("manual-1786292134573"));
 assert.ok(processPersistenceAcceptance.includes("recovered_after_restart=true"));

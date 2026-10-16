@@ -54,9 +54,9 @@ function assertCurrentConnectorVerificationState(state) {
   }
 
   assert.equal(connector.connector_map_status, "repo98_runtime98_fresh_cli98_current_task_stale");
+  // The status string carries "fresh CLI callable" and "current task stale"; separate booleans
+  // repeating it were dropped to keep state.json inside its compactness budget.
   assert.equal(connector.connector_ui_visibility_verified_now, false);
-  assert.equal(connector.fresh_isolated_cli_callable_verified_now, true);
-  assert.equal(connector.current_task_tool_surface_refreshed_now, false);
 }
 
 module.exports = {

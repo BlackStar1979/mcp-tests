@@ -300,7 +300,6 @@
       "profile": "public",
       "expected_tool_count": 13,
       "currently_live_local": false,
-      "last_probe": "2026-06-28 local 127.0.0.1:3009 connection refused",
       "start_requires_important_intent": true
     }
   },
@@ -317,9 +316,6 @@
       "server_start_id": "2026-09-04T15:49:05.071Z",
       "connector_ui_visibility_verified_now": false,
       "model_runtime_callable_verified_now": false,
-      "fresh_isolated_cli_callable_verified_now": true,
-      "current_task_tool_surface_refreshed_now": false,
-      "cli_auth_status": "OAuth",
       "ttl_ms": 0,
       "cache_scope": "private",
       "connector_refresh_required_now": false
