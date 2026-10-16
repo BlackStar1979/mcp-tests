@@ -43,6 +43,14 @@ design input that later packages are cut from. Retire it once the conversion has
   back in 6 s; a second keeper exits without touching the server; `-Stop` stops the whole tree.
   Found and fixed on the way: `server.ps1` takeover of a supervised server killed only the parent,
   so node kept the port and the takeover failed (now it stops the server too).
+- 2026-10-16 P4 DONE (identity): server name `LocalNodeMCP` from one constant
+  (`src/runtime/identity.js`, `LEGACY_SERVER_NAMES` keeps the old one recognisable for takeover);
+  tests read it instead of 12 literals, one contract test pins the value; client-visible
+  instructions, README, package description, NORTHSTAR, SERVER_SPEC/state/STATE/CANON updated;
+  frozen baseline manifest revised explicitly (server_name only, fingerprints unchanged, so no
+  connector refresh). Switched live by a controlled restart (code 42): public healthz reports
+  LocalNodeMCP with 98 tools, unauthenticated POST 401. The npm package NAME and the repository/
+  directory name stay `mcp-tests` until P7 (directory rename touches ~70 references).
 - 2026-10-16 3009 RETIRED: tunnel route removed (remote config v26), DNS record
   `mcp-tests.romionologic.dev` deleted, local `~/.cloudflared/config.yml` block removed (backup
   `config.yml.bak-20261016`; the running service applies it at its next restart). Only
@@ -54,6 +62,14 @@ design input that later packages are cut from. Retire it once the conversion has
   it now sets `MCP_CONTENT_STAGE_STORAGE_FILE` and `MCP_FILE_COMPOSE_STORAGE_FILE` into the test
   temp root. A full suite afterwards added 0 files. 9438 debris files moved (not deleted) to
   `~/.romion/_archive_test_debris_20261016/`; the 6 files of the live 3008 server stay.
+- 2026-10-16 FS-HARDEN Task 1 (`scripts/github_api.py`, a secret-safe GitHub REST helper):
+  DROPPED as superseded. Its premise was that `gh` is not installed; `gh` is installed
+  (`C:\Program Files\GitHub CLI\gh.exe`) and drove today's CI work.
+- 2026-10-16 MEASURED for P3 (memory ownership): the local store `_logs/.mcp-agent-memory.jsonl`
+  holds 87 entries (codex 65, chatgpt 10, gpt 9, others 3), 2026-06-07 .. 2026-08-20, untouched
+  for two months. Migration into the TinyPyMCP shared store needs a duplicate check per entry and
+  kept authorship (saved by me with a provenance prefix naming the original agent and date), then
+  the local `memory_*` tools freeze read-only. Its own package, not an end-of-day job.
 - 2026-10-16 FS-HARDEN Task 6 (append-only policy): DROPPED as superseded. Its premise was that
   append bypasses mutation safety; on `main` `appendFile` already goes through the file-transform
   engine (expected hash, receipt, atomic replace), the same path as `edit_file_patch` append.
