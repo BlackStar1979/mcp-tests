@@ -103,7 +103,7 @@ Checkpoint topology:
 - Repository, live runtime, and this model map are aligned at `98`. The hardened CBM v0.9.0, canonical PKCE, activated memory, freshness-aware retrieval, durable task lifecycle, structured file subsystem, and final dual-era protocol contracts remain unchanged.
 - Runtime drift ledger confirms current public local surface hash `0852d07b373a25ed`, matching the frozen public baseline; the older `f2830cb7817520ac` value is historical mismatch evidence, not current drift;
 - Runtime compatibility labels are not workflow progress truth.
-- Operator-facing documentation contract (`DOC-1`) is accepted at `4/4` through a freshness-gated one-call planning view and live query-quality evidence. `DOC-2` is accepted at `4/4`: all `68/68` directories containing tracked files have functional maps. Generator `--help`/`--check` are non-mutating, invalid arguments fail before writes, dynamic control-plane maps have one generation authority, and repo-wide coverage is guarded.
+- Operator-facing documentation contract (`DOC-1`) is accepted at `4/4` through a freshness-gated one-call planning view and live query-quality evidence. `DOC-2` is accepted at `4/4`: all directories containing tracked files have functional maps. Generator `--help`/`--check` are non-mutating, invalid arguments fail before writes, dynamic control-plane maps have one generation authority, and repo-wide coverage is guarded.
 
 Recent committed checkpoints:
 

@@ -305,6 +305,21 @@ const CONFIG = {
       "run_operational_e2e_soak.js": "Runs the bounded OPS-1A hermetic/live operational matrix with independent repetition limits, fail-closed CLI validation, and structured output.",
     },
   },
+  ".github": {
+    title: "GitHub configuration directory map",
+    updated: "2026-10-16",
+    entries: {
+      "workflows/": "GitHub Actions workflows (CI).",
+    },
+  },
+  ".github/workflows": {
+    title: "GitHub workflows directory map",
+    updated: "2026-10-16",
+    entries: {
+      "smoke.yml": "CI: npm ci, npm audit (high fails) and the full smoke suite on Windows, run from the production path C:\\Work\\mcp-tests.",
+    },
+    tail: "Added 2026-10-16; before that the repository had no CI and the local run was the only gate.",
+  },
   "profiles": {
     title: "profiles directory map",
     entries: {

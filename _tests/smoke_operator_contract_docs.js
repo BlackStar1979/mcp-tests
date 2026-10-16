@@ -124,7 +124,14 @@ assert.ok(readiness.includes(`Hermetic official \`@modelcontextprotocol/client@$
   `READINESS.md must describe coverage with the pinned official client ${pinnedOfficialClient}`);
 assert.ok(readiness.includes("process-restart recovery of the registered client plus active tokens from SQLite"));
 assert.ok(readiness.includes("legacy-path refresh-token rotation after that restart and an access rejection"));
-assert.ok(readiness.includes("All `68/68` directories containing tracked project files have `DIRECTORY.md`"));
+// Coverage itself is enforced live by smoke_directory_docs_audit.js; the prose must not carry a
+// directory count, which goes false whenever a directory is added (68 -> 70 on 2026-10-16).
+assert.ok(readiness.includes("All directories containing tracked project files have `DIRECTORY.md`"));
+for (const [name, doc] of [["READINESS.md", readiness], ["ROADMAP.md", roadmap], ["STATE.md", stateDoc], ["ACTIVE_WORKFLOW_INDEX.md", workflowIndex]]) {
+  const currentTenseCount = doc.split("\n").find((line) => /all `\d+\/\d+` directories containing tracked/i.test(line)
+    && !/^- `\d{4}-\d{2}-\d{2}`/.test(line) && !line.startsWith("Completed "));
+  assert.equal(currentTenseCount, undefined, `${name} carries a frozen directory count in a current-tense claim`);
+}
 assert.ok(readiness.includes("the active CBM native-contract boundary"));
 assert.ok(readiness.includes("the retired progress-state validator snapshot"));
 assert.ok(readiness.includes("`generate_directory_docs.js --check` is non-mutating and fail-closed"));
@@ -237,7 +244,7 @@ assert.ok(workflowIndex.includes("A fresh `index_status` is the single-call plan
 assert.ok(readiness.includes("| DOC-1 | Operator-facing documentation contract | 4/4 |"));
 assert.ok(readiness.includes("No active planning-orientation blocker remains"));
 assert.ok(workflowIndex.includes("`DOC-2` is accepted at `4/4`"));
-assert.ok(workflowIndex.includes("all `68/68` directories containing tracked files"));
+assert.ok(workflowIndex.includes("all directories containing tracked files have functional maps"));
 assert.ok(workflowIndex.includes("routes documentation/workflow questions to the dependency-free knowledge index"));
 assert.ok(workflowIndex.includes("`_workflow/NORTHSTAR.md`"));
 assert.ok(workflowIndex.includes("`current_working_course = protocol-capability-module-convergence`"));
