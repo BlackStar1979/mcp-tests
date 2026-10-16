@@ -754,6 +754,19 @@ function runBoundedProcess(command, args, { timeoutMs = 6000, cwd = WORKSPACE_RO
   });
 }
 
+// Which checker would validate this file -- known BEFORE anything is written, so a mutation of a file
+// that cannot be validated can be refused up front instead of written, failed and rolled back.
+function validationCapability(filePath) {
+  const extension = path.extname(String(filePath || "")).toLowerCase();
+  if (JS_CHECK_EXTENSIONS.has(extension)) {
+    return { available: true, extension, language: "javascript", checker: "node --check" };
+  }
+  if (PY_CHECK_EXTENSIONS.has(extension)) {
+    return { available: true, extension, language: "python", checker: "python -m py_compile" };
+  }
+  return { available: false, extension, language: languageForPath(String(filePath || "")), checker: "none" };
+}
+
 async function syntaxCheck(filePath) {
   const item = await statCodeFile(filePath);
   const ext = path.extname(item.relative_path).toLowerCase();
@@ -780,6 +793,7 @@ async function syntaxCheck(filePath) {
 }
 
 module.exports = {
+  validationCapability,
   CODE_EXTENSIONS,
   MAX_CODE_FILE_BYTES,
   MAX_GRAPH_EDGES,

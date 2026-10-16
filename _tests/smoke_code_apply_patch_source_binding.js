@@ -69,6 +69,27 @@ const path = require("node:path");
     }, options);
     assert.equal(committed.status, "committed_after_validation");
     assert.match(fs.readFileSync(target, "utf8"), /const value = 2;/);
+    assert.equal(fresh.validation.available, true, "a .js target has a checker (node --check)");
+
+    // FS-HARDEN Task 4 (2026-10-16): .ts/.tsx/.jsx count as code but have no checker. Before, an
+    // apply wrote the file, failed validation and rolled back -- it could never succeed, and a hard
+    // reset inside that window left an unvalidated file. It must now refuse BEFORE writing.
+    const tsTarget = path.join(fixture, "sample.ts");
+    const tsOriginal = "const value: number = 1;\n";
+    fs.writeFileSync(tsTarget, tsOriginal, "utf8");
+    const tsArgs = { ...args, target: `${fixtureRelative}/sample.ts`, anchor: "= 1;", content: "= 2;" };
+    const tsPreview = await executeCodeApplyPatch(tsArgs, options);
+    assert.equal(tsPreview.status, "ready_to_apply");
+    assert.equal(tsPreview.validation.available, false, "the preview announces that the apply will be refused");
+    const backupDir = path.resolve(root, "..", ".mcp_backups", ...workspaceFixtureRelative.split("/"));
+    const backupsBefore = fs.existsSync(backupDir) ? fs.readdirSync(backupDir).filter((n) => n.endsWith(".ts")).length : 0;
+    const tsApply = await executeCodeApplyPatch({ ...tsArgs, dry_run: false, confirm: true, commit_ref: tsPreview.operation_id }, options);
+    assert.equal(tsApply.status, "validation_unavailable");
+    assert.equal(tsApply.applied, false);
+    assert.equal(tsApply.success, false);
+    assert.equal(fs.readFileSync(tsTarget, "utf8"), tsOriginal, "the unvalidatable file is never written");
+    const backupsAfter = fs.existsSync(backupDir) ? fs.readdirSync(backupDir).filter((n) => n.endsWith(".ts")).length : 0;
+    assert.equal(backupsAfter, backupsBefore, "no write means no backup either");
 
     console.log("smoke_code_apply_patch_source_binding ok");
   } finally {

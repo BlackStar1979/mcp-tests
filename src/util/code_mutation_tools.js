@@ -13,6 +13,7 @@ const {
   patchPlan,
   scenarioPlan,
   syntaxCheck,
+  validationCapability,
 } = require("./code_workspace");
 const { editFilePatch, resolveWritableWorkspacePath } = require("./workspace_mutation");
 const { safeWorkspacePath } = require("./workspace_roots");
@@ -155,6 +156,8 @@ async function executeCodeApplyPatch(args = {}, options = {}) {
     delta_bytes: dryRunPatch.delta_bytes,
     dry_run: dryRun,
     plan,
+    // Announced in the preview: an apply on a file with no checker will be refused (FS-HARDEN Task 4).
+    validation: validationCapability(codeTargetPath),
   };
 
   if (dryRun) {
@@ -215,6 +218,26 @@ async function executeCodeApplyPatch(args = {}, options = {}) {
       success: false,
       error: "commit_ref does not match target/mode/content of this apply request.",
       status: "commit_integrity_violation",
+    };
+  }
+
+  // Refuse BEFORE writing when no checker exists for this file type. The old path wrote, failed
+  // validation and rolled back from backup: it could never succeed, and a hard reset inside that
+  // window left an unvalidated file on disk.
+  if (!readyPayload.validation.available) {
+    await appendLedger({
+      ...patchAudit,
+      status: "validation_unavailable",
+      applied: false,
+      target: targetPath,
+      validation: readyPayload.validation,
+    });
+    return {
+      ...readyPayload,
+      success: false,
+      applied: false,
+      error: `No syntax checker for ${readyPayload.validation.extension || "this"} files; refusing to write a change that cannot be validated. Use edit_file_patch for files without a checker.`,
+      status: "validation_unavailable",
     };
   }
 

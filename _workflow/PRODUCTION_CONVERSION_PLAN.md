@@ -77,7 +77,8 @@ design input that later packages are cut from. Retire it once the conversion has
   engine (expected hash, receipt, atomic replace), the same path as `edit_file_patch` append.
   Restricting it to .log/.jsonl/.ndjson would remove function without adding protection
   (5 append_file calls in all retained audit logs, all successful).
-- 2026-10-16 FS-HARDEN Task 4 (code-patch validation preflight): MEASURED, DEFERRED to the schema
+- 2026-10-16 21:3x FS-HARDEN Task 4 DONE, and the deferral below was WRONG: `status` is a free string and `validation` a free object in the code_apply_patch output schema, so the refusal needed no schema change and no connector refresh (the governed fingerprint is unchanged). `validationCapability()` in code_workspace; the preview announces `validation.available`; an apply on .ts/.tsx/.jsx now returns `validation_unavailable` BEFORE writing (no write, no backup), tested.
+- (superseded entry) 2026-10-16 FS-HARDEN Task 4 (code-patch validation preflight): MEASURED, DEFERRED to the schema
   batch. On `main`, `.ts/.tsx/.jsx` count as code but have no checker (only .js/.mjs/.cjs/.py do),
   so `code_apply_patch` on them always writes, fails validation and rolls back from backup: it can
   never succeed, and a hard reset inside that window leaves an unvalidated file. The fix adds a
