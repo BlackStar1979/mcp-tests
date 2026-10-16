@@ -20,7 +20,10 @@ const {
 const { withHermeticServerControlEnv } = require("./helpers/hermetic_server_control_env");
 
 const ROOT = path.resolve(__dirname, "..");
-const CLIENT_VERSION = "2.0.0";
+// The exact pin lives in package.json only; this fails if the installed client drifts from it or if
+// the pin is loosened into a range.
+const CLIENT_VERSION = require("../package.json").devDependencies["@modelcontextprotocol/client"];
+assert.match(CLIENT_VERSION, /^\d+\.\d+\.\d+$/, "official client must be pinned to an exact version");
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

@@ -119,7 +119,9 @@ assert.ok(readiness.includes("snippet source-integrity validation"));
 assert.ok(readiness.includes("Live `get_code_snippet` recovered verified `searchIndex` lines `1073-1084`"));
 assert.ok(readiness.includes("incorrect native lines `898-909`"));
 assert.ok(readiness.includes("No active CBM integrity blocker remains"));
-assert.ok(readiness.includes("Hermetic official `@modelcontextprotocol/client@2.0.0` coverage"));
+const pinnedOfficialClient = JSON.parse(packageJson).devDependencies["@modelcontextprotocol/client"];
+assert.ok(readiness.includes(`Hermetic official \`@modelcontextprotocol/client@${pinnedOfficialClient}\` coverage`),
+  `READINESS.md must describe coverage with the pinned official client ${pinnedOfficialClient}`);
 assert.ok(readiness.includes("process-restart recovery of the registered client plus active tokens from SQLite"));
 assert.ok(readiness.includes("legacy-path refresh-token rotation after that restart and an access rejection"));
 assert.ok(readiness.includes("All `68/68` directories containing tracked project files have `DIRECTORY.md`"));
