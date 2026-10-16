@@ -66,7 +66,7 @@ function handleServerDiscoverMessage({
         extensions: extensionCapabilities,
       },
       instructions:
-        "TEST MCP workbench server for connector compatibility, bounded code sampling, and controlled network tools.",
+        "LocalNodeMCP: the operator's PC-local MCP server for the workspace -- files, processes, code intelligence, and controlled network tools.",
       ttlMs: 0,
       cacheScope: "private",
       _meta: {

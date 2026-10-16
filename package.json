@@ -2,7 +2,7 @@
   "name": "mcp-tests",
   "version": "0.40.0",
   "private": true,
-  "description": "TEST MCP workbench for connector/runtime contract validation.",
+  "description": "LocalNodeMCP: the operator's production PC-local MCP server (repository mcp-tests).",
   "type": "commonjs",
   "license": "UNLICENSED",
   "engines": {

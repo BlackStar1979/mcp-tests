@@ -34,7 +34,7 @@ if ($AllowNonServerProcess) {
   $targetVerified = (
     [int]$listener.OwningProcess -eq $ProcessId -and
     [string]$targetProcess.Name -eq 'node' -and
-    [string]$health.server -eq 'mcp-tests-response-shape' -and
+    [string]$health.server -in @('LocalNodeMCP', 'mcp-tests-response-shape') -and
     [string]$health.profile -eq 'internal' -and
     [string]$health.auth.mode -eq 'oauth21'
   )

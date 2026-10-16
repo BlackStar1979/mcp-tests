@@ -1,4 +1,5 @@
 "use strict";
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 
 const assert = require("node:assert/strict");
 const { dispatchRpcMessage } = require("../src/runtime/rpc_message_dispatcher");
@@ -8,7 +9,7 @@ async function dispatch(method) {
   const response = await dispatchRpcMessage({
     prelude: { id: 1, method, params: {} },
     context: { requestId: `req-${method}`, sessionId: "" },
-    serverName: "mcp-tests-response-shape",
+    serverName: SERVER_NAME_FOR_TESTS,
     serverVersion: "0.40.0",
     connectorShapeVersion: "2025-05-strict-v1",
     outputMode: "structured",

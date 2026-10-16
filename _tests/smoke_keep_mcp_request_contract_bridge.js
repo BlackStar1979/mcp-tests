@@ -1,4 +1,5 @@
 "use strict";
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -84,7 +85,7 @@ function modernHeaders(method, extra = {}) {
   const audits = [];
   const auditLog = (event, data) => audits.push({ event, data });
   const runtimeHandlers = createMcpRuntimeHandlers({
-    serverName: "mcp-tests-response-shape",
+    serverName: SERVER_NAME_FOR_TESTS,
     serverVersion: "0.40.0",
     connectorShapeVersion: "2025-05-strict-v1",
     outputMode: "structured",
@@ -137,7 +138,7 @@ function modernHeaders(method, extra = {}) {
   assert.equal(modernResult.ttlMs, 0);
   assert.equal(modernResult.cacheScope, "private");
   assert.equal(modernResult.serverInfo, undefined);
-  assert.equal(modernResult._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+  assert.equal(modernResult._meta["io.modelcontextprotocol/serverInfo"].name, SERVER_NAME_FOR_TESTS);
   assert.equal(modernResult._meta["io.modelcontextprotocol/serverInfo"].version, "0.40.0");
 
   const modernList = res();
@@ -146,7 +147,7 @@ function modernHeaders(method, extra = {}) {
   const modernListResult = JSON.parse(modernList.body()).result;
   assert.equal(modernListResult.resultType, "complete");
   assert.ok(Array.isArray(modernListResult.tools));
-  assert.equal(modernListResult._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+  assert.equal(modernListResult._meta["io.modelcontextprotocol/serverInfo"].name, SERVER_NAME_FOR_TESTS);
 
   const missingMethod = res();
   await runtimeHandlers.handleMcp(req(modernBody(), { "mcp-protocol-version": "2026-07-28" }), missingMethod);

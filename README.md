@@ -1,6 +1,6 @@
-# mcp-tests
+# LocalNodeMCP (repository `mcp-tests`)
 
-TEST MCP workbench for validating MCP server behavior, connector-visible contracts, auth modes, runtime metadata, workflow controls, and policy/spec guards.
+LocalNodeMCP is the operator's production PC-local MCP server: workspace files, local processes, code intelligence and controlled network tools on this workstation, served on 127.0.0.1:3008 behind OAuth 2.1 and reachable through the Cloudflare tunnel as `mcp-tests-oauth21.romionologic.dev`. Until 2026-10-16 it was the TEST MCP workbench (`mcp-tests-response-shape`); the repository and directory keep the old name for now. It starts at logon via `scripts/register-localnode-task.ps1` (see `_workflow/PRODUCTION_CONVERSION_PLAN.md`).
 
 ## Current Runtime
 

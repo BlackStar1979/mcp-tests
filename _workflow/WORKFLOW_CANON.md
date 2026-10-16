@@ -25,7 +25,7 @@ Purpose: Replace scattered historical workflow notes with one compact operationa
 
 ## 3. Current validated state
 
-- Server name: `mcp-tests-response-shape`.
+- Server name: `LocalNodeMCP` (renamed 2026-10-16 from `mcp-tests-response-shape`).
 - Server version: `0.40.0`.
 - Connector shape version: `2025-05-strict-v1`.
 - Output mode: `structured` by default.

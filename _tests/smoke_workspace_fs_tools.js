@@ -44,7 +44,7 @@ async function callTool(name, args) {
     max_chars: 2000,
   });
   assert.equal(text.success, true);
-  assert.match(text.text, /TEST MCP workbench/);
+  assert.match(text.text, /LocalNodeMCP/);
 
   const lines = await callTool("read_file_lines", {
     path: "mcp-tests/README.md",

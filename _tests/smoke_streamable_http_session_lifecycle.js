@@ -1,4 +1,5 @@
 "use strict";
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
@@ -57,7 +58,7 @@ async function call({headers={},body,handler}){const r=res();const audits=[];awa
  assert.equal(invalid.r.statusCode,200);
  assert.equal(JSON.parse(invalid.r.body).result.sid,null);
 
- const discover=handleServerDiscoverMessage({id:4,protocolVersion:"2025-06-18",serverName:"mcp-tests-response-shape",serverVersion:"0.40.0",connectorShapeVersion:"2025-05-strict-v1",outputMode:"structured",authMode:"oauth21",profile:"internal",tools:[],serverStartId:"start"});
+ const discover=handleServerDiscoverMessage({id:4,protocolVersion:"2025-06-18",serverName:SERVER_NAME_FOR_TESTS,serverVersion:"0.40.0",connectorShapeVersion:"2025-05-strict-v1",outputMode:"structured",authMode:"oauth21",profile:"internal",tools:[],serverStartId:"start"});
  assert.equal(discover.result.transport.protocol_sessions,false);
  assert.equal(discover.result.transport.legacy_initialize_supported,true);
  assert.equal(discover.result.transport.mode,"streamable_http_stateless_legacy_initialize_compat");

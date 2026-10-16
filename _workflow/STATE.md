@@ -12,7 +12,7 @@ Summarize the current validated product state in one operator-facing place witho
 - Repository: `C:\Work\mcp-tests`
 - Current branch: `main` (release line since 2026-10-16; baseline tag `v0.40.0`; former branches are `archive/*` tags)
 - Runtime entrypoint: `server.js`
-- Server identity: `mcp-tests-response-shape`
+- Server identity: `LocalNodeMCP` (renamed 2026-10-16 from `mcp-tests-response-shape`; production PC-local server)
 - Server version: `0.40.0`
 - Connector shape version: `2025-05-strict-v1`
 - Output mode: `structured`

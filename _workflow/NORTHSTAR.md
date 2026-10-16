@@ -9,7 +9,7 @@ Define the intended end-state for `mcp-tests` without turning workflow files int
 
 ## Accepted product target
 
-`mcp-tests` should converge toward a production-grade TEST MCP server that is:
+`mcp-tests` -- since 2026-10-16 the production server LocalNodeMCP -- should converge toward a production-grade PC-local MCP server that is:
 
 1. Single-route on `/mcp`
    No parallel target route, no target SSE contract, no target transport-session lifecycle.

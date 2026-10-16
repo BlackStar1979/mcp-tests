@@ -1,3 +1,4 @@
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 const assert = require("node:assert/strict");
 const { CURRENT_STAGE_STATUS, CURRENT_COMPATIBILITY_LABEL } = require("../src/stage_metadata");
 const { createTestMcpRuntimeStatusTool } = require("../tools/test_mcp_runtime_status");
@@ -25,7 +26,7 @@ assert.equal(validateAgainstSchema({ error: "controlled" }, {
 
 function runtimeStatusFromBuilder(includeTools = true) {
   return buildRuntimeStatus({
-    serverName: "mcp-tests-response-shape",
+    serverName: SERVER_NAME_FOR_TESTS,
     serverVersion: "0.40.0",
     connectorShapeVersion: "2025-05-strict-v1",
     outputMode: "structured",
@@ -61,7 +62,7 @@ function runtimeStatusFromBuilder(includeTools = true) {
 
 function baseRuntimeStatus() {
   return {
-    server_name: "mcp-tests-response-shape",
+    server_name: SERVER_NAME_FOR_TESTS,
     server_version: "0.40.0",
     connector_shape_version: "2025-05-strict-v1",
     output_mode: "structured",
@@ -69,7 +70,7 @@ function baseRuntimeStatus() {
     host: "127.0.0.1",
     port: 3009,
     runtime_identity: {
-      server_name: "mcp-tests-response-shape",
+      server_name: SERVER_NAME_FOR_TESTS,
       server_version: "0.40.0",
       connector_shape_version: "2025-05-strict-v1",
       audit_version: "audit-v1",

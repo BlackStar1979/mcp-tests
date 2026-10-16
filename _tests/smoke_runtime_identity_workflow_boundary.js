@@ -1,4 +1,5 @@
 "use strict";
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs");
@@ -40,7 +41,7 @@ assert.ok(index.includes("Runtime identity boundary guard"));
 
 assert.equal(state.schema_version, "workflow-state-spec-map-v2");
 assert.equal(state.status, "compact_orientation_map_not_progress_log");
-assert.equal(state.server_identity.name, "mcp-tests-response-shape");
+assert.equal(state.server_identity.name, SERVER_NAME_FOR_TESTS);
 assert.equal(state.server_identity.version, "0.40.0");
 assert.equal(state.runtime_topology.public.port, 3009);
 assert.equal(state.runtime_topology.authorized.port, 3008);

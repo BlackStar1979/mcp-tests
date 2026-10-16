@@ -11,7 +11,7 @@
     "_workflow/WORKFLOW_CANON.md"
   ],
   "server_identity": {
-    "name": "mcp-tests-response-shape",
+    "name": "LocalNodeMCP",
     "version": "0.40.0",
     "connector_shape_version": "2025-05-strict-v1",
     "output_mode": "structured",

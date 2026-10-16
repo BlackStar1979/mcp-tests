@@ -1,4 +1,5 @@
 "use strict";
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 
 const assert = require("node:assert/strict");
 const fs = require("node:fs/promises");
@@ -128,7 +129,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
         JSON.stringify({
           live_package_marker: "live-state-token",
           server_identity: {
-            name: "mcp-tests-response-shape",
+            name: SERVER_NAME_FOR_TESTS,
             version: "0.40.0",
             connector_shape_version: "2025-05-strict-v1",
             output_mode: "structured",
@@ -233,7 +234,7 @@ const INDEX_FILE = path.join(ROOT, "_control", "smoke-build-index.json");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_readiness, true);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_roadmap, true);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.health.has_workflow_canon, true);
-      assert.equal(isolated.stats.knowledge_summary.workflow_summary.runtime_identity.server_name, "mcp-tests-response-shape");
+      assert.equal(isolated.stats.knowledge_summary.workflow_summary.runtime_identity.server_name, SERVER_NAME_FOR_TESTS);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.runtime_identity.authenticated_total_tool_count, 84);
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.workflow_markers.next_primary, "comp-1a-on-fresh-external-client-traffic");
       assert.equal(isolated.stats.knowledge_summary.workflow_summary.readiness.component_count, 2);

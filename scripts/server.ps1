@@ -71,7 +71,9 @@ function Test-CompatibleRunningServer {
   $healthProfile = [string]$Status.Health.profile
   $expectedHealthProfile = if ($ProfileName -eq 'tests') { 'internal' } else { $ProfileName }
 
-  if ($serverName -ne 'mcp-tests-response-shape') {
+  # LocalNodeMCP since 2026-10-16; the legacy name must still be recognised so a running pre-rename
+  # server is taken over instead of being treated as a foreign process on the port.
+  if ($serverName -notin @('LocalNodeMCP', 'mcp-tests-response-shape')) {
     return $false
   }
   if ($healthAuth -ne $AuthMode) {

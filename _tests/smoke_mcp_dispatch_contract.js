@@ -1,4 +1,5 @@
 "use strict";
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 
 // MCP dispatch contract tests.
 //
@@ -257,7 +258,7 @@ function postJson(value) {
       const discover = await discoverResponse.json();
       assert.equal(discover.result.resultType, "complete");
       assert.deepEqual(discover.result.supportedVersions, ["2026-07-28"]);
-      assert.equal(discover.result._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+      assert.equal(discover.result._meta["io.modelcontextprotocol/serverInfo"].name, SERVER_NAME_FOR_TESTS);
       assert.equal(discover.result.serverInfo, undefined);
 
       const listResponse = await postRawWithHeaders(JSON.stringify({
@@ -324,7 +325,7 @@ function postJson(value) {
       assert.equal(response.status, 200, "modern tools/call status");
       const result = (await response.json()).result;
       assert.equal(result.resultType, "complete");
-      assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].name, "mcp-tests-response-shape");
+      assert.equal(result._meta["io.modelcontextprotocol/serverInfo"].name, SERVER_NAME_FOR_TESTS);
     }
 
     // 10b. Methods removed from the modern era return HTTP 404 with JSON-RPC -32601.
@@ -361,7 +362,7 @@ function postJson(value) {
       assert.equal(response.headers.get("mcp-session-id"), null, "initialize does not create transport session header");
       assert.equal(result.protocolVersion, "2025-06-18", "initialize protocolVersion");
       assert.equal(result.capabilities.tools.listChanged, false, "initialize remains pull-only and does not advertise listChanged");
-      assert.equal(result.serverInfo.name, "mcp-tests-response-shape", "initialize serverInfo.name");
+      assert.equal(result.serverInfo.name, SERVER_NAME_FOR_TESTS, "initialize serverInfo.name");
       assert.equal(result.serverInfo.version, "0.40.0", "initialize serverInfo.version");
       assert.equal(
         result.serverInfo.connectorShapeVersion,

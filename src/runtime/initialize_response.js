@@ -43,7 +43,7 @@ function buildInitializeResponse({
       schemaCompatibility: introspection?.schemaCompatibility || assertToolSchemas(sourceTools),
     },
     instructions:
-      `TEST MCP workbench server for connector compatibility, bounded code sampling, and controlled network tools. ` +
+      `LocalNodeMCP: the operator's PC-local MCP server for the workspace -- files, processes, code intelligence, and controlled network tools. ` +
       `Connector shape ${connectorShapeVersion}. ` +
       `Output mode ${outputMode}. Exposes the active profile tool surface reported in serverInfo.enabledTools.`,
   };

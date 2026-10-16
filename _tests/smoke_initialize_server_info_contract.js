@@ -1,3 +1,4 @@
+const { SERVER_NAME: SERVER_NAME_FOR_TESTS } = require("../src/runtime/identity");
 const assert = require("node:assert/strict");
 
 const { buildInitializeResponse } = require("../src/runtime/initialize_response");
@@ -51,7 +52,10 @@ const response = buildInitializeResponse({
 
 assert.equal(response.protocolVersion, "2025-06-18");
 assert.equal(response.capabilities.tools.listChanged, false);
-assert.equal(response.serverInfo.name, "mcp-tests-response-shape");
+assert.equal(response.serverInfo.name, SERVER_NAME_FOR_TESTS);
+// The one place the identity VALUE is pinned (operator decision 2026-10-16); every other test reads
+// it from src/runtime/identity.js, so a silent rename must fail here.
+assert.equal(SERVER_NAME_FOR_TESTS, "LocalNodeMCP");
 assert.equal(response.serverInfo.version, "0.40.0");
 assert.equal(response.serverInfo.connectorShapeVersion, "2025-05-strict-v1");
 assert.equal(response.serverInfo.outputMode, "structured");

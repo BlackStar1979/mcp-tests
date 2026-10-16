@@ -56,7 +56,7 @@ const report = formatStartupReport({
   useColor: false,
 }).join("\n");
 
-assert.ok(report.includes("mcp-tests-response-shape v0.40.0"));
+assert.ok(report.includes(`${identity.SERVER_NAME} v${identity.SERVER_VERSION}`));
 assert.ok(report.includes("startupReportVersion=test-mcp-startup-report-v1"));
 assert.ok(report.includes("labelsVersion=test-mcp-labels-v1"));
 assert.ok(report.includes("Public MCP tools:"));

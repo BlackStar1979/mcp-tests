@@ -2,7 +2,7 @@
   "schema_version": "mcp-tests-server-spec-v1",
   "spec_mode": "canonical_structured_spec_not_progress_log",
   "server": {
-    "name": "mcp-tests-response-shape",
+    "name": "LocalNodeMCP",
     "version": "0.40.0",
     "shape": "2025-05-strict-v1",
     "mode": "structured",

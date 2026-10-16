@@ -23,7 +23,7 @@ const authMode = process.argv[3];
 const expectedProfile = profileName === "tests" ? "internal" : profileName;
 const ok = data
   && data.status === "ok"
-  && data.server === "mcp-tests-response-shape"
+  && ["LocalNodeMCP", "mcp-tests-response-shape"].includes(data.server)
   && data.auth
   && data.auth.mode === authMode
   && data.profile === expectedProfile;

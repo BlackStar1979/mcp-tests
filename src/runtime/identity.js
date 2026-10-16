@@ -6,7 +6,11 @@ const {
   CURRENT_WORKING_COURSE,
 } = require("../stage_metadata");
 
-const SERVER_NAME = "mcp-tests-response-shape";
+// Production identity since 2026-10-16 (operator decision): the PC-local MCP server is LocalNodeMCP.
+const SERVER_NAME = "LocalNodeMCP";
+// Names a running instance may still report while it is replaced; supervisors must recognise them
+// so a takeover works across the rename instead of treating the old server as a foreign process.
+const LEGACY_SERVER_NAMES = Object.freeze(["mcp-tests-response-shape"]);
 const SERVER_VERSION = "0.40.0";
 const CONNECTOR_SHAPE_VERSION = "2025-05-strict-v1";
 const AUDIT_VERSION = "mcp-tests-audit-v1";
@@ -31,6 +35,7 @@ function buildRuntimeIdentity() {
 
 module.exports = {
   SERVER_NAME,
+  LEGACY_SERVER_NAMES,
   SERVER_VERSION,
   CONNECTOR_SHAPE_VERSION,
   AUDIT_VERSION,
