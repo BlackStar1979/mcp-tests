@@ -10,7 +10,7 @@ Summarize the current validated product state in one operator-facing place witho
 ## Current as-is state
 
 - Repository: `C:\Work\mcp-tests`
-- Current branch: `feature/cbm-cli-bridge-mvp`
+- Current branch: `main` (release line since 2026-10-16; baseline tag `v0.40.0`; former branches are `archive/*` tags)
 - Runtime entrypoint: `server.js`
 - Server identity: `mcp-tests-response-shape`
 - Server version: `0.40.0`

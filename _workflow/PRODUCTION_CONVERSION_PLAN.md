@@ -1,9 +1,32 @@
 # Production conversion plan: mcp-tests -> production local MCP server
 
-Status: PLAN (not started). Owner: Claude. Written 2026-10-16 at the operator's request
-("plan the conversion of the local test MCP server into a non-test version").
+Status: IN PROGRESS (P1 done except P1.5, P2.1 done). Owner: Claude. Written 2026-10-16 at the
+operator's request ("plan the conversion of the local test MCP server into a non-test version").
 Queue authority stays `WORKFLOW_CANON.md` + `ACTIVE_WORKFLOW_INDEX.md`; this file is the
 design input that later packages are cut from. Retire it once the conversion has landed.
+
+## 0. Progress log
+
+- 2026-10-16 P1.1: WIP `0f18977` triaged. It was one coherent package (COMP-1A refresh to
+  `codex-mcp-client 0.153.1`), half-applied; completed in `7c81c75` after re-running its evidence
+  command. It had broken 3 smokes (two frozen sentences, `state.json` over its 16000-char budget).
+- 2026-10-16 P1.2-P1.3: full suite 7 + 313 green (79 s); `main` fast-forwarded 149 commits to
+  `c24609e`; annotated tag `v0.40.0` = rollback target.
+- 2026-10-16 P1.4: all 26 other branches became 27 `archive/*` tags (one branch had diverged
+  local/remote heads; both kept), each verified on the remote before its branch was deleted.
+  Two archives hold work NOT in `main` and need a keep/drop decision (P2.4).
+- 2026-10-16 P1.5 FINDING: the repo has NO CI (`.github/workflows` absent). The local suite is
+  the only gate. Adding CI is now a P2 item, not a formality.
+- 2026-10-16 P2.1: the three GPT defects resolved, each with its own cause:
+  - 9f312d0d "every invocation returns ExceptionGroup after restart": NOT a server defect. The
+    server started 2026-08-19T20:06:10Z and the workstation hard-reset (CPU MCE, event 41) at
+    20:07:27Z; GPT's calls hit a dead host. Its cached tool schemas made discovery look alive.
+  - 6e203293 write_file ExceptionGroup: audit shows `destructive_tool_denied` (blanket deny on
+    `destructive=true`), rendered by the connector as ExceptionGroup. Fixed by `cc75a66`
+    (2026-08-20, capability-adaptive authorization); guarded by
+    `boundedWorkspaceWriteIsNotBlanketDeniedByDestructiveMetadata`.
+  - f2f5e44b file_inspect on an empty file: real defect; `eof` selector returned line 0 against a
+    schema minimum of 1. Fixed in this session with a regression through the DLP boundary.
 
 ## 1. What "production" means here (the decision this plan rests on)
 
@@ -69,6 +92,15 @@ Done when the runtime's `running_source` equals a tagged commit on `main`.
 2. Bump `@modelcontextprotocol/client` 2.0.0 -> 2.3.x in a separate commit; run the hermetic
    OAuth/DCR suite against it.
 3. `npm audit` + pinning review; no `^` ranges in production deps (`ssh2-sftp-client` is `^12`).
+4. Keep/drop decision, by reading the diff against `main`, for the two archives holding unmerged
+   work: `archive/feature/filesystem-hardening-20260802` (`550d58d`, 38 files of uncommitted work
+   preserved 2026-10-15) and `archive/fix/oauth21-mcp-resource` (28 commits, 2026-07-11).
+5. CI: a GitHub workflow running `node _tests/run_all_smokes.js --skip-network` on push to `main`.
+6. `_tests/smoke_sep2549_list_read_cache_inventory.js` (helper manifest, not in run-all) asserts
+   the dispatcher has NO `resources/read`; that became false by design with PROCESS-ARTIFACTS.
+   Update the assertion to the current contract or retire the helper manifest entry.
+7. `state.json` compaction (15930 / 16000 chars): the 34 `*_record` paths in
+   `active_target_direction` repeat the `_workflow/operator_decisions/` prefix.
 
 ### P3. Surface split: production / tests / moves to TinyPyMCP
 Classify all 128 tools into a table (`_workflow/SURFACE_CLASSIFICATION.md`) with one owner per row:
