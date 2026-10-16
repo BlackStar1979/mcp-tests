@@ -71,6 +71,7 @@ design input that later packages are cut from. Retire it once the conversion has
   for two months. Migration into the TinyPyMCP shared store needs a duplicate check per entry and
   kept authorship (saved by me with a provenance prefix naming the original agent and date), then
   the local `memory_*` tools freeze read-only. Its own package, not an end-of-day job.
+- 2026-10-16 P3 MEMORY MIGRATION DONE: of the 87 local entries, 1 new rule (markdown heading ancestry, c28331b9) and 1 superseding update (LocalNodeMCP operations, 00840dad replaces codex f601ee88) went to the TinyPyMCP shared store. The other 85 were dated progress logs (already in git and the workflow docs), test markers (persistence/quality probes), an entry from an unrelated project, or rules the shared store already held (stale node processes 407459a9/8c239ed4, Codex UI vs CLI 502347c9, run_process vs process_start 8192b00b). Checked by searching the shared store per candidate, not assumed. The local file stays untouched as the archive; `memory_*` can leave the production surface at cutover.
 - 2026-10-16 FS-HARDEN Task 6 (append-only policy): DROPPED as superseded. Its premise was that
   append bypasses mutation safety; on `main` `appendFile` already goes through the file-transform
   engine (expected hash, receipt, atomic replace), the same path as `edit_file_patch` append.

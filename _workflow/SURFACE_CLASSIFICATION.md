@@ -24,7 +24,7 @@ not MCP-visible and are out of scope here.
 | workspace_index | 371 | KEEP | build/search index over C:\Work |
 | code_analysis | 281 | KEEP | dev_code_locate 153, syntax_check 97; code_patch_plan never called -- keep with code_apply_patch |
 | truth | 277 | KEEP project_truth_audit (182), code_runtime_map, tool_usage_snapshot; TESTS-ONLY `change_workflow_simulator` (6) and `deploy_decision_guard` (42) | the last two serve this repository's own workflow, not the operator's PC work |
-| memory (memory_*) | 245 | KEEP UNTIL MIGRATED, then remove | duplicates the TinyPyMCP shared store (two write paths); migrate the 87 local entries first (plan P3), then point clients at TinyPyMCP |
+| memory (memory_*) | 245 | REMOVE at cutover (migration done 2026-10-16) | duplicates the TinyPyMCP shared store (two write paths); migrate the 87 local entries first (plan P3), then point clients at TinyPyMCP |
 | network (net_*) | 59 | KEEP | cheap, read-only, allowlisted |
 | code_mutation | 3 | KEEP | code_apply_patch/rollback pair; fix FS-HARDEN Task 4 at cutover |
 | core: search / fetch | 7 | KEEP | the search+fetch pair some ChatGPT modes require; verify against the public sandbox root before cutover |
