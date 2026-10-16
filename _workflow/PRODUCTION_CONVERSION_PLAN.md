@@ -179,8 +179,11 @@ P7 (renaming the directory breaks about 70 references, and that is its own packa
    restart-on-failure. Measure, do not assume, that it survives a hard reset and comes back.
    Probe it by RUNNING it: Smart App Control may block a fresh binary
    (`smart-app-control-blocks-venv-shims`).
-2. Health: `/health` returns the version, `running_source` and the tool fingerprint; add a Kuma
-   monitor through the tunnel (its 401/200 semantics as on the VPS).
+2. Health: `/health` returns the version, `running_source` and the tool fingerprint.
+   DECIDED 2026-10-16: NO Kuma monitor for it. The server lives on the PC, which is off whenever
+   the operator turns it off; a VPS-side monitor would go DOWN every evening and vps-watch would
+   push that as an outage -- noise that trains him to ignore real alarms. Liveness is the keeper's
+   job (local restart), and its log `_logs/localnode-keeper.log` is the record.
 3. Backups: OAuth SQLite, process registry, artifacts. Restic to the same offsite target as the
    VPS, with a restore drill, never an untested backup.
 4. Logs: bounded rotation; keep the no-raw-payload observability boundary.
