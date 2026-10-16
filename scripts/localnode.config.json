@@ -1,5 +1,5 @@
 {
-  "profile": "tests",
+  "profile": "production",
   "auth": "oauth21",
   "port": 3008,
   "oauth_secret_file": "~/.romion/tests_oauth_secret.json",
