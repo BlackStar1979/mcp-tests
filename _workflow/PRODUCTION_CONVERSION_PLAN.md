@@ -92,10 +92,22 @@ Done when the runtime's `running_source` equals a tagged commit on `main`.
 2. Bump `@modelcontextprotocol/client` 2.0.0 -> 2.3.x in a separate commit; run the hermetic
    OAuth/DCR suite against it.
 3. `npm audit` + pinning review; no `^` ranges in production deps (`ssh2-sftp-client` is `^12`).
-4. Keep/drop decision, by reading the diff against `main`, for the two archives holding unmerged
-   work: `archive/feature/filesystem-hardening-20260802` (`550d58d`, 38 files of uncommitted work
-   preserved 2026-10-15) and `archive/fix/oauth21-mcp-resource` (28 commits, 2026-07-11).
-5. CI: a GitHub workflow running `node _tests/run_all_smokes.js --skip-network` on push to `main`.
+4. Keep/drop decision for the two archives holding unmerged work -- DECIDED 2026-10-16:
+   - `archive/fix/oauth21-mcp-resource` (28 commits, 2026-07-11): SUPERSEDED. `git cherry` finds no
+     patch-equivalent commit, but the substance (issuer separated from the canonical MCP resource,
+     tokens bound to it) landed differently on `main` (`canonicalizeResource` with aliases in
+     `src/auth/oauth21_authorization_server.js`; AUTH-1 4/4). Keep the tag, port nothing.
+   - `archive/feature/filesystem-hardening-20260802` (`550d58d`, 38 files, +1835/-268, base
+     2026-08-02): KEEP AND PORT as package FS-HARDEN. None of it is on `main` (its five new smokes,
+     `scripts/github_api.py`, the plan doc are absent; `main`'s `workspace_roots.js` has 3 realpath
+     checks, the branch 10). Its Task 2 closes symlink/junction escape from the workspace boundary,
+     which a production server must have. Port task by task, test-first, onto current `main`;
+     the base is 140 commits old, so this is a re-implementation guided by the archive, not a
+     rebase. Its plan: `git show archive/feature/filesystem-hardening-20260802:docs/superpowers/plans/2026-08-02-filesystem-tooling-hardening.md`.
+5. CI: DONE 2026-10-16 (`.github/workflows/smoke.yml`): Windows runner, repository copied to the
+   production path `C:\Work\mcp-tests` (the suite asserts that root), `npm ci`, `npm audit
+   --audit-level=high`, full suite. A July attempt on the oauth21 branch was removed by its author.
+   Dependency bump of P2.2/P2.3 also DONE (`cda3a61`): client 2.3.1, fast-uri 3.1.8, audit 0.
 6. `_tests/smoke_sep2549_list_read_cache_inventory.js` (helper manifest, not in run-all) asserts
    the dispatcher has NO `resources/read`; that became false by design with PROCESS-ARTIFACTS.
    Update the assertion to the current contract or retire the helper manifest entry.

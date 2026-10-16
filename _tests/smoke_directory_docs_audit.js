@@ -61,8 +61,12 @@ for (const relPath of execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "
     directory = parent;
   }
 }
+// The map itself must be tracked: an ignored on-disk DIRECTORY.md passed here locally while clean
+// checkouts had none.
+const trackedFiles = new Set(execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" })
+  .split(/\r?\n/).filter(Boolean).map((relPath) => relPath.replaceAll("\\", "/")));
 const missingTrackedDirectoryMaps = [...trackedDirectories]
-  .filter((directory) => !fs.existsSync(path.join(ROOT, directory, "DIRECTORY.md")))
+  .filter((directory) => !trackedFiles.has(`${directory.replaceAll("\\", "/")}/DIRECTORY.md`))
   .sort();
 assert.deepEqual(missingTrackedDirectoryMaps, [], `tracked directories missing DIRECTORY.md:\n${missingTrackedDirectoryMaps.join("\n")}`);
 

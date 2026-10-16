@@ -51,13 +51,18 @@ _workflow/control_plane/oauth21_prune_backups/*/*
 !_workflow/control_plane/oauth21_prune_backups/*/DIRECTORY.md
 _workflow/control_plane/oauth21_prune_records/*
 !_workflow/control_plane/oauth21_prune_records/DIRECTORY.md
-_workflow/control_plane/retired_root_backups/
-_workflow/control_plane/snapshots/
+_workflow/control_plane/retired_root_backups/*
+!_workflow/control_plane/retired_root_backups/README.md
+!_workflow/control_plane/retired_root_backups/DIRECTORY.md
+_workflow/control_plane/snapshots/*
+!_workflow/control_plane/snapshots/README.md
+!_workflow/control_plane/snapshots/DIRECTORY.md
 
 # Local imported reference material; keep only the directory orientation.
 _docs/*
 !_docs/README.md
 !_docs/.gitkeep
+!_docs/DIRECTORY.md
 
 # External corpora and local research sandboxes not suitable for first GitHub import
 _repos_with_code_samples/

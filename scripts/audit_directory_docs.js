@@ -72,8 +72,16 @@ function directoryExists(relDir) {
   return fs.existsSync(path.join(ROOT, relDir)) && fs.statSync(path.join(ROOT, relDir)).isDirectory();
 }
 
+let trackedDirectoryDocs = null;
+
+// A map must be TRACKED, not merely present on disk: an ignored local DIRECTORY.md satisfied this
+// check on the workstation while every clean checkout (CI, 2026-10-16) had no map for `_docs`.
 function hasDirectoryDoc(relDir) {
-  return fs.existsSync(path.join(ROOT, relDir, "DIRECTORY.md"));
+  if (!trackedDirectoryDocs) {
+    trackedDirectoryDocs = new Set(runGit(["ls-files", "--", "*DIRECTORY.md"])
+      .split(/\r?\n/).map((line) => normalizePath(line.trim())).filter(Boolean));
+  }
+  return trackedDirectoryDocs.has(`${relDir}/DIRECTORY.md`);
 }
 
 function collectRows(opts) {
