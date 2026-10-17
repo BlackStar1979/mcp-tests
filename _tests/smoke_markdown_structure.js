@@ -18,7 +18,7 @@ const { fileInspectTool } = require("../tools/file_inspect");
 
 const ROOT = path.resolve(__dirname, "..");
 const WORKSPACE_ROOT = path.resolve(ROOT, "..");
-const FIXTURE_REL = "mcp-tests/_control/smoke_markdown_structure";
+const FIXTURE_REL = "LocalNodeMCP/_control/smoke_markdown_structure";
 const FIXTURE = path.join(WORKSPACE_ROOT, ...FIXTURE_REL.split("/"));
 
 function sha256(value) {

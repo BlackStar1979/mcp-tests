@@ -96,19 +96,19 @@ mustThrow(
 
 {
   const config = resolveAuthBootstrapConfig({
-    argv: ["--token-file", "C:\\Work\\mcp-tests\\.secrets\\future-token.txt"],
+    argv: ["--token-file", "C:\\Work\\LocalNodeMCP\\.secrets\\future-token.txt"],
     env: env({ MCP_TEST_TOKEN_FILE: "C:\\should\\not\\win.txt" }),
   });
-  assert.equal(config.tokenFile, "C:\\Work\\mcp-tests\\.secrets\\future-token.txt");
+  assert.equal(config.tokenFile, "C:\\Work\\LocalNodeMCP\\.secrets\\future-token.txt");
   assert.equal(config.tokenFileSource, "cli");
 }
 
 {
   const config = resolveAuthBootstrapConfig({
     argv: [],
-    env: env({ MCP_TEST_TOKEN_FILE: "C:\\Work\\mcp-tests\\.secrets\\env-token.txt" }),
+    env: env({ MCP_TEST_TOKEN_FILE: "C:\\Work\\LocalNodeMCP\\.secrets\\env-token.txt" }),
   });
-  assert.equal(config.tokenFile, "C:\\Work\\mcp-tests\\.secrets\\env-token.txt");
+  assert.equal(config.tokenFile, "C:\\Work\\LocalNodeMCP\\.secrets\\env-token.txt");
   assert.equal(config.tokenFileSource, "env");
 }
 

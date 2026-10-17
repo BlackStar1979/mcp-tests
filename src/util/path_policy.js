@@ -72,7 +72,7 @@ function assertPublicFsRootSafe(root) {
       throw new Error(`Unsafe public FS root: contains ${dir}.`);
     }
   }
-  if (["mcp-tests", "mcp", "work"].includes(base)) {
+  if (["mcp-tests", "localnodemcp", "mcp", "work"].includes(base)) {
     throw new Error(`Unsafe public FS root basename: ${base}.`);
   }
   return resolved;

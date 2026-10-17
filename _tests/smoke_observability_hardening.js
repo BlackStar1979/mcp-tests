@@ -66,7 +66,7 @@ assert.ok(status.recommended_actions.some((item) => item.includes("raw audit log
 assert.deepEqual(status.next_recommended_checks, status.recommended_actions);
 
 const serialized = JSON.stringify(status);
-assert.equal(serialized.includes("C:/Work/mcp-tests/_fixtures/example.txt"), false);
+assert.equal(serialized.includes("C:/Work/LocalNodeMCP/_fixtures/example.txt"), false);
 assert.equal(serialized.includes("docs/private.pem"), false);
 assert.equal(serialized.includes("listen EADDRINUSE"), false);
 

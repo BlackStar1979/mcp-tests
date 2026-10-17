@@ -17,7 +17,7 @@ const OWNER = "migration-client";
 const INPUT = {
   command: "node",
   args: ["--version"],
-  cwd: "mcp-tests",
+  cwd: "LocalNodeMCP",
   idempotency_key: "migration-retry-key",
 };
 

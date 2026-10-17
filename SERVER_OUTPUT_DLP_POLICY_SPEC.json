@@ -66,11 +66,11 @@
     "output_schema_changed": true,
     "accepted_live_server_start_id": "2026-08-18T04:39:45.722Z",
     "accepted_live_source_commit": "b385c88",
-    "live_combined_fingerprint": "93721a82a339f9d6",
+    "live_combined_fingerprint": "49d8c360e3756758",
     "connector_cached_combined_fingerprint_before_refresh": "ec7d3af5b4ea17f5",
     "repo_target_output_schema_fingerprint": "8292895f0216967c",
-    "repo_target_descriptor_fingerprint": "82ffaaa3adb6e7db",
-    "repo_target_combined_fingerprint": "93721a82a339f9d6"
+    "repo_target_descriptor_fingerprint": "1de4323d222a91a2",
+    "repo_target_combined_fingerprint": "49d8c360e3756758"
   },
   "implementation_evidence": [
     "src/runtime/output_dlp_boundary.js centralizes JSON-compatible output sanitation, high-confidence secret redaction, bounded complexity checks, and cached JSON Schema 2020-12 validation through pinned ajv@8.20.0 without remote schema loading",

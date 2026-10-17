@@ -16,7 +16,7 @@ const CODE_SAMPLE_JS_INPUT_SCHEMA = {
   properties: {
     path: {
       type: "string",
-      description: "Workspace-relative JS/TS file path. Absolute paths are rejected. Default root is C:\\Work\\mcp-tests.",
+      description: "Workspace-relative JS/TS file path. Absolute paths are rejected. Default root is C:\\Work\\LocalNodeMCP.",
     },
     search: {
       type: "string",

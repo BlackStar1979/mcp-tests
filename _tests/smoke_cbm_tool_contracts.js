@@ -109,7 +109,7 @@ function bridgeResult(toolName, args) {
     resolveCbmRepositoryPath(logicalPath) {
       calls.push({ op: "resolve", logicalPath });
       if (logicalPath === "escape") throw new Error("Access denied");
-      return { absolutePath: "C:\\Work\\mcp-tests", displayPath: logicalPath, rootAlias: "work" };
+      return { absolutePath: "C:\\Work\\LocalNodeMCP", displayPath: logicalPath, rootAlias: "work" };
     },
     async callCbmTool(toolName, args) {
       calls.push({ op: "call", toolName, args });
@@ -368,7 +368,7 @@ function bridgeResult(toolName, args) {
   assert.equal(readCallsBeforeIndex.includes("index_repository"), false);
 
   const indexed = await byName.get("cbm_index_repository").execute({
-    path: "mcp-tests",
+    path: "LocalNodeMCP",
     mode: "moderate",
     target_projects: ["shared"],
     name: "demo-index",
@@ -376,13 +376,13 @@ function bridgeResult(toolName, args) {
   });
   assert.equal(indexed.cbm_tool, "index_repository");
   assert.deepEqual(calls.slice(-3), [
-    { op: "resolve", logicalPath: "mcp-tests" },
+    { op: "resolve", logicalPath: "LocalNodeMCP" },
     { op: "call", toolName: "list_projects", args: {} },
     {
       op: "call",
       toolName: "index_repository",
       args: {
-        repo_path: "C:\\Work\\mcp-tests",
+        repo_path: "C:\\Work\\LocalNodeMCP",
         mode: "moderate",
         target_projects: ["shared"],
         name: "demo-index",
@@ -396,11 +396,11 @@ function bridgeResult(toolName, args) {
   const adrBridge = {
     resolveCbmRepositoryPath(logicalPath) {
       adrCalls.push({ op: "resolve", logicalPath });
-      return { absolutePath: "C:\\Work\\mcp-tests", displayPath: logicalPath, rootAlias: "work" };
+      return { absolutePath: "C:\\Work\\LocalNodeMCP", displayPath: logicalPath, rootAlias: "work" };
     },
     async callCbmTool(toolName, args) {
       adrCalls.push({ op: "call", toolName, args });
-      if (toolName === "list_projects") return { ...bridgeResult(toolName, args), result: { projects: [{ name: "demo-project", root_path: "C:/Work/mcp-tests" }] } };
+      if (toolName === "list_projects") return { ...bridgeResult(toolName, args), result: { projects: [{ name: "demo-project", root_path: "C:/Work/LocalNodeMCP" }] } };
       if (toolName === "manage_adr" && args.mode === "get") {
         adrGetCount += 1;
         return { ...bridgeResult(toolName, args), result: adrGetCount === 1 ? { content: "## PURPOSE\nPreserve me" } : { content: "", status: "no_adr" } };
@@ -411,7 +411,7 @@ function bridgeResult(toolName, args) {
     },
   };
   const adrIndexTool = createCbmTools(adrBridge).find((tool) => tool.name === "cbm_index_repository");
-  const preservedIndex = await adrIndexTool.execute({ path: "mcp-tests" });
+  const preservedIndex = await adrIndexTool.execute({ path: "LocalNodeMCP" });
   assert.equal(preservedIndex.success, true);
   assert.equal(preservedIndex.result.adr_preservation_checked, true);
   assert.equal(preservedIndex.result.adr_restored_by_bridge, true);
@@ -424,12 +424,12 @@ function bridgeResult(toolName, args) {
   const failedSnapshotBridge = {
     resolveCbmRepositoryPath(logicalPath) {
       failedSnapshotCalls.push({ op: "resolve", logicalPath });
-      return { absolutePath: "C:\\Work\\mcp-tests", displayPath: logicalPath, rootAlias: "work" };
+      return { absolutePath: "C:\\Work\\LocalNodeMCP", displayPath: logicalPath, rootAlias: "work" };
     },
     async callCbmTool(toolName, args) {
       failedSnapshotCalls.push({ op: "call", toolName, args });
       if (toolName === "list_projects") {
-        return { ...bridgeResult(toolName, args), result: { projects: [{ name: "demo-project", root_path: "C:/Work/mcp-tests" }] } };
+        return { ...bridgeResult(toolName, args), result: { projects: [{ name: "demo-project", root_path: "C:/Work/LocalNodeMCP" }] } };
       }
       if (toolName === "manage_adr" && args.mode === "get") {
         return {
@@ -447,7 +447,7 @@ function bridgeResult(toolName, args) {
     },
   };
   const failedSnapshotIndexTool = createCbmTools(failedSnapshotBridge).find((tool) => tool.name === "cbm_index_repository");
-  const failedSnapshotIndex = await failedSnapshotIndexTool.execute({ path: "mcp-tests" });
+  const failedSnapshotIndex = await failedSnapshotIndexTool.execute({ path: "LocalNodeMCP" });
   assert.equal(failedSnapshotIndex.success, false);
   assert.equal(failedSnapshotIndex.error_code, "cbm_adr_snapshot_unavailable");
   assert.match(failedSnapshotIndex.error, /ADR snapshot unavailable/i);
@@ -457,12 +457,12 @@ function bridgeResult(toolName, args) {
   const emptySnapshotBridge = {
     resolveCbmRepositoryPath(logicalPath) {
       emptySnapshotCalls.push({ op: "resolve", logicalPath });
-      return { absolutePath: "C:\\Work\\mcp-tests", displayPath: logicalPath, rootAlias: "work" };
+      return { absolutePath: "C:\\Work\\LocalNodeMCP", displayPath: logicalPath, rootAlias: "work" };
     },
     async callCbmTool(toolName, args) {
       emptySnapshotCalls.push({ op: "call", toolName, args });
       if (toolName === "list_projects") {
-        return { ...bridgeResult(toolName, args), result: { projects: [{ name: "demo-project", root_path: "C:/Work/mcp-tests" }] } };
+        return { ...bridgeResult(toolName, args), result: { projects: [{ name: "demo-project", root_path: "C:/Work/LocalNodeMCP" }] } };
       }
       if (toolName === "manage_adr" && args.mode === "get") {
         return { ...bridgeResult(toolName, args), result: { content: "", status: "no_adr" } };
@@ -474,7 +474,7 @@ function bridgeResult(toolName, args) {
     },
   };
   const emptySnapshotIndexTool = createCbmTools(emptySnapshotBridge).find((tool) => tool.name === "cbm_index_repository");
-  const emptySnapshotIndex = await emptySnapshotIndexTool.execute({ path: "mcp-tests" });
+  const emptySnapshotIndex = await emptySnapshotIndexTool.execute({ path: "LocalNodeMCP" });
   assert.equal(emptySnapshotIndex.success, true);
   assert.equal(emptySnapshotIndex.result.adr_preservation_checked, true);
   assert.equal(emptySnapshotIndex.result.adr_snapshot_available, true);

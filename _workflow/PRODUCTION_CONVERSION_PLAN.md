@@ -165,7 +165,7 @@ Done when the runtime's `running_source` equals a tagged commit on `main`.
      the base is 140 commits old, so this is a re-implementation guided by the archive, not a
      rebase. Its plan: `git show archive/feature/filesystem-hardening-20260802:docs/superpowers/plans/2026-08-02-filesystem-tooling-hardening.md`.
 5. CI: DONE 2026-10-16 (`.github/workflows/smoke.yml`): Windows runner, repository copied to the
-   production path `C:\Work\mcp-tests` (the suite asserts that root), `npm ci`, `npm audit
+   production path `C:\Work\LocalNodeMCP` (the suite asserts that root), `npm ci`, `npm audit
    --audit-level=high`, full suite. A July attempt on the oauth21 branch was removed by its author.
    Dependency bump of P2.2/P2.3 also DONE (`cda3a61`): client 2.3.1, fast-uri 3.1.8, audit 0.
 6. `_tests/smoke_sep2549_list_read_cache_inventory.js` (helper manifest, not in run-all) asserts

@@ -1,0 +1,55 @@
+{
+  "$purpose": "LocalNodeMCP -- machine-readable project spec. Load THIS to know the project cold. Portfolio: C:\\Work\\PORTFOLIO.json. Deeper state lives in _workflow/ (STATE.md, PRODUCTION_CONVERSION_PLAN.md, SURFACE_CLASSIFICATION.md); this file points there instead of copying it.",
+  "meta": {
+    "spec_version": 1,
+    "last_verified": "2026-10-17",
+    "verified_by": "architect agent: directory renamed mcp-tests -> LocalNodeMCP (P7), adopted into portfolio governance; suite 7 public + 316 authenticated green from the new path"
+  },
+  "identity": {
+    "id": "localnodemcp",
+    "name": "LocalNodeMCP",
+    "aka": ["mcp-tests (the repo and directory name until 2026-10-17; the server identity since 2026-10-16)"],
+    "owner": "me (adopted from CODEX's test harness; production since 2026-10-16)",
+    "role": "Production PC-local MCP server (Node.js): the tools that must run ON the operator's PC -- local filesystem, processes, code-workspace tools -- for remote MCP clients through an OAuth 2.1 tunnel."
+  },
+  "runtime": {
+    "listen": "127.0.0.1:3008",
+    "public_host": "mcp-tests-oauth21.romionologic.dev (Cloudflare tunnel; the hostname keeps the old name ON PURPOSE -- OAuth clients are registered against this resource identity, and changing it forces every client to re-register)",
+    "auth": "oauth21",
+    "process_chain": "logon task LocalNodeMCP -> headless conhost -> scripts/localnode-keeper.ps1 (mutex, back-off 5-60 s) -> scripts/server.ps1 (supervisor, restart codes 42/43/44) -> node server.js --profile production",
+    "code_dir": "~/.localnode/release (git worktree pinned at a localnode-rN tag; the dev tree is NOT what runs)",
+    "state_dir": "C:\\Work\\LocalNodeMCP (audit log, restart trigger, workspace index, runtime state)",
+    "config": "scripts/localnode.config.json (secret FILE paths under ~/.romion, never values)"
+  },
+  "surface": {
+    "production_profile_tools": 76,
+    "tests_profile_tools": 98,
+    "profile_file": "profiles/production.json (tests minus auth_mode_exclusions.oauth21)",
+    "wire_namespace": "_meta keys keep the 'mcp-tests/' prefix (e.g. mcp-tests/outputTrust, mcp-tests/toolSurfaceFingerprint): that is a protocol contract with clients, not a path, and was deliberately NOT renamed"
+  },
+  "deploy": {
+    "recipe": "commit on main -> CI green -> git tag -a localnode-rN -> pwsh -File scripts\\deploy-localnode.ps1 -Ref localnode-rN -ExpectedTools 76 (npm ci in the release tree, waits for a NEW listener pid). Rollback = same command with the previous tag.",
+    "runbook_skill": "~/.claude/skills/operate-localnodemcp"
+  },
+  "ci": {
+    "workflow": ".github/workflows/smoke.yml (Windows; copies the checkout to C:\\Work\\LocalNodeMCP because tests assert that root; npm ci, npm audit high, full suite)"
+  },
+  "docs": {
+    "state": "_workflow/STATE.md",
+    "plan": "_workflow/PRODUCTION_CONVERSION_PLAN.md",
+    "surface": "_workflow/SURFACE_CLASSIFICATION.md",
+    "directory_map": "DIRECTORY.md (generated: node scripts/generate_directory_docs.js --check)"
+  },
+  "dependencies": {
+    "depends_on": {
+      "infrastructure": "Cloudflare tunnel (~/.cloudflared/config.yml) for the public host",
+      "tinypymcp": "the shared memory store: memory_* tools were migrated there and removed from this server's production profile"
+    }
+  },
+  "invariants": [
+    "Production runs from a pinned release tag, never from the dev tree.",
+    "Never a second server on 3008; test instances use other ports and hermetic server-control env.",
+    "No Kuma monitor: the PC is off at night, which would read as an outage.",
+    "A tool-set or schema change moves the surface fingerprint and makes every client refresh -- batch such changes."
+  ]
+}

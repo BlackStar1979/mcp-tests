@@ -60,7 +60,7 @@ async function callTool(name, args) {
   assert.equal(traversal.success, false);
   assert.match(traversal.error, /traversal/i);
 
-  const absolute = await callTool("fs_read_public_text", { path: "C:/Work/mcp-tests/server.js" });
+  const absolute = await callTool("fs_read_public_text", { path: "C:/Work/LocalNodeMCP/server.js" });
   assert.equal(absolute.success, false);
   assert.match(absolute.error, /drive-letter/i);
 

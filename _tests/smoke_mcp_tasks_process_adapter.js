@@ -36,7 +36,7 @@ function status(overrides = {}) {
     family: "runtime",
     resolution_class: "runtime",
     cwd: ".",
-    workspace: "mcp-tests",
+    workspace: "LocalNodeMCP",
     queue_position: null,
     created_at: "2026-08-14T07:00:00.000Z",
     started_at: "2026-08-14T07:00:00.100Z",
@@ -63,7 +63,7 @@ function finalResult(overrides = {}) {
     status: "ok",
     command: "node",
     cwd: ".",
-    workspace: "mcp-tests",
+    workspace: "LocalNodeMCP",
     exit_code: 0,
     signal: null,
     timed_out: false,
@@ -404,7 +404,7 @@ function dispatchArgs(context, prelude) {
       requestId: "req-task-restart-one",
       processJobManager: firstManager,
     };
-    const actualArgs = { command: "node", args: ["--version"], cwd: "mcp-tests", timeout_ms: 5000 };
+    const actualArgs = { command: "node", args: ["--version"], cwd: "LocalNodeMCP", timeout_ms: 5000 };
     const actualTask = await handleToolsCall({
       id: 16,
       params: { name: "run_process", arguments: actualArgs },

@@ -25,7 +25,7 @@ const PROTOCOL_VERSION_META_KEY = "io.modelcontextprotocol/protocolVersion";
 const CLIENT_INFO_META_KEY = "io.modelcontextprotocol/clientInfo";
 const CLIENT_CAPABILITIES_META_KEY = "io.modelcontextprotocol/clientCapabilities";
 const EXPECTED_TOOL_COUNT = 98;
-const EXPECTED_COMBINED_FINGERPRINT = "93721a82a339f9d6";
+const EXPECTED_COMBINED_FINGERPRINT = "49d8c360e3756758";
 
 function wait(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));

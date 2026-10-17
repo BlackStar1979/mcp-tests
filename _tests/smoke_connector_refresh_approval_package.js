@@ -39,8 +39,8 @@ assert.equal(connectorSpec.oauth21_connector.path, "/mcp");
 assert.equal(connectorSpec.authenticated_connector.current_tool_count_after_stage6, 43);
 assert.equal(connectorSpec.authenticated_connector.repo_current_expected_tool_count, 98);
 assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.output_schema_fingerprint, "8292895f0216967c");
-assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.descriptor_fingerprint, "82ffaaa3adb6e7db");
-assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.combined_fingerprint, "93721a82a339f9d6");
+assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.descriptor_fingerprint, "1de4323d222a91a2");
+assert.equal(connectorSpec.authenticated_connector.repo_target_surface_fingerprints.combined_fingerprint, "49d8c360e3756758");
 assert.equal(connectorSpec.authenticated_connector.current_schema_refresh_required, false);
 
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);

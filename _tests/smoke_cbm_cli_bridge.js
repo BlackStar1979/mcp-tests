@@ -704,8 +704,8 @@ function fixtureOptions(overrides = {}) {
     () => resolveCbmRepositoryPath("../", fixtureOptions()),
     /Access denied/
   );
-  const repoPath = resolveCbmRepositoryPath("mcp-tests", fixtureOptions());
-  assert.equal(repoPath.displayPath, "mcp-tests");
+  const repoPath = resolveCbmRepositoryPath("LocalNodeMCP", fixtureOptions());
+  assert.equal(repoPath.displayPath, "LocalNodeMCP");
   assert.equal(repoPath.absolutePath, fs.realpathSync(path.join(__dirname, "..")));
 
   resetCbmBridgeForTests();

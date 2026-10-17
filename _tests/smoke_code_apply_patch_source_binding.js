@@ -7,7 +7,7 @@ const path = require("node:path");
 (async () => {
   const root = path.resolve(__dirname, "..");
   const fixtureRelative = "_control/smoke_code_apply_patch_source_binding";
-  const workspaceFixtureRelative = `mcp-tests/${fixtureRelative}`;
+  const workspaceFixtureRelative = `LocalNodeMCP/${fixtureRelative}`;
   const fixture = path.join(root, ...fixtureRelative.split("/"));
   try {
     fs.rmSync(fixture, { recursive: true, force: true });

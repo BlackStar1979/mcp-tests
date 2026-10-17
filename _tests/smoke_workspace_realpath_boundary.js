@@ -14,7 +14,7 @@ const { copyPath, deletePath, movePath, writeFile } = require("../src/util/works
 const { safeWorkspacePath } = require("../src/util/workspace_roots");
 
 const WORK_ROOT = safeWorkspacePath(".").absolutePath;
-const REL_BASE = "mcp-tests/_control/smoke_workspace_realpath_boundary";
+const REL_BASE = "LocalNodeMCP/_control/smoke_workspace_realpath_boundary";
 const ABS_BASE = path.join(WORK_ROOT, ...REL_BASE.split("/"));
 const BOUNDARY_ERROR = /workspace root|real path|symlink|junction|reparse/i;
 

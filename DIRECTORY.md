@@ -51,6 +51,10 @@ Updated: 2026-07-17
   Package metadata and script entrypoints.
 - `README.md`
   Human-oriented repo overview and common commands.
+- `SPEC.json`
+  Portfolio-level machine spec (identity, runtime, surface, deploy, invariants); points into _workflow/ for detail.
+- `WORKFLOW.md`
+  Portfolio-level changelog; bumped with SPEC.json in the same commit as every change.
 - `SERVER_AUTH_SPEC.json`
   Canonical auth/OAuth server contract.
 - `SERVER_AUTHZ_DECISION_SPEC.json`

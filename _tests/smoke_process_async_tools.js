@@ -152,7 +152,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const idempotentInput = {
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     idempotency_key: "tool-retry-key",
   };
   const idempotentFirst = await processStartTool.execute(idempotentInput, context);
@@ -181,7 +181,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const started = await processStartTool.execute({
     command: "node",
     args: ["-e", "process.stdout.write('async-tool-output')"],
-    cwd: safeWorkspacePath("mcp-tests").absolutePath,
+    cwd: safeWorkspacePath("LocalNodeMCP").absolutePath,
   }, context);
   assert.equal(started.command, "node");
   assert.equal(started.terminal, false);
@@ -191,7 +191,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     return status.terminal ? status : null;
   });
   assert.equal(completed.status, "ok");
-  assert.equal(completed.cwd, "mcp-tests");
+  assert.equal(completed.cwd, "LocalNodeMCP");
   const hiddenStatus = await processStatusTool.execute({ job_id: started.job_id }, otherClientContext);
   assert.deepEqual(hiddenStatus, {
     success: false,
@@ -230,12 +230,12 @@ async function waitFor(predicate, timeoutMs = 5000) {
     assert.equal(missing.success, false);
     assert.equal(missing.error.code, "process_job_not_found");
   }
-  const deniedCommand = await processStartTool.execute({ command: "cmd", cwd: "mcp-tests" }, context);
+  const deniedCommand = await processStartTool.execute({ command: "cmd", cwd: "LocalNodeMCP" }, context);
   assert.equal(deniedCommand.success, false);
   assert.equal(deniedCommand.error.code, "process_command_not_allowed");
   const deniedEnv = await processStartTool.execute({
     command: "node",
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     env: { PYTHONPATH: "C:\\untrusted" },
   }, context);
   assert.equal(deniedEnv.success, false);
@@ -244,7 +244,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const longJob = await processStartTool.execute({
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   }, context);
   const cancelled = await processCancelTool.execute({
     job_id: longJob.job_id,

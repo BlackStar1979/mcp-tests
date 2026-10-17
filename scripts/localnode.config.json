@@ -7,5 +7,5 @@
   "memory_embedding_external_egress": 1,
   "memory_embedding_token_file": "~/.romion/mcp-tests-memory-embedding-token.txt",
   "release_dir": "~/.localnode/release",
-  "state_dir": "C:\\Work\\mcp-tests"
+  "state_dir": "C:\\Work\\LocalNodeMCP"
 }

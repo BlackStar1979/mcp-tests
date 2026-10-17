@@ -28,26 +28,26 @@ async function callTool(name, args) {
 }
 
 (async () => {
-  const listing = await callTool("list_directory", { path: "mcp-tests" });
+  const listing = await callTool("list_directory", { path: "LocalNodeMCP" });
   assert.equal(listing.success, true);
-  assert.ok(listing.entries.some((entry) => entry.path === "mcp-tests/README.md"));
-  assert.ok(listing.entries.some((entry) => entry.path === "mcp-tests/src"));
+  assert.ok(listing.entries.some((entry) => entry.path === "LocalNodeMCP/README.md"));
+  assert.ok(listing.entries.some((entry) => entry.path === "LocalNodeMCP/src"));
 
-  const info = await callTool("get_info", { path: "mcp-tests/README.md" });
+  const info = await callTool("get_info", { path: "LocalNodeMCP/README.md" });
   assert.equal(info.success, true);
   assert.equal(info.type, "file");
   assert.equal(info.root_alias, "work");
   assert.ok(info.size > 0);
 
   const text = await callTool("read_file", {
-    path: "mcp-tests/README.md",
+    path: "LocalNodeMCP/README.md",
     max_chars: 2000,
   });
   assert.equal(text.success, true);
   assert.match(text.text, /LocalNodeMCP/);
 
   const lines = await callTool("read_file_lines", {
-    path: "mcp-tests/README.md",
+    path: "LocalNodeMCP/README.md",
     start_line: 1,
     end_line: 2,
   });
@@ -55,7 +55,7 @@ async function callTool(name, args) {
   assert.match(lines.text, /^L1 /);
 
   const chunk = await callTool("read_file_chunk", {
-    path: "mcp-tests/README.md",
+    path: "LocalNodeMCP/README.md",
     offset: 0,
     length: 20,
   });
@@ -66,14 +66,14 @@ async function callTool(name, args) {
   assert.equal(traversal.success, false);
   assert.match(traversal.error, /traversal|access denied/i);
 
-  const absolute = await callTool("read_file", { path: "C:/Work/mcp-tests/README.md" });
+  const absolute = await callTool("read_file", { path: "C:/Work/LocalNodeMCP/README.md" });
   assert.equal(absolute.success, false);
   assert.match(absolute.error, /drive-letter/i);
 
   const workspaceFs = require("../src/util/workspace_fs");
   const tempDir = path.join(__dirname, "..", "_tmp");
   const tempFile = path.join(tempDir, "workspace-fs-read-file-streaming.txt");
-  const tempRelative = "mcp-tests/_tmp/workspace-fs-read-file-streaming.txt";
+  const tempRelative = "LocalNodeMCP/_tmp/workspace-fs-read-file-streaming.txt";
   const source = Array.from({ length: 1200 }, (_, index) => `line-${String(index + 1).padStart(4, "0")} ${"x".repeat(64)}`).join("\n");
   const originalReadFile = fs.readFile;
   let blockedCalls = 0;

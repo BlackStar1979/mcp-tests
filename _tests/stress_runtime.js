@@ -74,7 +74,7 @@ function stats(samples) {
   assert.equal(deniedTraversal.payload.success, false);
   assert.match(deniedTraversal.payload.error, /traversal/i);
 
-  const deniedDrive = await callTool("fs_read_public_text", { path: "C:/Work/mcp-tests/server.js", max_chars: 512 });
+  const deniedDrive = await callTool("fs_read_public_text", { path: "C:/Work/LocalNodeMCP/server.js", max_chars: 512 });
   assert.equal(deniedDrive.payload.success, false);
   assert.match(deniedDrive.payload.error, /Drive-letter/i);
 

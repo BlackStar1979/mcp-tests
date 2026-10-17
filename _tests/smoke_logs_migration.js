@@ -18,7 +18,7 @@ assert.equal(fs.statSync(path.join(ROOT, "_logs", ".mcp-tests-audit.jsonl")).isF
 const server = read("server.js");
 const bootstrap = read("src/runtime/server_bootstrap_runtime.js");
 assert.ok(bootstrap.includes('path.join(rootDir, "_logs")'), "server bootstrap runtime default audit dir must be _logs");
-assert.ok(server.includes("C:\\Work\\mcp-tests\\_logs\\.mcp-tests-audit.jsonl"), "server header must document _logs audit path");
+assert.ok(server.includes("C:\\Work\\LocalNodeMCP\\_logs\\.mcp-tests-audit.jsonl"), "server header must document _logs audit path");
 assert.equal(server.includes('path.join(__dirname, "logs")'), false, "server must not default to logs/");
 assert.equal(bootstrap.includes('path.join(rootDir, "logs")'), false, "server bootstrap runtime must not default to logs/");
 

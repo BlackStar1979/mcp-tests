@@ -19,7 +19,7 @@ try {
     return originalExistsSync(targetPath);
   };
   fs.readdirSync = (targetPath, options) => {
-    if (String(targetPath).endsWith(path.join("mcp-tests", "plugins"))) {
+    if (String(targetPath).endsWith(path.join("LocalNodeMCP", "plugins"))) {
       return [{
         name: "alpha",
         isDirectory: () => true,

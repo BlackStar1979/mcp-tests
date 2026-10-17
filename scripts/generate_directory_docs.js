@@ -71,6 +71,8 @@ const CONFIG = {
       "package-lock.json": "Locked npm dependency graph.",
       "package.json": "Package metadata and script entrypoints.",
       "README.md": "Human-oriented repo overview and common commands.",
+    "SPEC.json": "Portfolio-level machine spec (identity, runtime, surface, deploy, invariants); points into _workflow/ for detail.",
+    "WORKFLOW.md": "Portfolio-level changelog; bumped with SPEC.json in the same commit as every change.",
       "SERVER_AUTH_SPEC.json": "Canonical auth/OAuth server contract.",
       "SERVER_AUTHZ_DECISION_SPEC.json": "Authorization decision envelope contract.",
       "SERVER_CAPABILITY_ATTESTATION_POLICY_SPEC.json": "Capability attestation policy spec.",
@@ -320,7 +322,7 @@ const CONFIG = {
     title: "GitHub workflows directory map",
     updated: "2026-10-16",
     entries: {
-      "smoke.yml": "CI: npm ci, npm audit (high fails) and the full smoke suite on Windows, run from the production path C:\\Work\\mcp-tests.",
+      "smoke.yml": "CI: npm ci, npm audit (high fails) and the full smoke suite on Windows, run from the production path C:\\Work\\LocalNodeMCP.",
     },
     tail: "Added 2026-10-16; before that the repository had no CI and the local run was the only gate.",
   },

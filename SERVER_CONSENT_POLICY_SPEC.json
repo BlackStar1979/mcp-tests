@@ -91,7 +91,7 @@
     "output_schema_changed": false,
     "descriptor_changed": false,
     "repo_target_tool_count": 98,
-    "repo_target_combined_fingerprint": "93721a82a339f9d6"
+    "repo_target_combined_fingerprint": "49d8c360e3756758"
   },
   "live_acceptance": {
     "status": "accepted_on_oauth21_internal",
@@ -99,7 +99,7 @@
     "restart_request_id": "manual-1787246667424",
     "server_start_id": "2026-08-20T17:24:29.112Z",
     "tool_count": 98,
-    "combined_fingerprint": "93721a82a339f9d6",
+    "combined_fingerprint": "49d8c360e3756758",
     "connector_refresh_required": false,
     "chatgpt_run_process_without_elicitation_form": true,
     "chatgpt_process_start_without_elicitation_form": true,
@@ -114,7 +114,7 @@
     "restart_request_id": "manual-1787194958781",
     "server_start_id": "2026-08-20T03:02:40.571Z",
     "tool_count": 98,
-    "combined_fingerprint": "93721a82a339f9d6",
+    "combined_fingerprint": "49d8c360e3756758",
     "missing_form_capability_error": -32021,
     "form_capable_input_required_without_execution": true,
     "decline_denied_without_execution": true,

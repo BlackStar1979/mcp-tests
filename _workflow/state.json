@@ -307,10 +307,10 @@
     "oauth21_3008_tools": {
       "tool_count": 98,
       "tool_names_hash": "b6526b6d88ccbee3",
-      "input_schema_fingerprint": "440c0f660abff822",
+      "input_schema_fingerprint": "47f2a0d7da5e5847",
       "output_schema_fingerprint": "8292895f0216967c",
-      "descriptor_fingerprint": "82ffaaa3adb6e7db",
-      "combined_fingerprint": "93721a82a339f9d6",
+      "descriptor_fingerprint": "1de4323d222a91a2",
+      "combined_fingerprint": "49d8c360e3756758",
       "connector_map_status": "repo98_runtime98_fresh_cli98_current_task_stale",
       "repo_current_expected_tool_count": 98,
       "server_start_id": "2026-09-04T15:49:05.071Z",

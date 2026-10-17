@@ -50,7 +50,7 @@
     "descriptor_changed": false,
     "tool_result_content_contract_changed": true,
     "repo_target_tool_count": 98,
-    "repo_target_combined_fingerprint": "93721a82a339f9d6"
+    "repo_target_combined_fingerprint": "49d8c360e3756758"
   },
   "live_acceptance": {
     "date": "2026-08-21",
@@ -62,7 +62,7 @@
     "server_start_id": "2026-08-21T18:44:38.849Z",
     "profile": "internal",
     "tool_count": 98,
-    "combined_fingerprint": "93721a82a339f9d6",
+    "combined_fingerprint": "49d8c360e3756758",
     "connector_refresh_required": false,
     "safe_raw_rpc_probe": {
       "http_status": 200,

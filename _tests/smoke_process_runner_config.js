@@ -103,7 +103,7 @@ const dockerEnv = buildProcessEnv("container", {}, config, {
 assert.equal(dockerEnv.HTTPS_PROXY, "http://proxy.example");
 assert.equal(dockerEnv.DOCKER_HOST, "npipe:////./pipe/docker_engine");
 
-const repo = safeWorkspacePath("mcp-tests");
+const repo = safeWorkspacePath("LocalNodeMCP");
 const fixtureRoot = fs.mkdtempSync(path.join(repo.absolutePath, "_tmp-process-runner-config-"));
 try {
   const relativeCwd = path.relative(repo.rootPath, fixtureRoot).replaceAll("\\", "/");

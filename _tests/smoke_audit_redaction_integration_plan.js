@@ -7,7 +7,7 @@ const {
 
 const riskyPayload = {
   audit: [
-    { event: "tool_call_start", path: "C:/Work/mcp-tests/docs/private.pem" },
+    { event: "tool_call_start", path: "C:/Work/LocalNodeMCP/docs/private.pem" },
     { event: "tool_call_error", detail: "token file .secrets/mcp_token.txt" },
   ],
 };

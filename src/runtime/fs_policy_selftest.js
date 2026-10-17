@@ -39,7 +39,7 @@ function assertPublicFsPolicySelfTest(fsTools, normalizeRelativePath) {
   );
   assertRejectedRelativePath(
     normalizeRelativePath,
-    "C:/Work/mcp-tests/server.js",
+    "C:/Work/LocalNodeMCP/server.js",
     "Drive-letter",
     "FS path policy allowed drive-letter path"
   );

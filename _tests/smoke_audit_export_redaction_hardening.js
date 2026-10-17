@@ -11,7 +11,7 @@ const rawAudit = [
     event: "tool_call_start",
     tool: "fs_read_public_text",
     args: {
-      path: "C:/Work/mcp-tests/docs/private.pem",
+      path: "C:/Work/LocalNodeMCP/docs/private.pem",
       note: "read ../server.js and token file .secrets/mcp_token.txt",
     },
   },
@@ -19,14 +19,14 @@ const rawAudit = [
     event: "tool_call_error",
     stderr: "failed opening /tmp/workspace/credential.key and relative/path/config.json",
     nested: {
-      "C:/Work/mcp-tests/.secrets/key.txt": "sensitive key name should be redacted",
+      "C:/Work/LocalNodeMCP/.secrets/key.txt": "sensitive key name should be redacted",
     },
   },
 ];
 
-assert.equal(classifyString("C:/Work/mcp-tests/docs/private.pem").path_like, true);
-assert.equal(classifyString("C:/Work/mcp-tests/docs/private.pem").path_is_absolute, true);
-assert.equal(classifyString("C:/Work/mcp-tests/docs/private.pem").sensitive_path_hint, true);
+assert.equal(classifyString("C:/Work/LocalNodeMCP/docs/private.pem").path_like, true);
+assert.equal(classifyString("C:/Work/LocalNodeMCP/docs/private.pem").path_is_absolute, true);
+assert.equal(classifyString("C:/Work/LocalNodeMCP/docs/private.pem").sensitive_path_hint, true);
 assert.equal(classifyString("plain status ok").path_like, false);
 assert.equal(classifyString("plain status ok").sensitive_path_hint, false);
 

@@ -18,6 +18,6 @@ assert.ok(toolUsageSnapshotSource.includes('path.resolve(__dirname, "..", "..", 
 assert.ok(toolUsageSnapshotSource.includes("process.env.MCP_TEST_AUDIT_LOG"), "tool_usage_snapshot must honor MCP_TEST_AUDIT_LOG override");
 assert.ok(!toolUsageSnapshotSource.includes('path.resolve(__dirname, "..", "..", ".mcp-tests-audit.jsonl")'), "tool_usage_snapshot must not fall back to repo-root audit path");
 assert.ok(!serverSource.includes('path.join(__dirname, ".mcp-tests-audit.jsonl")'), "root-level default audit log path must not return");
-assert.ok(serverSource.includes("C:\\Work\\mcp-tests\\_logs\\.mcp-tests-audit.jsonl"), "header comment must document _logs directory path");
+assert.ok(serverSource.includes("C:\\Work\\LocalNodeMCP\\_logs\\.mcp-tests-audit.jsonl"), "header comment must document _logs directory path");
 
 console.log("smoke_runtime_log_directory ok");

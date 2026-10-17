@@ -315,7 +315,7 @@ async function connectAndExercise({
       arguments: {
         command: "node",
         args: ["-e", "process.stdout.write('oauth-process-ok')"],
-        cwd: "mcp-tests",
+        cwd: "LocalNodeMCP",
         timeout_ms: 5000,
       },
     });
@@ -393,7 +393,7 @@ async function connectAndExercise({
         arguments: {
           command: "node",
           args: ["-e", "setTimeout(() => {}, 5000)"],
-          cwd: "mcp-tests",
+          cwd: "LocalNodeMCP",
           timeout_ms: 10000,
         },
       });
@@ -417,7 +417,7 @@ async function connectAndExercise({
 
       const deniedStart = await client.callTool({
         name: "process_start",
-        arguments: { command: "cmd", cwd: "mcp-tests" },
+        arguments: { command: "cmd", cwd: "LocalNodeMCP" },
       });
       assert.notEqual(deniedStart.isError, true, `${label} normalizes process policy denials`);
       assert.equal(deniedStart.structuredContent?.success, false);
@@ -427,7 +427,7 @@ async function connectAndExercise({
     } else {
       const legacyStarted = await client.callTool({
         name: "process_start",
-        arguments: { command: "node", cwd: "mcp-tests", timeout_ms: 5000 },
+        arguments: { command: "node", cwd: "LocalNodeMCP", timeout_ms: 5000 },
       });
       assert.notEqual(legacyStarted.isError, true, `${label} uses the same bounded OAuth process authorization without MRTR`);
       assert.equal(typeof legacyStarted.structuredContent?.job_id, "string", `${label} receives a bounded process job id`);

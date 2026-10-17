@@ -35,7 +35,7 @@ let spawnedNestedPid = null;
       "-e",
       "process.stdout.write('o'.repeat(800000));process.stderr.write('e'.repeat(800000));",
     ],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     timeout_ms: 5000,
     max_output_chars: 1000000,
   });
@@ -57,7 +57,7 @@ let spawnedNestedPid = null;
   const timeoutHandle = startProcessExecution({
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     timeout_ms: 100,
   });
   const timeoutResult = await timeoutHandle.completion;
@@ -68,7 +68,7 @@ let spawnedNestedPid = null;
   const cancelHandle = startProcessExecution({
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     timeout_ms: 5000,
   });
   await delay(100);
@@ -83,7 +83,7 @@ let spawnedNestedPid = null;
       "-e",
       "const {spawn}=require('node:child_process');const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{detached:process.platform==='win32',stdio:'ignore'});child.unref();process.stdout.write(String(child.pid));setInterval(()=>{},1000);",
     ],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     timeout_ms: 10000,
   });
   await waitFor(() => /^\d+$/.test(treeHandle.readOutput({ max_chars: 64 }).stdout));
@@ -110,7 +110,7 @@ let spawnedNestedPid = null;
   const pinnedHandle = startProcessExecution({
     command: "node",
     args: ["--version"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   }, { spawn: fakeSpawn });
   await pinnedHandle.completion;
   assert.equal(capturedExecutable, process.execPath);

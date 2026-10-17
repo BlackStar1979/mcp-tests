@@ -49,9 +49,21 @@ const SKIPPED_SCAN_DIRS = new Set([
   "_stages",
   "archive",
   ".codebase-memory",
+  // Tool caches. 2026-10-17: C:\Work\.cache (the estate's consolidated tool cache since 10-15) held
+  // a mypy tree that consumed the WHOLE 200-file budget of a bounded build -- 201 files visited,
+  // 200 skipped by extension, 0 documents indexed -- because the walker treated it as content.
+  ".cache",
+  ".mypy_cache",
+  ".ruff_cache",
+  ".pytest_cache",
 ]);
+// This server's own directory NAME under the workspace root, derived from where the file sits.
+// It was the literal "mcp-tests" until the 2026-10-17 rename to LocalNodeMCP, which silently turned
+// the three uses below into no-ops: the exclusion stopped excluding, the entrypoints stopped
+// matching, the score bonus stopped applying -- with every test still green.
+const SELF_DIR = path.basename(path.resolve(__dirname, "..", ".."));
 const BLOCKED_TOP_LEVEL_DIRS = new Set([
-  "mcp-tests/.codebase-memory",
+  `${SELF_DIR}/.codebase-memory`,
 ]);
 const BLOCKED_SUBTREE_PATHS = [
   "/_workflow/control_plane/snapshots/",
@@ -419,9 +431,9 @@ function buildDocumentGraphSummary(docs) {
     });
 
   const activeEntrypointLinks = [
-    "mcp-tests/_workflow/ACTIVE_WORKFLOW_INDEX.md",
-    "mcp-tests/_workflow/READINESS.md",
-    "mcp-tests/_workflow/ROADMAP.md",
+    `${SELF_DIR}/_workflow/ACTIVE_WORKFLOW_INDEX.md`,
+    `${SELF_DIR}/_workflow/READINESS.md`,
+    `${SELF_DIR}/_workflow/ROADMAP.md`,
     "_workflow/ACTIVE_WORKFLOW_INDEX.md",
     "_workflow/READINESS.md",
     "_workflow/ROADMAP.md",
@@ -1202,7 +1214,7 @@ function scoreDoc(doc, query) {
   score += identifierAndEvidenceIntentScore(doc, terms);
   if (p.startsWith("romionsim/")) score += 8;
   if (p.includes("readme")) score += 4;
-  if (p.startsWith("mcp-tests/src/")) score += 2;
+  if (p.startsWith(`${SELF_DIR}/src/`)) score += 2;
   return score;
 }
 

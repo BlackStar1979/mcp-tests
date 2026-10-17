@@ -2,7 +2,7 @@ name: smoke
 
 # The suite assumes the production layout: workspace root C:\Work containing mcp-tests
 # (tests resolve bare workspace paths such as "mcp-tests" against C:\Work, and several assert
-# that root literally). So the job copies the checkout to C:\Work\mcp-tests and runs it there,
+# that root literally). So the job copies the checkout to C:\Work\LocalNodeMCP and runs it there,
 # on Windows, exactly as the workstation does.
 
 on:
@@ -35,18 +35,18 @@ jobs:
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force C:\Work | Out-Null
-          robocopy "$env:GITHUB_WORKSPACE\mcp-tests" C:\Work\mcp-tests /E /NFL /NDL /NJH /NJS /NP
+          robocopy "$env:GITHUB_WORKSPACE\mcp-tests" C:\Work\LocalNodeMCP /E /NFL /NDL /NJH /NJS /NP
           if ($LASTEXITCODE -ge 8) { exit $LASTEXITCODE }
           exit 0
 
       - name: Install pinned dependencies
-        working-directory: C:\Work\mcp-tests
+        working-directory: C:\Work\LocalNodeMCP
         run: npm ci --no-audit --no-fund
 
       - name: Dependency audit (high and above fails)
-        working-directory: C:\Work\mcp-tests
+        working-directory: C:\Work\LocalNodeMCP
         run: npm audit --audit-level=high
 
       - name: Full smoke suite
-        working-directory: C:\Work\mcp-tests
+        working-directory: C:\Work\LocalNodeMCP
         run: node _tests/run_all_smokes.js --skip-network

@@ -57,7 +57,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     const first = firstManager.start({
       command: "node",
       args: ["-e", "process.stdout.write('durable-output')"],
-      cwd: "mcp-tests",
+      cwd: "LocalNodeMCP",
     }, { ownerId: "client-a" });
     const firstDone = await waitFor(() => {
       const status = firstManager.status(first.job_id, { ownerId: "client-a" });
@@ -69,7 +69,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     const durableIdempotentInput = {
       command: "node",
       args: ["-e", "process.stdout.write('durable-idempotent-output')"],
-      cwd: "mcp-tests",
+      cwd: "LocalNodeMCP",
       idempotency_key: durableIdempotencyKey,
     };
     const durableIdempotent = firstManager.start(
@@ -141,7 +141,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
       command: "node",
       family: "runtime",
       resolutionClass: "pinned_node_runtime",
-      cwd: "mcp-tests",
+      cwd: "LocalNodeMCP",
       workspace: "work",
       createdAtMs: 1000,
       timeoutMs: 30000,
@@ -210,7 +210,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
       command: "node",
       family: "runtime",
       resolutionClass: "pinned_node_runtime",
-      cwd: "mcp-tests",
+      cwd: "LocalNodeMCP",
       workspace: "work",
       createdAtMs: leaseNow,
       timeoutMs: 30000,
@@ -272,7 +272,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     const redacted = redactionManager.start({
       command: "node",
       args: ["-e", `const privateValue = '${secretArg}'; void privateValue;`],
-      cwd: "mcp-tests",
+      cwd: "LocalNodeMCP",
       env: { NODE_ENV: "must-not-persist-process-env" },
     }, { ownerId: "client-a" });
     await waitFor(() => redactionManager.status(redacted.job_id, { ownerId: "client-a" }).terminal);

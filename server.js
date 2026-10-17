@@ -11,10 +11,10 @@
  * - Self-test now also enforces exact read-only annotations and strict search outputSchema.
  *
  * Run:
- *   node C:\Work\mcp-tests\server.js
+ *   node C:\Work\LocalNodeMCP\server.js
  *
  * Self-test:
- *   node C:\Work\mcp-tests\server.js --self-test
+ *   node C:\Work\LocalNodeMCP\server.js --self-test
  *
  * Optional old strict mode:
  *   set MCP_TEST_OUTPUT_MODE=content-only
@@ -22,7 +22,7 @@
  * Runtime configuration:
  *   see SERVER_RUNTIME_CONFIG_SPEC.json
  * Audit log:
- *   C:\Work\mcp-tests\_logs\.mcp-tests-audit.jsonl
+ *   C:\Work\LocalNodeMCP\_logs\.mcp-tests-audit.jsonl
  */
 
 const { runServerBootstrapRuntime } = require("./src/runtime/server_bootstrap_runtime");

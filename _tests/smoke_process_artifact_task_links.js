@@ -19,7 +19,7 @@ const ARTIFACT_ID = "11111111111111111111111111111111";
     family: "runtime",
     resolution_class: "fixture",
     cwd: ".",
-    workspace: "mcp-tests",
+    workspace: "LocalNodeMCP",
     created_at: "2026-08-14T12:00:00.000Z",
     started_at: "2026-08-14T12:00:00.100Z",
     finished_at: "2026-08-14T12:00:01.000Z",

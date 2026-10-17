@@ -116,8 +116,8 @@ assert.equal(state.audit_events_spec.event_count, eventCatalog.events.length);
 assertCurrentRestartRequirement(state);
 assert.equal(state.current_runtime_truth.oauth21_3008.cbm_contract, "live_hardened_v0_9_0_with_upstream_201_277_caveats_and_snippet_integrity");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.tool_count, 98);
-assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "93721a82a339f9d6");
-assert.equal(SURFACE.combined_fingerprint, "93721a82a339f9d6");
+assert.equal(state.current_connector_truth.oauth21_3008_tools.combined_fingerprint, "49d8c360e3756758");
+assert.equal(SURFACE.combined_fingerprint, "49d8c360e3756758");
 assert.equal(state.current_connector_truth.oauth21_3008_tools.connector_refresh_required_now, false);
 assertCurrentConnectorVerificationState(state);
 

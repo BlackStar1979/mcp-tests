@@ -33,7 +33,7 @@ function taskStatus(overrides = {}) {
     family: "runtime",
     resolution_class: "fixture",
     cwd: ".",
-    workspace: "mcp-tests",
+    workspace: "LocalNodeMCP",
     queue_position: null,
     created_at: "2026-08-14T12:00:00.000Z",
     started_at: "2026-08-14T12:00:00.100Z",

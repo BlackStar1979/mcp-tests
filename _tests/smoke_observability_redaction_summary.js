@@ -8,7 +8,7 @@ const {
 const riskyPayload = {
   audit_jsonl_health: { status: "ok" },
   examples: [
-    { event: "tool_call_start", arg: "C:/Work/mcp-tests/docs/private.pem" },
+    { event: "tool_call_start", arg: "C:/Work/LocalNodeMCP/docs/private.pem" },
     { event: "tool_call_error", message: "read .secrets/mcp_token.txt failed" },
     { event: "child_process", stderr: "/tmp/workspace/credential.key" },
   ],

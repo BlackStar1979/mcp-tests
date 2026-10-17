@@ -63,7 +63,7 @@ const SPAN_ID = "00f067aa0ba902b7";
       family: "runtime",
       resolutionClass: "fixture",
       cwd: ".",
-      workspace: "mcp-tests",
+      workspace: "LocalNodeMCP",
       traceId: TRACE_ID,
       spanId: SPAN_ID,
       parentSpanId: null,

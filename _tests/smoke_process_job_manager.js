@@ -32,14 +32,14 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const first = manager.start({
     command: "node",
     args: ["-e", "setTimeout(() => process.stdout.write('first-secret'), 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     env: { NODE_ENV: "audit-secret-value" },
     timeout_ms: 10000,
   });
   const second = manager.start({
     command: "node",
     args: ["-e", "process.stdout.write('second-output')"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   });
 
   assert.equal(first.status, "running");
@@ -74,7 +74,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const idempotentInput = {
     command: "node",
     args: ["-e", "setTimeout(() => process.stdout.write('idempotent-output'), 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     idempotency_key: "manager-retry-key",
   };
   const idempotentFirst = manager.start(idempotentInput, { ownerId: "idempotent-client" });
@@ -86,14 +86,14 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const envOrderedFirst = manager.start({
     command: "node",
     args: ["-e", "process.stdout.write('env-order')"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     env: { NODE_ENV: "test", NO_COLOR: "1" },
     idempotency_key: "manager-env-order-key",
   }, { ownerId: "env-order-client" });
   const envOrderedRetry = manager.start({
     command: "node",
     args: ["-e", "process.stdout.write('env-order')"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
     env: { no_color: "1", node_env: "test" },
     idempotency_key: "manager-env-order-key",
   }, { ownerId: "env-order-client" });
@@ -111,7 +111,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const queueFiller = manager.start({
     command: "node",
     args: ["-e", "process.stdout.write('queue-filler')"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   });
   assert.equal(queueFiller.status, "queued");
   assert.equal(
@@ -120,7 +120,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     "idempotent retry must bypass exhausted queue capacity"
   );
   assert.throws(
-    () => manager.start({ command: "node", args: ["--version"], cwd: "mcp-tests" }),
+    () => manager.start({ command: "node", args: ["--version"], cwd: "LocalNodeMCP" }),
     (error) => error && error.code === "process_job_queue_full"
   );
   await manager.cancel(queueFiller.job_id, "idempotency-test-cleanup");
@@ -130,12 +130,12 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const running = manager.start({
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   });
   const queued = manager.start({
     command: "node",
     args: ["-e", "process.stdout.write('must-not-run')"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   });
   assert.equal(queued.status, "queued");
   const queuedCancelled = await manager.cancel(queued.job_id, "queued_cancel");
@@ -150,7 +150,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   const owned = manager.start({
     command: "node",
     args: ["-e", "setTimeout(() => {}, 5000)"],
-    cwd: "mcp-tests",
+    cwd: "LocalNodeMCP",
   }, { ownerId: "client-a" });
   assert.throws(
     () => manager.status(owned.job_id, { ownerId: "client-b" }),
@@ -170,7 +170,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
     const job = manager.start({
       command: "node",
       args: ["-e", `process.stdout.write('${index}')`],
-      cwd: "mcp-tests",
+      cwd: "LocalNodeMCP",
     });
     await waitFor(() => manager.status(job.job_id).terminal);
   }
@@ -192,7 +192,7 @@ async function waitFor(predicate, timeoutMs = 5000) {
   assert.equal(manager.snapshot().running_jobs, 0);
   assert.equal(manager.snapshot().queued_jobs, 0);
   assert.throws(
-    () => manager.start({ command: "node", args: ["--version"], cwd: "mcp-tests" }),
+    () => manager.start({ command: "node", args: ["--version"], cwd: "LocalNodeMCP" }),
     /shutting down/i
   );
 

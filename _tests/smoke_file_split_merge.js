@@ -18,7 +18,7 @@ const { fileSplitTool } = require("../tools/file_split");
 
 const ROOT = path.resolve(__dirname, "..");
 const WORKSPACE_ROOT = path.resolve(ROOT, "..");
-const FIXTURE_REL = "mcp-tests/_control/smoke_file_split_merge";
+const FIXTURE_REL = "LocalNodeMCP/_control/smoke_file_split_merge";
 const FIXTURE = path.join(WORKSPACE_ROOT, ...FIXTURE_REL.split("/"));
 const BACKUP_FIXTURE = path.join(WORKSPACE_ROOT, ".mcp_backups", ...FIXTURE_REL.split("/"));
 

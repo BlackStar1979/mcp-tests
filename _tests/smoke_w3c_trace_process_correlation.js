@@ -40,7 +40,7 @@ function prepared() {
       originalArgs: [],
       family: "runtime",
       resolutionClass: "fixture",
-      cwdInfo: { absolutePath: process.cwd(), displayPath: ".", rootAlias: "mcp-tests" },
+      cwdInfo: { absolutePath: process.cwd(), displayPath: ".", rootAlias: "LocalNodeMCP" },
     },
   };
 }

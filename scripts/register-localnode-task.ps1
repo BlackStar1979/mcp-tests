@@ -64,7 +64,7 @@ $settings = New-ScheduledTaskSettingsSet `
   -RestartCount 999 -RestartInterval (New-TimeSpan -Minutes 1)
 
 Register-ScheduledTask -TaskName $TaskName -Action $action -Trigger $trigger -Principal $principal `
-  -Settings $settings -Description 'LocalNodeMCP (C:\Work\mcp-tests): keeps the local production MCP server on 127.0.0.1:3008 running.' `
+  -Settings $settings -Description 'LocalNodeMCP (C:\Work\LocalNodeMCP): keeps the local production MCP server on 127.0.0.1:3008 running.' `
   -Force | Out-Null
 Write-Host "Registered task $TaskName for $user."
 
