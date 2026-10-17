@@ -11,7 +11,7 @@
   `deploy-localnode.ps1 -Ref localnode-r3 -ExpectedTools 76`: npm ci in the release tree, new listener pid,
   76 tools; public `/healthz` 200, unauthenticated `/mcp` 401; release worktree clean at the tag.
   Production now carries the derived `SELF_DIR` in the workspace index and skips tool caches (r2 still had
-  the literal directory name, i.e. the silent no-ops, for the 26 minutes between rename and deploy).
+  the literal directory name, i.e. the silent no-ops, for under 19 minutes: restart from the new path 18:20:45, r3 deploy done before 18:39:38 -- both read from logs/clock).
 
 - **2026-10-17 -- directory and repo renamed mcp-tests -> LocalNodeMCP (P7); adopted into portfolio governance. SPEC v1.**
   The server had been production as LocalNodeMCP since 2026-10-16 while PORTFOLIO.json still listed
