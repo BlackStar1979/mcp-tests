@@ -1,7 +1,7 @@
 {
   "$purpose": "LocalNodeMCP -- machine-readable project spec. Load THIS to know the project cold. Portfolio: C:\\Work\\PORTFOLIO.json. Deeper state lives in _workflow/ (STATE.md, PRODUCTION_CONVERSION_PLAN.md, SURFACE_CLASSIFICATION.md); this file points there instead of copying it.",
   "meta": {
-    "spec_version": 1,
+    "spec_version": 2,
     "last_verified": "2026-10-17",
     "verified_by": "architect agent: directory renamed mcp-tests -> LocalNodeMCP (P7), adopted into portfolio governance; suite 7 public + 316 authenticated green from the new path"
   },

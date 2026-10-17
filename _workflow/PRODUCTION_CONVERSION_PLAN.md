@@ -7,6 +7,12 @@ design input that later packages are cut from. Retire it once the conversion has
 
 ## 0. Progress log
 
+- 2026-10-17 P7 rename DONE: directory `C:\Work\mcp-tests` -> `C:\Work\LocalNodeMCP` (live, ~1.5 min
+  down) and GitHub repo `mcp-tests` -> `LocalNodeMCP` (redirects keep old clones working); adopted into
+  PORTFOLIO governance with SPEC.json + WORKFLOW.md (it was listed as CODEX's, "do NOT govern").
+  Kept on purpose: the tunnel host `mcp-tests-oauth21` (OAuth resource identity) and the `mcp-tests/`
+  `_meta` wire namespace (client contract). Detail: `WORKFLOW.md` (root) 2026-10-17. Remaining P7:
+  spec migration M44 (per-request versioning) and POL-1C.
 - 2026-10-16 P1.1: WIP `0f18977` triaged. It was one coherent package (COMP-1A refresh to
   `codex-mcp-client 0.153.1`), half-applied; completed in `7c81c75` after re-running its evidence
   command. It had broken 3 smokes (two frozen sentences, `state.json` over its 16000-char budget).
